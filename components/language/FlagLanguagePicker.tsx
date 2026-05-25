@@ -9,11 +9,11 @@ type Language = {
 };
 
 const languages: Language[] = [
-  { code: "tr", title: "Türkçe", flagUrl: "/flags/tr.svg" },
-  { code: "en", title: "English", flagUrl: "/flags/gb.svg" },
-  { code: "ru", title: "Русский", flagUrl: "/flags/ru.svg" },
-  { code: "ka", title: "ქართული", flagUrl: "/flags/ge.svg" },
-  { code: "de", title: "Deutsch", flagUrl: "/flags/de.svg" },
+  { code: "tr", title: "Türkçe", flagUrl: "https://flagcdn.com/w40/tr.png" },
+  { code: "en", title: "English", flagUrl: "https://flagcdn.com/w40/gb.png" },
+  { code: "ru", title: "Русский", flagUrl: "https://flagcdn.com/w40/ru.png" },
+  { code: "ka", title: "ქართული", flagUrl: "https://flagcdn.com/w40/ge.png" },
+  { code: "de", title: "Deutsch", flagUrl: "https://flagcdn.com/w40/de.png" },
 ];
 
 type FlagLanguagePickerProps = {

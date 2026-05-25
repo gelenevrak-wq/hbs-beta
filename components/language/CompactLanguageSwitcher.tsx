@@ -7,15 +7,15 @@ export type LanguageCode = "tr" | "en" | "ru" | "ka" | "de";
 type Language = {
   code: LanguageCode;
   title: string;
-  flagSrc: string;
+  short: string;
 };
 
 const languages: Language[] = [
-  { code: "tr", title: "Türkçe", flagSrc: "/flags/tr.svg" },
-  { code: "ka", title: "ქართული", flagSrc: "/flags/ge.svg" },
-  { code: "en", title: "English", flagSrc: "/flags/gb.svg" },
-  { code: "ru", title: "Русский", flagSrc: "/flags/ru.svg" },
-  { code: "de", title: "Deutsch", flagSrc: "/flags/de.svg" },
+  { code: "tr", title: "Türkçe", short: "TR" },
+  { code: "en", title: "English", short: "EN" },
+  { code: "ru", title: "Русский", short: "RU" },
+  { code: "ka", title: "ქართული", short: "KA" },
+  { code: "de", title: "Deutsch", short: "DE" },
 ];
 
 export function isLanguageCode(value: string | null): value is LanguageCode {
@@ -43,9 +43,7 @@ export default function CompactLanguageSwitcher() {
     document.documentElement.dir = "ltr";
   }, []);
 
-  if (!language) {
-    return <div className="h-8 w-[132px] shrink-0" aria-hidden="true" />;
-  }
+  if (!language) return <div className="h-8 w-[74px] shrink-0" />;
 
   const changeLanguage = (languageCode: LanguageCode) => {
     setLanguage(languageCode);
@@ -56,35 +54,19 @@ export default function CompactLanguageSwitcher() {
   };
 
   return (
-    <div
-      className="flex shrink-0 items-center gap-1 rounded-full border border-slate-200 bg-white px-1 py-1 shadow-sm"
-      aria-label="Language selection"
-    >
-      {languages.map((item) => {
-        const selected = item.code === language;
-
-        return (
-          <button
-            key={item.code}
-            type="button"
-            onClick={() => changeLanguage(item.code)}
-            title={item.title}
-            aria-label={item.title}
-            aria-pressed={selected}
-            className={`flex h-7 w-7 items-center justify-center rounded-full transition ${
-              selected
-                ? "bg-blue-50 ring-2 ring-blue-500 ring-offset-1"
-                : "hover:bg-slate-100"
-            }`}
-          >
-            <img
-              src={item.flagSrc}
-              alt={item.title}
-              className="h-[18px] w-[18px] rounded-full border border-slate-200 object-cover shadow-[0_0_0_1px_rgba(255,255,255,0.9)]"
-            />
-          </button>
-        );
-      })}
-    </div>
+    <label className="relative shrink-0">
+      <span className="sr-only">Language</span>
+      <select
+        value={language}
+        onChange={(event) => changeLanguage(event.target.value as LanguageCode)}
+        className="h-8 max-w-[82px] rounded-full border border-slate-200 bg-white px-2 pr-6 text-[11px] font-black text-slate-900 shadow-sm outline-none transition hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:h-9 sm:max-w-[126px] sm:px-3 sm:text-xs"
+      >
+        {languages.map((item) => (
+          <option key={item.code} value={item.code}>
+            {item.short} {item.title}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

@@ -51,6 +51,11 @@ const ui = {
     hardware: "Hırdavat / Tesisat",
     spare: "Yedek Parça",
     message: "Stok yaparken malını müşterilerine de göster.",
+    region: "Arama bölgesi",
+    regionPlaceholder: "Şehir / bölge seç",
+    radius: "Çap",
+    mapPick: "Haritadan seç",
+    allWorld: "Tüm dünya",
   },
   en: {
     login: "Login",
@@ -73,6 +78,11 @@ const ui = {
     hardware: "Hardware / Plumbing",
     spare: "Spare Parts",
     message: "Enter stock once; show it to customers too.",
+    region: "Search region",
+    regionPlaceholder: "Choose city / region",
+    radius: "Radius",
+    mapPick: "Pick on map",
+    allWorld: "Worldwide",
   },
   de: {
     login: "Login",
@@ -95,6 +105,11 @@ const ui = {
     hardware: "Werkzeug / Sanitär",
     spare: "Ersatzteile",
     message: "Bestand einmal erfassen; Kunden direkt zeigen.",
+    region: "Suchgebiet",
+    regionPlaceholder: "Stadt / Region wählen",
+    radius: "Radius",
+    mapPick: "Auf Karte wählen",
+    allWorld: "Weltweit",
   },
   ru: {
     login: "Вход",
@@ -117,6 +132,11 @@ const ui = {
     hardware: "Инструменты / Сантехника",
     spare: "Запчасти",
     message: "Внеси склад один раз; покажи товар клиентам.",
+    region: "Регион поиска",
+    regionPlaceholder: "Выберите город / регион",
+    radius: "Радиус",
+    mapPick: "Выбрать на карте",
+    allWorld: "Весь мир",
   },
   ka: {
     login: "შესვლა",
@@ -139,8 +159,41 @@ const ui = {
     hardware: "ინსტრუმენტი / სანტექნიკა",
     spare: "ნაწილები",
     message: "მარაგი ერთხელ შეიყვანე; მომხმარებელსაც აჩვენე.",
+    region: "ძებნის ზონა",
+    regionPlaceholder: "აირჩიეთ ქალაქი / რეგიონი",
+    radius: "რადიუსი",
+    mapPick: "რუკაზე არჩევა",
+    allWorld: "მთელი მსოფლიო",
   },
 };
+
+const searchCenters = [
+  { key: "batumi", label: "Batumi, Georgia", city: "Batumi", country: "Georgia", lat: 41.6168, lng: 41.6367 },
+  { key: "tbilisi", label: "Tbilisi, Georgia", city: "Tbilisi", country: "Georgia", lat: 41.7151, lng: 44.8271 },
+  { key: "istanbul", label: "İstanbul, Türkiye", city: "İstanbul", country: "Türkiye", lat: 41.0082, lng: 28.9784 },
+  { key: "izmir", label: "İzmir, Türkiye", city: "İzmir", country: "Türkiye", lat: 38.4237, lng: 27.1428 },
+  { key: "antalya", label: "Antalya, Türkiye", city: "Antalya", country: "Türkiye", lat: 36.8969, lng: 30.7133 },
+  { key: "stpetersburg", label: "St. Petersburg, Russia", city: "St. Petersburg", country: "Russia", lat: 59.9311, lng: 30.3609 },
+] as const;
+
+type SearchCenterKey = (typeof searchCenters)[number]["key"];
+
+const productCoordinates: Record<string, { lat: number; lng: number }> = {
+  Batumi: { lat: 41.6168, lng: 41.6367 },
+  İstanbul: { lat: 41.0082, lng: 28.9784 },
+  Tbilisi: { lat: 41.7151, lng: 44.8271 },
+};
+
+function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const toRad = (value: number) => (value * Math.PI) / 180;
+  const earthRadiusKm = 6371;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+  return 2 * earthRadiusKm * Math.asin(Math.sqrt(h));
+}
 
 const products: Product[] = [
   { slug: "obdtr-obd-platformu", name: { tr: "OBDTR OBD Platformu", en: "OBDTR OBD Platformu", de: "OBDTR OBD Platformu", ru: "OBDTR OBD Platformu", ka: "OBDTR OBD Platformu" }, category: { tr: "OBD cihazları vitrini", en: "OBD cihazları vitrini", de: "OBD cihazları vitrini", ru: "OBD cihazları vitrini", ka: "OBD cihazları vitrini" }, store: "OBDTR", storeSlug: "obdtr", city: "İstanbul", country: "Türkiye", image: "https://assets.zyrosite.com/cdn-cgi/image/format%3Dauto%2Cw%3D768%2Ch%3D512%2Cfit%3Dcrop/UQiqWaZEFBvz3IaI/ana-sayfa-son-1pEM1pE6JGsoxwuu.png", price: { tr: "Bilgi / teklif alın", en: "Request quote", de: "Anfrage", ru: "Request quote", ka: "Request quote" }, tag: { tr: "OBDTR gerçek görsel", en: "OBDTR gerçek görsel", de: "OBDTR gerçek görsel", ru: "OBDTR gerçek görsel", ka: "OBDTR gerçek görsel" }, sku: "OBDTR-PLATFORM" },
@@ -178,15 +231,57 @@ export default function HomePage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
+  const [searchCenter, setSearchCenter] = useState<SearchCenterKey>("batumi");
+  const [radiusKm, setRadiusKm] = useState(50);
+  const [uploadedProducts, setUploadedProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(saved) ? saved : "tr");
+
+    const savedProducts = window.localStorage.getItem("hbs-store-products");
+    if (savedProducts) {
+      try {
+        const parsedProducts = JSON.parse(savedProducts) as Array<{
+          id: string;
+          name: string;
+          category: string;
+          salePrice: string;
+          currency: string;
+          sku: string;
+          imageUrl?: string;
+          visibility?: string;
+        }>;
+
+        const mappedProducts: Product[] = parsedProducts
+          .filter((item) => item.visibility !== "hidden")
+          .map((item) => ({
+            slug: item.id,
+            name: { tr: item.name },
+            category: { tr: item.category },
+            store: "OBDTR",
+            storeSlug: "obdtr",
+            city: "İstanbul",
+            country: "Türkiye",
+            image: item.imageUrl || "/product-images/diagnostic-scanner.svg",
+            price: { tr: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Teklif isteyin" },
+            tag: { tr: "Mağaza ürünü" },
+            sku: item.sku || item.id,
+          }));
+
+        setUploadedProducts(mappedProducts);
+      } catch {
+        setUploadedProducts([]);
+      }
+    }
   }, []);
+
+  const allProducts = useMemo(() => [...uploadedProducts, ...products], [uploadedProducts]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return products.filter((item) => {
+    const center = searchCenters.find((item) => item.key === searchCenter) ?? searchCenters[0];
+    return allProducts.filter((item) => {
       const categoryOk =
         category === "all" ||
         ["service", "rental", "realestate", "tour"].includes(category) ||
@@ -196,14 +291,18 @@ export default function HomePage() {
       const haystack = [l(item.name, language ?? "tr"), l(item.category, language ?? "tr"), item.store, item.city, item.country, item.sku]
         .join(" ")
         .toLowerCase();
-      return categoryOk && (!q || haystack.includes(q));
+      const coords = productCoordinates[item.city] ?? productCoordinates[center.city];
+      const distanceOk = radiusKm >= 10000 || distanceKm(center, coords) <= radiusKm;
+      return categoryOk && distanceOk && (!q || haystack.includes(q));
     });
-  }, [query, category, language]);
+  }, [query, category, language, allProducts, searchCenter, radiusKm]);
 
   if (!language) return <main className="min-h-screen bg-white" />;
 
   const activeUiLanguage = (language in ui ? language : "en") as keyof typeof ui;
   const t = ui[activeUiLanguage];
+  const selectedCenter = searchCenters.find((item) => item.key === searchCenter) ?? searchCenters[0];
+  const radiusLabel = radiusKm >= 10000 ? t.allWorld : `${radiusKm} km`;
   const searchHref = query.trim() ? `/customer?q=${encodeURIComponent(query.trim())}` : "/customer";
   const countLabel = language === "tr" ? "kayıt" : language === "de" ? "Eintrag" : language === "ru" ? "позиция" : language === "ka" ? "ჩანაწერი" : "items";
   const openingOffer = language === "tr" ? "Açılışa özel ücretsiz mağaza kaydınızı şimdi yaptırın" : language === "de" ? "Zur Eröffnung: Jetzt kostenlos Ihren Shop registrieren" : language === "ru" ? "К открытию: зарегистрируйте магазин бесплатно" : language === "ka" ? "გახსნის შეთავაზება: დაარეგისტრირეთ მაღაზია უფასოდ" : "Opening offer: register your store for free now";
@@ -224,21 +323,13 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#f6f7fb] text-slate-950">
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-1.5 px-2 py-1.5 sm:gap-2 sm:px-4">
-          <Link href="/" className="mr-1 shrink-0 text-base font-black tracking-tight text-blue-700 sm:mr-3 sm:text-xl">HBS</Link>
-          <CompactLanguageSwitcher />
-          <Link
-            href="/login"
-            className="rounded-full border border-slate-200 bg-white px-2.5 py-1.5 text-[11px] font-black text-slate-800 shadow-sm hover:bg-slate-50 sm:px-3 sm:text-xs"
-          >
-            {t.login}
-          </Link>
-          <Link
-            href="/register"
-            className="rounded-full bg-blue-600 px-2.5 py-1.5 text-[11px] font-black text-white shadow-sm hover:bg-blue-700 sm:px-3 sm:text-xs"
-          >
-            {t.register}
-          </Link>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-2 py-1.5 sm:px-4">
+          <Link href="/" className="shrink-0 text-base font-black tracking-tight text-blue-700 sm:text-xl">HBS</Link>
+          <div className="flex items-center gap-1.5">
+            <CompactLanguageSwitcher />
+            <Link href="/login" className="hidden rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-800 hover:bg-slate-50 sm:inline-flex">{t.login}</Link>
+            <Link href="/register" className="hidden rounded-full bg-blue-600 px-3 py-1.5 text-xs font-black text-white hover:bg-blue-700 sm:inline-flex">{t.register}</Link>
+          </div>
         </div>
 
         <div className="mx-auto max-w-7xl px-2 pb-1.5 sm:px-4">
@@ -251,6 +342,72 @@ export default function HomePage() {
             />
             <Link href={searchHref} className="rounded-full bg-blue-600 px-3 py-1 text-[11px] font-black text-white sm:px-4 sm:text-xs">{t.searchButton}</Link>
           </form>
+        </div>
+
+        <div className="mx-auto max-w-7xl px-2 pb-1.5 sm:px-4">
+          <div className="rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
+            <div className="mb-1 flex items-center justify-between gap-2 px-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
+              <span>📍 {t.region}</span>
+              <span className="text-blue-700">{selectedCenter.label} · {radiusLabel}</span>
+            </div>
+            <div className="grid grid-cols-[1fr_auto] gap-1 sm:grid-cols-[1.3fr_1fr_auto]">
+              <select
+                value={searchCenter}
+                onChange={(event) => setSearchCenter(event.target.value as SearchCenterKey)}
+                className="h-8 min-w-0 rounded-full border border-slate-200 bg-slate-50 px-2 text-[11px] font-black text-slate-800 outline-none focus:border-blue-500"
+                aria-label={t.regionPlaceholder}
+              >
+                {searchCenters.map((item) => (
+                  <option key={item.key} value={item.key}>{item.label}</option>
+                ))}
+              </select>
+              <div className="hidden items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 sm:flex">
+                <span className="text-[10px] font-black text-slate-500">{t.radius}</span>
+                <input
+                  type="range"
+                  min="5"
+                  max="200"
+                  step="5"
+                  value={Math.min(radiusKm, 200)}
+                  onChange={(event) => setRadiusKm(Number(event.target.value))}
+                  className="w-24 accent-blue-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => setRadiusKm(radiusKm >= 10000 ? 50 : 10000)}
+                  className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black text-blue-700"
+                >
+                  {radiusLabel}
+                </button>
+              </div>
+              <button
+                type="button"
+                className="h-8 rounded-full border border-blue-100 bg-blue-50 px-2 text-[10px] font-black text-blue-700"
+                title={t.mapPick}
+              >
+                🗺️ {t.mapPick}
+              </button>
+            </div>
+            <div className="mt-1 flex items-center gap-1 sm:hidden">
+              {[10, 25, 50, 100].map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setRadiusKm(value)}
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-black ${radiusKm === value ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"}`}
+                >
+                  {value} km
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setRadiusKm(10000)}
+                className={`rounded-full px-2 py-0.5 text-[10px] font-black ${radiusKm >= 10000 ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"}`}
+              >
+                {t.allWorld}
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="mx-auto grid max-w-7xl grid-cols-3 gap-1 px-2 pb-1.5 sm:hidden">

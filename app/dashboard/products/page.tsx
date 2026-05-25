@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -30,6 +30,7 @@ type ProductRecord = {
   warehouse: string;
   shelf: string;
   visibility: Visibility;
+  imageUrl: string;
 };
 
 const texts = {
@@ -94,7 +95,10 @@ const texts = {
     submit: "Kaydı Oluştur",
     media: "Fotoğraf / Video",
     mediaText:
-      "Ürün veya hizmet için çoklu fotoğraf ve video yükleme alanı burada olacak. Gerçek dosya yükleme sistemi sonraki aşamada bağlanacaktır.",
+      "Ürün veya hizmet fotoğrafını seçin veya görsel adresi girin. Bu beta sürümde kayıtlar tarayıcı hafızasına yazılır; Supabase bağlanınca gerçek veritabanına taşınacaktır.",
+    imageUrl: "Ürün Fotoğrafı",
+    imageUrlPlaceholder: "Görsel URL veya dosya seçimi sonrası otomatik dolar",
+    chooseImage: "Fotoğraf seç",
     barcodeDeviceNoteTitle: "Barkod okuyucu uyumu",
     barcodeDeviceNote:
       "Bu alanlar telefon kamerası, USB barkod okuyucu, Bluetooth barkod okuyucu ve manuel kod girişiyle uyumlu tasarlanacaktır. Harici okuyucular barkod alanına kodu yazıp Enter gönderebilir.",
@@ -153,6 +157,7 @@ const initialProducts: ProductRecord[] = [
     warehouse: "Ana Depo",
     shelf: "A-01",
     visibility: "visible",
+    imageUrl: "/product-images/brake-pad.svg",
   },
   {
     id: "product-002",
@@ -175,6 +180,7 @@ const initialProducts: ProductRecord[] = [
     warehouse: "Ana Depo",
     shelf: "B-04",
     visibility: "visible",
+    imageUrl: "/product-images/oil-filter.svg",
   },
 ];
 
@@ -200,6 +206,8 @@ export default function ProductsPage() {
   const [warehouse, setWarehouse] = useState("");
   const [shelf, setShelf] = useState("");
   const [visibility, setVisibility] = useState<Visibility>("visible");
+  const [imageUrl, setImageUrl] = useState("");
+  const [productsLoaded, setProductsLoaded] = useState(false);
   const [products, setProducts] = useState<ProductRecord[]>(initialProducts);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
@@ -207,7 +215,25 @@ export default function ProductsPage() {
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : "tr");
+
+    const savedProducts = window.localStorage.getItem("hbs-store-products");
+    if (savedProducts) {
+      try {
+        const parsedProducts = JSON.parse(savedProducts) as ProductRecord[];
+        if (Array.isArray(parsedProducts)) {
+          setProducts(parsedProducts);
+        }
+      } catch {
+        setProducts(initialProducts);
+      }
+    }
+    setProductsLoaded(true);
   }, []);
+
+  useEffect(() => {
+    if (!productsLoaded) return;
+    window.localStorage.setItem("hbs-store-products", JSON.stringify(products));
+  }, [products, productsLoaded]);
 
   const currentText = texts.tr;
 
@@ -254,6 +280,20 @@ export default function ProductsPage() {
     setWarehouse("");
     setShelf("");
     setVisibility("visible");
+    setImageUrl("");
+  }
+
+  function handleProductImage(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setImageUrl(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
   }
 
   function createProduct() {
@@ -283,6 +323,7 @@ export default function ProductsPage() {
       warehouse,
       shelf,
       visibility,
+      imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
     };
 
     setProducts((currentProducts) => [newProduct, ...currentProducts]);
@@ -418,6 +459,29 @@ export default function ProductsPage() {
                   placeholder={currentText.descriptionPlaceholder}
                   className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
                 />
+              </div>
+
+              <div className="md:col-span-2 rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+                <label className="mb-2 block text-sm text-slate-300">
+                  {currentText.imageUrl}
+                </label>
+                <input
+                  value={imageUrl}
+                  onChange={(event) => setImageUrl(event.target.value)}
+                  placeholder={currentText.imageUrlPlaceholder}
+                  className="mb-3 w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProductImage}
+                  className="block w-full text-sm text-slate-300 file:mr-4 file:rounded-xl file:border-0 file:bg-emerald-400 file:px-4 file:py-2 file:text-sm file:font-black file:text-slate-950"
+                />
+                {imageUrl && (
+                  <div className="mt-4 h-32 w-32 overflow-hidden rounded-2xl bg-white p-2">
+                    <img src={imageUrl} alt={name || currentText.imageUrl} className="h-full w-full object-contain" />
+                  </div>
+                )}
               </div>
 
               <InputBlock
