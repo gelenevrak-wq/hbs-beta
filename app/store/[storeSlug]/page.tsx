@@ -139,6 +139,7 @@ export default function StorePage() {
           <Link href="/" className="text-base font-black sm:text-xl text-blue-600">HBS Vitrin</Link>
           <div className="flex items-center gap-2">
             <CompactLanguageSwitcher />
+            <Link href="/requests" className="rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-750 px-3 py-2 text-xs font-black shadow-sm hover:bg-indigo-100 transition">📢 İlan Panosu</Link>
             <Link href="/customer" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black shadow-sm">Müşteri Portalı</Link>
             <Link href="/login" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black shadow-sm">Mağaza Paneli</Link>
           </div>
@@ -336,7 +337,7 @@ export default function StorePage() {
                                 saveCustomerOffer(finalProductName, "quote");
                                 setMessage(`${finalProductName} için fiyat teklif talebi satıcıya iletildi. 'Tekliflerim' sekmesinden takip edebilirsiniz.`);
                               }}
-                              className="rounded-lg bg-blue-600 px-3 py-1.5 text-[10px] font-black text-white hover:bg-blue-700 transition"
+                              className="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1.5 text-[10px] font-black text-white shadow-md shadow-blue-500/10 hover:from-blue-500 hover:to-indigo-500 hover:shadow-lg active:scale-95 transition-all duration-300"
                             >
                               Teklif İste
                             </button>

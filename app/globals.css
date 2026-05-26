@@ -3,6 +3,9 @@
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
+  --neon-blue: #2563eb;
+  --neon-purple: #7c3aed;
+  --neon-emerald: #059669;
 }
 
 * {
@@ -11,46 +14,41 @@
 
 html {
   scroll-behavior: smooth;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(59, 130, 246, 0.10), transparent 34rem),
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.10), transparent 32rem),
-    #f8fafc;
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.07), transparent 32rem),
+    radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05), transparent 30rem),
+    #f6f8fc;
   color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
 }
 
-button,
-a,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-::selection {
-  background: rgba(255, 255, 255, 0.22);
-}
-
+/* Captivating interactive font and scrollbar styles */
 .hbs-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  scrollbar-color: rgba(99, 102, 241, 0.2) transparent;
 }
 
 .hbs-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 .hbs-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
-  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 99px;
+  transition: background 0.3s;
 }
 
+.hbs-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 102, 241, 0.45);
+}
 
-/* HBS compact density system: more business data per screen, less brochure spacing. */
+/* HBS compact density system */
 html {
   font-size: 14px;
 }
@@ -59,6 +57,47 @@ html {
   html {
     font-size: 13px;
   }
+}
+
+/* Premium Choreographer Glow Elements */
+.hbs-glow-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(99, 102, 241, 0.08);
+  box-shadow: 
+    0 4px 20px -4px rgba(99, 102, 241, 0.03),
+    0 1px 1px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hbs-glow-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99, 102, 241, 0.28);
+  box-shadow: 
+    0 16px 36px -12px rgba(99, 102, 241, 0.12),
+    0 0 0 1px rgba(99, 102, 241, 0.15),
+    0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Pulse breathing effect for highlighted focal points */
+.hbs-pulse-glow {
+  position: relative;
+}
+.hbs-pulse-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+  z-index: -1;
+  opacity: 0.45;
+  filter: blur(6px);
+  animation: hbs-pulse-glow-anim 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes hbs-pulse-glow-anim {
+  0% { transform: scale(0.97); opacity: 0.3; }
+  100% { transform: scale(1.03); opacity: 0.65; }
 }
 
 .hbs-compact-card {
@@ -71,6 +110,7 @@ html {
   padding: 0.5rem 0.75rem;
   font-size: 0.82rem;
   line-height: 1.15rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (max-width: 640px) {
@@ -107,17 +147,47 @@ html {
   }
 }
 
+/* Sleek glassmorphism variables */
+.hbs-market-page { 
+  background: linear-gradient(180deg, #f3f6fc 0%, #edf1fa 50%, #f3f6fc 100%); 
+  color: #0f172a; 
+}
 
-/* Bright marketplace density layer */
-.hbs-market-page { background: linear-gradient(180deg,#f8fafc 0%,#eef6ff 52%,#f8fafc 100%); color:#0f172a; }
-.hbs-market-card { border:1px solid rgba(15,23,42,.08); background:rgba(255,255,255,.92); box-shadow:0 14px 40px rgba(15,23,42,.08); }
-.hbs-market-soft { border:1px solid rgba(15,23,42,.08); background:rgba(248,250,252,.92); }
-.hbs-market-button { background:#0f172a; color:white; border-radius:.8rem; padding:.55rem .8rem; font-size:.78rem; font-weight:800; }
-.hbs-market-ghost { border:1px solid rgba(15,23,42,.12); background:white; color:#0f172a; border-radius:.8rem; padding:.55rem .8rem; font-size:.78rem; font-weight:800; }
-.hbs-product-image { aspect-ratio: 4/3; width:100%; overflow:hidden; border-radius:1rem; background:#eef2ff; border:1px solid rgba(15,23,42,.08); }
-.hbs-product-image img { width:100%; height:100%; object-fit:cover; display:block; }
+.hbs-market-card { 
+  border: 1px solid rgba(99, 102, 241, 0.08); 
+  background: rgba(255, 255, 255, 0.94); 
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 48px -16px rgba(99, 102, 241, 0.07); 
+}
 
-/* HBS final rule: no dark theme. Keep every screen bright, compact and marketplace-like. */
+.hbs-market-soft { 
+  border: 1px solid rgba(15, 23, 42, 0.04); 
+  background: rgba(248, 250, 252, 0.88); 
+}
+
+.hbs-product-image { 
+  aspect-ratio: 4/3; 
+  width: 100%; 
+  overflow: hidden; 
+  border-radius: 1.25rem; 
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); 
+  border: 1px solid rgba(15, 23, 42, 0.05); 
+  transition: transform 0.3s ease;
+}
+
+.hbs-product-image img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit:contain; 
+  display: block; 
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hbs-glow-card:hover .hbs-product-image img {
+  transform: scale(1.05);
+}
+
+/* HBS bright-mode override rules */
 .bg-slate-950,
 .bg-slate-900,
 .bg-slate-950\/70,
@@ -127,35 +197,52 @@ html {
 .bg-\[\#0f172a\] {
   background-color: #ffffff !important;
 }
-.text-white { color: #0f172a !important; }
+
+.text-white { 
+  color: #0f172a !important; 
+}
+
 .border-slate-800,
 .border-slate-700,
-.border-white\/10 { border-color: #e2e8f0 !important; }
-.placeholder\:text-slate-600::placeholder { color: #94a3b8 !important; }
+.border-white\/10 { 
+  border-color: #e2e8f0 !important; 
+}
+
+.placeholder\:text-slate-600::placeholder { 
+  color: #94a3b8 !important; 
+}
+
 .hover\:bg-slate-900:hover,
-.hover\:bg-white\/10:hover { background-color: #f1f5f9 !important; }
+.hover\:bg-white\/10:hover { 
+  background-color: #f1f5f9 !important; 
+}
+
 button.bg-slate-950,
 a.bg-slate-950,
 .hbs-dark-action {
   background-color: #0f172a !important;
   color: #ffffff !important;
 }
+
 button.bg-slate-950 *,
-a.bg-slate-950 * { color: inherit !important; }
+a.bg-slate-950 * { 
+  color: inherit !important; 
+}
 
-
-/* HBS urgent polish: readable language selector and bright marketplace buttons. */
+/* Language selector */
 .hbs-language-button,
 button[aria-label^="Language:"] {
   background: #ffffff !important;
   color: #0f172a !important;
   border-color: #e2e8f0 !important;
 }
+
 .bg-blue-600.text-white,
 button.bg-blue-600,
 a.bg-blue-600 {
   color: #ffffff !important;
 }
+
 .bg-slate-950.text-white,
 button.bg-slate-950,
 a.bg-slate-950 {
@@ -166,6 +253,7 @@ a.bg-slate-950 {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
+
 .animate-hbs-marquee {
   animation: hbs-marquee 26s linear infinite;
 }

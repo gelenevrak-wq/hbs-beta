@@ -227,6 +227,7 @@ export default function HomePage() {
   const [uploadedProducts, setUploadedProducts] = useState<Product[]>([]);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [customerOffers, setCustomerOffers] = useState<any[]>([]);
+  const [registeredStores, setRegisteredStores] = useState<any[]>([]);
 
   const [filteredSuggestions, setFilteredSuggestions] = useState<LocationSuggestion[]>([]);
 
@@ -313,6 +314,32 @@ export default function HomePage() {
       if (userStr) {
         setCurrentUser(JSON.parse(userStr));
       }
+    } catch (e) {
+      console.error(e);
+    }
+
+    // Load registered stores and ensure obdtr is present
+    try {
+      const storesStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+      let storesList = JSON.parse(storesStr);
+      const hasObdtr = storesList.some((st: any) => st.code === "obdtr");
+      if (!hasObdtr) {
+        storesList = [
+          {
+            code: "obdtr",
+            name: "OBDTR Diagnostics",
+            city: "İstanbul",
+            address: "Sanal Mağaza, Türkiye çapında kargolama",
+            industry: "Oto yedek parçası",
+            licenseType: "lifetime",
+            isSuspended: false,
+            operatingModel: "virtual_delivery",
+            serviceCountries: ["TR", "GE"]
+          },
+          ...storesList
+        ];
+      }
+      setRegisteredStores(storesList);
     } catch (e) {
       console.error(e);
     }
@@ -422,10 +449,33 @@ export default function HomePage() {
 
   const quickCategories = useMemo(() => {
     const unique = new Set<string>();
+    
+    // Sadece aktif (askıya alınmamış) mağazaların sektör adları
+    const activeStoreIndustries = new Set(
+      registeredStores
+        .filter((st: any) => !st.isSuspended)
+        .map((st: any) => (st.industry || "").toLowerCase().trim())
+    );
+
+    // Aktif mağaza slug listesi
+    const activeStoreSlugs = new Set(
+      registeredStores
+        .filter((st: any) => !st.isSuspended)
+        .map((st: any) => st.code.toLowerCase().trim())
+    );
+
     allProducts.forEach((item) => {
       const cat = l(item.category, language ?? "tr");
       if (cat) {
-        unique.add(cat);
+        const catLower = cat.toLowerCase().trim();
+        // Bu sektöre ait aktif bir mağaza var mı veya bu ürün aktif bir mağazaya mı ait?
+        const isAssociatedWithActiveStore = 
+          activeStoreIndustries.has(catLower) || 
+          activeStoreSlugs.has(item.storeSlug.toLowerCase().trim());
+
+        if (isAssociatedWithActiveStore) {
+          unique.add(cat);
+        }
       }
     });
 
@@ -435,13 +485,25 @@ export default function HomePage() {
     }));
 
     return [{ key: "all", label: t.all }, ...list];
-  }, [allProducts, language, t.all]);
+  }, [allProducts, registeredStores, language, t.all]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const center = customCoords;
 
+    const activeStoreSlugs = new Set(
+      registeredStores
+        .filter((st: any) => !st.isSuspended)
+        .map((st: any) => st.code.toLowerCase().trim())
+    );
+
     return allProducts.filter((item) => {
+      // Sadece aktif mağazaların ürünlerini göster
+      const storeSlugLower = item.storeSlug.toLowerCase().trim();
+      if (!activeStoreSlugs.has(storeSlugLower)) {
+        return false;
+      }
+
       const itemCat = l(item.category, language ?? "tr").toLowerCase();
       const categoryOk =
         category === "all" ||
@@ -450,9 +512,7 @@ export default function HomePage() {
         .join(" ")
         .toLowerCase();
       
-      const localStoresStr = typeof window !== "undefined" ? window.localStorage.getItem("hbs-registered-stores") || "[]" : "[]";
-      const localStores = JSON.parse(localStoresStr);
-      const storeObj = localStores.find((st: any) => st.code === item.storeSlug) || (item.storeSlug === "obdtr" ? {
+      const storeObj = registeredStores.find((st: any) => st.code === item.storeSlug) || (item.storeSlug === "obdtr" ? {
         operatingModel: "virtual_delivery",
         serviceCountries: ["TR", "GE"]
       } : null);
@@ -468,7 +528,7 @@ export default function HomePage() {
 
       return categoryOk && distanceOk && (!q || haystack.includes(q));
     });
-  }, [query, category, language, allProducts, customCoords, radiusKm, locationLabel]);
+  }, [query, category, language, allProducts, customCoords, radiusKm, locationLabel, registeredStores]);
 
   if (!language) return <main className="min-h-screen bg-white" />;
 
@@ -492,6 +552,10 @@ export default function HomePage() {
           <div className="flex items-center gap-1 sm:gap-1.5">
             <Link href="/promo" className="rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-blue-100 transition animate-pulse shrink-0">
               🎥 {language === "tr" ? "Tanıtım Videosu" : "Promo Video"}
+            </Link>
+            
+            <Link href="/requests" className="rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-indigo-100 transition shrink-0">
+              📢 {language === "tr" ? "İlan Panosu" : "Tenders Board"}
             </Link>
             
             {currentUser ? (
