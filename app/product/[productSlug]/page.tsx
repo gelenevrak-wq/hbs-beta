@@ -46,8 +46,8 @@ const demoProducts: ProductData[] = [
     brand: "Ford",
     model: { tr: "Escape", en: "Escape" },
     category: { tr: "Oto Yedek Parça / Fren Sistemi", en: "Auto Spare Parts / Brake System", de: "Autoersatzteile / Bremssystem", ru: "Автозапчасти / Тормозная система", ka: "ავტონაწილები / მუხრუჭის სისტემა" },
-    storeName: "Ferro Motors",
-    storeSlug: "ferro-motors",
+    storeName: "OBDTR Diagnostics",
+    storeSlug: "obdtr",
     country: "Georgia",
     city: "Batumi",
     description: {
@@ -73,8 +73,8 @@ const demoProducts: ProductData[] = [
     brand: "Toyota",
     model: { tr: "Corolla", en: "Corolla" },
     category: { tr: "Oto Yedek Parça / Filtre", en: "Auto Spare Parts / Filter", de: "Autoersatzteile / Filter", ru: "Автозапчасти / Фильтр", ka: "ავტონაწილები / ფილტრი" },
-    storeName: "Ferro Motors",
-    storeSlug: "ferro-motors",
+    storeName: "OBDTR Diagnostics",
+    storeSlug: "obdtr",
     country: "Georgia",
     city: "Batumi",
     description: {
@@ -101,8 +101,8 @@ const demoProducts: ProductData[] = [
     brand: "Universal",
     model: { tr: "Çeşitli Modeller", en: "Various Models", de: "Verschiedene Modelle", ru: "Разные модели", ka: "სხვადასხვა მოდელი" },
     category: { tr: "Oto Yedek Parça / Ateşleme Sistemi", en: "Auto Spare Parts / Ignition System", de: "Autoersatzteile / Zündsystem", ru: "Автозапчасти / Система зажигания", ka: "ავტონაწილები / ანთების სისტემა" },
-    storeName: "Ferro Motors",
-    storeSlug: "ferro-motors",
+    storeName: "OBDTR Diagnostics",
+    storeSlug: "obdtr",
     country: "Georgia",
     city: "Batumi",
     description: {
@@ -397,8 +397,8 @@ export default function ProductDetailPage() {
 
   const activeProduct: ProductData = product;
   const displayGallery = Array.from(new Set([activeProduct.imageUrl, ...activeProduct.gallery])).slice(0, 4);
-  const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Ana Depo / A-03-R12-G04";
-  const storefrontNames = activeProduct.storeSlug === "obdtr" ? "OBDTR Online Vitrin, Diagnostik Vitrini" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız Batum Vitrini, Tesisat Ürünleri" : "Ferro Motors Online Vitrin";
+  const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Depo / A-03-R12-G04";
+  const storefrontNames = activeProduct.storeSlug === "obdtr" ? "OBDTR Online Vitrin, Diagnostik Vitrini" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız Batum Vitrini, Tesisat Ürünleri" : "OBDTR Online Vitrin";
   const canonicalUrl = `https://hbs.example.com/product/${activeProduct.slug}`;
   const productSchema = {
     "@context": "https://schema.org",

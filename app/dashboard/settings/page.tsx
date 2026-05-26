@@ -347,8 +347,8 @@ function isLanguageCode(value: string | null): value is LanguageCode {
 
 export default function SettingsPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
-  const [companyName, setCompanyName] = useState("Ferro Motors");
-  const [officialTitle, setOfficialTitle] = useState("Ferro Motors LLC");
+  const [companyName, setCompanyName] = useState("OBDTR Diagnostics");
+  const [officialTitle, setOfficialTitle] = useState("OBDTR Diagnostics LLC");
   const [taxNumber, setTaxNumber] = useState("");
   const [sector, setSector] = useState("Oto Yedek Parça");
   const [description, setDescription] = useState(
@@ -357,7 +357,7 @@ export default function SettingsPage() {
   const [country, setCountry] = useState<CountryCode>("GE");
   const [phone, setPhone] = useState("+995 555 000 001");
   const [whatsapp, setWhatsapp] = useState("+995 555 000 001");
-  const [email, setEmail] = useState("info@ferromotors.ge");
+  const [email, setEmail] = useState("info@obdtr.ge");
   const [city, setCity] = useState("Batumi");
   const [address, setAddress] = useState("Batumi Merkez");
   const [googleMap, setGoogleMap] = useState("");
@@ -415,7 +415,7 @@ export default function SettingsPage() {
             <CompactLanguageSwitcher />
 
             <Link
-              href="/store/ferro-motors"
+              href="/store/obdtr"
               className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
             >
               {currentText.storeFront}

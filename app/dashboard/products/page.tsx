@@ -52,62 +52,7 @@ type ProductRecord = {
   variants?: ProductVariant[];
 };
 
-const INITIAL_PRODUCTS: ProductRecord[] = [
-  {
-    id: "product-001",
-    itemType: "product",
-    name: "Ford Escape Fren Balatası",
-    category: "Oto Yedek Parça",
-    brand: "Ford",
-    model: "Escape",
-    description: "Ford Escape uyumlu ön fren balatası.",
-    salePrice: "75",
-    purchasePrice: "45",
-    currency: "GEL",
-    barcode: "8690000000011",
-    qrCode: "HBS-FERRO-BALATA-001",
-    sku: "FR-BALATA-ESCAPE-001",
-    oemCode: "FORD-OEM-ESC-BR-001",
-    manufacturerCode: "MFG-BR-001",
-    stockTracking: true,
-    quantity: "12",
-    warehouse: "Ana Depo",
-    shelf: "A-01",
-    entryDate: "2026-05-01",
-    exitDate: "",
-    pricingMode: "fixed",
-    visibility: "visible",
-    imageUrl: "/product-images/brake-pad.svg",
-    videoUrl: "https://www.youtube.com/watch?v=demo",
-  },
-  {
-    id: "product-002",
-    itemType: "product",
-    name: "Toyota Corolla Yağ Filtresi",
-    category: "Filtre",
-    brand: "Toyota",
-    model: "Corolla",
-    description: "Toyota Corolla uyumlu yağ filtresi.",
-    salePrice: "22",
-    purchasePrice: "12",
-    currency: "GEL",
-    barcode: "8690000000028",
-    qrCode: "HBS-FERRO-FILTRE-002",
-    sku: "FR-FILTRE-COROLLA-002",
-    oemCode: "TOYOTA-OEM-COR-FLT-002",
-    manufacturerCode: "MFG-FLT-002",
-    stockTracking: true,
-    quantity: "30",
-    warehouse: "Ana Depo",
-    shelf: "B-04",
-    entryDate: "2026-05-10",
-    exitDate: "",
-    pricingMode: "fixed",
-    visibility: "visible",
-    imageUrl: "/product-images/oil-filter.svg",
-    videoUrl: "",
-  },
-];
+const INITIAL_PRODUCTS: ProductRecord[] = [];
 
 export default function ProductsPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);

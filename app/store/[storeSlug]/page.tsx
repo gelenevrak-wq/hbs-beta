@@ -57,7 +57,7 @@ export default function StorePage() {
   
   // Dynamic UI morphing simulator trigger
   const [storeType, setStoreType] = useState<StoreType>(
-    params.storeSlug === "obdtr" || params.storeSlug === "ferro-motors" ? "products" : "autoRepair"
+    params.storeSlug === "obdtr" ? "products" : "autoRepair"
   );
   
   const [search, setSearch] = useState("");
@@ -71,7 +71,7 @@ export default function StorePage() {
       const saved = window.localStorage.getItem("hbs-store-products");
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           setProducts(parsed);
           return;
         }
@@ -79,194 +79,7 @@ export default function StorePage() {
     } catch (e) {
       console.error("Store products loading error:", e);
     }
-    
-    // Fallback to initial diagnostics-focused store list for OBDTR
-    const defaultProducts: ProductRecord[] = [
-      {
-        id: "default-autel-001",
-        itemType: "product",
-        name: "Autel Diagnostik Cihazı",
-        category: "Oto Diagnostik",
-        brand: "Autel",
-        model: "MaxiSys Serisi",
-        description: "Profesyonel otomotiv arıza tespit ve beyin programlama cihazları.",
-        salePrice: "1600",
-        purchasePrice: "1000",
-        currency: "GEL",
-        barcode: "8690000000042",
-        qrCode: "QR-AUTEL-MAXISYS",
-        sku: "AT-MAXISYS",
-        oemCode: "",
-        manufacturerCode: "",
-        stockTracking: true,
-        quantity: "5",
-        warehouse: "Ana Depo",
-        shelf: "A-02",
-        entryDate: "2026-05-15",
-        exitDate: "",
-        pricingMode: "fixed",
-        visibility: "visible",
-        imageUrl: "/product-images/diagnostic-scanner.svg",
-        videoUrl: "https://www.youtube.com/watch?v=demo",
-        variants: [
-          {
-            id: "var-autel-elite",
-            name: "Autel MaxiSys Elite II",
-            sku: "AT-ELITE-II",
-            barcode: "8690000000042",
-            purchasePrice: "1000",
-            salePrice: "1600",
-            quantity: "3",
-            warehouse: "Ana Depo",
-            shelf: "A-02"
-          },
-          {
-            id: "var-autel-ultra",
-            name: "Autel MaxiSys Ultra Tablet",
-            sku: "AT-ULTRA-TAB",
-            barcode: "8690000000059",
-            purchasePrice: "2400",
-            salePrice: "3800",
-            quantity: "2",
-            warehouse: "Ana Depo",
-            shelf: "A-03"
-          }
-        ]
-      },
-      {
-        id: "default-thinktool-002",
-        itemType: "product",
-        name: "Thinktool Akıllı Arıza Tespit Cihazı",
-        category: "Oto Diagnostik",
-        brand: "Thinktool",
-        model: "Master Serisi",
-        description: "Yüksek performanslı, çevrimiçi kodlama destekli yeni nesil diagnostik cihazları.",
-        salePrice: "450",
-        purchasePrice: "300",
-        currency: "GEL",
-        barcode: "8690000000066",
-        qrCode: "QR-THINKTOOL",
-        sku: "TT-MASTER",
-        oemCode: "",
-        manufacturerCode: "",
-        stockTracking: true,
-        quantity: "11",
-        warehouse: "Ana Depo",
-        shelf: "B-01",
-        entryDate: "2026-05-18",
-        exitDate: "",
-        pricingMode: "fixed",
-        visibility: "visible",
-        imageUrl: "/product-images/diagnostic-scanner.svg",
-        videoUrl: "",
-        variants: [
-          {
-            id: "var-tt-reader",
-            name: "Thinktool Reader",
-            sku: "TT-READER",
-            barcode: "8690000000066",
-            purchasePrice: "300",
-            salePrice: "450",
-            quantity: "8",
-            warehouse: "Ana Depo",
-            shelf: "B-01"
-          },
-          {
-            id: "var-tt-masterx",
-            name: "Thinktool Master X",
-            sku: "TT-MASTER-X",
-            barcode: "8690000000073",
-            purchasePrice: "1500",
-            salePrice: "2200",
-            quantity: "3",
-            warehouse: "Ana Depo",
-            shelf: "B-02"
-          }
-        ]
-      },
-      {
-        id: "default-003",
-        itemType: "product",
-        name: "Ford Escape Fren Balatası",
-        category: "Fren Sistemi",
-        brand: "Ford",
-        model: "Escape",
-        description: "Ford Escape uyumlu ön fren balatası.",
-        salePrice: "75",
-        purchasePrice: "45",
-        currency: "GEL",
-        barcode: "8690000000011",
-        qrCode: "HBS-FERRO-BALATA-001",
-        sku: "FR-BALATA-ESCAPE-001",
-        oemCode: "FORD-OEM-ESC-BR-001",
-        manufacturerCode: "MFG-BR-001",
-        stockTracking: true,
-        quantity: "12",
-        warehouse: "Ana Depo",
-        shelf: "A-03",
-        entryDate: "2026-05-01",
-        exitDate: "",
-        pricingMode: "fixed",
-        visibility: "visible",
-        imageUrl: "/product-images/brake-pad.svg",
-        videoUrl: "",
-      },
-      {
-        id: "default-004",
-        itemType: "product",
-        name: "Toyota Corolla Yağ Filtresi",
-        category: "Filtre",
-        brand: "Toyota",
-        model: "Corolla",
-        description: "Toyota Corolla uyumlu yağ filtresi.",
-        salePrice: "22",
-        purchasePrice: "12",
-        currency: "GEL",
-        barcode: "8690000000028",
-        qrCode: "HBS-FERRO-FILTRE-002",
-        sku: "FR-FILTRE-COROLLA-002",
-        oemCode: "TOYOTA-OEM-COR-FLT-002",
-        manufacturerCode: "MFG-FLT-002",
-        stockTracking: true,
-        quantity: "30",
-        warehouse: "Ana Depo",
-        shelf: "B-04",
-        entryDate: "2026-05-10",
-        exitDate: "",
-        pricingMode: "fixed",
-        visibility: "visible",
-        imageUrl: "/product-images/oil-filter.svg",
-        videoUrl: "",
-      },
-      {
-        id: "default-005",
-        itemType: "product",
-        name: "Universal Buji Seti",
-        category: "Ateşleme",
-        brand: "Universal",
-        model: "Tüm Modeller",
-        description: "Evrensel yüksek performanslı buji takımı.",
-        salePrice: "",
-        purchasePrice: "50",
-        currency: "GEL",
-        barcode: "8690000000035",
-        qrCode: "",
-        sku: "FR-BUJI-004",
-        oemCode: "",
-        manufacturerCode: "",
-        stockTracking: true,
-        quantity: "15",
-        warehouse: "Ana Depo",
-        shelf: "C-01",
-        entryDate: "2026-05-12",
-        exitDate: "",
-        pricingMode: "quote",
-        visibility: "visible",
-        imageUrl: "/product-images/diagnostic-scanner.svg",
-        videoUrl: "",
-      }
-    ];
-    setProducts(defaultProducts);
+    setProducts([]);
   }, []);
 
   function saveCustomerOffer(productName: string, type: "quote" | "bid", offerVal = "") {
@@ -363,119 +176,132 @@ export default function StorePage() {
           <section className="space-y-4 animate-fadeIn">
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
               <span className="text-[11px] font-black uppercase text-blue-700 tracking-wider">HBS PARÇA MAĞAZASI</span>
-              <h1 className="text-3xl font-black">Ferro Motors / OBDTR Diagnostics</h1>
+              <h1 className="text-3xl font-black">OBDTR Diagnostics</h1>
               <p className="text-xs text-slate-500 leading-relaxed max-w-4xl">
                 Oto yedek parça, diagnos cihazları, motor yağları ve filtre gruplarının sergilendiği fiziksel depo ve raf entegrasyonlu katalog vitrinidir.
               </p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((p) => {
-                const hasVariants = p.variants && p.variants.length > 0;
-                const selectedVarId = selectedVariants[p.id];
-                const activeVariant = hasVariants ? p.variants?.find(v => v.id === selectedVarId) || p.variants?.[0] : null;
+            {products.length === 0 ? (
+              <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center max-w-lg mx-auto shadow-sm my-6">
+                <div className="text-4xl">🛍️</div>
+                <h3 className="font-black text-slate-800 mt-3 text-sm uppercase tracking-wider">Mağaza Kataloğu Boş</h3>
+                <p className="text-xs text-slate-500 mt-2 leading-relaxed font-bold">
+                  Bu mağazada henüz sergilenen bir ürün bulunmamaktadır.
+                </p>
+                <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                  Mağaza yöneticisi olarak yönetim panelinizden ilk ürünlerinizi veya Excel şablonunuzu yükleyerek kataloğunuzu anında doldurabilirsiniz!
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {products.map((p) => {
+                  const hasVariants = p.variants && p.variants.length > 0;
+                  const selectedVarId = selectedVariants[p.id];
+                  const activeVariant = hasVariants ? p.variants?.find(v => v.id === selectedVarId) || p.variants?.[0] : null;
 
-                const displayPrice = activeVariant 
-                  ? (activeVariant.salePrice ? `${activeVariant.salePrice} ${p.currency}` : "Teklif Alın") 
-                  : (p.pricingMode === "fixed" && p.salePrice ? `${p.salePrice} ${p.currency}` : "Teklif Alın");
+                  const displayPrice = activeVariant 
+                    ? (activeVariant.salePrice ? `${activeVariant.salePrice} ${p.currency}` : "Teklif Alın") 
+                    : (p.pricingMode === "fixed" && p.salePrice ? `${p.salePrice} ${p.currency}` : "Teklif Alın");
 
-                const displaySku = activeVariant ? activeVariant.sku : p.sku;
-                const displayBarcode = activeVariant ? activeVariant.barcode : p.barcode;
-                const displayShelf = activeVariant ? activeVariant.shelf : p.shelf;
-                const displayWarehouse = activeVariant ? activeVariant.warehouse : p.warehouse;
-                const displayQuantity = activeVariant ? activeVariant.quantity : p.quantity;
-                const isPricingFixed = activeVariant ? !!activeVariant.salePrice : p.pricingMode === "fixed" && !!p.salePrice;
+                  const displaySku = activeVariant ? activeVariant.sku : p.sku;
+                  const displayBarcode = activeVariant ? activeVariant.barcode : p.barcode;
+                  const displayShelf = activeVariant ? activeVariant.shelf : p.shelf;
+                  const displayWarehouse = activeVariant ? activeVariant.warehouse : p.warehouse;
+                  const displayQuantity = activeVariant ? activeVariant.quantity : p.quantity;
+                  const isPricingFixed = activeVariant ? !!activeVariant.salePrice : p.pricingMode === "fixed" && !!p.salePrice;
 
-                return (
-                  <article key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 flex flex-col justify-between">
-                    <div className="space-y-3">
-                      <div className="aspect-[4/3] rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
-                        {p.imageUrl ? (
-                          <img src={p.imageUrl} alt={p.name} className="object-contain h-full w-full p-2" />
-                        ) : (
-                          <span className="text-3xl">⚙️</span>
-                        )}
-                      </div>
-                      
-                      <div>
-                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[9px] font-black text-blue-800 uppercase">
-                          {p.category}
-                        </span>
-                        <h3 className="font-black text-sm text-slate-800 mt-1">{p.name}</h3>
-                        {p.description && (
-                          <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{p.description}</p>
-                        )}
-                        
-                        <div className="text-[10px] text-slate-400 mt-2 space-y-0.5 border-t border-slate-50 pt-2 font-medium">
-                          <p>Stok SKU: <b className="text-slate-700">{displaySku || "-"}</b></p>
-                          <p>Barkod: <span className="text-slate-700">{displayBarcode || "-"}</span></p>
-                          <p>Raf Adresi: <span className="text-blue-700 font-bold">{displayWarehouse} · {displayShelf || "-"}</span></p>
-                          {displayQuantity && (
-                            <p>Stok Durumu: <span className="text-emerald-700 font-extrabold">{displayQuantity} Adet</span></p>
+                  return (
+                    <article key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 flex flex-col justify-between">
+                      <div className="space-y-3">
+                        <div className="aspect-[4/3] rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+                          {p.imageUrl ? (
+                            <img src={p.imageUrl} alt={p.name} className="object-contain h-full w-full p-2" />
+                          ) : (
+                            <span className="text-3xl">⚙️</span>
                           )}
                         </div>
-
-                        {/* Variants Select Box */}
-                        {hasVariants && (
-                          <div className="mt-2.5 space-y-1">
-                            <label className="text-[9px] font-black text-slate-500 block uppercase tracking-wider">
-                              ⚙️ Model / Varyant Seçin:
-                            </label>
-                            <select
-                              value={selectedVarId || p.variants?.[0]?.id}
-                              onChange={(e) => {
-                                setSelectedVariants({
-                                  ...selectedVariants,
-                                  [p.id]: e.target.value
-                                });
-                              }}
-                              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-black outline-none focus:border-blue-500 transition"
-                            >
-                              {p.variants?.map((v) => (
-                                <option key={v.id} value={v.id}>
-                                  {v.name} {v.salePrice ? `(${v.salePrice} ${p.currency})` : "(Teklif Alın)"}
-                                </option>
-                              ))}
-                            </select>
+                        
+                        <div>
+                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[9px] font-black text-blue-800 uppercase">
+                            {p.category}
+                          </span>
+                          <h3 className="font-black text-sm text-slate-800 mt-1">{p.name}</h3>
+                          {p.description && (
+                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{p.description}</p>
+                          )}
+                          
+                          <div className="text-[10px] text-slate-400 mt-2 space-y-0.5 border-t border-slate-50 pt-2 font-medium">
+                            <p>Stok SKU: <b className="text-slate-700">{displaySku || "-"}</b></p>
+                            <p>Barkod: <span className="text-slate-700">{displayBarcode || "-"}</span></p>
+                            <p>Raf Adresi: <span className="text-blue-700 font-bold">{displayWarehouse} · {displayShelf || "-"}</span></p>
+                            {displayQuantity && (
+                              <p>Stok Durumu: <span className="text-emerald-700 font-extrabold">{displayQuantity} Adet</span></p>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
 
-                    <div className="flex justify-between items-center pt-2.5 border-t border-slate-100 mt-2">
-                      <span className="font-black text-xs text-slate-900">{displayPrice}</span>
-                      <div className="flex gap-1.5">
-                        {isPricingFixed ? (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const variantName = activeVariant ? ` (${activeVariant.name})` : "";
-                              setMessage(`${p.name}${variantName} sepetinize eklendi.`);
-                            }}
-                            className="rounded-lg bg-slate-900 px-3 py-1.5 text-[10px] font-black text-white hover:bg-slate-800 transition"
-                          >
-                            Sepete Ekle
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const variantName = activeVariant ? ` (${activeVariant.name})` : "";
-                              const finalProductName = `${p.name}${variantName}`;
-                              saveCustomerOffer(finalProductName, "quote");
-                              setMessage(`${finalProductName} için fiyat teklif talebi satıcıya iletildi. 'Tekliflerim' sekmesinden takip edebilirsiniz.`);
-                            }}
-                            className="rounded-lg bg-blue-600 px-3 py-1.5 text-[10px] font-black text-white hover:bg-blue-700 transition"
-                          >
-                            Teklif İste
-                          </button>
-                        )}
+                          {/* Variants Select Box */}
+                          {hasVariants && (
+                            <div className="mt-2.5 space-y-1">
+                              <label className="text-[9px] font-black text-slate-500 block uppercase tracking-wider">
+                                ⚙️ Model / Varyant Seçin:
+                              </label>
+                              <select
+                                value={selectedVarId || p.variants?.[0]?.id}
+                                onChange={(e) => {
+                                  setSelectedVariants({
+                                    ...selectedVariants,
+                                    [p.id]: e.target.value
+                                  });
+                                }}
+                                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-black outline-none focus:border-blue-500 transition"
+                              >
+                                {p.variants?.map((v) => (
+                                  <option key={v.id} value={v.id}>
+                                    {v.name} {v.salePrice ? `(${v.salePrice} ${p.currency})` : "(Teklif Alın)"}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
+
+                      <div className="flex justify-between items-center pt-2.5 border-t border-slate-100 mt-2">
+                        <span className="font-black text-xs text-slate-900">{displayPrice}</span>
+                        <div className="flex gap-1.5">
+                          {isPricingFixed ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const variantName = activeVariant ? ` (${activeVariant.name})` : "";
+                                setMessage(`${p.name}${variantName} sepetinize eklendi.`);
+                              }}
+                              className="rounded-lg bg-slate-900 px-3 py-1.5 text-[10px] font-black text-white hover:bg-slate-800 transition"
+                            >
+                              Sepete Ekle
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const variantName = activeVariant ? ` (${activeVariant.name})` : "";
+                                const finalProductName = `${p.name}${variantName}`;
+                                saveCustomerOffer(finalProductName, "quote");
+                                setMessage(`${finalProductName} için fiyat teklif talebi satıcıya iletildi. 'Tekliflerim' sekmesinden takip edebilirsiniz.`);
+                              }}
+                              className="rounded-lg bg-blue-600 px-3 py-1.5 text-[10px] font-black text-white hover:bg-blue-700 transition"
+                            >
+                              Teklif İste
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
           </section>
         )}
 
@@ -663,7 +489,7 @@ export default function StorePage() {
           <section className="space-y-4 animate-fadeIn">
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
               <span className="text-[11px] font-black uppercase text-blue-700 tracking-wider">HBS OTO SERVİS & CANLI İLERLEME TAKİBİ</span>
-              <h1 className="text-3xl font-black">Ferro Auto Repair & Service</h1>
+              <h1 className="text-3xl font-black">OBDTR Auto Repair & Service</h1>
               <p className="text-xs text-slate-500 leading-relaxed max-w-4xl">
                 Oto servis ve tamirhanelerde müşterilerin arabalarının tamir sürecini (başlayan, biten ve bekleyen tüm görevleri) şeffaf şekilde izleyebildikleri canlı ilerleme takip vitrinidir.
               </p>

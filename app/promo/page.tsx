@@ -675,7 +675,7 @@ export default function PromoVideoPage() {
                       <div className="mt-2 border-t border-slate-100 pt-2 space-y-1.5">
                         <div className="min-w-0">
                           <span className="text-[9px] font-black text-blue-700 hover:underline block leading-tight">{t.seoStoreTitle}</span>
-                          <span className="text-[8px] text-emerald-700 block">https://hbsmarket.com/store/ferro-motors</span>
+                          <span className="text-[8px] text-emerald-700 block">https://hbsmarket.com/store/obdtr</span>
                           <span className="text-[8px] text-slate-500 block leading-tight">{t.seoStoreDesc}</span>
                         </div>
                       </div>

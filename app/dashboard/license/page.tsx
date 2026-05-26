@@ -14,7 +14,7 @@ export default function LicensePage() {
     isSuspended: boolean;
     licenseMonthsLeft?: number;
   }>({
-    name: "Ferro Motors",
+    name: "OBDTR Diagnostics",
     trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days left in demo
     warningEndsAt: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
     licenseType: "trial",

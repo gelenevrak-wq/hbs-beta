@@ -7,7 +7,6 @@ import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitch
 const stores = [
   { id: "obdtr", name: "OBDTR", channel: "WhatsApp + E-posta", allowed: true },
   { id: "yildiz", name: "Yıldız Hırdavat", channel: "WhatsApp", allowed: true },
-  { id: "ferro", name: "Ferro Motors", channel: "E-posta", allowed: false },
 ];
 
 export default function AccountPage() {

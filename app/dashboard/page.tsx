@@ -438,7 +438,7 @@ export default function DashboardPage() {
   ];
 
   const adminLinks = [
-    ["Ana marketplace", "/"], ["OBDTR vitrini", "/store/obdtr"], ["Yıldız Hırdavat", "/store/yildiz-hirdavat"], ["Ferro Motors", "/store/ferro-motors"], ["Ürün yönetimi", "/dashboard/products"], ["Hizmet/Randevu", "/dashboard/services"], ["Stok hareketleri", "/dashboard/stock-movements"], ["Siparişler", "/dashboard/orders"], ["Müşteriler", "/dashboard/customers"], ["Mağaza kullanıcıları", "/dashboard/users"], ["Raporlar", "/dashboard/reports"], ["Mesajlar", "/dashboard/messages"], ["Ayarlar", "/dashboard/settings"],
+    ["Ana marketplace", "/"], ["OBDTR vitrini", "/store/obdtr"], ["Yıldız Hırdavat", "/store/yildiz-hirdavat"], ["Ürün yönetimi", "/dashboard/products"], ["Hizmet/Randevu", "/dashboard/services"], ["Stok hareketleri", "/dashboard/stock-movements"], ["Siparişler", "/dashboard/orders"], ["Müşteriler", "/dashboard/customers"], ["Mağaza kullanıcıları", "/dashboard/users"], ["Raporlar", "/dashboard/reports"], ["Mesajlar", "/dashboard/messages"], ["Ayarlar", "/dashboard/settings"],
   ];
 
   return (

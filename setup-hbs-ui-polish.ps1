@@ -1,4 +1,4 @@
-﻿$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 
 function Write-HbsFile {
@@ -121,7 +121,7 @@ export default function DashboardLayout({
               <div className="text-xs uppercase tracking-[0.22em] text-emerald-200/70">
                 Aktif Mağaza
               </div>
-              <div className="mt-2 text-lg font-bold">Ferro Motors</div>
+              <div className="mt-2 text-lg font-bold">OBDTR Diagnostics</div>
               <div className="mt-3 inline-flex rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-100">
                 7 Günlük Demo
               </div>
@@ -160,7 +160,7 @@ export default function DashboardLayout({
               </Link>
 
               <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-100">
-                Ferro Motors
+                OBDTR Diagnostics
               </span>
             </div>
 
@@ -542,7 +542,7 @@ export default function DashboardPage() {
                 </div>
 
                 <h1 className="mt-5 text-5xl font-black tracking-tight">
-                  Ferro Motors
+                  OBDTR Diagnostics
                 </h1>
 
                 <p className="mt-4 max-w-4xl text-base leading-7 text-slate-300">

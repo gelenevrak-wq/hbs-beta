@@ -1,4 +1,4 @@
-﻿$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $root
 
 function Write-HbsFile {
@@ -144,7 +144,7 @@ export default function DashboardLayout({
 
           <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-950 p-4">
             <div className="text-sm text-slate-400">Aktif Mağaza</div>
-            <div className="mt-1 text-lg font-semibold">Ferro Motors</div>
+            <div className="mt-1 text-lg font-semibold">OBDTR Diagnostics</div>
             <div className="mt-3 inline-flex rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-200">
               7 Günlük Demo
             </div>
@@ -179,7 +179,7 @@ export default function DashboardLayout({
               </Link>
 
               <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-200">
-                Ferro Motors
+                OBDTR Diagnostics
               </span>
             </div>
 
@@ -508,7 +508,7 @@ export default function StoreLoginPage() {
                 <label className="mb-2 block text-sm text-slate-300">Firma Kodu</label>
                 <input
                   type="text"
-                  defaultValue="FERRO-MOTORS"
+                  defaultValue="OBDTR"
                   className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-white"
                 />
               </div>
@@ -619,8 +619,8 @@ import Link from "next/link";
 
 const stores = [
   {
-    name: "Ferro Motors",
-    code: "FERRO-MOTORS",
+    name: "OBDTR Diagnostics",
+    code: "OBDTR",
     city: "Batumi",
     status: "Onaylı Erişim",
     description: "Oto yedek parça, filtre, buji, fren ve motor parçaları.",
@@ -650,7 +650,7 @@ const stores = [
 const productResults = [
   {
     product: "NGK BKR6E Buji",
-    store: "Ferro Motors",
+    store: "OBDTR Diagnostics",
     stock: "Stokta var",
     price: "18 ₾",
     delivery: "Bugün teslim",
@@ -860,7 +860,7 @@ export default function DashboardPage() {
             <div className="text-sm uppercase tracking-[0.35em] text-slate-500">
               Mağaza Yönetim Paneli
             </div>
-            <h1 className="mt-3 text-4xl font-bold">Ferro Motors</h1>
+            <h1 className="mt-3 text-4xl font-bold">OBDTR Diagnostics</h1>
             <p className="mt-3 max-w-3xl text-slate-300">
               Stok, depo, müşteri, teklif, sipariş, kur, randevu ve dijital vitrin süreçlerinizi tek merkezden yönetin.
             </p>
@@ -1048,7 +1048,7 @@ $modulePages = @(
     stats=@(@("Yayındaki Kampanya","4","good"),@("Onay Bekleyen","2","warn"),@("Görüntülenme","1.920","normal"),@("Talep / Tıklama","146","normal"));
     items=@(
       @("NGK bujilerde toplu alım indirimi","Kategori reklamı","7 gün","Oto yedek parça","Yayında"),
-      @("Ferro Motors öne çıkan mağaza","Ana sayfa","30 gün","Tüm kullanıcılar","Onay Bekliyor"),
+      @("OBDTR Diagnostics öne çıkan mağaza","Ana sayfa","30 gün","Tüm kullanıcılar","Onay Bekliyor"),
       @("Yağ filtrelerinde kampanya","Story","48 saat","Favori müşteriler","Taslak")
     )
   },
@@ -1123,9 +1123,9 @@ $modulePages = @(
     section="Temel Firma Ayarları"; sectionDesc="Firma ayarları ileride gerçek veritabanına bağlanacak.";
     note="HBS mağazayı müşteri bulmaya zorlamaz; mağaza isterse vitrinini açar, isterse kapalı tutar.";
     side="Müşteri Erişim Modları"; sideItems=@("Herkese açık","Onaylı müşteriler","Davet kodu ile giriş","Tamamen kapalı","Sadece teklif ile satış");
-    stats=@(@("Firma","Ferro","normal"),@("Varsayılan Dil","TR","normal"),@("Ana Para","GEL","normal"),@("Portal","Aktif","good"));
+    stats=@(@("Firma","OBDTR","normal"),@("Varsayılan Dil","TR","normal"),@("Ana Para","GEL","normal"),@("Portal","Aktif","good"));
     items=@(
-      @("Firma Adı","Ferro Motors","Firma kodu","FERRO-MOTORS","Aktif"),
+      @("Firma Adı","OBDTR Diagnostics","Firma kodu","OBDTR","Aktif"),
       @("Müşteri Portalı","Herkese açık / onaylı seçilebilir","Fiyat gösterimi","Yetkiye bağlı","Aktif"),
       @("Dijital Vitrin","Ürün ve hizmet görünürlüğü","Kampanya","Reklam destekli","Aktif")
     )

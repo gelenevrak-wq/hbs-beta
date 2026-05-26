@@ -36,7 +36,7 @@ const warehouses: Warehouse[] = [
 const locationRows: LocationRow[] = [
   { product: "Autel Diagnostics Ürün Grubu", sku: "OBDTR-AUTEL-GRUP", qty: 14, warehouse: "OBDTR Ana Depo", address: "D-01-R03-G02", storefronts: ["OBDTR Online Vitrin", "Diagnostik Vitrini"], lastMove: "23.05.2026", user: "ALTANCANCI" },
   { product: "Krom Mutfak Bataryası", sku: "YH-TESISAT-BATARYA-001", qty: 38, warehouse: "Ana Depo", address: "T-02-R04-G01", storefronts: ["Yıldız Batum Vitrini"], lastMove: "22.05.2026", user: "OZGUR" },
-  { product: "Ford Escape Fren Balatası", sku: "FR-BALATA-ESCAPE-001", qty: 18, warehouse: "Ana Depo", address: "A-03-R12-G04", storefronts: ["Ferro Motors Vitrini", "Fren Sistemi Kampanyası"], lastMove: "21.05.2026", user: "Depo Personeli" },
+  { product: "Ford Escape Fren Balatası", sku: "FR-BALATA-ESCAPE-001", qty: 18, warehouse: "Ana Depo", address: "A-03-R12-G04", storefronts: ["OBDTR Vitrini", "Fren Sistemi Kampanyası"], lastMove: "21.05.2026", user: "Depo Personeli" },
   { product: "PVC Boru Bağlantı Seti", sku: "YH-PVC-FITTING-SET-002", qty: 64, warehouse: "Showroom Alanı", address: "S-01-R02-G01", storefronts: ["Yıldız Batum Vitrini", "Tesisat Ürünleri"], lastMove: "20.05.2026", user: "OZGUR" },
 ];
 

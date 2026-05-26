@@ -1,4 +1,4 @@
-﻿import ModulePage from "@/components/layout/ModulePage";
+import ModulePage from "@/components/layout/ModulePage";
 
 export default function Page() {
   return (
@@ -18,7 +18,7 @@ export default function Page() {
       sectionDescription="Reklamlar HBS onayından geçmeden yayınlanmaz."
       items={[
         { title: "NGK bujilerde toplu alım indirimi", subtitle: "Kategori reklamı", meta1: "7 gün", meta2: "Oto yedek parça", meta3: "Yayında" },
-        { title: "Ferro Motors öne çıkan mağaza", subtitle: "Ana sayfa", meta1: "30 gün", meta2: "Tüm kullanıcılar", meta3: "Onay Bekliyor" },
+        { title: "OBDTR Diagnostics öne çıkan mağaza", subtitle: "Ana sayfa", meta1: "30 gün", meta2: "Tüm kullanıcılar", meta3: "Onay Bekliyor" },
         { title: "Yağ filtrelerinde kampanya", subtitle: "Story", meta1: "48 saat", meta2: "Favori müşteriler", meta3: "Taslak" }
       ]}
       sideTitle="Reklam Alanları"

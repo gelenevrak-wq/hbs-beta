@@ -15,7 +15,7 @@ type DemoUser = {
 };
 
 const demoUsers: DemoUser[] = [
-  { username: "OZGUR", password: "OZDEMIR", role: "superadmin", storeSlugs: ["obdtr", "yildiz-hirdavat", "ferro-motors"], displayName: "Özgür Özdemir", redirectTo: "/dashboard" },
+  { username: "OZGUR", password: "OZDEMIR", role: "superadmin", storeSlugs: ["obdtr", "yildiz-hirdavat"], displayName: "Özgür Özdemir", redirectTo: "/dashboard" },
   { username: "ALTANCANCI", password: "CANCI35", role: "storeOwner", storeSlugs: ["obdtr"], displayName: "Altan Cancı", redirectTo: "/dashboard" },
   { username: "MUSTERI", password: "MUSTERI123", role: "customer", storeSlugs: [], displayName: "Demo Müşteri", redirectTo: "/customer" },
 ];
