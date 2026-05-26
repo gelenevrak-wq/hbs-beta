@@ -306,13 +306,9 @@ export default function HomePage() {
               slug: item.id,
               name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
               category: { tr: item.category || "Genel", en: item.category || "General", de: item.category || "Allgemein", ru: item.category || "Общий", ka: item.category || "საერთო" },
-              // @ts-expect-error joined table typing
               store: item.companies?.name || "HBS Mağaza",
-              // @ts-expect-error joined table typing
               storeSlug: item.companies?.code || "unknown",
-              // @ts-expect-error joined table typing
               city: item.companies?.city || "İstanbul",
-              // @ts-expect-error joined table typing
               country: item.companies?.country || "Türkiye",
               image: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
               price: { tr: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Bilgi / teklif alın" },
