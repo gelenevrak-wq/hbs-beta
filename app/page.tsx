@@ -371,21 +371,41 @@ export default function HomePage() {
             visibility?: string;
           }>;
 
+          const localStoresStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+          const localStores = JSON.parse(localStoresStr) as Array<{
+            code: string;
+            name: string;
+            city: string;
+            address: string;
+            operatingModel?: string;
+            serviceCountries?: string[];
+          }>;
+
           const mappedProducts: Product[] = parsedProducts
             .filter((item) => item.visibility !== "hidden")
-            .map((item) => ({
-              slug: item.id,
-              name: { tr: item.name },
-              category: { tr: item.category },
-              store: "OBDTR",
-              storeSlug: "obdtr",
-              city: "İstanbul",
-              country: "Türkiye",
-              image: item.imageUrl || "/product-images/diagnostic-scanner.svg",
-              price: { tr: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Teklif isteyin" },
-              tag: { tr: "Mağaza ürünü" },
-              sku: item.sku || item.id,
-            }));
+            .map((item) => {
+              const matchingStore = localStores.find(st => st.code === "obdtr") || {
+                code: "obdtr",
+                name: "OBDTR Diagnostics",
+                city: "İstanbul",
+                operatingModel: "virtual_delivery",
+                serviceCountries: ["TR", "GE"]
+              };
+
+              return {
+                slug: item.id,
+                name: { tr: item.name },
+                category: { tr: item.category },
+                store: matchingStore.name,
+                storeSlug: matchingStore.code,
+                city: matchingStore.city,
+                country: matchingStore.city.toLowerCase().includes("batum") ? "Gürcistan" : "Türkiye",
+                image: item.imageUrl || "/product-images/diagnostic-scanner.svg",
+                price: { tr: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Teklif isteyin" },
+                tag: { tr: "Mağaza ürünü" },
+                sku: item.sku || item.id,
+              };
+            });
 
           setUploadedProducts(mappedProducts);
         } catch {
@@ -429,11 +449,26 @@ export default function HomePage() {
       const haystack = [l(item.name, language ?? "tr"), l(item.category, language ?? "tr"), item.store, item.city, item.country, item.sku]
         .join(" ")
         .toLowerCase();
-      const coords = productCoordinates[item.city] ?? center;
-      const distanceOk = radiusKm >= 10000 || distanceKm(center, coords) <= radiusKm;
+      
+      const localStoresStr = typeof window !== "undefined" ? window.localStorage.getItem("hbs-registered-stores") || "[]" : "[]";
+      const localStores = JSON.parse(localStoresStr);
+      const storeObj = localStores.find((st: any) => st.code === item.storeSlug) || (item.storeSlug === "obdtr" ? {
+        operatingModel: "virtual_delivery",
+        serviceCountries: ["TR", "GE"]
+      } : null);
+
+      let distanceOk = false;
+      if (storeObj && storeObj.operatingModel === "virtual_delivery") {
+        const activeCountryCode = locationLabel.toLowerCase().includes("gürcistan") || locationLabel.toLowerCase().includes("georgia") || locationLabel.toLowerCase().includes("batum") || locationLabel.toLowerCase().includes("tbilisi") ? "GE" : "TR";
+        distanceOk = storeObj.serviceCountries?.includes(activeCountryCode) || false;
+      } else {
+        const coords = productCoordinates[item.city] ?? center;
+        distanceOk = radiusKm >= 10000 || distanceKm(center, coords) <= radiusKm;
+      }
+
       return categoryOk && distanceOk && (!q || haystack.includes(q));
     });
-  }, [query, category, language, allProducts, customCoords, radiusKm]);
+  }, [query, category, language, allProducts, customCoords, radiusKm, locationLabel]);
 
   if (!language) return <main className="min-h-screen bg-white" />;
 

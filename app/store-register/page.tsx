@@ -52,6 +52,10 @@ export default function StoreRegisterPage() {
   const [isPartner, setIsPartner] = useState(false);
   const [licenseType, setLicenseType] = useState<"trial" | "lifetime">("trial");
   
+  // Store Operating Model & Countries Served
+  const [operatingModel, setOperatingModel] = useState<"physical" | "virtual_delivery">("physical");
+  const [serviceCountries, setServiceCountries] = useState<string[]>(["TR", "GE"]);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -73,6 +77,9 @@ export default function StoreRegisterPage() {
     const isObdtr = companyName.toUpperCase().includes("OBDTR") || email.toLowerCase().includes("obdtr.com");
     setIsPartner(isObdtr);
     setLicenseType(isObdtr ? "lifetime" : "trial");
+    if (isObdtr) {
+      setOperatingModel("virtual_delivery");
+    }
   }, [companyName, email]);
 
   function handleAddWarehouse() {
@@ -239,6 +246,8 @@ export default function StoreRegisterPage() {
         isSuspended: false,
         warehouses: warehouses,
         createdAt: new Date().toISOString(),
+        operatingModel: operatingModel,
+        serviceCountries: serviceCountries,
       };
 
       // Save company in local registry
@@ -427,6 +436,67 @@ export default function StoreRegisterPage() {
                     />
                     <p className="text-[10px] text-slate-500">Bu sektörü eklediğinizde sistem bir sonraki mağaza açılışlarında sektörü otomatik listeye dahil edecektir.</p>
                   </label>
+                )}
+              </div>
+
+              <div className="space-y-3.5 border-t border-slate-100 pt-4">
+                <label className="grid gap-1.5">
+                  <span className="text-xs font-black text-slate-600 uppercase tracking-wider">🏢 Mağaza İşletim Modeli *</span>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <button
+                      type="button"
+                      onClick={() => setOperatingModel("physical")}
+                      className={`rounded-2xl border p-4 text-left transition active:scale-[0.98] ${operatingModel === "physical" ? "border-blue-600 bg-blue-50/50 ring-2 ring-blue-100" : "border-slate-200 bg-slate-50 hover:bg-slate-100"}`}
+                    >
+                      <p className="text-xs font-black text-slate-800">🏪 Fiziksel Mağaza / Sabit Depo</p>
+                      <p className="text-[10px] text-slate-500 mt-1 leading-normal font-semibold">Müşterilerin arama yaptıklarında belirledikleri yarıçap içindeki fiziksel konumuma göre listelenirim.</p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setOperatingModel("virtual_delivery")}
+                      className={`rounded-2xl border p-4 text-left transition active:scale-[0.98] ${operatingModel === "virtual_delivery" ? "border-blue-600 bg-blue-50/50 ring-2 ring-blue-100" : "border-slate-200 bg-slate-50 hover:bg-slate-100"}`}
+                    >
+                      <p className="text-xs font-black text-slate-800">🌍 Sanal Mağaza (Adrese Teslim & Yerinde Kurulum)</p>
+                      <p className="text-[10px] text-slate-500 mt-1 leading-normal font-semibold">Fiziksel raf/stoğu tek bir lokal dükkanda tutmayan, ülke çapında teslimat veya yerinde elden kurulum ve eğitim hizmeti sunan mağazalar.</p>
+                    </button>
+                  </div>
+                </label>
+
+                {operatingModel === "virtual_delivery" && (
+                  <div className="rounded-2xl border border-blue-100 bg-blue-50/20 p-4 animate-fadeIn space-y-3">
+                    <span className="text-[11px] font-black text-blue-700 uppercase tracking-wider block">🌍 Hizmet Verilecek Ülkeler:</span>
+                    <div className="flex flex-wrap gap-4 text-xs font-bold text-slate-700">
+                      {[
+                        { code: "TR", label: "Türkiye 🇹🇷" },
+                        { code: "GE", label: "Gürcistan 🇬🇪" },
+                        { code: "AZ", label: "Azerbaycan 🇦🇿" },
+                        { code: "DE", label: "Almanya 🇩🇪" }
+                      ].map((c) => {
+                        const checked = serviceCountries.includes(c.code);
+                        return (
+                          <label key={c.code} className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => {
+                                if (checked) {
+                                  setServiceCountries(serviceCountries.filter(v => v !== c.code));
+                                } else {
+                                  setServiceCountries([...serviceCountries, c.code]);
+                                }
+                              }}
+                              className="rounded border-slate-350 text-blue-600 focus:ring-blue-500 h-4.5 w-4.5"
+                            />
+                            <span>{c.label}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <p className="text-[10px] text-blue-600 font-bold leading-normal">
+                      ✓ Bu seçenekteki ürünler, seçtiğiniz ülkelerin tamamında müşterinin arama yarıçapından bağımsız olarak her zaman en üstte görünür olacaktır.
+                    </p>
+                  </div>
                 )}
               </div>
 

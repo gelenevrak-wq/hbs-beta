@@ -396,6 +396,15 @@ export default function ProductDetailPage() {
   }
 
   const activeProduct: ProductData = product;
+  const isVirtualDelivery = useMemo(() => {
+    if (typeof window === "undefined") return false;
+    const localStoresStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+    const localStores = JSON.parse(localStoresStr);
+    const storeObj = localStores.find((st: any) => st.code === activeProduct.storeSlug) || (activeProduct.storeSlug === "obdtr" ? {
+      operatingModel: "virtual_delivery"
+    } : null);
+    return storeObj?.operatingModel === "virtual_delivery";
+  }, [activeProduct]);
   const displayGallery = Array.from(new Set([activeProduct.imageUrl, ...activeProduct.gallery])).slice(0, 4);
   const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Depo / A-03-R12-G04";
   const storefrontNames = activeProduct.storeSlug === "obdtr" ? "OBDTR Online Vitrin, Diagnostik Vitrini" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız Batum Vitrini, Tesisat Ürünleri" : "OBDTR Online Vitrin";
@@ -514,9 +523,19 @@ export default function ProductDetailPage() {
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm sm:rounded-[2rem] sm:p-5">
             <h2 className="text-lg font-black text-emerald-900 sm:text-xl">Depo / vitrin bağlantısı</h2>
             <div className="mt-3 grid gap-2 text-sm leading-6 text-emerald-900/90">
-              <p><span className="font-black">İç depo adresi:</span> {internalWarehouseCode}</p>
-              <p><span className="font-black">Müşteriye açık vitrin:</span> {storefrontNames}</p>
-              <p><span className="font-black">Kural:</span> Depo ürünün nerede durduğunu, vitrin müşteriye nerede göründüğünü anlatır.</p>
+              {isVirtualDelivery ? (
+                <>
+                  <p><span className="font-black">Hizmet Modeli:</span> Sanal Mağaza / Adrese Teslimat</p>
+                  <p><span className="font-black">Müşteriye açık vitrin:</span> {storefrontNames} (Ülke Genelinde Görünür)</p>
+                  <p><span className="font-black">Kural:</span> Sanal depodaki ürünler kargo ile gönderilir veya adreste kurulum & eğitim verilir.</p>
+                </>
+              ) : (
+                <>
+                  <p><span className="font-black">İç depo adresi:</span> {internalWarehouseCode}</p>
+                  <p><span className="font-black">Müşteriye açık vitrin:</span> {storefrontNames}</p>
+                  <p><span className="font-black">Kural:</span> Depo ürünün nerede durduğunu, vitrin müşteriye nerede göründüğünü anlatır.</p>
+                </>
+              )}
             </div>
           </div>
         </section>
@@ -540,9 +559,19 @@ export default function ProductDetailPage() {
             <h2 className="text-xl font-black sm:text-2xl">{t.product.storeDeliveryTitle}</h2>
             <div className="mt-4 grid gap-3 text-sm leading-6 text-slate-600 sm:mt-5 sm:gap-4">
               <p><span className="font-bold text-slate-950">{t.common.store}:</span> {activeProduct.storeName}</p>
-              <p><span className="font-bold text-slate-950">{t.common.location}:</span> {activeProduct.country} / {activeProduct.city}</p>
-              <p><span className="font-bold text-slate-950">{txt(dynamicUi.salesMethodLabel, language)}:</span> {t.product.salesMethod}</p>
-              <p><span className="font-bold text-slate-950">{txt(dynamicUi.note, language)}:</span> {t.product.realSystemNote}</p>
+              {isVirtualDelivery ? (
+                <>
+                  <p><span className="font-bold text-slate-950">{t.common.location}:</span> Türkiye 🇹🇷 & Gürcistan 🇬🇪 Geneli</p>
+                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.salesMethodLabel, language)}:</span> Kargolu Gönderim, Elden Teslim, Yerinde Kurulum & Teknik Eğitim</p>
+                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.note, language)}:</span> Bu ürün fiziksel bir yerel mağazada raf stoğunda tutulmamaktadır; sipariş üzerine temin edilip doğrudan müşterinin adresinde elden kurulur.</p>
+                </>
+              ) : (
+                <>
+                  <p><span className="font-bold text-slate-950">{t.common.location}:</span> {activeProduct.country} / {activeProduct.city}</p>
+                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.salesMethodLabel, language)}:</span> {t.product.salesMethod}</p>
+                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.note, language)}:</span> {t.product.realSystemNote}</p>
+                </>
+              )}
             </div>
             <div className="mt-5 sm:mt-6">
               <Link href={`/store/${activeProduct.storeSlug}`} className="inline-flex rounded-xl bg-slate-950 px-5 py-3 text-sm font-black text-white hover:bg-slate-200 sm:rounded-2xl sm:px-6 sm:py-4">{activeProduct.storeName} {t.product.goToStorePage}</Link>
