@@ -225,6 +225,8 @@ export default function HomePage() {
   const [locationLabel, setLocationLabel] = useState("İzmir, Türkiye");
   const [radiusKm, setRadiusKm] = useState(50);
   const [uploadedProducts, setUploadedProducts] = useState<Product[]>([]);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [customerOffers, setCustomerOffers] = useState<any[]>([]);
 
   const [filteredSuggestions, setFilteredSuggestions] = useState<LocationSuggestion[]>([]);
 
@@ -263,7 +265,22 @@ export default function HomePage() {
           }
         })
         .catch((err) => {
-          console.error("Nominatim API error:", err);
+          console.error("Nominatim API error, using local fallback:", err);
+          const fallbackCities = [
+            { label: "Batum, Gürcistan (Batumi)", city: "Batumi", country: "Gürcistan", lat: 41.6168, lng: 41.6367 },
+            { label: "Tiflis, Gürcistan (Tbilisi)", city: "Tbilisi", country: "Gürcistan", lat: 41.7151, lng: 44.8271 },
+            { label: "İstanbul, Türkiye (Istanbul)", city: "Istanbul", country: "Türkiye", lat: 41.0082, lng: 28.9784 },
+            { label: "İzmir, Türkiye (Izmir)", city: "Izmir", country: "Türkiye", lat: 38.4237, lng: 27.1428 },
+            { label: "Ankara, Türkiye (Ankara)", city: "Ankara", country: "Türkiye", lat: 39.9334, lng: 32.8597 },
+            { label: "Antalya, Türkiye (Antalya)", city: "Antalya", country: "Türkiye", lat: 36.8969, lng: 30.7133 },
+            { label: "Bakü, Azerbaycan (Baku)", city: "Baku", country: "Azerbaycan", lat: 40.4093, lng: 49.8671 },
+            { label: "Berlin, Almanya (Berlin)", city: "Berlin", country: "Almanya", lat: 52.5200, lng: 13.4050 }
+          ];
+          const cleanQuery = input.toLowerCase();
+          const matches = fallbackCities.filter(
+            c => c.label.toLowerCase().includes(cleanQuery) || c.city.toLowerCase().includes(cleanQuery)
+          );
+          setFilteredSuggestions(matches);
         });
     }, 400);
 
@@ -289,6 +306,26 @@ export default function HomePage() {
     detectLocation();
     const saved = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(saved) ? saved : "tr");
+
+    // Load current user session
+    try {
+      const userStr = window.localStorage.getItem("hbs-current-user");
+      if (userStr) {
+        setCurrentUser(JSON.parse(userStr));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    // Load customer submitted offers
+    try {
+      const offersStr = window.localStorage.getItem("hbs-store-customer-offers");
+      if (offersStr) {
+        setCustomerOffers(JSON.parse(offersStr));
+      }
+    } catch (e) {
+      console.error(e);
+    }
 
     const isSupabaseConfigured = 
       process.env.NEXT_PUBLIC_SUPABASE_URL && 
@@ -360,17 +397,35 @@ export default function HomePage() {
 
   const allProducts = useMemo(() => [...uploadedProducts, ...products], [uploadedProducts]);
 
+  const activeUiLanguage = (language && language in ui ? language : "en") as keyof typeof ui;
+  const t = ui[activeUiLanguage];
+
+  const quickCategories = useMemo(() => {
+    const unique = new Set<string>();
+    allProducts.forEach((item) => {
+      const cat = l(item.category, language ?? "tr");
+      if (cat) {
+        unique.add(cat);
+      }
+    });
+
+    const list = Array.from(unique).map((catName) => ({
+      key: catName.toLowerCase(),
+      label: catName,
+    }));
+
+    return [{ key: "all", label: t.all }, ...list];
+  }, [allProducts, language, t.all]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const center = customCoords;
 
     return allProducts.filter((item) => {
+      const itemCat = l(item.category, language ?? "tr").toLowerCase();
       const categoryOk =
         category === "all" ||
-        ["service", "rental", "realestate", "tour"].includes(category) ||
-        (category === "auto" && item.storeSlug !== "yildiz-hirdavat") ||
-        (category === "hardware" && item.storeSlug === "yildiz-hirdavat") ||
-        (category === "spare" && item.storeSlug === "ferro-motors");
+        itemCat === category;
       const haystack = [l(item.name, language ?? "tr"), l(item.category, language ?? "tr"), item.store, item.city, item.country, item.sku]
         .join(" ")
         .toLowerCase();
@@ -382,8 +437,6 @@ export default function HomePage() {
 
   if (!language) return <main className="min-h-screen bg-white" />;
 
-  const activeUiLanguage = (language in ui ? language : "en") as keyof typeof ui;
-  const t = ui[activeUiLanguage];
   const radiusLabel = radiusKm >= 10000 ? t.allWorld : `${radiusKm} km`;
   const searchHref = query.trim() ? `/customer?q=${encodeURIComponent(query.trim())}` : "/customer";
   const countLabel = language === "tr" ? "kayıt" : language === "de" ? "Eintrag" : language === "ru" ? "позиция" : language === "ka" ? "ჩანაწერი" : "items";
@@ -391,16 +444,7 @@ export default function HomePage() {
   const label = (tr: string, en: string, de = en, ru = en, ka = en) =>
     language === "tr" ? tr : language === "de" ? de : language === "ru" ? ru : language === "ka" ? ka : en;
 
-  const quickCategories = [
-    { key: "all", label: t.all },
-    { key: "auto", label: t.auto },
-    { key: "hardware", label: t.hardware },
-    { key: "spare", label: t.spare },
-    { key: "service", label: label("Hizmet", "Service", "Service", "Услуги", "სერვისი") },
-    { key: "rental", label: label("Kiralık", "Rental", "Miete", "Аренда", "ქირა") },
-    { key: "realestate", label: label("Emlak", "Real Estate", "Immobilien", "Недвижимость", "უძრავი") },
-    { key: "tour", label: label("Tur", "Tours", "Touren", "Туры", "ტურები") },
-  ];
+
 
   return (
     <main className="min-h-screen bg-[#f6f7fb] text-slate-950">
@@ -411,8 +455,40 @@ export default function HomePage() {
             <CompactLanguageSwitcher />
           </div>
           <div className="flex items-center gap-1 sm:gap-1.5">
-            <Link href="/login" className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-black text-slate-800 hover:bg-slate-50 flex items-center justify-center sm:px-3 sm:py-1.5 sm:text-xs">{t.login}</Link>
-            <Link href="/register" className="rounded-full bg-blue-600 px-2 py-1 text-[10px] font-black text-white hover:bg-blue-700 flex items-center justify-center sm:px-3 sm:py-1.5 sm:text-xs">{t.register}</Link>
+            <Link href="/promo" className="rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-blue-100 transition animate-pulse shrink-0">
+              🎥 {language === "tr" ? "Tanıtım Videosu" : "Promo Video"}
+            </Link>
+            
+            {currentUser ? (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] sm:text-xs font-black text-slate-700 flex items-center gap-1 bg-slate-100 px-2.5 py-1.5 rounded-full border border-slate-200">
+                  👤 {currentUser.displayName}
+                </span>
+                {(currentUser.role === "owner" || currentUser.role === "superadmin" || currentUser.role === "storeOwner") && (
+                  <Link
+                    href="/dashboard"
+                    className="rounded-full bg-blue-600 px-2.5 py-1.5 text-[10px] font-black text-white hover:bg-blue-700 sm:px-3 sm:text-xs"
+                  >
+                    Panelim
+                  </Link>
+                )}
+                <button
+                  onClick={() => {
+                    window.localStorage.removeItem("hbs-current-user");
+                    window.localStorage.removeItem("hbs-demo-user");
+                    window.location.reload();
+                  }}
+                  className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-black text-red-700 hover:bg-red-100 sm:px-3 sm:text-xs cursor-pointer active:scale-95 transition"
+                >
+                  Çıkış Yap
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link href="/login" className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-black text-slate-800 hover:bg-slate-50 flex items-center justify-center sm:px-3 sm:py-1.5 sm:text-xs">{t.login}</Link>
+                <Link href="/register" className="rounded-full bg-blue-600 px-2 py-1 text-[10px] font-black text-white hover:bg-blue-700 flex items-center justify-center sm:px-3 sm:py-1.5 sm:text-xs">{t.register}</Link>
+              </>
+            )}
           </div>
         </div>
 
@@ -559,6 +635,57 @@ export default function HomePage() {
           </div>
         </section>
       </div>
+
+      {/* Dynamic B2B Offers and Bids Tracking Section - Wow Factor! */}
+      {currentUser && customerOffers.length > 0 && (
+        <div className="mx-auto max-w-7xl px-2 pb-6 sm:px-4">
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">MÜŞTERİ PANELİ</p>
+              <h2 className="text-sm font-black sm:text-lg">Tekliflerim & B2B Pazarlıklarım</h2>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                Satıcılardan talep ettiğiniz fiyat tekliflerini, iskontolu pazarlık taleplerinizi ve güncel onay durumlarını buradan canlı takip edebilirsiniz.
+              </p>
+            </div>
+            
+            <div className="overflow-x-auto rounded-xl border border-slate-100 bg-slate-50/50 p-1">
+              <table className="min-w-full text-left text-xs font-semibold">
+                <thead className="bg-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-200">
+                  <tr>
+                    <th className="p-3">Ürün / Portföy</th>
+                    <th className="p-3">Pazarlık Türü</th>
+                    <th className="p-3">Sunulan Fiyat</th>
+                    <th className="p-3">Talep Tarihi</th>
+                    <th className="p-3 text-right">Durum</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {customerOffers
+                    .filter(o => o.customerEmail === currentUser.username)
+                    .map((o) => (
+                      <tr key={o.id} className="align-middle">
+                        <td className="p-3 font-black text-slate-900">{o.productName}</td>
+                        <td className="p-3">
+                          <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black ${o.type === "bid" ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}>
+                            {o.type === "bid" ? "İskonto Teklifi" : "Fiyat Teklifi İstemi"}
+                          </span>
+                        </td>
+                        <td className="p-3 font-bold text-slate-700">{o.offerValue}</td>
+                        <td className="p-3 text-slate-500 font-bold">{o.date}</td>
+                        <td className="p-3 text-right">
+                          <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-[10px] font-black border border-amber-200">
+                            {o.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      )}
+
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-blue-100 bg-white/95 py-1.5 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur">
         <div className="overflow-hidden whitespace-nowrap">
           <div className="inline-block animate-hbs-marquee text-[12px] font-black text-blue-700">

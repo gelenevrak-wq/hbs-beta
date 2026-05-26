@@ -108,35 +108,66 @@ export default function LoginPage() {
         window.location.href = redirectTo;
       }
     } else {
-      // Demo kullanıcı fall-back
+      // Demo kullanıcı ve local tescilli mağaza fall-back
       const normalizedUsername = inputVal.toUpperCase();
-      const user = demoUsers.find(
+      let user = demoUsers.find(
         (item) => item.username === normalizedUsername && item.password === password.trim()
       );
+
+      let isLocalRegisteredStore = false;
+      let localStoreUser: any = null;
+
       if (!user) {
+        // Local tescilli mağaza sahiplerini kontrol et
+        try {
+          const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+          const foundStore = localStores.find(
+            (store: any) =>
+              store.email.toLowerCase() === inputVal.toLowerCase() &&
+              store.password === password.trim()
+          );
+          if (foundStore) {
+            isLocalRegisteredStore = true;
+            localStoreUser = {
+              username: foundStore.email,
+              displayName: foundStore.representative,
+              role: "owner",
+              storeSlugs: [foundStore.code],
+              redirectTo: "/dashboard"
+            };
+          }
+        } catch (e) {
+          console.error("Local stores parse error", e);
+        }
+      }
+
+      const activeUser = user || localStoreUser;
+
+      if (!activeUser) {
         setError(currentText.error);
         return;
       }
+
       window.localStorage.setItem(
         "hbs-current-user",
         JSON.stringify({
-          username: user.username,
-          displayName: user.displayName,
-          role: user.role,
-          storeSlugs: user.storeSlugs,
+          username: activeUser.username,
+          displayName: activeUser.displayName,
+          role: activeUser.role,
+          storeSlugs: activeUser.storeSlugs,
           signedInAt: new Date().toISOString(),
         })
       );
       window.localStorage.setItem(
         "hbs-demo-user",
         JSON.stringify({
-          username: user.username,
-          role: user.role,
-          store: user.storeSlugs[0] ?? "ALL",
-          note: user.displayName,
+          username: activeUser.username,
+          role: activeUser.role,
+          store: activeUser.storeSlugs[0] ?? "ALL",
+          note: activeUser.displayName,
         })
       );
-      window.location.href = user.redirectTo;
+      window.location.href = activeUser.redirectTo;
     }
   }
   return (

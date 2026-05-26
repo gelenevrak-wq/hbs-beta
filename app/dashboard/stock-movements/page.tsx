@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type MovementType =
   | "stock_in"
@@ -141,6 +141,76 @@ export default function StockMovementsPage() {
   const [note, setNote] = useState("");
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
+  const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
+  const [productsLoaded, setProductsLoaded] = useState(false);
+
+  useEffect(() => {
+    // 1. Load products
+    const savedProducts = window.localStorage.getItem("hbs-store-products");
+    if (savedProducts) {
+      try {
+        const parsed = JSON.parse(savedProducts);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const mapped = parsed.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            barcode: p.barcode || "",
+            sku: p.sku || "",
+            oemCode: p.oemCode || "",
+            currentStock: Number(p.quantity) || 0,
+            warehouse: p.warehouse || "",
+            shelf: p.shelf || ""
+          }));
+          setProducts(mapped);
+        }
+      } catch (e) {
+        console.error("Error loading products for stock movements", e);
+      }
+    }
+
+    // 2. Load movements
+    const savedMovements = window.localStorage.getItem("hbs-store-stock-movements");
+    if (savedMovements) {
+      try {
+        const parsed = JSON.parse(savedMovements);
+        if (Array.isArray(parsed)) {
+          setMovements(parsed);
+        }
+      } catch (e) {
+        console.error("Error loading movements history", e);
+      }
+    }
+
+    // 3. Load warehouses map
+    try {
+      const currentUserStr = window.localStorage.getItem("hbs-current-user");
+      if (currentUserStr) {
+        const currentUser = JSON.parse(currentUserStr);
+        const storeSlug = currentUser.storeSlugs?.[0];
+        if (storeSlug) {
+          const registeredStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+          const myStore = registeredStores.find((s: any) => s.code === storeSlug);
+          if (myStore && myStore.warehouses) {
+            setAvailableWarehouses(myStore.warehouses);
+            if (myStore.warehouses.length > 0) {
+              setWarehouse(myStore.warehouses[0].name);
+              if (myStore.warehouses[0].shelves && myStore.warehouses[0].shelves.length > 0) {
+                setShelf(myStore.warehouses[0].shelves[0]);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error loading warehouse maps for stock movements", e);
+    }
+    setProductsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!productsLoaded) return;
+    window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(movements));
+  }, [movements, productsLoaded]);
 
   const filteredMovements = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -263,15 +333,39 @@ export default function StockMovementsPage() {
       warehouse,
       shelf,
       note,
-      createdAt: "Şimdi",
+      createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)",
     };
 
     setMovements((currentMovements) => [movement, ...currentMovements]);
 
+    // Update quantity in hbs-store-products local storage
+    try {
+      const savedProducts = window.localStorage.getItem("hbs-store-products");
+      if (savedProducts) {
+        const fullRecords = JSON.parse(savedProducts);
+        if (Array.isArray(fullRecords)) {
+          const updatedRecords = fullRecords.map((r: any) => {
+            if (r.id === selectedProduct.id) {
+              return {
+                ...r,
+                quantity: newStock.toString(),
+                warehouse: warehouse,
+                shelf: shelf
+              };
+            }
+            return r;
+          });
+          window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedRecords));
+        }
+      }
+    } catch (e) {
+      console.error("Error updating product quantity in localStorage", e);
+    }
+
     setQuantity("");
     setNote("");
     setMessage(
-      `${selectedProduct.name} için stok işlemi demo olarak kaydedildi. Yeni stok: ${newStock}`
+      `${selectedProduct.name} için stok işlemi kaydedildi. Yeni stok: ${newStock}`
     );
   }
 
@@ -435,22 +529,59 @@ export default function StockMovementsPage() {
 
                 <label className="grid gap-2">
                   <span className="text-sm text-slate-300">Depo</span>
-                  <input
-                    value={warehouse}
-                    onChange={(event) => setWarehouse(event.target.value)}
-                    placeholder="Ana Depo"
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                  />
+                  {availableWarehouses.length > 0 ? (
+                    <select
+                      value={warehouse}
+                      onChange={(e) => {
+                        const nextWh = e.target.value;
+                        setWarehouse(nextWh);
+                        const nextWhObj = availableWarehouses.find(wh => wh.name === nextWh);
+                        if (nextWhObj && nextWhObj.shelves && nextWhObj.shelves.length > 0) {
+                          setShelf(nextWhObj.shelves[0]);
+                        } else {
+                          setShelf("");
+                        }
+                      }}
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none focus:border-white text-white"
+                    >
+                      {availableWarehouses.map((wh) => (
+                        <option key={wh.name} value={wh.name} className="bg-slate-950 text-white">{wh.name}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      value={warehouse}
+                      onChange={(event) => setWarehouse(event.target.value)}
+                      placeholder="Ana Depo"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
+                    />
+                  )}
                 </label>
 
                 <label className="grid gap-2">
                   <span className="text-sm text-slate-300">Raf / Konum</span>
-                  <input
-                    value={shelf}
-                    onChange={(event) => setShelf(event.target.value)}
-                    placeholder="A-01"
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                  />
+                  {availableWarehouses.length > 0 ? (
+                    <select
+                      value={shelf}
+                      onChange={(event) => setShelf(event.target.value)}
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none focus:border-white text-white"
+                    >
+                      {(availableWarehouses.find(wh => wh.name === warehouse)?.shelves || []).map((sh: string) => (
+                        <option key={sh} value={sh} className="bg-slate-950 text-white">{sh}</option>
+                      ))}
+                      {(!availableWarehouses.find(wh => wh.name === warehouse)?.shelves || 
+                        availableWarehouses.find(wh => wh.name === warehouse)?.shelves.length === 0) && (
+                        <option value="" className="bg-slate-950 text-white">Raf Konumu Yok</option>
+                      )}
+                    </select>
+                  ) : (
+                    <input
+                      value={shelf}
+                      onChange={(event) => setShelf(event.target.value)}
+                      placeholder="A-01"
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
+                    />
+                  )}
                 </label>
               </div>
 

@@ -385,12 +385,14 @@ export default function RegisterPage() {
                 <p className="mt-1 text-sm font-semibold text-slate-500">{t.subtitle}</p>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <button onClick={() => setMode("customer")} className="rounded-2xl border border-blue-200 bg-blue-50 p-5 text-left shadow-sm transition hover:border-blue-500 hover:bg-blue-100">
+                <Link href="/customer-register" className="rounded-2xl border border-blue-200 bg-blue-50 p-5 text-left shadow-sm transition hover:border-blue-500 hover:bg-blue-100 block">
                   <div className="text-xl font-black text-blue-950">{t.customerButton}</div>
-                </button>
-                <button onClick={() => setMode("store")} className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-left shadow-sm transition hover:border-emerald-500 hover:bg-emerald-100">
+                  <p className="text-xs text-slate-500 mt-1">Sadece e-posta ve telefon ile anında kayıt olun.</p>
+                </Link>
+                <Link href="/store-register" className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-left shadow-sm transition hover:border-emerald-500 hover:bg-emerald-100 block">
                   <div className="text-xl font-black text-emerald-950">{t.storeButton}</div>
-                </button>
+                  <p className="text-xs text-slate-500 mt-1">Firma detayları ve depo haritanızla SaaS panelinizi kurun.</p>
+                </Link>
               </div>
               <Link href="/login" className="inline-flex w-fit rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold hover:bg-slate-50">{t.login}</Link>
             </div>

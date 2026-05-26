@@ -2,15 +2,27 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
 
 type MessageStatus = "unread" | "open" | "answered" | "closed";
 type MessageChannel = "HBS Mesaj" | "WhatsApp" | "E-posta";
+
+type MessageItem = {
+  id: string;
+  sender: "customer" | "store";
+  originalText: string;
+  translatedText: string;
+  originalLanguage: string;
+  targetLanguage: string;
+  time: string;
+};
 
 type MessageThread = {
   id: string;
   customerName: string;
   customerPhone: string;
   customerEmail: string;
+  customerLang: string; // e.g. Georgian, Russian, German
   channel: MessageChannel;
   subject: string;
   productName?: string;
@@ -18,20 +30,16 @@ type MessageThread = {
   city: string;
   status: MessageStatus;
   lastMessageAt: string;
-  messages: {
-    id: string;
-    sender: "customer" | "store";
-    text: string;
-    time: string;
-  }[];
+  messages: MessageItem[];
 };
 
-const initialThreads: MessageThread[] = [
+const INITIAL_THREADS: MessageThread[] = [
   {
     id: "msg-001",
-    customerName: "Demo Auto Service",
+    customerName: "Giorgi Kalandadze (Batumi)",
     customerPhone: "+995 555 111 222",
-    customerEmail: "demo@hbs.ge",
+    customerEmail: "giorgi@autoservice.ge",
+    customerLang: "ka", // Georgian
     channel: "HBS Mesaj",
     subject: "Ford Escape fren balatası uyumu",
     productName: "Ford Escape Fren Balatası",
@@ -43,508 +51,353 @@ const initialThreads: MessageThread[] = [
       {
         id: "m1",
         sender: "customer",
-        text: "Merhaba, bu fren balatası 2018 Ford Escape için uyumlu mu?",
+        originalText: "გამარჯობა, ეს სამუხრუჭე ხუნდები თავსებადია 2018 წლის Ford Escape-თან?",
+        translatedText: "Merhaba, bu fren balatası 2018 Ford Escape için uyumlu mu?",
+        originalLanguage: "ka",
+        targetLanguage: "tr",
         time: "Bugün 10:24",
       },
     ],
   },
   {
     id: "msg-002",
-    customerName: "Batumi Garage",
+    customerName: "Dmitry Ivanov (Tbilisi)",
     customerPhone: "+995 555 333 444",
-    customerEmail: "garage@hbs.ge",
+    customerEmail: "dmitry@tbilisigarage.ge",
+    customerLang: "ru", // Russian
     channel: "WhatsApp",
-    subject: "Toyota Corolla yağ filtresi",
+    subject: "Toyota Corolla yağ filtresi fiyat",
     productName: "Toyota Corolla Yağ Filtresi",
     productCode: "FR-FILTRE-COROLLA-002",
-    city: "Batumi",
+    city: "Tbilisi",
     status: "open",
     lastMessageAt: "Bugün 11:05",
     messages: [
       {
         id: "m1",
         sender: "customer",
-        text: "2016 Toyota Corolla 1.6 benzinli için filtre uygun mu?",
+        originalText: "Здравствуйте, подходит ли этот фильтр для Toyota Corolla 1.6 бензин 2016 года?",
+        translatedText: "Merhaba, bu filtre 2016 model Toyota Corolla 1.6 benzinli araç için uygun mu?",
+        originalLanguage: "ru",
+        targetLanguage: "tr",
         time: "Bugün 11:05",
       },
       {
         id: "m2",
         sender: "store",
-        text: "Araç motor kodunu gönderirseniz uyumluluğu net kontrol edebiliriz.",
+        originalText: "Lütfen aracın şasi numarasını gönderirseniz uyumluluğu net kontrol edebiliriz.",
+        translatedText: "Пожалуйста, отправьте серийный номер автомобиля, чтобы мы могли точно проверить совместимость.",
+        originalLanguage: "tr",
+        targetLanguage: "ru",
         time: "Bugün 11:12",
       },
     ],
   },
   {
     id: "msg-003",
-    customerName: "Giorgi Parts",
-    customerPhone: "+995 555 777 888",
-    customerEmail: "giorgi@hbs.ge",
+    customerName: "Hans Weber (Munich)",
+    customerPhone: "+49 89 123456",
+    customerEmail: "hans.weber@auto-parts.de",
+    customerLang: "de", // German
     channel: "E-posta",
-    subject: "Toplu ürün teklifi",
+    subject: "Toplu ürün siparişi hakkında",
     productName: "Universal Buji Seti",
     productCode: "FR-BUJI-SET-004",
-    city: "Tbilisi",
+    city: "Munich",
     status: "answered",
     lastMessageAt: "Dün 17:40",
     messages: [
       {
         id: "m1",
         sender: "customer",
-        text: "4 adet buji seti için fiyat ve teslimat süresi öğrenmek istiyorum.",
+        originalText: "Hallo, ich würde gerne den Preis und die Lieferzeit für 20 Sätze Zündkerzen erfahren.",
+        translatedText: "Merhaba, 20 set buji için fiyat ve teslimat süresini öğrenmek istiyorum.",
+        originalLanguage: "de",
+        targetLanguage: "tr",
         time: "Dün 17:40",
       },
       {
         id: "m2",
         sender: "store",
-        text: "Stok kontrolü sonrası size teklif dönüşü yapılacaktır.",
+        originalText: "Stok adetlerimiz yeterlidir. Proforma fatura hazırlayıp teklif paneline yükledik.",
+        translatedText: "Unsere Lagerbestände reichen aus. Wir haben eine Proforma-Rechnung vorbereitet und in das Angebots-Panel hochgeladen.",
+        originalLanguage: "tr",
+        targetLanguage: "de",
         time: "Dün 18:05",
       },
     ],
   },
 ];
 
-function statusText(status: MessageStatus) {
-  switch (status) {
-    case "unread":
-      return "Okunmadı";
-    case "open":
-      return "Açık";
-    case "answered":
-      return "Cevaplandı";
-    case "closed":
-      return "Kapandı";
-  }
-}
-
-function statusClass(status: MessageStatus) {
-  switch (status) {
-    case "unread":
-      return "bg-blue-950 text-blue-200";
-    case "open":
-      return "bg-yellow-950 text-yellow-200";
-    case "answered":
-      return "bg-emerald-950 text-emerald-200";
-    case "closed":
-      return "bg-slate-800 text-slate-300";
-  }
-}
-
-function channelClass(channel: MessageChannel) {
-  switch (channel) {
-    case "HBS Mesaj":
-      return "bg-purple-950 text-purple-200";
-    case "WhatsApp":
-      return "bg-emerald-950 text-emerald-200";
-    case "E-posta":
-      return "bg-cyan-950 text-cyan-200";
-  }
-}
-
 export default function MessagesPage() {
-  const [threads, setThreads] = useState<MessageThread[]>(initialThreads);
-  const [selectedThread, setSelectedThread] = useState<MessageThread | null>(
-    initialThreads[0] ?? null
-  );
+  const [threads, setThreads] = useState<MessageThread[]>(INITIAL_THREADS);
+  const [selectedIdx, setSelectedIdx] = useState(0);
   const [statusFilter, setStatusFilter] = useState<MessageStatus | "all">("all");
   const [search, setSearch] = useState("");
+  
+  // Interactive translation states
   const [replyText, setReplyText] = useState("");
+  const [autoTranslate, setAutoTranslate] = useState(true);
   const [message, setMessage] = useState("");
+
+  const activeThread = threads[selectedIdx] ?? null;
 
   const filteredThreads = useMemo(() => {
     const q = search.trim().toLowerCase();
-
     return threads.filter((thread) => {
-      const matchesStatus =
-        statusFilter === "all" || thread.status === statusFilter;
-
+      const matchesStatus = statusFilter === "all" || thread.status === statusFilter;
       const matchesSearch =
         !q ||
         thread.customerName.toLowerCase().includes(q) ||
-        thread.customerPhone.toLowerCase().includes(q) ||
-        thread.customerEmail.toLowerCase().includes(q) ||
         thread.subject.toLowerCase().includes(q) ||
-        thread.productName?.toLowerCase().includes(q) ||
-        thread.productCode?.toLowerCase().includes(q) ||
-        thread.city.toLowerCase().includes(q) ||
-        thread.messages.some((item) => item.text.toLowerCase().includes(q));
-
+        thread.productName?.toLowerCase().includes(q);
       return matchesStatus && matchesSearch;
     });
   }, [threads, statusFilter, search]);
 
-  function updateThreadStatus(threadId: string, status: MessageStatus) {
-    setThreads((currentThreads) =>
-      currentThreads.map((thread) =>
-        thread.id === threadId ? { ...thread, status } : thread
-      )
-    );
-
-    setSelectedThread((currentThread) =>
-      currentThread && currentThread.id === threadId
-        ? { ...currentThread, status }
-        : currentThread
-    );
-
-    setMessage(`Mesaj durumu "${statusText(status)}" olarak güncellendi.`);
-  }
+  // Mock translation preview generator based on selected client language!
+  const simulatedTranslationPreview = useMemo(() => {
+    if (!replyText.trim() || !activeThread) return "";
+    const lang = activeThread.customerLang;
+    if (lang === "ka") {
+      return `[გურჯული თარგმანი] გამარჯობა, მადლობა შეკითხვისთვის. ${replyText}`;
+    }
+    if (lang === "ru") {
+      return `[Русский перевод] Здравствуйте, спасибо за обращение. ${replyText}`;
+    }
+    if (lang === "de") {
+      return `[Deutscher Übersetzung] Hallo, danke für Ihre Anfrage. ${replyText}`;
+    }
+    return `[English Translation] Hello, thanks for writing. ${replyText}`;
+  }, [replyText, activeThread]);
 
   function sendReply() {
-    if (!selectedThread) return;
-
+    if (!activeThread) return;
     if (!replyText.trim()) {
       setMessage("Cevap göndermek için mesaj alanını doldurun.");
       return;
     }
 
-    const newMessage = {
+    const newMsg: MessageItem = {
       id: `reply-${Date.now()}`,
-      sender: "store" as const,
-      text: replyText,
+      sender: "store",
+      originalText: replyText,
+      translatedText: autoTranslate ? simulatedTranslationPreview : replyText,
+      originalLanguage: "tr",
+      targetLanguage: activeThread.customerLang,
       time: "Şimdi",
     };
 
-    const updatedThread: MessageThread = {
-      ...selectedThread,
+    const updated = [...threads];
+    updated[selectedIdx] = {
+      ...activeThread,
       status: "answered",
       lastMessageAt: "Şimdi",
-      messages: [...selectedThread.messages, newMessage],
+      messages: [...activeThread.messages, newMsg],
     };
 
-    setThreads((currentThreads) =>
-      currentThreads.map((thread) =>
-        thread.id === selectedThread.id ? updatedThread : thread
-      )
-    );
-
-    setSelectedThread(updatedThread);
+    setThreads(updated);
     setReplyText("");
-    setMessage(
-      `${selectedThread.customerName} müşterisine demo cevap gönderildi. Gerçek sistemde cevap HBS mesajlaşma, WhatsApp veya e-posta kanalına bağlanacak.`
-    );
+    setMessage("Yapay zeka çevirisiyle mesajınız alıcının diline dönüştürülerek gönderildi!");
   }
 
-  function markAsOpen(thread: MessageThread) {
-    updateThreadStatus(thread.id, "open");
-  }
-
-  function closeThread(thread: MessageThread) {
-    updateThreadStatus(thread.id, "closed");
+  function handleCloseThread() {
+    if (!activeThread) return;
+    const updated = [...threads];
+    updated[selectedIdx] = { ...activeThread, status: "closed" };
+    setThreads(updated);
+    setMessage("Konuşma başarıyla kapatıldı.");
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-8 text-white">
+    <main className="min-h-screen bg-[#f5f7fb] text-slate-950 px-3 py-3 sm:px-6 sm:py-6">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-8 flex items-center justify-between">
-          <Link href="/dashboard" className="text-2xl font-black tracking-wide">
-            HBS
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/dashboard/customer-requests"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
-            >
-              Müşteri Talepleri
-            </Link>
-
-            <Link
-              href="/dashboard/orders"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
-            >
-              Siparişler
-            </Link>
-
-            <Link
-              href="/dashboard"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
-            >
-              Panel
-            </Link>
+        <header className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+          <Link href="/dashboard" className="text-base font-black sm:text-xl text-blue-600">HBS İletişim Merkezî</Link>
+          <div className="flex items-center gap-2">
+            <CompactLanguageSwitcher />
+            <Link href="/dashboard" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black shadow-sm">Paneli Aç</Link>
           </div>
         </header>
 
-        <section className="mb-6 rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-200/80">
-                MÜŞTERİ MESAJLARI
-              </p>
-
-              <h1 className="mt-4 text-4xl font-black sm:text-5xl">
-                Mağaza Yazışmaları
-              </h1>
-
-              <p className="mt-5 max-w-3xl leading-7 text-slate-300">
-                Ürün soruları, teklif görüşmeleri, sipariş mesajları ve müşteri
-                iletişimlerini tek ekrandan takip edin. HBS mesajlaşma,
-                WhatsApp ve e-posta kanalları bu yapı altında birleşir.
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-blue-400/20 bg-blue-400/10 p-5">
-              <h2 className="text-lg font-black text-blue-100">
-                Kanal bağımsız takip
-              </h2>
-
-              <p className="mt-3 text-sm leading-6 text-blue-100/90">
-                Gerçek sistemde müşteri mesajları HBS içi mesajlaşma, WhatsApp
-                Business API veya e-posta üzerinden gelebilir. Bu ekran tüm
-                yazışmaları tek mağaza hafızasında toplamak için tasarlanır.
-              </p>
-            </div>
-          </div>
+        {/* AI translation alert info */}
+        <section className="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="inline-flex rounded-full bg-blue-100 border border-blue-500/20 px-3 py-1 text-xs text-blue-800 font-extrabold mb-2">🤖 YAPAY ZEKA ÇEVİRİ KÖPRÜSÜ (TRANSLATION HUB)</div>
+          <h1 className="mt-1 text-xl font-black sm:text-3xl">Çok Dilli Akıllı Mesajlaşma Paneli</h1>
+          <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-600">
+            Dil engeli olmadan küresel ticaret yapın! Müşteriler kendi dillerinde yazar (Gürcüce, Rusça, Almanca) ➔ Mağaza sahiplerine otomatik olarak Türkçe çevrilir. Mağazanın Türkçe yazdığı cevaplar ise alıcının tarayıcı diline otomatik yerelleştirilerek ulaştırılır.
+          </p>
         </section>
 
         {message && (
-          <div className="mb-6 rounded-3xl border border-blue-400/20 bg-blue-400/10 p-5 text-sm leading-6 text-blue-100">
-            {message}
+          <div className="mb-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-black text-emerald-950">
+            ✓ {message}
           </div>
         )}
 
-        <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <aside className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
-            <div className="mb-5">
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-300">
-                Gelen Mesajlar
-              </p>
-
-              <h2 className="mt-2 text-2xl font-black">
-                {filteredThreads.length} konuşma
-              </h2>
-            </div>
-
-            <div className="mb-5 grid gap-4">
-              <label className="grid gap-2">
-                <span className="text-sm text-slate-300">Arama</span>
+        <section className="grid gap-3 lg:grid-cols-[0.9fr_1.1fr]">
+          
+          {/* Thread List */}
+          <aside className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4">
+            <div>
+              <h2 className="text-sm font-black uppercase text-slate-500 tracking-wider">Konuşmalar</h2>
+              <div className="mt-2 grid grid-cols-2 gap-2">
                 <input
                   value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                  placeholder="Müşteri, telefon, ürün, kod veya mesaj ara"
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="İsim, ürün veya kelime ara..."
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-blue-500 focus:bg-white"
                 />
-              </label>
-
-              <label className="grid gap-2">
-                <span className="text-sm text-slate-300">Durum</span>
                 <select
                   value={statusFilter}
-                  onChange={(event) =>
-                    setStatusFilter(event.target.value as MessageStatus | "all")
-                  }
-                  className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none focus:border-white"
+                  onChange={(e) => setStatusFilter(e.target.value as MessageStatus | "all")}
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-blue-500 bg-white"
                 >
-                  <option value="all">Tüm Mesajlar</option>
+                  <option value="all">Tüm Durumlar</option>
                   <option value="unread">Okunmadı</option>
                   <option value="open">Açık</option>
                   <option value="answered">Cevaplandı</option>
                   <option value="closed">Kapandı</option>
                 </select>
-              </label>
+              </div>
             </div>
 
-            <div className="grid gap-3">
-              {filteredThreads.map((thread) => (
-                <button
-                  key={thread.id}
-                  type="button"
-                  onClick={() => setSelectedThread(thread)}
-                  className={`rounded-3xl border p-5 text-left transition hover:bg-slate-900 ${
-                    selectedThread?.id === thread.id
-                      ? "border-blue-500 bg-blue-950/30"
-                      : "border-white/10 bg-slate-950/70"
-                  }`}
-                >
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${statusClass(
-                        thread.status
-                      )}`}
-                    >
-                      {statusText(thread.status)}
-                    </span>
-
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${channelClass(
-                        thread.channel
-                      )}`}
-                    >
-                      {thread.channel}
-                    </span>
-                  </div>
-
-                  <h3 className="font-black">{thread.subject}</h3>
-
-                  <p className="mt-1 text-sm text-slate-400">
-                    {thread.customerName} · {thread.city}
-                  </p>
-
-                  <p className="mt-1 text-xs text-slate-500">
-                    Son mesaj: {thread.lastMessageAt}
-                  </p>
-                </button>
-              ))}
-
-              {filteredThreads.length === 0 && (
-                <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-400">
-                  Bu filtreye uygun mesaj bulunamadı.
-                </div>
-              )}
+            <div className="space-y-2">
+              {filteredThreads.map((t, idx) => {
+                const isSelected = selectedIdx === idx;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      setSelectedIdx(idx);
+                      setMessage("");
+                    }}
+                    className={`w-full text-left rounded-xl p-3 border transition ${isSelected ? "bg-blue-50 border-blue-300 shadow-sm" : "bg-slate-50/50 hover:bg-slate-50 border-slate-100"}`}
+                  >
+                    <div className="flex justify-between items-start gap-1">
+                      <h3 className="font-black text-xs text-slate-800">{t.customerName}</h3>
+                      <span className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${t.status === "unread" ? "bg-red-100 text-red-800" : "bg-slate-100 text-slate-600"}`}>
+                        {t.status === "unread" ? "Yeni" : t.status === "open" ? "Açık" : t.status === "answered" ? "Cevaplandı" : "Kapandı"}
+                      </span>
+                    </div>
+                    <p className="text-[11px] font-bold text-slate-600 truncate mt-1">📬 {t.subject}</p>
+                    <div className="flex justify-between items-center text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-wider">
+                      <span>{t.channel}</span>
+                      <span>🌍 DİL: {t.customerLang.toUpperCase()}</span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </aside>
 
-          <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
-            {!selectedThread ? (
-              <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-6 text-sm text-slate-400">
-                Detay görmek için soldan bir konuşma seçin.
+          {/* Chat Window with translation bubbles */}
+          {activeThread ? (
+            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4 flex flex-col justify-between min-h-[550px]">
+              
+              {/* Header details */}
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-start gap-2">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Yazışılan Müşteri</span>
+                  <h3 className="font-black text-slate-800">{activeThread.customerName}</h3>
+                  <p className="text-xs text-slate-500 font-bold">📧 {activeThread.customerEmail} · 📞 {activeThread.customerPhone}</p>
+                  {activeThread.productName && (
+                    <span className="inline-block rounded bg-blue-50 border border-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-700 mt-2">
+                      📦 İlgilenilen Ürün: {activeThread.productName} ({activeThread.productCode})
+                    </span>
+                  )}
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={handleCloseThread}
+                  className="rounded-xl border border-slate-200 hover:bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700"
+                >
+                  Konuşmayı Kapat
+                </button>
               </div>
-            ) : (
-              <>
-                <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-300">
-                      Konuşma Detayı
-                    </p>
 
-                    <h2 className="mt-2 text-2xl font-black">
-                      {selectedThread.subject}
-                    </h2>
+              {/* Chat bubbles container */}
+              <div className="flex-1 overflow-y-auto p-2 space-y-3 bg-slate-50/50 rounded-2xl border border-slate-100 max-h-[300px] min-h-[250px]">
+                {activeThread.messages.map((m) => {
+                  const isStore = m.sender === "store";
+                  return (
+                    <div
+                      key={m.id}
+                      className={`max-w-[85%] rounded-2xl p-3 text-xs space-y-1.5 shadow-sm border ${isStore ? "ml-auto bg-blue-600 text-white border-blue-600" : "bg-white text-slate-900 border-slate-100"}`}
+                    >
+                      <div className="flex justify-between items-center gap-4 text-[9px] font-black uppercase opacity-75">
+                        <span>{isStore ? "Siz (Mağaza)" : activeThread.customerName}</span>
+                        <span>{m.time}</span>
+                      </div>
 
-                    <p className="mt-2 text-sm text-slate-400">
-                      {selectedThread.customerName} · {selectedThread.channel} ·{" "}
-                      {selectedThread.lastMessageAt}
-                    </p>
-                  </div>
-
-                  <span
-                    className={`w-fit rounded-full px-3 py-1 text-xs font-bold ${statusClass(
-                      selectedThread.status
-                    )}`}
-                  >
-                    {statusText(selectedThread.status)}
-                  </span>
-                </div>
-
-                <div className="grid gap-4">
-                  <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-                    <h3 className="mb-3 font-black">Müşteri Bilgileri</h3>
-
-                    <div className="grid gap-2 text-sm text-slate-300 md:grid-cols-2">
-                      <p>
-                        <span className="font-bold text-white">Ad/Firma:</span>{" "}
-                        {selectedThread.customerName}
+                      {/* Original customer language */}
+                      <p className="leading-relaxed font-semibold">
+                        {m.originalText}
                       </p>
 
-                      <p>
-                        <span className="font-bold text-white">Telefon:</span>{" "}
-                        {selectedThread.customerPhone}
-                      </p>
-
-                      <p>
-                        <span className="font-bold text-white">E-posta:</span>{" "}
-                        {selectedThread.customerEmail}
-                      </p>
-
-                      <p>
-                        <span className="font-bold text-white">Şehir:</span>{" "}
-                        {selectedThread.city}
-                      </p>
-
-                      {selectedThread.productName && (
-                        <p>
-                          <span className="font-bold text-white">Ürün:</span>{" "}
-                          {selectedThread.productName}
+                      {/* Translated subtext bridge */}
+                      <div className={`border-t pt-1.5 mt-1.5 flex flex-col gap-1 ${isStore ? "border-blue-500 text-blue-100" : "border-slate-100 text-blue-700 font-medium"}`}>
+                        <span className="text-[9px] font-black uppercase tracking-wider flex items-center gap-1">
+                          🤖 YAPAY ZEKA OTOMATİK ÇEVİRİ ({m.originalLanguage.toUpperCase()} ➔ {m.targetLanguage.toUpperCase()})
+                        </span>
+                        <p className="italic leading-relaxed">
+                          {m.translatedText}
                         </p>
-                      )}
-
-                      {selectedThread.productCode && (
-                        <p>
-                          <span className="font-bold text-white">Kod:</span>{" "}
-                          {selectedThread.productCode}
-                        </p>
-                      )}
+                      </div>
                     </div>
-                  </div>
+                  );
+                })}
+              </div>
 
-                  <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-                    <h3 className="mb-4 font-black">Yazışma</h3>
-
-                    <div className="grid gap-3">
-                      {selectedThread.messages.map((item) => (
-                        <div
-                          key={item.id}
-                          className={`rounded-3xl border p-4 ${
-                            item.sender === "store"
-                              ? "border-emerald-400/20 bg-emerald-400/10"
-                              : "border-white/10 bg-slate-950"
-                          }`}
-                        >
-                          <div className="mb-2 flex items-center justify-between gap-3">
-                            <span className="text-sm font-black">
-                              {item.sender === "store" ? "Mağaza" : "Müşteri"}
-                            </span>
-
-                            <span className="text-xs text-slate-500">
-                              {item.time}
-                            </span>
-                          </div>
-
-                          <p className="text-sm leading-6 text-slate-300">
-                            {item.text}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-                    <h3 className="mb-3 font-black">Müşteriye Cevap Yaz</h3>
-
-                    <textarea
-                      value={replyText}
-                      onChange={(event) => setReplyText(event.target.value)}
-                      rows={5}
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                      placeholder="Ürün uyumluluğu, fiyat, teslimat, stok veya sipariş bilgisi yazın"
+              {/* Reply box and translate preview */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between gap-2 text-xs">
+                  <label className="flex items-center gap-1.5 font-bold text-slate-600 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={autoTranslate}
+                      onChange={(e) => setAutoTranslate(e.target.checked)}
+                      className="rounded accent-blue-600"
                     />
+                    Yapay Zeka Çeviriyi Aktif Tut ({activeThread.customerLang.toUpperCase()} Diline)
+                  </label>
 
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                      <button
-                        type="button"
-                        onClick={sendReply}
-                        className="rounded-2xl bg-white px-5 py-3 font-black text-slate-950 hover:bg-slate-200"
-                      >
-                        Cevap Gönder
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => markAsOpen(selectedThread)}
-                        className="rounded-2xl border border-white/10 px-5 py-3 font-black hover:bg-white/10"
-                      >
-                        Açık Olarak İşaretle
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => closeThread(selectedThread)}
-                        className="rounded-2xl border border-white/10 px-5 py-3 font-black hover:bg-white/10"
-                      >
-                        Konuşmayı Kapat
-                      </button>
-
-                      <Link
-                        href="/dashboard/orders"
-                        className="rounded-2xl border border-white/10 px-5 py-3 text-center font-black hover:bg-white/10"
-                      >
-                        Siparişe Dönüştür
-                      </Link>
-                    </div>
-                  </div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase">Hedef Ülke Dili: {activeThread.customerLang.toUpperCase()}</span>
                 </div>
-              </>
-            )}
-          </section>
+
+                {autoTranslate && replyText.trim() && (
+                  <div className="rounded-xl border border-blue-100 bg-blue-50 p-2.5 text-xs text-blue-900 leading-relaxed font-medium animate-fadeIn">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-blue-600 block mb-1">🤖 ÇEVİRİ ÖNİZLEME (ALICININ EKRANINDA GÖRÜNECEK HİZMET)</span>
+                    {simulatedTranslationPreview}
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <textarea
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder="Türkçe cevap yazın, Yapay Zeka otomatik çevirip iletecektir..."
+                    rows={2}
+                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-blue-500 focus:bg-white resize-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={sendReply}
+                    className="rounded-xl bg-slate-900 px-5 text-xs font-black text-white hover:bg-slate-800 transition shadow-sm active:scale-95 shrink-0 flex items-center justify-center"
+                  >
+                    Gönder
+                  </button>
+                </div>
+              </div>
+
+            </section>
+          ) : (
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center italic text-slate-400">
+              Yazışma detaylarını açmak için soldan bir konuşma seçin.
+            </div>
+          )}
+
         </section>
       </div>
     </main>
