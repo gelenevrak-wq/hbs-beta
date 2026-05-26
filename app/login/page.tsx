@@ -78,7 +78,6 @@ export default function LoginPage() {
         const displayName = profile?.full_name ?? data.user.email?.split("@")[0] ?? "Kullanıcı";
         
         // Şirket kodu / store slug mapping
-        // @ts-expect-error profiles table joined schema typing
         const companyCode = profile?.companies?.code;
         const storeSlugs = companyCode ? [companyCode] : [];
         
