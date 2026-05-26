@@ -13,9 +13,9 @@ type Language = {
 const languages: Language[] = [
   { code: "tr", title: "Türkçe", short: "TR" },
   { code: "en", title: "English", short: "EN" },
+  { code: "de", title: "Deutsch", short: "DE" },
   { code: "ru", title: "Русский", short: "RU" },
   { code: "ka", title: "ქართული", short: "KA" },
-  { code: "de", title: "Deutsch", short: "DE" },
 ];
 
 export function isLanguageCode(value: string | null): value is LanguageCode {
@@ -43,7 +43,7 @@ export default function CompactLanguageSwitcher() {
     document.documentElement.dir = "ltr";
   }, []);
 
-  if (!language) return <div className="h-8 w-[74px] shrink-0" />;
+  if (!language) return <div className="h-8 w-40 shrink-0" />;
 
   const changeLanguage = (languageCode: LanguageCode) => {
     setLanguage(languageCode);
@@ -54,19 +54,31 @@ export default function CompactLanguageSwitcher() {
   };
 
   return (
-    <label className="relative shrink-0">
-      <span className="sr-only">Language</span>
-      <select
-        value={language}
-        onChange={(event) => changeLanguage(event.target.value as LanguageCode)}
-        className="h-8 max-w-[82px] rounded-full border border-slate-200 bg-white px-2 pr-6 text-[11px] font-black text-slate-900 shadow-sm outline-none transition hover:border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 sm:h-9 sm:max-w-[126px] sm:px-3 sm:text-xs"
-      >
-        {languages.map((item) => (
-          <option key={item.code} value={item.code}>
-            {item.short} {item.title}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div className="flex items-center gap-1 sm:gap-1.5 shrink-0" aria-label="Language Selector">
+      {languages.map((item) => {
+        const isSelected = item.code === language;
+        const flagCode = item.code === "en" ? "gb" : item.code === "ka" ? "ge" : item.code;
+        
+        return (
+          <button
+            key={item.code}
+            type="button"
+            onClick={() => changeLanguage(item.code)}
+            title={item.title}
+            className={`flex items-center justify-center p-0.5 rounded-lg border transition duration-200 hover:scale-110 active:scale-95 ${
+              isSelected
+                ? "border-blue-600 bg-blue-50 shadow-sm"
+                : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+            }`}
+          >
+            <img
+              src={`https://flagcdn.com/w40/${flagCode}.png`}
+              alt={item.title}
+              className="h-4 w-6 rounded-sm object-cover sm:h-5 sm:w-8"
+            />
+          </button>
+        );
+      })}
+    </div>
   );
 }

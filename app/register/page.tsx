@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
+import { supabase } from "@/lib/supabaseClient";
 
 type RegisterMode = "select" | "customer" | "store" | "done";
 type DoneKind = "customer" | "store";
@@ -173,6 +174,7 @@ export default function RegisterPage() {
   const [language, setLanguage] = useState<LanguageCode>("tr");
   const [mode, setMode] = useState<RegisterMode>("select");
   const [doneKind, setDoneKind] = useState<DoneKind>("customer");
+  const [error, setError] = useState("");
   const t = texts[language];
 
   useEffect(() => {
@@ -180,15 +182,185 @@ export default function RegisterPage() {
     setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : "tr");
   }, []);
 
-  function submitCustomer(event: FormEvent<HTMLFormElement>) {
+  async function submitCustomer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError("");
+
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const fullName = formData.get("fullName") as string;
+    const phone = formData.get("phone") as string;
+    const country = formData.get("country") as string;
+    const city = formData.get("city") as string;
+
+    if (isSupabaseConfigured) {
+      const { data, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            phone,
+            country,
+            city,
+            role: "customer",
+          }
+        }
+      });
+
+      if (authError) {
+        setError(authError.message);
+        return;
+      }
+
+      if (data.user) {
+        // public.customers tablosuna da kaydet
+        await supabase.from("customers").insert({
+          id: data.user.id,
+          full_name: fullName,
+          phone,
+          email,
+          city,
+          trust_score: 100,
+        });
+
+        // Local storage'a kaydet (uyumluluk için)
+        window.localStorage.setItem(
+          "hbs-current-user",
+          JSON.stringify({
+            username: email,
+            displayName: fullName,
+            role: "customer",
+            storeSlugs: [],
+            signedInAt: new Date().toISOString(),
+          })
+        );
+      }
+    } else {
+      // Offline fallback için local storage'a kaydet
+      window.localStorage.setItem(
+        "hbs-current-user",
+        JSON.stringify({
+          username: email,
+          displayName: fullName,
+          role: "customer",
+          storeSlugs: [],
+          signedInAt: new Date().toISOString(),
+        })
+      );
+    }
+
     setDoneKind("customer");
     setMode("done");
     window.localStorage.removeItem("hbs-register-draft");
   }
 
-  function submitStore(event: FormEvent<HTMLFormElement>) {
+  async function submitStore(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setError("");
+
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    const formData = new FormData(event.currentTarget);
+    const company = formData.get("company") as string;
+    const representative = formData.get("representative") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+    const password = formData.get("password") as string;
+    const country = formData.get("country") as string;
+    const city = formData.get("city") as string;
+    const address = formData.get("address") as string;
+    const whatsapp = formData.get("whatsapp") as string;
+    const maps = formData.get("maps") as string;
+
+    if (isSupabaseConfigured) {
+      // 1. Supabase Auth signup
+      const { data, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: representative,
+            phone,
+            country,
+            city,
+            role: "owner",
+          }
+        }
+      });
+
+      if (authError) {
+        setError(authError.message);
+        return;
+      }
+
+      if (data.user) {
+        // 2. Şirketi (Company) oluştur
+        const companyCode = company.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+        const { data: companyData, error: compError } = await supabase
+          .from("companies")
+          .insert({
+            name: company,
+            code: companyCode,
+            default_language: language,
+            main_currency: "GEL",
+            phone,
+            whatsapp,
+            address,
+          })
+          .select("id")
+          .single();
+
+        if (compError) {
+          setError("Mağaza kaydı sırasında hata oluştu: " + compError.message);
+          return;
+        }
+
+        // 3. Profili güncelle (company_id ve role set et)
+        if (companyData) {
+          await supabase
+            .from("profiles")
+            .update({
+              company_id: companyData.id,
+              role: "owner",
+            })
+            .eq("id", data.user.id);
+        }
+
+        // Local storage'a kaydet (uyumluluk için)
+        window.localStorage.setItem(
+          "hbs-current-user",
+          JSON.stringify({
+            username: email,
+            displayName: representative,
+            role: "owner",
+            storeSlugs: [companyCode],
+            signedInAt: new Date().toISOString(),
+          })
+        );
+      }
+    } else {
+      // Offline fallback
+      const companyCode = company.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      window.localStorage.setItem(
+        "hbs-current-user",
+        JSON.stringify({
+          username: email,
+          displayName: representative,
+          role: "owner",
+          storeSlugs: [companyCode],
+          signedInAt: new Date().toISOString(),
+        })
+      );
+    }
+
     setDoneKind("store");
     setMode("done");
     window.localStorage.removeItem("hbs-register-draft");
@@ -231,17 +403,18 @@ export default function RegisterPage() {
                 <button type="button" onClick={() => setMode("select")} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black">{t.back}</button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.fullName} autoComplete="off" />
-                <input required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
-                <input required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
-                <input className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.cityOptional} autoComplete="off" />
+                <input name="fullName" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.fullName} autoComplete="off" />
+                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
+                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
+                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
+                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
+                <input name="city" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.cityOptional} autoComplete="off" />
               </div>
               <label className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold leading-5 text-slate-700">
                 <input type="checkbox" className="mt-1" />
                 <span>{t.customerCampaign}</span>
               </label>
+              {error && <div className="rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700">{error}</div>}
               <button className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-black text-white hover:bg-slate-800">{t.customerSubmit}</button>
             </form>
           )}
@@ -254,21 +427,22 @@ export default function RegisterPage() {
               </div>
               <p className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs font-bold leading-5 text-blue-900">{t.storeNote}</p>
               <div className="grid gap-3 sm:grid-cols-2">
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.company} autoComplete="off" />
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.representative} autoComplete="off" />
-                <input required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
-                <input required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.cityOptional.replace("(zorunlu değil)", "").replace("(optional)", "").replace("(необязательно)", "").replace("(არასავალდებულო)", "")} autoComplete="off" />
-                <input required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.address} autoComplete="off" />
-                <input className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.whatsapp} autoComplete="off" />
-                <input className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.maps} autoComplete="off" />
+                <input name="company" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.company} autoComplete="off" />
+                <input name="representative" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.representative} autoComplete="off" />
+                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
+                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
+                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
+                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
+                <input name="city" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.cityOptional.replace("(zorunlu değil)", "").replace("(optional)", "").replace("(необязательно)", "").replace("(არასავალდებულო)", "")} autoComplete="off" />
+                <input name="address" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.address} autoComplete="off" />
+                <input name="whatsapp" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.whatsapp} autoComplete="off" />
+                <input name="maps" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.maps} autoComplete="off" />
               </div>
               <label className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-black leading-5 text-amber-950">
                 <input required type="checkbox" className="mt-1" />
                 <span>{t.ownerDeclaration}</span>
               </label>
+              {error && <div className="rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700">{error}</div>}
               <button className="rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-black text-white hover:bg-slate-800">{t.storeSubmit}</button>
             </form>
           )}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
+import { supabase } from "@/lib/supabaseClient";
 
 type DemoUser = {
   username: string;
@@ -20,11 +21,11 @@ const demoUsers: DemoUser[] = [
 ];
 
 const texts = {
-  tr: { home: "Ana sayfa", title: "HBS hesabına giriş yap", description: "Alışveriş, rezervasyon ve hesabına ait işlemler için giriş yap.", username: "Kullanıcı adı", password: "Şifre", login: "Giriş yap", forgot: "Şifremi unuttum", register: "Kayıt ol", error: "Kullanıcı adı veya şifre hatalı." },
-  en: { home: "Home", title: "Sign in to HBS", description: "Sign in for shopping, bookings and account actions.", username: "Username", password: "Password", login: "Sign in", forgot: "Forgot password", register: "Register", error: "Invalid username or password." },
-  de: { home: "Startseite", title: "Bei HBS anmelden", description: "Für Einkauf, Reservierung und Kontoaktionen anmelden.", username: "Benutzername", password: "Passwort", login: "Anmelden", forgot: "Passwort vergessen", register: "Registrieren", error: "Benutzername oder Passwort falsch." },
-  ru: { home: "Главная", title: "Войти в HBS", description: "Войдите для покупок, бронирований и действий в аккаунте.", username: "Пользователь", password: "Пароль", login: "Войти", forgot: "Забыли пароль", register: "Регистрация", error: "Неверный логин или пароль." },
-  ka: { home: "მთავარი", title: "HBS-ში შესვლა", description: "შედით შესყიდვების, ჯავშნების და ანგარიშის მოქმედებებისთვის.", username: "მომხმარებელი", password: "პაროლი", login: "შესვლა", forgot: "პაროლი დამავიწყდა", register: "რეგისტრაცია", error: "მომხმარებელი ან პაროლი არასწორია." },
+  tr: { home: "Ana sayfa", title: "HBS hesabına giriş yap", description: "Alışveriş, rezervasyon ve hesabına ait işlemler için giriş yap.", username: "Kullanıcı adı veya E-posta", password: "Şifre", login: "Giriş yap", forgot: "Şifremi unuttum", register: "Kayıt ol", error: "Giriş bilgileri hatalı veya kullanıcı bulunamadı." },
+  en: { home: "Home", title: "Sign in to HBS", description: "Sign in for shopping, bookings and account actions.", username: "Username or Email", password: "Password", login: "Sign in", forgot: "Forgot password", register: "Register", error: "Invalid credentials or user not found." },
+  de: { home: "Startseite", title: "Bei HBS anmelden", description: "Für Einkauf, Reservierung und Kontoaktionen anmelden.", username: "Benutzername oder E-Mail", password: "Passwort", login: "Anmelden", forgot: "Passwort vergessen", register: "Registrieren", error: "Ungültige Anmeldedaten." },
+  ru: { home: "Главная", title: "Войти в HBS", description: "Войдите для покупок, бронирований и действий в аккаунте.", username: "Пользователь или Email", password: "Пароль", login: "Войти", forgot: "Забыли пароль", register: "Регистрация", error: "Неверный логин, email или пароль." },
+  ka: { home: "მთავარი", title: "HBS-ში შესვლა", description: "შედით შესყიდვების, ჯავშნების და ანგარიშის მოქმედებებისთვის.", username: "მომხმარებელი ან ელფოსტა", password: "პაროლი", login: "შესვლა", forgot: "პაროლი დამავიწყდა", register: "რეგისტრაცია", error: "მომხმარებელი, ელფოსტა ან პაროლი არასწორია." },
 };
 
 function isLanguageCode(value: string | null): value is LanguageCode {
@@ -41,14 +42,103 @@ export default function LoginPage() {
     setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : "tr");
   }, []);
   const currentText = texts[language];
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const normalizedUsername = username.trim().toUpperCase();
-    const user = demoUsers.find((item) => item.username === normalizedUsername && item.password === password.trim());
-    if (!user) { setError(currentText.error); return; }
-    window.localStorage.setItem("hbs-current-user", JSON.stringify({ username: user.username, displayName: user.displayName, role: user.role, storeSlugs: user.storeSlugs, signedInAt: new Date().toISOString() }));
-    window.localStorage.setItem("hbs-demo-user", JSON.stringify({ username: user.username, role: user.role, store: user.storeSlugs[0] ?? "ALL", note: user.displayName }));
-    window.location.href = user.redirectTo;
+    setError("");
+
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    const inputVal = username.trim();
+    const isEmail = inputVal.includes("@");
+
+    if (isSupabaseConfigured && isEmail) {
+      // Supabase ile gerçek giriş yap
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email: inputVal,
+        password: password.trim(),
+      });
+
+      if (authError) {
+        setError(authError.message || currentText.error);
+        return;
+      }
+
+      if (data.user) {
+        // Kullanıcı profilini çek
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*, companies(*)")
+          .eq("id", data.user.id)
+          .single();
+
+        const role = profile?.role ?? "viewer";
+        const displayName = profile?.full_name ?? data.user.email?.split("@")[0] ?? "Kullanıcı";
+        
+        // Şirket kodu / store slug mapping
+        // @ts-expect-error profiles table joined schema typing
+        const companyCode = profile?.companies?.code;
+        const storeSlugs = companyCode ? [companyCode] : [];
+        
+        let redirectTo = "/customer";
+        if (role === "owner" || role === "top_manager" || role === "store_manager" || role === "superadmin") {
+          redirectTo = "/dashboard";
+        }
+
+        window.localStorage.setItem(
+          "hbs-current-user",
+          JSON.stringify({
+            username: data.user.email,
+            displayName,
+            role,
+            storeSlugs,
+            signedInAt: new Date().toISOString(),
+          })
+        );
+        window.localStorage.setItem(
+          "hbs-demo-user",
+          JSON.stringify({
+            username: data.user.email,
+            role,
+            store: storeSlugs[0] ?? "ALL",
+            note: displayName,
+          })
+        );
+        window.location.href = redirectTo;
+      }
+    } else {
+      // Demo kullanıcı fall-back
+      const normalizedUsername = inputVal.toUpperCase();
+      const user = demoUsers.find(
+        (item) => item.username === normalizedUsername && item.password === password.trim()
+      );
+      if (!user) {
+        setError(currentText.error);
+        return;
+      }
+      window.localStorage.setItem(
+        "hbs-current-user",
+        JSON.stringify({
+          username: user.username,
+          displayName: user.displayName,
+          role: user.role,
+          storeSlugs: user.storeSlugs,
+          signedInAt: new Date().toISOString(),
+        })
+      );
+      window.localStorage.setItem(
+        "hbs-demo-user",
+        JSON.stringify({
+          username: user.username,
+          role: user.role,
+          store: user.storeSlugs[0] ?? "ALL",
+          note: user.displayName,
+        })
+      );
+      window.location.href = user.redirectTo;
+    }
   }
   return (
     <main className="hbs-market-page min-h-screen px-3 py-3 text-slate-950 sm:px-6 sm:py-8">

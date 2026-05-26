@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
+import { supabase } from "@/lib/supabaseClient";
 
 type Localized = Partial<Record<LanguageCode, string>> & { tr: string };
 
@@ -167,21 +168,26 @@ const ui = {
   },
 };
 
-const searchCenters = [
-  { key: "batumi", label: "Batumi, Georgia", city: "Batumi", country: "Georgia", lat: 41.6168, lng: 41.6367 },
-  { key: "tbilisi", label: "Tbilisi, Georgia", city: "Tbilisi", country: "Georgia", lat: 41.7151, lng: 44.8271 },
-  { key: "istanbul", label: "İstanbul, Türkiye", city: "İstanbul", country: "Türkiye", lat: 41.0082, lng: 28.9784 },
-  { key: "izmir", label: "İzmir, Türkiye", city: "İzmir", country: "Türkiye", lat: 38.4237, lng: 27.1428 },
-  { key: "antalya", label: "Antalya, Türkiye", city: "Antalya", country: "Türkiye", lat: 36.8969, lng: 30.7133 },
-  { key: "stpetersburg", label: "St. Petersburg, Russia", city: "St. Petersburg", country: "Russia", lat: 59.9311, lng: 30.3609 },
-] as const;
+type LocationSuggestion = {
+  label: string;
+  city: string;
+  country: string;
+  lat: number;
+  lng: number;
+};
 
-type SearchCenterKey = (typeof searchCenters)[number]["key"];
+// Statik şehir listesi yerine dinamik OpenStreetMap coğrafi kodlama API'si kullanılmaktadır.
 
 const productCoordinates: Record<string, { lat: number; lng: number }> = {
   Batumi: { lat: 41.6168, lng: 41.6367 },
+  Batum: { lat: 41.6168, lng: 41.6367 },
   İstanbul: { lat: 41.0082, lng: 28.9784 },
+  Istanbul: { lat: 41.0082, lng: 28.9784 },
   Tbilisi: { lat: 41.7151, lng: 44.8271 },
+  Tiflis: { lat: 41.7151, lng: 44.8271 },
+  İzmir: { lat: 38.4237, lng: 27.1428 },
+  Izmir: { lat: 38.4237, lng: 27.1428 },
+  Antalya: { lat: 36.8969, lng: 30.7133 },
 };
 
 function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
@@ -231,47 +237,145 @@ export default function HomePage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
-  const [searchCenter, setSearchCenter] = useState<SearchCenterKey>("batumi");
+  const [locationInput, setLocationInput] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [customCoords, setCustomCoords] = useState<{ lat: number; lng: number }>({ lat: 38.4237, lng: 27.1428 }); // İzmir varsayılan
+  const [locationLabel, setLocationLabel] = useState("İzmir, Türkiye");
   const [radiusKm, setRadiusKm] = useState(50);
   const [uploadedProducts, setUploadedProducts] = useState<Product[]>([]);
 
+  const [filteredSuggestions, setFilteredSuggestions] = useState<LocationSuggestion[]>([]);
+
   useEffect(() => {
+    const input = locationInput.trim();
+    if (input.length < 3) {
+      setFilteredSuggestions([]);
+      return;
+    }
+
+    const delayDebounce = setTimeout(() => {
+      const activeLanguage = language || "tr";
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(input)}&limit=5&addressdetails=1`, {
+        headers: {
+          "Accept-Language": activeLanguage,
+          "User-Agent": "hbs-marketplace-app"
+        }
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            const mapped = data.map((item: any) => {
+              const addr = item.address || {};
+              const city = addr.city || addr.town || addr.village || addr.municipality || addr.county || addr.state || item.name || "Bilinmeyen Konum";
+              const country = addr.country || "";
+              const label = item.display_name;
+              return {
+                label: label,
+                city: city,
+                country: country,
+                lat: parseFloat(item.lat),
+                lng: parseFloat(item.lon)
+              };
+            });
+            setFilteredSuggestions(mapped);
+          }
+        })
+        .catch((err) => {
+          console.error("Nominatim API error:", err);
+        });
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [locationInput, language]);
+
+  const detectLocation = () => {
+    if (typeof window !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setCustomCoords({ lat: latitude, lng: longitude });
+          setLocationLabel(window.localStorage.getItem("hbs-language") === "tr" ? "📍 Mevcut Konumunuz" : "📍 Current Location");
+        },
+        (error) => {
+          console.log("GPS Location Access Denied or Failed", error);
+        }
+      );
+    }
+  };
+
+  useEffect(() => {
+    detectLocation();
     const saved = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(saved) ? saved : "tr");
 
-    const savedProducts = window.localStorage.getItem("hbs-store-products");
-    if (savedProducts) {
-      try {
-        const parsedProducts = JSON.parse(savedProducts) as Array<{
-          id: string;
-          name: string;
-          category: string;
-          salePrice: string;
-          currency: string;
-          sku: string;
-          imageUrl?: string;
-          visibility?: string;
-        }>;
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
-        const mappedProducts: Product[] = parsedProducts
-          .filter((item) => item.visibility !== "hidden")
-          .map((item) => ({
-            slug: item.id,
-            name: { tr: item.name },
-            category: { tr: item.category },
-            store: "OBDTR",
-            storeSlug: "obdtr",
-            city: "İstanbul",
-            country: "Türkiye",
-            image: item.imageUrl || "/product-images/diagnostic-scanner.svg",
-            price: { tr: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Teklif isteyin" },
-            tag: { tr: "Mağaza ürünü" },
-            sku: item.sku || item.id,
-          }));
+    if (isSupabaseConfigured) {
+      // Supabase'den gerçek verileri çek
+      supabase
+        .from("offerable_items")
+        .select("*, companies(*)")
+        .eq("is_visible_in_public_search", true)
+        .then(({ data: items, error }) => {
+          if (items && !error) {
+            const mappedProducts: Product[] = items.map((item) => ({
+              slug: item.id,
+              name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
+              category: { tr: item.category || "Genel", en: item.category || "General", de: item.category || "Allgemein", ru: item.category || "Общий", ka: item.category || "საერთო" },
+              // @ts-expect-error joined table typing
+              store: item.companies?.name || "HBS Mağaza",
+              // @ts-expect-error joined table typing
+              storeSlug: item.companies?.code || "unknown",
+              // @ts-expect-error joined table typing
+              city: item.companies?.city || "İstanbul",
+              // @ts-expect-error joined table typing
+              country: item.companies?.country || "Türkiye",
+              image: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+              price: { tr: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Bilgi / teklif alın" },
+              tag: { tr: item.type === "product" ? "Ürün" : item.type === "service" ? "Hizmet" : "Kiralık" },
+              sku: item.code || item.id,
+            }));
+            setUploadedProducts(mappedProducts);
+          }
+        });
+    } else {
+      // LocalStorage'dan mock ürünleri çek
+      const savedProducts = window.localStorage.getItem("hbs-store-products");
+      if (savedProducts) {
+        try {
+          const parsedProducts = JSON.parse(savedProducts) as Array<{
+            id: string;
+            name: string;
+            category: string;
+            salePrice: string;
+            currency: string;
+            sku: string;
+            imageUrl?: string;
+            visibility?: string;
+          }>;
 
-        setUploadedProducts(mappedProducts);
-      } catch {
-        setUploadedProducts([]);
+          const mappedProducts: Product[] = parsedProducts
+            .filter((item) => item.visibility !== "hidden")
+            .map((item) => ({
+              slug: item.id,
+              name: { tr: item.name },
+              category: { tr: item.category },
+              store: "OBDTR",
+              storeSlug: "obdtr",
+              city: "İstanbul",
+              country: "Türkiye",
+              image: item.imageUrl || "/product-images/diagnostic-scanner.svg",
+              price: { tr: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Teklif isteyin" },
+              tag: { tr: "Mağaza ürünü" },
+              sku: item.sku || item.id,
+            }));
+
+          setUploadedProducts(mappedProducts);
+        } catch {
+          setUploadedProducts([]);
+        }
       }
     }
   }, []);
@@ -280,7 +384,8 @@ export default function HomePage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const center = searchCenters.find((item) => item.key === searchCenter) ?? searchCenters[0];
+    const center = customCoords;
+
     return allProducts.filter((item) => {
       const categoryOk =
         category === "all" ||
@@ -291,17 +396,16 @@ export default function HomePage() {
       const haystack = [l(item.name, language ?? "tr"), l(item.category, language ?? "tr"), item.store, item.city, item.country, item.sku]
         .join(" ")
         .toLowerCase();
-      const coords = productCoordinates[item.city] ?? productCoordinates[center.city];
+      const coords = productCoordinates[item.city] ?? center;
       const distanceOk = radiusKm >= 10000 || distanceKm(center, coords) <= radiusKm;
       return categoryOk && distanceOk && (!q || haystack.includes(q));
     });
-  }, [query, category, language, allProducts, searchCenter, radiusKm]);
+  }, [query, category, language, allProducts, customCoords, radiusKm]);
 
   if (!language) return <main className="min-h-screen bg-white" />;
 
   const activeUiLanguage = (language in ui ? language : "en") as keyof typeof ui;
   const t = ui[activeUiLanguage];
-  const selectedCenter = searchCenters.find((item) => item.key === searchCenter) ?? searchCenters[0];
   const radiusLabel = radiusKm >= 10000 ? t.allWorld : `${radiusKm} km`;
   const searchHref = query.trim() ? `/customer?q=${encodeURIComponent(query.trim())}` : "/customer";
   const countLabel = language === "tr" ? "kayıt" : language === "de" ? "Eintrag" : language === "ru" ? "позиция" : language === "ka" ? "ჩანაწერი" : "items";
@@ -347,68 +451,69 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-2 pb-1.5 sm:px-4">
           <div className="rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
             <div className="mb-1 flex items-center justify-between gap-2 px-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
-              <span>📍 {t.region}</span>
-              <span className="text-blue-700">{selectedCenter.label} · {radiusLabel}</span>
+               <span>📍 {t.region}</span>
+               <span className="text-blue-700">{locationLabel} · {radiusLabel}</span>
             </div>
-            <div className="grid grid-cols-[1fr_auto] gap-1 sm:grid-cols-[1.3fr_1fr_auto]">
-              <select
-                value={searchCenter}
-                onChange={(event) => setSearchCenter(event.target.value as SearchCenterKey)}
-                className="h-8 min-w-0 rounded-full border border-slate-200 bg-slate-50 px-2 text-[11px] font-black text-slate-800 outline-none focus:border-blue-500"
-                aria-label={t.regionPlaceholder}
-              >
-                {searchCenters.map((item) => (
-                  <option key={item.key} value={item.key}>{item.label}</option>
-                ))}
-              </select>
-              <div className="hidden items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 sm:flex">
-                <span className="text-[10px] font-black text-slate-500">{t.radius}</span>
+            <div className="relative grid grid-cols-[1fr_auto] gap-1.5">
+              <div className="relative">
                 <input
-                  type="range"
-                  min="5"
-                  max="200"
-                  step="5"
-                  value={Math.min(radiusKm, 200)}
-                  onChange={(event) => setRadiusKm(Number(event.target.value))}
-                  className="w-24 accent-blue-600"
+                  type="text"
+                  value={locationInput}
+                  onChange={(e) => {
+                    setLocationInput(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  placeholder={language === "tr" ? "Şehir ara... (Örn: Antalya)" : "Search city... (e.g. Batumi)"}
+                  className="h-8 w-full rounded-full border border-slate-200 bg-slate-50 px-3 text-[11px] font-black text-slate-800 outline-none focus:border-blue-500 focus:bg-white placeholder:text-slate-400"
                 />
-                <button
-                  type="button"
-                  onClick={() => setRadiusKm(radiusKm >= 10000 ? 50 : 10000)}
-                  className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black text-blue-700"
-                >
-                  {radiusLabel}
-                </button>
+                {showSuggestions && filteredSuggestions.length > 0 && (
+                  <ul className="absolute left-0 right-0 top-9 z-50 max-h-48 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1 shadow-lg">
+                    {filteredSuggestions.map((item) => (
+                      <li key={item.label}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCustomCoords({ lat: item.lat, lng: item.lng });
+                            setLocationLabel(item.label);
+                            setLocationInput("");
+                            setShowSuggestions(false);
+                          }}
+                          className="w-full px-3 py-1.5 text-left text-[11px] font-bold text-slate-800 hover:bg-blue-50 transition"
+                        >
+                          📍 {item.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
               <button
                 type="button"
-                className="h-8 rounded-full border border-blue-100 bg-blue-50 px-2 text-[10px] font-black text-blue-700"
-                title={t.mapPick}
+                onClick={detectLocation}
+                className="h-8 rounded-full border border-blue-200 bg-blue-50 px-3 text-[10px] font-black text-blue-700 flex items-center gap-1 hover:bg-blue-100 transition active:scale-95 shrink-0"
+                title={language === "tr" ? "Konumumu Bul" : "Find My Location"}
               >
-                🗺️ {t.mapPick}
+                🎯 {language === "tr" ? "Konumu Bul" : "Locate Me"}
               </button>
             </div>
-            <div className="mt-1 flex items-center gap-1 sm:hidden">
-              {[10, 25, 50, 100].map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setRadiusKm(value)}
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-black ${radiusKm === value ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"}`}
-                >
-                  {value} km
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setRadiusKm(10000)}
-                className={`rounded-full px-2 py-0.5 text-[10px] font-black ${radiusKm >= 10000 ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"}`}
-              >
-                {t.allWorld}
-              </button>
+            </div>
+            <div className="mt-2.5 px-1 pb-1">
+              <div className="flex items-center justify-between text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
+                <span>📍 {language === "tr" ? "Arama Yarıçapı" : "Search Radius"}</span>
+                <span className="rounded-full bg-blue-100 px-2 py-0.5 text-blue-700 font-extrabold text-[10px] shadow-sm">{radiusKm} km</span>
+              </div>
+              <input
+                type="range"
+                min="25"
+                max="1000"
+                step="25"
+                value={radiusKm >= 10000 ? 50 : radiusKm}
+                onChange={(e) => setRadiusKm(Number(e.target.value))}
+                className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none"
+              />
             </div>
           </div>
-        </div>
 
         <div className="mx-auto grid max-w-7xl grid-cols-3 gap-1 px-2 pb-1.5 sm:hidden">
           <button className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black shadow-sm">📷 {t.photo}</button>
