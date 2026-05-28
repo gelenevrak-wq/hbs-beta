@@ -550,11 +550,11 @@ export default function HomePage() {
             <CompactLanguageSwitcher />
           </div>
           <div className="flex items-center gap-1 sm:gap-1.5">
-            <Link href="/promo" className="rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-blue-100 transition animate-pulse shrink-0">
+            <Link href="/promo" className="hidden sm:flex rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-blue-100 transition animate-pulse shrink-0">
               🎥 {language === "tr" ? "Tanıtım Videosu" : "Promo Video"}
             </Link>
             
-            <Link href="/requests" className="rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-indigo-100 transition shrink-0">
+            <Link href="/requests" className="hidden sm:flex rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-indigo-100 transition shrink-0">
               📢 {language === "tr" ? "İlan Panosu" : "Tenders Board"}
             </Link>
             
@@ -589,6 +589,17 @@ export default function HomePage() {
               </>
             )}
           </div>
+        </div>
+
+        {/* Mobile Quick Action Pill-Buttons */}
+        <div className="mx-auto flex sm:hidden max-w-[1800px] items-center gap-1.5 px-2 pb-2 overflow-x-auto hbs-scrollbar">
+          <Link href="/promo" className="rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-black px-2.5 py-1 text-[10px] flex items-center gap-1 hover:bg-blue-100 transition animate-pulse shrink-0">
+            🎥 {language === "tr" ? "Tanıtım Videosu" : "Promo Video"}
+          </Link>
+          
+          <Link href="/requests" className="rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2.5 py-1 text-[10px] flex items-center gap-1 hover:bg-indigo-100 transition shrink-0">
+            📢 {language === "tr" ? "İlan Panosu" : "Tenders Board"}
+          </Link>
         </div>
 
         <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
