@@ -339,6 +339,12 @@ export default function DashboardPage() {
   const [isProductsDone, setIsProductsDone] = useState(false);
   const [isCalendarDone, setIsCalendarDone] = useState(false);
 
+  // Dynamic statistics
+  const [todayRequests, setTodayRequests] = useState(0);
+  const [activeProducts, setActiveProducts] = useState(0);
+  const [waitingMessages, setWaitingMessages] = useState(0);
+  const [stockAlerts, setStockAlerts] = useState(0);
+
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : "tr");
@@ -366,12 +372,34 @@ export default function DashboardPage() {
 
       // 5: Check if products exist in database
       const productsStr = window.localStorage.getItem("hbs-store-products");
-      if (productsStr && JSON.parse(productsStr).length > 0) {
-        setIsProductsDone(true);
+      let customProductsCount = 0;
+      let lowStockCount = 0;
+      if (productsStr) {
+        const parsed = JSON.parse(productsStr);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setIsProductsDone(true);
+          customProductsCount = parsed.length;
+          // Count items under low stock limit (e.g. qty <= 2)
+          lowStockCount = parsed.filter((p: any) => p.stockTracking && Number(p.quantity) <= 2).length;
+        }
       }
+      setActiveProducts(customProductsCount);
+      setStockAlerts(lowStockCount);
 
       // 6: Check if calendar and capacity setup is completed
       setIsCalendarDone(window.localStorage.getItem("hbs-calendar-configured") === "true");
+
+      // Load dynamic offers count
+      const offersStr = window.localStorage.getItem("hbs-store-customer-offers");
+      if (offersStr) {
+        const offers = JSON.parse(offersStr);
+        setTodayRequests(offers.length);
+      } else {
+        setTodayRequests(0);
+      }
+
+      // Load dynamic messages count (set to 0 initially)
+      setWaitingMessages(0);
 
     } catch (e) {
       console.error("Dashboard states fetch error:", e);
@@ -426,19 +454,19 @@ export default function DashboardPage() {
   const stats = [
     {
       label: currentText.todayRequests,
-      value: "3",
+      value: String(todayRequests),
     },
     {
       label: currentText.activeProducts,
-      value: isProductsDone ? "4" : "3",
+      value: String(activeProducts),
     },
     {
       label: currentText.waitingMessages,
-      value: "2",
+      value: String(waitingMessages),
     },
     {
       label: currentText.stockAlerts,
-      value: "1",
+      value: String(stockAlerts),
     },
   ];
 
