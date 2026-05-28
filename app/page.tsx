@@ -575,7 +575,7 @@ export default function HomePage() {
                   }}
                   className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-black text-red-700 hover:bg-red-100 sm:px-3 sm:text-xs cursor-pointer active:scale-95 transition"
                 >
-                  Çıkış Yap
+                  Çıkış
                 </button>
               </div>
             ) : (
