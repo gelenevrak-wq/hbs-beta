@@ -64,6 +64,22 @@ export default function LicensePage() {
 
   const [hasLicenseLoaded, setHasLicenseLoaded] = useState(false);
 
+  // Dynamic SaaS Pricing Rates (Editable by superadmin)
+  const [pricingRates, setPricingRates] = useState({
+    baseRate: 10,
+    userRate: 2,
+    whRate: 5,
+    prodRate: 1.5,
+  });
+
+  const [ratesSuccessMsg, setRatesSuccessMsg] = useState("");
+
+  const handleSavePricingRates = () => {
+    window.localStorage.setItem("hbs-saas-pricing-rates", JSON.stringify(pricingRates));
+    setRatesSuccessMsg("✓ Fiyat tarifesi başarıyla güncellendi! Kaydırıcı hesaplayıcısı yeni fiyatlara göre anında güncellenmiştir.");
+    setTimeout(() => setRatesSuccessMsg(""), 5000);
+  };
+
   // Sync limits automatically when preset changes
   useEffect(() => {
     if (genPreset === "Bronze") {
@@ -86,6 +102,13 @@ export default function LicensePage() {
     try {
       const activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
       setCurrentUser(activeUser);
+
+      const savedRates = window.localStorage.getItem("hbs-saas-pricing-rates");
+      if (savedRates) {
+        try {
+          setPricingRates(JSON.parse(savedRates));
+        } catch {}
+      }
 
       const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
       const isSupabaseConfigured = 
@@ -173,12 +196,12 @@ export default function LicensePage() {
 
   // Calculate pricing based on users, warehouses, products, and months
   const calculatedPrice = useMemo(() => {
-    const baseRate = 10; // 10 GEL base monthly
-    const userRate = (users - 1) * 2; // 2 GEL per extra user
-    const whRate = (warehouses - 1) * 5; // 5 GEL per extra depot
-    const prodRate = Math.floor(products / 100) * 1.5; // 1.5 GEL per 100 products
+    const base = pricingRates.baseRate;
+    const userExtra = (users - 1) * pricingRates.userRate;
+    const whExtra = (warehouses - 1) * pricingRates.whRate;
+    const prodExtra = Math.floor(products / 100) * pricingRates.prodRate;
     
-    const monthlyTotal = baseRate + userRate + whRate + prodRate;
+    const monthlyTotal = base + userExtra + whExtra + prodExtra;
     let finalTotal = monthlyTotal * months;
 
     // Apply duration discounts
@@ -186,7 +209,7 @@ export default function LicensePage() {
     if (months === 12) finalTotal *= 0.8; // 20% discount
 
     return Math.round(finalTotal);
-  }, [users, warehouses, products, months]);
+  }, [users, warehouses, products, months, pricingRates]);
 
   // Activate license using key
   const handleActivateKey = async () => {
@@ -654,7 +677,83 @@ export default function LicensePage() {
             
             {/* Superadmin batch licensing control panel */}
             {currentUser?.role === "superadmin" && (
-              <section className="rounded-2xl border-2 border-amber-300 bg-white p-5 shadow-xl space-y-4 relative overflow-hidden">
+              <div className="space-y-4">
+                
+                {/* 1. SaaS Pricing Rates Editor */}
+                <section className="rounded-2xl border-2 border-amber-300 bg-white p-5 shadow-xl space-y-4 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 bg-blue-600 text-white px-4 py-1 text-[10px] font-black rounded-bl-xl uppercase tracking-widest shadow-xs">
+                    ★ Fiyat Düzenleyici ★
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">💵 SaaS Lisans Ücret Tarifesi Düzenleyici</h2>
+                    <p className="text-xs text-slate-600 mt-1 font-bold">Özgür Bey, tüm mağazaların panelinde gördüğü hesap makinesinin birim fiyatlarını buradan anlık olarak değiştirebilirsiniz.</p>
+                  </div>
+                  
+                  <div className="border-t border-slate-100 pt-4 grid gap-3 sm:grid-cols-2">
+                    <label className="grid gap-1">
+                      <span className="text-xs font-bold text-slate-700">Taban Aylık Ücret (GEL)</span>
+                      <input
+                        type="number"
+                        step="1"
+                        value={pricingRates.baseRate}
+                        onChange={(e) => setPricingRates({ ...pricingRates, baseRate: Number(e.target.value) })}
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition"
+                      />
+                    </label>
+
+                    <label className="grid gap-1">
+                      <span className="text-xs font-bold text-slate-700">Ekstra Kullanıcı Başına (GEL)</span>
+                      <input
+                        type="number"
+                        step="0.5"
+                        value={pricingRates.userRate}
+                        onChange={(e) => setPricingRates({ ...pricingRates, userRate: Number(e.target.value) })}
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition"
+                      />
+                    </label>
+
+                    <label className="grid gap-1">
+                      <span className="text-xs font-bold text-slate-700">Ekstra Depo Başına (GEL)</span>
+                      <input
+                        type="number"
+                        step="0.5"
+                        value={pricingRates.whRate}
+                        onChange={(e) => setPricingRates({ ...pricingRates, whRate: Number(e.target.value) })}
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition"
+                      />
+                    </label>
+
+                    <label className="grid gap-1">
+                      <span className="text-xs font-bold text-slate-700">Her 100 Ürün Limiti Başına (GEL)</span>
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={pricingRates.prodRate}
+                        onChange={(e) => setPricingRates({ ...pricingRates, prodRate: Number(e.target.value) })}
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition"
+                      />
+                    </label>
+                  </div>
+                  
+                  <div className="flex justify-end pt-2">
+                    <button
+                      type="button"
+                      onClick={handleSavePricingRates}
+                      className="rounded-xl bg-blue-600 text-white hover:bg-blue-500 font-black text-xs px-5 py-3 transition active:scale-95 shadow-md"
+                    >
+                      💾 Birim Fiyatları Kaydet & Güncelle
+                    </button>
+                  </div>
+
+                  {ratesSuccessMsg && (
+                    <div className="rounded-xl border border-emerald-250 bg-emerald-50 p-3.5 text-xs text-emerald-950 font-bold">
+                      {ratesSuccessMsg}
+                    </div>
+                  )}
+                </section>
+
+                {/* 2. Superadmin batch licensing control panel */}
+                <section className="rounded-2xl border-2 border-amber-300 bg-white p-5 shadow-xl space-y-4 relative overflow-hidden">
                 
                 {/* Visual indicator corner badge */}
                 <div className="absolute top-0 right-0 bg-amber-400 text-slate-950 px-4 py-1 text-[10px] font-black rounded-bl-xl uppercase tracking-widest shadow-xs">
@@ -838,6 +937,7 @@ export default function LicensePage() {
                   )}
                 </div>
               </section>
+              </div>
             )}
 
             {/* General policies info card */}
