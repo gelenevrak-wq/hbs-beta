@@ -178,9 +178,9 @@ export default function StoreRegisterPage() {
               trial_ends_at: trialEnds,
               license_ends_at: isPartner ? null : new Date(Date.now() + 17 * 24 * 60 * 60 * 1000).toISOString(), // trial + 3 days warning
               is_suspended: false,
-              max_users: 10,
-              max_warehouses: warehouses.length || 2,
-              max_products: 500,
+              max_users: isPartner ? 99999 : 3,
+              max_warehouses: isPartner ? 99999 : 1,
+              max_products: isPartner ? 99999 : 250,
             })
             .select("id")
             .single();
@@ -244,6 +244,9 @@ export default function StoreRegisterPage() {
         warningEndsAt: warningEnds,
         licenseType: isPartner ? "lifetime" : "trial",
         isSuspended: false,
+        maxUsers: isPartner ? 99999 : 3,
+        maxWarehouses: isPartner ? 99999 : 1,
+        maxProducts: isPartner ? 99999 : 250,
         warehouses: warehouses,
         createdAt: new Date().toISOString(),
         operatingModel: operatingModel,

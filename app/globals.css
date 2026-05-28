@@ -259,3 +259,23 @@ a.bg-slate-950 {
 .animate-hbs-marquee {
   animation: hbs-marquee 26s linear infinite;
 }
+
+/* Premium Transitions & Celebrations Animations */
+.animate-fadeIn {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.scale-up-center {
+  animation: scaleUpCenter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(4px); }
+}
+
+@keyframes scaleUpCenter {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
