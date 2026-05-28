@@ -333,10 +333,49 @@ export default function DashboardPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
+  // Stateful completions
+  const [isCompanyDone, setIsCompanyDone] = useState(false);
+  const [isWarehouseDone, setIsWarehouseDone] = useState(false);
+  const [isProductsDone, setIsProductsDone] = useState(false);
+  const [isCalendarDone, setIsCalendarDone] = useState(false);
+
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : "tr");
-    try { setCurrentUser(JSON.parse(window.localStorage.getItem("hbs-current-user") || "null")); } catch { setCurrentUser(null); }
+    
+    try {
+      const activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
+      setCurrentUser(activeUser);
+
+      // 1 & 2 & 7: Check if company settings saved
+      const savedSettings = window.localStorage.getItem("hbs-company-settings");
+      if (savedSettings) {
+        setIsCompanyDone(true);
+      }
+
+      // 3 & 4: Check if any custom warehouse is created for active store slug
+      const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+      const storesStr = window.localStorage.getItem("hbs-registered-stores");
+      if (storesStr) {
+        const stores = JSON.parse(storesStr);
+        const activeStore = stores.find((s: any) => s.code === storeSlug);
+        if (activeStore && activeStore.warehouses && activeStore.warehouses.length > 0) {
+          setIsWarehouseDone(true);
+        }
+      }
+
+      // 5: Check if products exist in database
+      const productsStr = window.localStorage.getItem("hbs-store-products");
+      if (productsStr && JSON.parse(productsStr).length > 0) {
+        setIsProductsDone(true);
+      }
+
+      // 6: Check if calendar and capacity setup is completed
+      setIsCalendarDone(window.localStorage.getItem("hbs-calendar-configured") === "true");
+
+    } catch (e) {
+      console.error("Dashboard states fetch error:", e);
+    }
   }, []);
 
   if (!language) {
@@ -345,14 +384,43 @@ export default function DashboardPage() {
 
   const currentText = texts[language];
 
-  const setupSteps = [
-    currentText.step1,
-    currentText.step2,
-    currentText.step3,
-    currentText.step4,
-    currentText.step5,
-    "Hizmet/kiralama/tur çalışıyorsanız takvim ve kapasiteyi ayarla",
-    currentText.step6,
+  // Map onboarding checklist to dynamic routes and states
+  const stepsConfig = [
+    {
+      label: currentText.step1,
+      completed: isCompanyDone,
+      href: "/dashboard/settings",
+    },
+    {
+      label: currentText.step2,
+      completed: isCompanyDone,
+      href: "/dashboard/settings",
+    },
+    {
+      label: currentText.step3,
+      completed: isWarehouseDone,
+      href: "/dashboard/warehouses",
+    },
+    {
+      label: currentText.step4,
+      completed: isWarehouseDone,
+      href: "/dashboard/warehouses",
+    },
+    {
+      label: currentText.step5,
+      completed: isProductsDone,
+      href: "/dashboard/products",
+    },
+    {
+      label: "Hizmet/kiralama/tur çalışıyorsanız takvim ve kapasiteyi ayarla",
+      completed: isCalendarDone,
+      href: "/dashboard/services",
+    },
+    {
+      label: currentText.step6,
+      completed: isCompanyDone,
+      href: "/dashboard/settings",
+    },
   ];
 
   const stats = [
@@ -362,7 +430,7 @@ export default function DashboardPage() {
     },
     {
       label: currentText.activeProducts,
-      value: "3",
+      value: isProductsDone ? "4" : "3",
     },
     {
       label: currentText.waitingMessages,
@@ -459,6 +527,7 @@ export default function DashboardPage() {
             </div>
           </section>
         )}
+        
         <header className="mb-4 flex items-center justify-between gap-2">
           <Link href="/" className="text-xl font-black tracking-wide">
             HBS
@@ -531,39 +600,59 @@ export default function DashboardPage() {
         </section>
 
         <section className="mt-4 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          {/* 1. Onboarding Checklist Side */}
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
             <h2 className="text-xl font-black">{currentText.setupTitle}</h2>
 
             <div className="mt-4 grid gap-3">
-              {setupSteps.map((step, index) => (
+              {stepsConfig.map((step, index) => (
                 <div
-                  key={step}
-                  className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between"
+                  key={step.label + index}
+                  className={`flex flex-col gap-3 rounded-2xl border p-3.5 sm:flex-row sm:items-center sm:justify-between transition-all duration-305 ${
+                    step.completed
+                      ? "border-emerald-200 bg-emerald-50/50 shadow-sm"
+                      : "border-slate-200 bg-slate-50/50"
+                  }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-400/10 font-black text-emerald-100">
-                      {index + 1}
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-xl font-black text-xs transition ${
+                      step.completed
+                        ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+                        : "border border-slate-300 bg-white text-slate-500 shadow-sm"
+                    }`}>
+                      {step.completed ? "✓" : index + 1}
                     </div>
 
                     <div>
-                      <div className="font-black">{step}</div>
-                      <div className="mt-1 text-sm text-slate-500">
-                        {currentText.statusWaiting}
+                      <div className={`text-xs font-black transition-all ${
+                        step.completed ? "text-slate-500 line-through font-bold" : "text-slate-800"
+                      }`}>{step.label}</div>
+                      <div className="mt-1 text-[10px] font-black uppercase tracking-wider">
+                        {step.completed ? (
+                          <span className="text-emerald-700">✓ Tamamlandı</span>
+                        ) : (
+                          <span className="text-amber-600">⏳ {currentText.statusWaiting}</span>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black hover:bg-slate-100"
+                  <Link
+                    href={step.href}
+                    className={`rounded-xl px-4 py-2 text-xs font-extrabold text-center transition active:scale-95 whitespace-nowrap ${
+                      step.completed
+                        ? "border border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-50"
+                        : "bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-950/15"
+                    }`}
                   >
-                    {currentText.actionStart}
-                  </button>
+                    {step.completed ? "Düzenle" : currentText.actionStart}
+                  </Link>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* 2. Modules Directory Side */}
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl">
             <h2 className="text-xl font-black">{currentText.modulesTitle}</h2>
 

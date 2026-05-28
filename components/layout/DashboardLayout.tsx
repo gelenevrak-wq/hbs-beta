@@ -22,7 +22,7 @@ const menuItems = [
   { label: "Ödeme Hatırlatmaları", href: "/dashboard/reminders" },
   { label: "Kur Ayarları", href: "/dashboard/currency" },
   { label: "Raporlar", href: "/dashboard/reports" },
-  { label: "Firma Ayarları", href: "/dashboard/company" },
+  { label: "Firma Ayarları", href: "/dashboard/settings" },
   { label: "Lisans", href: "/dashboard/license" },
 ];
 
