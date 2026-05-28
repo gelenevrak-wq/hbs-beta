@@ -161,8 +161,7 @@ export default function StoreRegisterPage() {
         }
 
         if (data.user) {
-          // 2. Insert Company into Supabase companies table
-          const trialEnds = isPartner ? null : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+          const trialEnds = isPartner ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
           const { data: companyData, error: compError } = await supabase
             .from("companies")
             .insert({
@@ -176,7 +175,7 @@ export default function StoreRegisterPage() {
               address: finalAddress,
               city,
               trial_ends_at: trialEnds,
-              license_ends_at: isPartner ? null : new Date(Date.now() + 17 * 24 * 60 * 60 * 1000).toISOString(), // trial + 3 days warning
+              license_ends_at: isPartner ? null : new Date(Date.now() + 33 * 24 * 60 * 60 * 1000).toISOString(), // trial + 3 days warning
               is_suspended: false,
               max_users: isPartner ? 99999 : 3,
               max_warehouses: isPartner ? 99999 : 1,
@@ -227,7 +226,7 @@ export default function StoreRegisterPage() {
       }
 
       // Offline / LocalStorage registry
-      const trialDays = isPartner ? 99999 : 14;
+      const trialDays = isPartner ? 99999 : 30;
       const trialEnds = new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000).toISOString();
       const warningEnds = new Date(Date.now() + (trialDays + 3) * 24 * 60 * 60 * 1000).toISOString();
 
@@ -649,9 +648,9 @@ export default function StoreRegisterPage() {
               ) : (
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
-                    <h3 className="font-black text-blue-950">🎁 14 Günlük Ücretsiz Deneme Süresi</h3>
+                    <h3 className="font-black text-blue-950">🎁 30 Günlük Ücretsiz Deneme Süresi</h3>
                     <p className="mt-2 text-sm leading-relaxed text-blue-800">
-                      HBS sistemimizi 2 hafta boyunca ücretsiz deneyebilirsiniz. Deneme süresinin bitimine <b>3 gün kala</b> sistem satıcı paneline lisans hatırlatma bildirimleri yollar. Süre sonunda lisans anahtarı girilmezse mağaza otomatik askıya alınır.
+                      HBS sistemimizi 1 ay boyunca ücretsiz deneyebilirsiniz. Deneme süresinin bitimine <b>3 gün kala</b> sistem satıcı paneline lisans hatırlatma bildirimleri yollar. Süre sonunda lisans anahtarı girilmezse mağaza otomatik askıya alınır.
                     </p>
                   </div>
 
@@ -688,7 +687,7 @@ export default function StoreRegisterPage() {
                   onClick={handleRegisterStore}
                   className="flex-1 rounded-xl bg-slate-900 py-3 text-sm font-black text-white hover:bg-slate-800 transition"
                 >
-                  {loading ? "Kuruluyor..." : isPartner ? "Sınırsız Mağazayı Oluştur" : "14 Günlük Denemeyi Başlat"}
+                  {loading ? "Kuruluyor..." : isPartner ? "Sınırsız Mağazayı Oluştur" : "30 Günlük Denemeyi Başlat"}
                 </button>
               </div>
             </div>

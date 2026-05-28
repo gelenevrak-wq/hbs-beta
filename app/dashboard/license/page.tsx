@@ -475,7 +475,7 @@ export default function LicensePage() {
                         ? "bg-blue-100 text-blue-800 border border-blue-300" 
                         : "bg-amber-100 text-amber-800 border border-amber-300"
                     }`}>
-                      {storeInfo.licenseType === "lifetime" ? "🛡️ Sınırsız / Ortak" : storeInfo.licenseType === "active" ? "✓ Aktif Üye" : "🎁 14 Günlük Demo"}
+                      {storeInfo.licenseType === "lifetime" ? "🛡️ Sınırsız / Ortak" : storeInfo.licenseType === "active" ? "✓ Aktif Üye" : "🎁 30 Günlük Demo"}
                     </span>
                   </div>
                   <p className="text-xs font-bold text-slate-600">
@@ -844,7 +844,7 @@ export default function LicensePage() {
             <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
               <h3 className="text-sm font-black text-slate-700">📌 SaaS Askıya Alma Kuralları ve Politikaları</h3>
               <ul className="text-xs text-slate-600 list-disc list-inside space-y-2 leading-relaxed">
-                <li>Yeni açılan mağazalara varsayılan <b>14 Günlük Demo</b> süresi tanımlanır.</li>
+                <li>Yeni açılan mağazalara varsayılan <b>30 Günlük Demo</b> süresi tanımlanır.</li>
                 <li>Deneme süresi bitimine <b>3 gün kala</b> satıcı panelinde büyük lisans uyarı kutusu gösterilir.</li>
                 <li>Süre bittiğinde, mağaza lisans kodunu girene kadar <b>arama sonuçlarında gizlenir</b> (`is_visible_in_public_search = false`) ve satış işlemleri duraklatılır.</li>
                 <li>Sınırsız Partner muafiyeti yalnızca özel anlaşmalı büyük bayiler (OBDTR) için geçerlidir.</li>
