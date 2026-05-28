@@ -257,8 +257,8 @@ export default function ProductsPage() {
       "Elite Model|SKU-AT-ELITE|869000000101|1200|2000|3|Ana Depo|A-12; Ultra Model|SKU-AT-ULTRA|869000000102|2000|3500|2|Ana Depo|A-13"
     ];
     
-    // Construct CSV with BOM to ensure Excel opens Turkish/Georgian characters properly
-    const csvContent = "\uFEFF" + [headers.join(","), sampleRow.map(val => `"${val.replace(/"/g, '""')}"`).join(",")].join("\n");
+    // Construct CSV with BOM and sep=, instruction to ensure Excel splits columns properly on all Turkish/European Windows setups
+    const csvContent = "\uFEFF" + "sep=,\n" + [headers.join(","), sampleRow.map(val => `"${val.replace(/"/g, '""')}"`).join(",")].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -278,7 +278,10 @@ export default function ProductsPage() {
     reader.onload = () => {
       const text = reader.result as string;
       try {
-        const rows = parseCSV(text);
+        let rows = parseCSV(text);
+        if (rows.length > 0 && rows[0][0] && rows[0][0].toLowerCase().startsWith("sep=")) {
+          rows.shift(); // Remove the Excel helper separator line
+        }
         if (rows.length < 2) {
           setMessage("Hata: Dosya boş veya başlık satırı dışında veri içermiyor.");
           return;

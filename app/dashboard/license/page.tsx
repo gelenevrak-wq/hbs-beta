@@ -369,7 +369,7 @@ export default function LicensePage() {
       ].join(","))
     ];
 
-    const csvContent = "\uFEFF" + csvRows.join("\n"); // Add BOM for Excel UTF-8 compliance
+    const csvContent = "\uFEFF" + "sep=,\n" + csvRows.join("\n"); // Add BOM for Excel UTF-8 compliance
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
