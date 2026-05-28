@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { LocalizedText, dynamicUi, pickLocalizedText } from "@/lib/i18n/dynamicContent";
 import { HbsLanguageCode } from "@/lib/i18n/translations";
@@ -374,14 +374,94 @@ export default function ProductDetailPage() {
   const params = useParams<{ productSlug: string }>();
   const { t, language, isReady } = useHbsLanguage();
   const [message, setMessage] = useState("");
-  const product = demoProducts.find((item) => item.slug === params.productSlug);
+  const [product, setProduct] = useState<ProductData | null>(null);
+  const [customLoaded, setCustomLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isReady || !params.productSlug) return;
+    
+    // 1. Static demo products check
+    const staticProd = demoProducts.find((item) => item.slug === params.productSlug);
+    if (staticProd) {
+      setProduct(staticProd);
+      setCustomLoaded(true);
+      return;
+    }
+
+    // 2. Custom local storage products check
+    try {
+      const savedProducts = window.localStorage.getItem("hbs-store-products");
+      if (savedProducts) {
+        const parsedProducts = JSON.parse(savedProducts) as Array<{
+          id: string;
+          name: string;
+          category: string;
+          brand: string;
+          model: string;
+          description: string;
+          salePrice: string;
+          currency: string;
+          sku: string;
+          imageUrl?: string;
+          visibility?: string;
+          pricingMode?: string;
+          barcode?: string;
+          qrCode?: string;
+          oemCode?: string;
+          warehouse?: string;
+          shelf?: string;
+        }>;
+
+        const found = parsedProducts.find(p => p.id === params.productSlug || p.sku === params.productSlug);
+        if (found) {
+          const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+          const matchingStore = localStores.find((st: any) => st.code === "obdtr") || {
+            code: "obdtr",
+            name: "OBDTR Diagnostics",
+            city: "İstanbul",
+            operatingModel: "virtual_delivery",
+            serviceCountries: ["TR", "GE"]
+          };
+
+          const mapped: ProductData = {
+            slug: found.id,
+            name: { tr: found.name, en: found.name, de: found.name, ru: found.name, ka: found.name },
+            brand: found.brand || "Genel",
+            model: { tr: found.model || "Genel", en: found.model || "General" },
+            category: { tr: found.category || "Diğer", en: found.category || "Other" },
+            storeName: matchingStore.name,
+            storeSlug: matchingStore.code,
+            country: matchingStore.city.toLowerCase().includes("batum") ? "Georgia" : "Türkiye",
+            city: matchingStore.city || "İstanbul",
+            description: { tr: found.description || "", en: found.description || "" },
+            priceText: {
+              tr: found.pricingMode === "quote" ? "Teklif isteyin" : found.pricingMode === "bidding" ? "Teklif verin" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
+              en: found.pricingMode === "quote" ? "Request quote" : found.pricingMode === "bidding" ? "Make an offer" : `${found.salePrice || "0"} ${found.currency || "GEL"}`
+            },
+            imageUrl: found.imageUrl || "/product-images/diagnostic-scanner.svg",
+            gallery: [found.imageUrl || "/product-images/diagnostic-scanner.svg"],
+            priceValue: found.salePrice ? parseFloat(found.salePrice) : undefined,
+            currency: found.currency || "GEL",
+            stockStatus: found.pricingMode === "quote" ? "quote" : "inStock",
+            barcode: found.barcode,
+            sku: found.sku,
+            oemCode: found.oemCode
+          };
+          setProduct(mapped);
+        }
+      }
+    } catch (e) {
+      console.error("Error loading product detail from localStorage", e);
+    }
+    setCustomLoaded(true);
+  }, [params.productSlug, isReady]);
 
   const similarProducts = useMemo(() => {
     if (!product) return [];
     return demoProducts.filter((item) => item.slug !== product.slug && item.storeSlug === product.storeSlug);
   }, [product]);
 
-  if (!isReady) return <main className="min-h-screen bg-slate-50" />;
+  if (!isReady || !customLoaded) return <main className="min-h-screen bg-slate-50" />;
 
   if (!product) {
     return (
@@ -447,7 +527,7 @@ export default function ProductDetailPage() {
   return (
     <main className="min-h-screen hbs-market-page px-3 py-3 text-slate-950 sm:px-6 sm:py-8">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-[1800px]">
         <header className="mb-4 flex items-center justify-between gap-2 sm:mb-8">
           <Link href="/" className="shrink-0 text-sm font-black tracking-wide sm:text-2xl">HBS</Link>
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">

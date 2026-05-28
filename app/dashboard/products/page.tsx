@@ -489,7 +489,7 @@ export default function ProductsPage() {
 
   return (
     <main className="min-h-screen bg-[#f5f7fb] text-slate-900 px-3 py-3 sm:px-6 sm:py-6">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-[1850px]">
         <header className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
           <Link href="/dashboard" className="text-base font-black sm:text-xl text-blue-600">HBS Ürün</Link>
           <div className="flex items-center gap-2">
@@ -723,17 +723,46 @@ export default function ProductsPage() {
               </label>
             </div>
 
-            {/* Media URLs */}
+            {/* Media Upload & URLs */}
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-500">Resim URL</span>
-                <input
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="Görsel bağlantısı"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
-                />
-              </label>
+              <div className="grid gap-1">
+                <span className="text-xs font-bold text-slate-500">Ürün Görseli (Dosya Yükle veya URL Gir)</span>
+                {imageUrl ? (
+                  <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-white">
+                      <img src={imageUrl} alt="Önizleme" className="h-full w-full object-contain" />
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <input
+                        value={imageUrl.startsWith("data:") ? "Görsel Dosyası Yüklendi (Base64)" : imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        placeholder="Görsel bağlantısı"
+                        className="w-full bg-transparent text-xs font-semibold outline-none text-slate-700 truncate"
+                        title={imageUrl}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setImageUrl("")}
+                        className="text-[10px] font-black text-rose-600 hover:text-rose-700 hover:underline transition active:scale-95 cursor-pointer block"
+                      >
+                        Görseli Kaldır
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50/20 rounded-xl py-3 px-4 cursor-pointer transition text-center group">
+                    <div className="text-xl mb-1 group-hover:scale-110 transition duration-200">📷</div>
+                    <div className="text-[11px] font-black text-slate-700">Resim Seçin veya Sürükleyin</div>
+                    <div className="text-[9px] text-slate-400 mt-0.5">PNG, JPG veya SVG desteklenir</div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProductImage}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
 
               <label className="grid gap-1">
                 <span className="text-xs font-bold text-slate-500">Tanıtım Video URL</span>

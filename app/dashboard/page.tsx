@@ -443,7 +443,7 @@ export default function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[#f4f7fb] px-3 py-3 text-slate-950 sm:px-5 sm:py-5">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-[1850px]">
         {currentUser?.role === "superadmin" && (
           <section className="mb-3 rounded-2xl border border-blue-200 bg-blue-50 p-3 shadow-sm">
             <div className="mb-2 flex items-center justify-between gap-2">

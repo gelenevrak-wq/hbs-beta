@@ -544,7 +544,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#f6f7fb] text-slate-950">
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-2 py-1.5 sm:px-4">
+        <div className="mx-auto flex max-w-[1800px] items-center justify-between gap-2 px-2 py-1.5 sm:px-6">
           <div className="flex items-center gap-1.5 sm:gap-3">
             <Link href="/" className="shrink-0 text-base font-black tracking-tight text-blue-700 sm:text-xl">HBS</Link>
             <CompactLanguageSwitcher />
@@ -591,7 +591,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-2 pb-1.5 sm:px-4">
+        <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
           <form className="flex w-full items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-1 shadow-inner" onSubmit={(e) => e.preventDefault()}>
             <input
               value={query}
@@ -603,7 +603,7 @@ export default function HomePage() {
           </form>
         </div>
 
-        <div className="mx-auto max-w-7xl px-2 pb-1.5 sm:px-4">
+        <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
           <div className="rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
             <div className="mb-1 flex items-center justify-between gap-2 px-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
                <span>📍 {t.region}</span>
@@ -689,7 +689,7 @@ export default function HomePage() {
           </select>
         </div>
 
-        <div className="mx-auto hidden max-w-7xl gap-1 overflow-x-auto px-2 pb-1.5 sm:flex sm:px-4">
+        <div className="mx-auto hidden max-w-[1800px] gap-1 overflow-x-auto px-2 pb-1.5 sm:flex sm:px-6">
           {quickCategories.map((item) => (
             <button
               key={item.key}
@@ -702,7 +702,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-2 py-2 sm:px-4 sm:py-3">
+      <div className="mx-auto max-w-[1800px] px-2 py-2 sm:px-6 sm:py-4">
         <section className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:p-3">
           <div className="mb-2 flex items-center justify-between gap-2 px-1">
             <div className="min-w-0">
@@ -737,7 +737,7 @@ export default function HomePage() {
 
       {/* Dynamic B2B Offers and Bids Tracking Section - Wow Factor! */}
       {currentUser && customerOffers.length > 0 && (
-        <div className="mx-auto max-w-7xl px-2 pb-6 sm:px-4">
+        <div className="mx-auto max-w-[1800px] px-2 pb-6 sm:px-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">MÜŞTERİ PANELİ</p>

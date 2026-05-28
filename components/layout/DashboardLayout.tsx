@@ -92,7 +92,7 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
             </div>
           </header>
 
-          <div className="mx-auto w-full max-w-[1500px] p-3 sm:p-4 lg:p-5">{children}</div>
+          <div className="mx-auto w-full max-w-[1850px] p-3 sm:p-4 lg:p-5">{children}</div>
         </section>
       </div>
     </main>
