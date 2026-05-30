@@ -125,7 +125,7 @@ export default function LicensePage() {
 
         if (comp && !error) {
           let type: "trial" | "lifetime" | "active" | "suspended" = "trial";
-          if (comp.code === "obdtr" || comp.code === "yildiz-hirdavat") {
+          if (comp.code === "obdtr" || comp.code === "yildiz-hirdavat" || comp.code === "altan") {
             type = "lifetime";
           } else if (comp.is_suspended) {
             type = "suspended";
@@ -161,7 +161,7 @@ export default function LicensePage() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           const store = parsed.find((s: any) => s.code === storeSlug) || parsed[parsed.length - 1];
           let type: "trial" | "lifetime" | "active" | "suspended" = "trial";
-          if (store.code === "obdtr" || store.licenseType === "lifetime") {
+          if (store.code === "obdtr" || store.code === "altan" || store.licenseType === "lifetime") {
             type = "lifetime";
           } else if (store.isSuspended) {
             type = "suspended";
