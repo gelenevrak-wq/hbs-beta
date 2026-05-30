@@ -154,8 +154,9 @@ export default function RequestsBoardPage() {
     setError("");
     setMessage("");
 
-    if (!newTitle.trim() || !newDescription.trim() || !newOwnerEmail.trim() || !newOwnerName.trim()) {
+    if (!newTitle.trim() || !newDescription.trim() || !newOwnerEmail.trim() || !newOwnerName.trim() || !newCity.trim()) {
       setError("Lütfen gerekli tüm alanları doldurun.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -295,7 +296,7 @@ export default function RequestsBoardPage() {
                         <p>👤 <span className="text-slate-800">İlan Sahibi:</span> {t.ownerName}</p>
                         <p>✉ <span className="text-slate-800">İletişim Yetki E-postası:</span> {t.ownerEmail}</p>
                       </div>
-                      <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[9px] font-black uppercase text-slate-500">Legal İlan</span>
+                      <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[9px] font-black uppercase text-slate-500">Kurumsal İlan</span>
                     </div>
 
                     {/* Bids Panel for the Tender */}
@@ -333,7 +334,7 @@ export default function RequestsBoardPage() {
                       ) : (
                         <div className="rounded-2xl border border-blue-100 bg-blue-50/30 p-3 text-center text-xs font-black text-blue-800 flex items-center justify-center gap-2">
                           <span>🔒</span>
-                          <span>Kapalı Zarf Teklifi ({tenderBids.length} Adet) - Sadece İlan Sahibi ({t.ownerEmail}) Tarafından İnceleyebilir</span>
+                          <span>Kapalı Zarf Teklifi ({tenderBids.length} Adet) - Sadece İlan Sahibi ({t.ownerEmail}) Tarafından İncelenebilir</span>
                         </div>
                       )}
                     </div>
@@ -413,10 +414,10 @@ export default function RequestsBoardPage() {
             <div className="bg-white p-5 rounded-[2rem] border border-slate-200 shadow-sm space-y-4">
               <div>
                 <h3 className="text-base font-black text-slate-800 uppercase tracking-wider">Hemen İlan / İhale Açın</h3>
-                <p className="text-[11px] text-slate-500 font-bold mt-0.5">İstediğiniz legal ürün veya hizmet için anında ilan verin.</p>
+                <p className="text-[11px] text-slate-500 font-bold mt-0.5">İhtiyacınız olan her türlü ürün veya hizmet için anında ilan verin.</p>
               </div>
 
-              <form onSubmit={handleCreateTender} className="space-y-4">
+              <form onSubmit={handleCreateTender} noValidate className="space-y-4">
                 <label className="grid gap-1">
                   <span className="text-xs font-bold text-slate-600">İlan Başlığı *</span>
                   <input
@@ -505,7 +506,7 @@ export default function RequestsBoardPage() {
                     </label>
                   </div>
                   <p className="text-[10px] text-blue-600 font-bold leading-normal">
-                    * Yetki e-postanız önemlidir. Bu sayfada teklifleri görüntülemek için bu e-posta adresiyle HBS müşteri portali hesabınız açık olmalıdır. Diğer ziyaretçilerden teklif tutarlarınız tamamen gizlenir.
+                    * Yetki e-postanız önemlidir. Bu sayfada teklifleri görüntülemek için bu e-posta adresiyle HBS müşteri portalı hesabınız açık olmalıdır. Diğer ziyaretçilerden teklif tutarlarınız tamamen gizlenir.
                   </p>
                 </div>
 
