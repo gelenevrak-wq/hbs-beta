@@ -80,20 +80,76 @@ export default function StorePage() {
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem("hbs-store-products");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setProducts(parsed);
-          return;
-        }
-      }
-    } catch (e) {
-      console.error("Store products loading error:", e);
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
+      import("@/lib/supabaseClient").then(({ supabase }) => {
+        supabase
+          .from("offerable_items")
+          .select("*, companies!inner(code)")
+          .eq("companies.code", params.storeSlug)
+          .then(({ data, error }) => {
+            if (data && !error) {
+              const mapped: ProductRecord[] = data.map((item: any) => ({
+                id: item.id,
+                itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+                name: item.name,
+                category: item.category || "Genel",
+                brand: item.brand || "",
+                model: "",
+                description: item.description || "",
+                salePrice: item.sale_price ? String(item.sale_price) : "",
+                purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+                currency: item.currency || "GEL",
+                barcode: item.barcode || "",
+                qrCode: item.qr_code || "",
+                sku: item.code || "",
+                oemCode: "",
+                manufacturerCode: "",
+                stockTracking: true,
+                quantity: "10",
+                warehouse: "Ana Depo",
+                shelf: "",
+                entryDate: "",
+                exitDate: "",
+                pricingMode: item.sale_price ? "fixed" : "quote",
+                visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+                imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                videoUrl: item.video_urls?.[0] || "",
+                variants: []
+              }));
+              setProducts(mapped);
+            } else {
+              if (error) console.error("Supabase storefront loading error:", error);
+              loadFromLocalStorage();
+            }
+          });
+      }).catch(err => {
+        console.error("Supabase import error:", err);
+        loadFromLocalStorage();
+      });
+    } else {
+      loadFromLocalStorage();
     }
-    setProducts([]);
-  }, []);
+
+    function loadFromLocalStorage() {
+      try {
+        const saved = window.localStorage.getItem("hbs-store-products");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setProducts(parsed);
+            return;
+          }
+        }
+      } catch (e) {
+        console.error("Store products loading error:", e);
+      }
+      setProducts([]);
+    }
+  }, [params.storeSlug]);
 
   function saveCustomerOffer(productName: string, type: "quote" | "bid", offerVal = "") {
     try {
