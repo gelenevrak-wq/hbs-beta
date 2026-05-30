@@ -27,27 +27,21 @@ type LocationRow = {
   user: string;
 };
 
-const warehouses: Warehouse[] = [
-  { id: "main", name: "Ana Depo", purpose: "Satışa hazır ürün stoğu", customerVisible: false, city: "Batumi", zones: ["A", "B", "C", "D"], capacity: 720, used: 486 },
-  { id: "return", name: "İade / Kontrol Deposu", purpose: "İade, arızalı veya kontrol bekleyen ürünler", customerVisible: false, city: "Batumi", zones: ["R", "Q"], capacity: 160, used: 38 },
-  { id: "showroom", name: "Showroom Alanı", purpose: "Müşterinin görebileceği örnek ürünler", customerVisible: true, city: "Batumi", zones: ["S"], capacity: 90, used: 52 },
-  { id: "obdtr", name: "OBDTR Ana Depo", purpose: "Diagnostik cihaz ve aksesuar stoğu", customerVisible: false, city: "İstanbul", zones: ["D", "L", "A"], capacity: 420, used: 288 },
-];
-
-const locationRows: LocationRow[] = [
-  { product: "Autel Diagnostics Ürün Grubu", sku: "OBDTR-AUTEL-GRUP", qty: 14, warehouse: "OBDTR Ana Depo", address: "D-01-R03-G02", storefronts: ["OBDTR Online Vitrin", "Diagnostik Vitrini"], lastMove: "23.05.2026", user: "ALTANCANCI" },
-  { product: "Krom Mutfak Bataryası", sku: "YH-TESISAT-BATARYA-001", qty: 38, warehouse: "Ana Depo", address: "T-02-R04-G01", storefronts: ["Yıldız Batum Vitrini"], lastMove: "22.05.2026", user: "OZGUR" },
-  { product: "Ford Escape Fren Balatası", sku: "FR-BALATA-ESCAPE-001", qty: 18, warehouse: "Ana Depo", address: "A-03-R12-G04", storefronts: ["OBDTR Vitrini", "Fren Sistemi Kampanyası"], lastMove: "21.05.2026", user: "Depo Personeli" },
-  { product: "PVC Boru Bağlantı Seti", sku: "YH-PVC-FITTING-SET-002", qty: 64, warehouse: "Showroom Alanı", address: "S-01-R02-G01", storefronts: ["Yıldız Batum Vitrini", "Tesisat Ürünleri"], lastMove: "20.05.2026", user: "OZGUR" },
+const DEFAULT_WAREHOUSES: Warehouse[] = [
+  { id: "main", name: "Ana Depo", purpose: "Satışa hazır ürün stoğu", customerVisible: false, city: "Batumi", zones: ["A", "B", "C", "D"], capacity: 1000, used: 0 },
+  { id: "return", name: "İade / Kontrol Deposu", purpose: "İade, arızalı veya kontrol bekleyen ürünler", customerVisible: false, city: "Batumi", zones: ["R", "Q"], capacity: 200, used: 0 },
+  { id: "showroom", name: "Showroom Alanı", purpose: "Müşterinin görebileceği örnek ürünler", customerVisible: true, city: "Batumi", zones: ["S"], capacity: 150, used: 0 },
+  { id: "obdtr", name: "OBDTR Ana Depo", purpose: "Diagnostik cihaz ve aksesuar stoğu", customerVisible: false, city: "İstanbul", zones: ["D", "L", "A"], capacity: 500, used: 0 },
 ];
 
 function pct(used: number, capacity: number) {
-  return Math.round((used / capacity) * 100);
+  return Math.round((used / (capacity || 1)) * 100);
 }
 
 export default function WarehousesPage() {
   const [query, setQuery] = useState("");
   const [warehousesList, setWarehousesList] = useState<Warehouse[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   
   // Form fields
   const [newWhName, setNewWhName] = useState("");
@@ -60,6 +54,19 @@ export default function WarehousesPage() {
   const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
+    // Load products catalog
+    const savedProducts = window.localStorage.getItem("hbs-store-products");
+    if (savedProducts) {
+      try {
+        const parsed = JSON.parse(savedProducts);
+        if (Array.isArray(parsed)) {
+          setProducts(parsed);
+        }
+      } catch (e) {
+        console.error("Error loading products:", e);
+      }
+    }
+
     try {
       const currentUserStr = window.localStorage.getItem("hbs-current-user");
       const currentUser = currentUserStr ? JSON.parse(currentUserStr) : null;
@@ -75,7 +82,7 @@ export default function WarehousesPage() {
           city: "İstanbul",
           operatingModel: "virtual_delivery",
           serviceCountries: ["TR", "GE"],
-          warehouses: warehouses
+          warehouses: DEFAULT_WAREHOUSES
         };
         window.localStorage.setItem("hbs-registered-stores", JSON.stringify([myStore, ...registeredStores]));
       }
@@ -83,9 +90,9 @@ export default function WarehousesPage() {
       if (myStore && myStore.warehouses && myStore.warehouses.length > 0) {
         setWarehousesList(myStore.warehouses);
       } else {
-        setWarehousesList(warehouses);
+        setWarehousesList(DEFAULT_WAREHOUSES);
         if (myStore) {
-          myStore.warehouses = warehouses.map(w => ({
+          myStore.warehouses = DEFAULT_WAREHOUSES.map(w => ({
             ...w,
             shelves: w.zones.map(z => `${z}-01`)
           }));
@@ -95,7 +102,7 @@ export default function WarehousesPage() {
       }
     } catch (e) {
       console.error(e);
-      setWarehousesList(warehouses);
+      setWarehousesList(DEFAULT_WAREHOUSES);
     }
   }, []);
 
@@ -158,11 +165,57 @@ export default function WarehousesPage() {
     setSuccessMsg(`"${newWh.name}" başarıyla oluşturuldu! Artık ürün yüklerken bu depoyu seçebilirsiniz.`);
   }
 
+  const locationRows = useMemo<LocationRow[]>(() => {
+    const rows: LocationRow[] = [];
+    products.forEach((p) => {
+      if (p.warehouse || p.shelf || p.quantity) {
+        rows.push({
+          product: p.name,
+          sku: p.sku || "SKU-YOK",
+          qty: parseInt(p.quantity) || 0,
+          warehouse: p.warehouse || "Ana Depo",
+          address: p.shelf || "A-01",
+          storefronts: p.visibility === "visible" ? ["Online Mağaza Vitrini"] : ["Gizli Stok"],
+          lastMove: p.entryDate || new Date().toISOString().split("T")[0],
+          user: "Yönetici"
+        });
+      }
+      
+      if (p.variants && Array.isArray(p.variants)) {
+        p.variants.forEach((v: any) => {
+          rows.push({
+            product: `${p.name} (${v.name})`,
+            sku: v.sku || `SKU-${v.id}`,
+            qty: parseInt(v.quantity) || 0,
+            warehouse: v.warehouse || p.warehouse || "Ana Depo",
+            address: v.shelf || "A-01",
+            storefronts: p.visibility === "visible" ? ["Online Mağaza Vitrini"] : ["Gizli Stok"],
+            lastMove: p.entryDate || new Date().toISOString().split("T")[0],
+            user: "Yönetici"
+          });
+        });
+      }
+    });
+    return rows;
+  }, [products]);
+
+  const dynamicWarehousesList = useMemo(() => {
+    return warehousesList.map((wh) => {
+      const usedInWh = locationRows
+        .filter((row) => row.warehouse.toLowerCase() === wh.name.toLowerCase())
+        .reduce((sum, row) => sum + row.qty, 0);
+      return {
+        ...wh,
+        used: usedInWh
+      };
+    });
+  }, [warehousesList, locationRows]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return locationRows;
     return locationRows.filter((row) => [row.product, row.sku, row.warehouse, row.address, row.user, ...row.storefronts].some((v) => v.toLowerCase().includes(q)));
-  }, [query]);
+  }, [query, locationRows]);
 
   return (
     <main className="min-h-screen bg-slate-50 px-3 py-3 text-slate-950 sm:px-6 sm:py-6">
@@ -296,7 +349,7 @@ export default function WarehousesPage() {
         </section>
 
         <section className="mb-3 grid gap-2.5 sm:grid-cols-2 md:grid-cols-4">
-          {warehousesList.map((wh) => (
+          {dynamicWarehousesList.map((wh) => (
             <article key={wh.id} className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm space-y-3 flex flex-col justify-between">
               <div className="flex items-start justify-between gap-2">
                 <div>

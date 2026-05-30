@@ -6,6 +6,7 @@ import CompactLanguageSwitcher, {
   LanguageCode,
 } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
+import AICopilotTooltip from "@/components/common/AICopilotTooltip";
 
 type ItemType = "product" | "service" | "rental" | "appointment";
 type Visibility = "visible" | "hidden";
@@ -89,6 +90,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
@@ -244,30 +246,113 @@ export default function ProductsPage() {
 
   function downloadCSVTemplate() {
     const headers = [
-      "KayitTuru", "UrunAdi", "Kategori", "Marka", "Model", "Aciklama",
-      "SatisFiyati", "MaliyetFiyati", "ParaBirimi", "Barkod", "QRCode", "SKU",
-      "OEMKodu", "StokMiktari", "DepoAdi", "RafKonumu", "ResimURL", "VideoURL",
+      "Kayıt Türü", "Ürün Adı", "Kategori", "Marka", "Model", "Açıklama",
+      "Satış Fiyatı", "Maliyet Fiyatı", "Para Birimi", "Barkod", "Karekod (QR)", "SKU",
+      "OEM Kodu", "Stok Miktarı", "Depo Adı", "Raf Konumu", "Resim URL", "Video URL",
       "Varyantlar"
     ];
     const sampleRow = [
-      "product", "Autel Diagnostik Cihazı", "Oto Diagnostik", "Autel", "MaxiSys Ultra",
+      "ürün", "Autel Diagnostik Cihazı", "Oto Diagnostik", "Autel", "MaxiSys Ultra",
       "Profesyonel arıza tespit cihazı", "3500", "2000", "GEL", "869000000100", "QR-AUTEL-001",
       "SKU-AUTEL-001", "OEM-AT-01", "5", "Ana Depo", "A-02",
       "/product-images/diagnostic-scanner.svg", "https://youtube.com/watch?v=demo",
       "Elite Model|SKU-AT-ELITE|869000000101|1200|2000|3|Ana Depo|A-12; Ultra Model|SKU-AT-ULTRA|869000000102|2000|3500|2|Ana Depo|A-13"
     ];
-    
-    // Construct CSV with BOM and sep=, instruction to ensure Excel splits columns properly on all Turkish/European Windows setups
-    const csvContent = "\uFEFF" + "sep=,\n" + [headers.join(","), sampleRow.map(val => `"${val.replace(/"/g, '""')}"`).join(",")].join("\n");
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+    // Premium Column widths for Excel
+    const widths = [100, 220, 140, 100, 120, 260, 100, 100, 100, 140, 140, 140, 110, 100, 110, 100, 250, 250, 350];
+
+    const htmlContent = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office"
+            xmlns:x="urn:schemas-microsoft-com:office:excel"
+            xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <!--[if gte mso 9]>
+        <xml>
+          <x:ExcelWorkbook>
+            <x:ExcelWorksheets>
+              <x:ExcelWorksheet>
+                <x:Name>HBS Ürün Şablonu</x:Name>
+                <x:WorksheetOptions>
+                  <x:DisplayGridlines/>
+                </x:WorksheetOptions>
+                <x:DataValidation>
+                  <x:Range>R2C1:R1000C1</x:Range>
+                  <x:Type>List</x:Type>
+                  <x:Value>&quot;ürün,hizmet,kiralık,randevu&quot;</x:Value>
+                  <x:ErrorMessage>Lütfen listedeki geçerli kayıt türlerinden birini seçin (ürün, hizmet, kiralık, randevu).</x:ErrorMessage>
+                  <x:ErrorTitle>Geçersiz Kayıt Türü</x:ErrorTitle>
+                  <x:InputMessage>Geçerli bir kayıt türü seçin: ürün, hizmet, kiralık veya randevu.</x:InputMessage>
+                  <x:InputTitle>Kayıt Türü</x:InputTitle>
+                </x:DataValidation>
+                <x:DataValidation>
+                  <x:Range>R2C9:R1000C9</x:Range>
+                  <x:Type>List</x:Type>
+                  <x:Value>&quot;GEL,TRY,USD,EUR&quot;</x:Value>
+                  <x:ErrorMessage>Lütfen listedeki geçerli para birimlerinden birini seçin (GEL, TRY, USD, EUR).</x:ErrorMessage>
+                  <x:ErrorTitle>Geçersiz Para Birimi</x:ErrorTitle>
+                  <x:InputMessage>Geçerli bir para birimi seçin: GEL, TRY, USD veya EUR.</x:InputMessage>
+                  <x:InputTitle>Para Birimi</x:InputTitle>
+                </x:DataValidation>
+              </x:ExcelWorksheet>
+            </x:ExcelWorksheets>
+          </x:ExcelWorkbook>
+        </xml>
+        <![endif]-->
+        <style>
+          table { border-collapse: collapse; }
+          th { 
+            background-color: #2563eb; 
+            color: #ffffff; 
+            font-weight: bold; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 11pt;
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            text-align: left;
+          }
+          td { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 10pt;
+            border: 1px solid #cbd5e1;
+            padding: 6px;
+            mso-number-format:"\\@"; /* Force Text Format to prevent scientific notation on barcodes */
+          }
+          .sample-row {
+            background-color: #f8fafc;
+            color: #475569;
+            font-style: italic;
+          }
+        </style>
+      </head>
+      <body>
+        <table>
+          <thead>
+            <tr>
+              ${headers.map((h, i) => `<th style="width: ${widths[i]}px;">${h}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="sample-row">
+              ${sampleRow.map(cell => `<td>${cell}</td>`).join("")}
+            </tr>
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `;
+
+    // Create binary Blob of the Excel file
+    const blob = new Blob([htmlContent], { type: "application/vnd.ms-excel;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", "hbs_urun_sablonu.csv");
+    link.setAttribute("download", "hbs_urun_sablonu.xls");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setMessage("Excel / CSV ürün yükleme şablonu başarıyla indirildi.");
+    setMessage("Excel ürün şablonu (.xls) geniş sütunlar, renkli başlıklar, açılır seçim listeleri (dropdown) ve özel biçimlendirmelerle indirildi.");
   }
 
   function handleCSVImport(event: React.ChangeEvent<HTMLInputElement>) {
@@ -278,7 +363,20 @@ export default function ProductsPage() {
     reader.onload = () => {
       const text = reader.result as string;
       try {
-        let rows = parseCSV(text);
+        let rows: string[][] = [];
+        if (text.trim().startsWith("<") || text.includes("<table")) {
+          // Parse HTML-based Excel spreadsheet natively using DOMParser
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, "text/html");
+          const trs = Array.from(doc.querySelectorAll("tr"));
+          rows = trs.map(tr => 
+            Array.from(tr.querySelectorAll("th, td")).map(cell => cell.textContent?.trim() || "")
+          );
+        } else {
+          // Fallback to standard CSV parser
+          rows = parseCSV(text);
+        }
+
         if (rows.length > 0 && rows[0][0] && rows[0][0].toLowerCase().startsWith("sep=")) {
           rows.shift(); // Remove the Excel helper separator line
         }
@@ -290,26 +388,33 @@ export default function ProductsPage() {
         const newProducts: ProductRecord[] = [];
         const headers = rows[0].map(h => h.toLowerCase().trim());
         
-        const getIdx = (name: string) => headers.indexOf(name.toLowerCase());
-        const typeIdx = getIdx("KayitTuru");
-        const nameIdx = getIdx("UrunAdi");
-        const catIdx = getIdx("Kategori");
-        const brandIdx = getIdx("Marka");
-        const modelIdx = getIdx("Model");
-        const descIdx = getIdx("Aciklama");
-        const salePriceIdx = getIdx("SatisFiyati");
-        const purchasePriceIdx = getIdx("MaliyetFiyati");
-        const curIdx = getIdx("ParaBirimi");
-        const barIdx = getIdx("Barkod");
-        const qrIdx = getIdx("QRCode");
-        const skuIdx = getIdx("SKU");
-        const oemIdx = getIdx("OEMKodu");
-        const qtyIdx = getIdx("StokMiktari");
-        const whIdx = getIdx("DepoAdi");
-        const shelfIdx = getIdx("RafKonumu");
-        const imgIdx = getIdx("ResimURL");
-        const vidIdx = getIdx("VideoURL");
-        const varIdx = getIdx("Varyantlar");
+        const getIdx = (candidates: string[]) => {
+          for (const cand of candidates) {
+            const idx = headers.indexOf(cand.toLowerCase());
+            if (idx !== -1) return idx;
+          }
+          return -1;
+        };
+        
+        const typeIdx = getIdx(["kayıt türü", "kayitturu"]);
+        const nameIdx = getIdx(["ürün adı", "urunadi"]);
+        const catIdx = getIdx(["kategori"]);
+        const brandIdx = getIdx(["marka"]);
+        const modelIdx = getIdx(["model"]);
+        const descIdx = getIdx(["açıklama", "aciklama"]);
+        const salePriceIdx = getIdx(["satış fiyatı", "satisfiyati"]);
+        const purchasePriceIdx = getIdx(["maliyet fiyatı", "maliyetfiyati"]);
+        const curIdx = getIdx(["para birimi", "parabirimi"]);
+        const barIdx = getIdx(["barkod"]);
+        const qrIdx = getIdx(["karekod (qr)", "qrcode"]);
+        const skuIdx = getIdx(["sku"]);
+        const oemIdx = getIdx(["oem kodu", "oemkodu"]);
+        const qtyIdx = getIdx(["stok miktarı", "stokmiktari"]);
+        const whIdx = getIdx(["depo adı", "depoadi"]);
+        const shelfIdx = getIdx(["raf konumu", "rafkonumu"]);
+        const imgIdx = getIdx(["resim url", "resimurl"]);
+        const vidIdx = getIdx(["video url", "videourl"]);
+        const varIdx = getIdx(["varyantlar"]);
         
         for (let r = 1; r < rows.length; r++) {
           const row = rows[r];
@@ -341,9 +446,19 @@ export default function ProductsPage() {
             });
           }
           
+          const rawType = (row[typeIdx] || "").trim().toLowerCase();
+          let parsedType: ItemType = "product";
+          if (rawType.includes("hizmet") || rawType === "service") {
+            parsedType = "service";
+          } else if (rawType.includes("kiral") || rawType === "rental") {
+            parsedType = "rental";
+          } else if (rawType.includes("randevu") || rawType === "appointment") {
+            parsedType = "appointment";
+          }
+
           const newP: ProductRecord = {
             id: `product-${Date.now()}-${r}`,
-            itemType: (row[typeIdx] as ItemType) || "product",
+            itemType: parsedType,
             name: pName,
             category: pCat,
             brand: row[brandIdx] || "",
@@ -420,40 +535,40 @@ export default function ProductsPage() {
     );
   }
 
-  async function createProduct() {
-    if (!name.trim() || !category.trim()) {
-      setMessage("Ürün/hizmet adı ve kategori zorunludur.");
+  function startEditProduct(p: ProductRecord) {
+    setEditingProductId(p.id);
+    setItemType(p.itemType);
+    setName(p.name);
+    setCategory(p.category);
+    setBrand(p.brand || "");
+    setModel(p.model || "");
+    setDescription(p.description || "");
+    setSalePrice(p.salePrice || "");
+    setPurchasePrice(p.purchasePrice || "");
+    setCurrency(p.currency || "GEL");
+    setBarcode(p.barcode || "");
+    setQrCode(p.qrCode || "");
+    setSku(p.sku || "");
+    setOemCode(p.oemCode || "");
+    setManufacturerCode(p.manufacturerCode || "");
+    setStockTracking(p.stockTracking ?? true);
+    setQuantity(p.quantity || "");
+    setWarehouse(p.warehouse || "");
+    setShelf(p.shelf || "");
+    setEntryDate(p.entryDate || "");
+    setExitDate(p.exitDate || "");
+    setPricingMode(p.pricingMode || "fixed");
+    setVisibility(p.visibility || "visible");
+    setImageUrl(p.imageUrl || "");
+    setVideoUrl(p.videoUrl || "");
+    setVariants(p.variants || []);
+    setMessage(`"${p.name}" düzenleme için forma yüklendi. Değişiklikleri yaptıktan sonra sayfanın altındaki butona basarak kaydedebilirsiniz.`);
+  }
+
+  async function deleteProduct(id: string, productName: string, productSku: string) {
+    if (!window.confirm(`"${productName}" isimli ürünü silmek istediğinize emin misiniz?`)) {
       return;
     }
-
-    const newProduct: ProductRecord = {
-      id: `product-${Date.now()}`,
-      itemType,
-      name,
-      category,
-      brand,
-      model,
-      description,
-      salePrice: pricingMode === "fixed" ? salePrice : "",
-      purchasePrice,
-      currency,
-      barcode,
-      qrCode,
-      sku,
-      oemCode,
-      manufacturerCode,
-      stockTracking,
-      quantity: stockTracking ? quantity : "",
-      warehouse,
-      shelf,
-      entryDate,
-      exitDate,
-      pricingMode,
-      visibility,
-      imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
-      videoUrl,
-      variants: variants.length > 0 ? variants : undefined,
-    };
 
     const isSupabaseConfigured = 
       process.env.NEXT_PUBLIC_SUPABASE_URL && 
@@ -461,31 +576,193 @@ export default function ProductsPage() {
 
     if (isSupabaseConfigured) {
       try {
-        await supabase.from("offerable_items").insert({
-          name,
-          type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
-          category,
-          brand,
-          code: sku || `SKU-${Date.now()}`,
-          barcode,
-          qr_code: qrCode,
-          sale_price: pricingMode === "fixed" ? parseFloat(salePrice) || null : null,
-          purchase_price: parseFloat(purchasePrice) || null,
-          currency,
-          description,
-          photo_urls: [newProduct.imageUrl],
-          video_urls: [videoUrl],
-          is_visible_in_storefront: visibility === "visible",
-          is_visible_in_public_search: visibility === "visible",
-        });
+        await supabase
+          .from("offerable_items")
+          .delete()
+          .or(`code.eq.${productSku},name.eq.${productName}`);
       } catch (err) {
-        console.error("Supabase saving error:", err);
+        console.error("Supabase delete error:", err);
       }
     }
 
-    setProducts((currentProducts) => [newProduct, ...currentProducts]);
-    setMessage("Kayıt başarıyla oluşturuldu! Veritabanı ve yerel hafıza güncellendi.");
-    resetForm();
+    const updatedProducts = products.filter((p) => p.id !== id);
+    setProducts(updatedProducts);
+    setMessage(`"${productName}" başarıyla silindi.`);
+    if (editingProductId === id) {
+      setEditingProductId(null);
+      resetForm();
+    }
+  }
+
+  async function toggleVisibility(id: string) {
+    const updatedProducts = products.map((p) => {
+      if (p.id === id) {
+        const nextVisibility: Visibility = p.visibility === "visible" ? "hidden" : "visible";
+        
+        const isSupabaseConfigured = 
+          process.env.NEXT_PUBLIC_SUPABASE_URL && 
+          process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+        if (isSupabaseConfigured) {
+          supabase
+            .from("offerable_items")
+            .update({
+              is_visible_in_storefront: nextVisibility === "visible",
+              is_visible_in_public_search: nextVisibility === "visible",
+            })
+            .or(`code.eq.${p.sku},name.eq.${p.name}`)
+            .then(({ error }) => {
+              if (error) console.error("Supabase toggle error:", error);
+            });
+        }
+
+        return { ...p, visibility: nextVisibility };
+      }
+      return p;
+    });
+
+    setProducts(updatedProducts);
+    const targetProduct = products.find(p => p.id === id);
+    const isNowVisible = targetProduct?.visibility !== "visible";
+    setMessage(`"${targetProduct?.name}" vitrin görünürlüğü "${isNowVisible ? "Vitrin ve Pazar Yerinde Açık" : "Gizli"}" olarak güncellendi.`);
+  }
+
+  async function saveProduct() {
+    if (!name.trim() || !category.trim()) {
+      setMessage("Ürün/hizmet adı ve kategori zorunludur.");
+      return;
+    }
+
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (editingProductId) {
+      // EDIT MODE
+      const updatedProducts = products.map((p) => {
+        if (p.id === editingProductId) {
+          return {
+            ...p,
+            itemType,
+            name,
+            category,
+            brand,
+            model,
+            description,
+            salePrice: pricingMode === "fixed" ? salePrice : "",
+            purchasePrice,
+            currency,
+            barcode,
+            qrCode,
+            sku,
+            oemCode,
+            manufacturerCode,
+            stockTracking,
+            quantity: stockTracking ? quantity : "",
+            warehouse,
+            shelf,
+            entryDate,
+            exitDate,
+            pricingMode,
+            visibility,
+            imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
+            videoUrl,
+            variants: variants.length > 0 ? variants : undefined,
+          };
+        }
+        return p;
+      });
+
+      if (isSupabaseConfigured) {
+        try {
+          await supabase
+            .from("offerable_items")
+            .update({
+              name,
+              type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
+              category,
+              brand,
+              code: sku || `SKU-${Date.now()}`,
+              barcode,
+              qr_code: qrCode,
+              sale_price: pricingMode === "fixed" ? parseFloat(salePrice) || null : null,
+              purchase_price: parseFloat(purchasePrice) || null,
+              currency,
+              description,
+              photo_urls: [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"],
+              video_urls: [videoUrl],
+              is_visible_in_storefront: visibility === "visible",
+              is_visible_in_public_search: visibility === "visible",
+            })
+            .or(`code.eq.${sku},name.eq.${name}`);
+        } catch (err) {
+          console.error("Supabase update error:", err);
+        }
+      }
+
+      setProducts(updatedProducts);
+      setMessage("Kayıt başarıyla güncellendi! Veritabanı ve yerel hafıza senkronize edildi.");
+      setEditingProductId(null);
+      resetForm();
+    } else {
+      // CREATE MODE
+      const newProduct: ProductRecord = {
+        id: `product-${Date.now()}`,
+        itemType,
+        name,
+        category,
+        brand,
+        model,
+        description,
+        salePrice: pricingMode === "fixed" ? salePrice : "",
+        purchasePrice,
+        currency,
+        barcode,
+        qrCode,
+        sku,
+        oemCode,
+        manufacturerCode,
+        stockTracking,
+        quantity: stockTracking ? quantity : "",
+        warehouse,
+        shelf,
+        entryDate,
+        exitDate,
+        pricingMode,
+        visibility,
+        imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
+        videoUrl,
+        variants: variants.length > 0 ? variants : undefined,
+      };
+
+      if (isSupabaseConfigured) {
+        try {
+          await supabase.from("offerable_items").insert({
+            name,
+            type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
+            category,
+            brand,
+            code: sku || `SKU-${Date.now()}`,
+            barcode,
+            qr_code: qrCode,
+            sale_price: pricingMode === "fixed" ? parseFloat(salePrice) || null : null,
+            purchase_price: parseFloat(purchasePrice) || null,
+            currency,
+            description,
+            photo_urls: [newProduct.imageUrl],
+            video_urls: [videoUrl],
+            is_visible_in_storefront: visibility === "visible",
+            is_visible_in_public_search: visibility === "visible",
+          });
+        } catch (err) {
+          console.error("Supabase saving error:", err);
+        }
+      }
+
+      setProducts((currentProducts) => [newProduct, ...currentProducts]);
+      setMessage("Kayıt başarıyla oluşturuldu! Veritabanı ve yerel hafıza güncellendi.");
+      resetForm();
+    }
   }
 
   if (!language) return <main className="min-h-screen bg-slate-950" />;
@@ -527,7 +804,10 @@ export default function ProductsPage() {
               <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-black text-blue-700 uppercase border border-blue-100">
                 ⚡ HIZLI YÜKLEME SİSTEMİ
               </span>
-              <h2 className="text-lg font-black text-slate-800">Toplu Ürün Aktarımı (Excel / CSV)</h2>
+              <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                Toplu Ürün Aktarımı (Excel / CSV)
+                <AICopilotTooltip fieldKey="batchImport" position="right" />
+              </h2>
               <p className="text-xs text-slate-500 max-w-2xl leading-relaxed">
                 Mağazanıza yüzlerce ürünü ve bunlara ait varyantları (örneğin OBDTR Autel cihazları veya tekstil bedenleri) tek bir hamlede ekleyin. Hazırladığımız şablonu indirin, doldurup geri yükleyin!
               </p>
@@ -564,15 +844,25 @@ export default function ProductsPage() {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              createProduct();
+              saveProduct();
             }}
             className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4"
           >
-            <h2 className="text-lg font-black border-b border-slate-100 pb-2">Yeni Ürün Ekle</h2>
+            <h2 className="text-lg font-black border-b border-slate-100 pb-2 flex items-center justify-between">
+              <span>{editingProductId ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}</span>
+              {editingProductId && (
+                <span className="text-[10px] bg-blue-100 text-blue-800 font-extrabold px-2.5 py-0.5 rounded-full uppercase">
+                  DÜZENLEME MODU
+                </span>
+              )}
+            </h2>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-500">Kayıt Türü</span>
+                <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                  Kayıt Türü
+                  <AICopilotTooltip fieldKey="itemType" position="right" />
+                </span>
                 <select
                   value={itemType}
                   onChange={(e) => setItemType(e.target.value as ItemType)}
@@ -657,7 +947,10 @@ export default function ProductsPage() {
 
             {/* Price policy selector as requested */}
             <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-2">
-              <span className="text-xs font-black text-slate-700 block">Fiyat & Teklif Politikası</span>
+              <span className="text-xs font-black text-slate-700 flex items-center gap-1.5">
+                Fiyat & Teklif Politikası
+                <AICopilotTooltip fieldKey="pricingMode" position="right" />
+              </span>
               <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
@@ -781,7 +1074,10 @@ export default function ProductsPage() {
             {/* Barcodes & SKU */}
             <div className="grid gap-3 sm:grid-cols-3">
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-500">Barkod</span>
+                <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                  Barkod
+                  <AICopilotTooltip fieldKey="barcode" position="right" />
+                </span>
                 <input
                   value={barcode}
                   onChange={(e) => setBarcode(e.target.value)}
@@ -813,7 +1109,10 @@ export default function ProductsPage() {
 
             {/* Stock tracking, entry dates, exit dates as requested */}
             <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-3">
-              <span className="text-xs font-black text-slate-700 block">Depo Konumlandırma & Giriş Çıkış</span>
+              <span className="text-xs font-black text-slate-700 flex items-center gap-1.5">
+                Depo Konumlandırma & Giriş Çıkış
+                <AICopilotTooltip fieldKey="warehouse" position="right" />
+              </span>
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <label className="grid gap-1">
@@ -911,8 +1210,9 @@ export default function ProductsPage() {
             <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xs font-black text-slate-700 uppercase tracking-wider">
+                  <h3 className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                     📦 Ürün Varyantları (İsteğe Bağlı)
+                    <AICopilotTooltip fieldKey="variants" position="right" />
                   </h3>
                   <p className="text-[10px] text-slate-500 leading-normal mt-0.5">
                     Modeller (örn: Autel Ultra/Elite), aksesuarlar veya beden/renk ekleyin.
@@ -1087,12 +1387,27 @@ export default function ProductsPage() {
               )}
             </div>
 
-            <button
-              type="submit"
-              className="w-full rounded-xl bg-slate-900 py-3 text-sm font-black text-white hover:bg-slate-800 transition"
-            >
-              Kaydı Tamamla
-            </button>
+            <div className="flex gap-2.5">
+              {editingProductId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingProductId(null);
+                    resetForm();
+                    setMessage("Düzenleme iptal edildi.");
+                  }}
+                  className="w-1/3 rounded-xl border border-slate-200 bg-white py-3 text-sm font-black text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                >
+                  Vazgeç
+                </button>
+              )}
+              <button
+                type="submit"
+                className={`flex-1 rounded-xl py-3 text-sm font-black text-white transition cursor-pointer ${editingProductId ? "bg-blue-600 hover:bg-blue-700" : "bg-slate-900 hover:bg-slate-800"}`}
+              >
+                {editingProductId ? "Değişiklikleri Kaydet" : "Kaydı Tamamla"}
+              </button>
+            </div>
           </form>
 
           {/* Product list preview */}
@@ -1145,6 +1460,39 @@ export default function ProductsPage() {
                         </div>
                       </div>
                     )}
+
+                    {/* Action buttons with rich premium styling */}
+                    <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between gap-1.5">
+                      {/* Left: Quick Visibility Toggle */}
+                      <button
+                        type="button"
+                        onClick={() => toggleVisibility(p.id)}
+                        className={`rounded-lg px-2.5 py-1.5 text-[10px] font-black border transition flex items-center gap-1 cursor-pointer select-none active:scale-95 ${p.visibility === "visible" ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100" : "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100"}`}
+                        title="Vitrinde Gösterimi Aç/Kapat"
+                      >
+                        <span>{p.visibility === "visible" ? "👁️ Vitrinde Açık" : "🙈 Vitrinde Gizli"}</span>
+                      </button>
+
+                      {/* Right: Edit & Delete actions */}
+                      <div className="flex gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => startEditProduct(p)}
+                          className="rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          title="Ürünü Düzenle"
+                        >
+                          <span>✏️ Düzenle</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteProduct(p.id, p.name, p.sku)}
+                          className="rounded-lg bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          title="Ürünü Sil"
+                        >
+                          <span>🗑️ Sil</span>
+                        </button>
+                      </div>
+                    </div>
                   </article>
                 ))}
 

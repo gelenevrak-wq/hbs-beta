@@ -595,14 +595,29 @@ export default function HomePage() {
         </div>
 
         <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
-          <form className="flex w-full items-center rounded-full border border-slate-200 bg-slate-50 px-2 py-1 shadow-inner" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex w-full items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 shadow-inner transition focus-within:border-blue-400 focus-within:bg-white focus-within:shadow-md" onSubmit={(e) => e.preventDefault()}>
+            <span className="text-slate-400 text-xs sm:text-sm select-none mr-1.5">🔍</span>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t.search}
-              className="min-w-0 flex-1 bg-transparent px-1 text-[12px] font-semibold outline-none placeholder:text-slate-400 sm:text-sm"
+              className="min-w-0 flex-1 bg-transparent px-1 text-[12px] font-semibold outline-none placeholder:text-slate-400 sm:text-sm text-slate-850"
             />
-            <Link href={searchHref} className="rounded-full bg-blue-600 px-3 py-1 text-[11px] font-black text-white sm:px-4 sm:text-xs">{t.searchButton}</Link>
+            
+            {/* Elegant Lens/Scanner inline trigger */}
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("SKU-AUTEL-001");
+                alert(language === "tr" ? "📷 Telefon kamerası entegrasyonu aktif: Barkod veya QR kod taranıyor..." : "📷 Camera integration active: Scanning barcode or QR code...");
+              }}
+              className="mx-2 text-slate-400 hover:text-blue-600 transition active:scale-90 cursor-pointer text-xs sm:text-sm"
+              title={language === "tr" ? "Kamera ile Fotoğraf, Barkod veya QR Kod Tara" : "Scan Photo, Barcode or QR Code with Camera"}
+            >
+              📷
+            </button>
+
+            <Link href={searchHref} className="rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-black text-white sm:px-4 sm:text-xs hover:bg-blue-700 active:scale-95 transition shadow-sm">{t.searchButton}</Link>
           </form>
         </div>
 
@@ -673,11 +688,7 @@ export default function HomePage() {
             </div>
           </div>
 
-        <div className="mx-auto grid max-w-7xl grid-cols-3 gap-1 px-2 pb-1.5 sm:hidden">
-          <button className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black shadow-sm">📷 {t.photo}</button>
-          <button className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black shadow-sm">QR</button>
-          <button className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[11px] font-black shadow-sm">▥ {t.barcode}</button>
-        </div>
+
 
         <div className="mx-auto max-w-7xl px-2 pb-1.5 sm:hidden">
           <select

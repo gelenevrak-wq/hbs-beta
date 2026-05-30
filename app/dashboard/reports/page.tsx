@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
 
 type StockMovement = {
@@ -19,18 +19,6 @@ type StockMovement = {
   address: string;
 };
 
-// Seeded dataset with detailed dates
-const INITIAL_MOVEMENTS: StockMovement[] = [
-  { id: "m1", date: "2026-05-23", product: "Autel Diagnostics Ürün Grubu", group: "Diagnostik", customer: "Giorgi Auto Service", user: "ALTANCANCI", type: "Giriş", qty: 6, unitCost: 420, unitSale: 620, warehouse: "OBDTR Ana Depo", address: "D-01-R03-G02" },
-  { id: "m2", date: "2026-05-22", product: "Ford Escape Fren Balatası", group: "Fren Sistemi", customer: "Batumi Garage", user: "Depo Sorumlusu", type: "Satış", qty: 2, unitCost: 45, unitSale: 75, warehouse: "Ana Depo", address: "A-03-R12-G04" },
-  { id: "m3", date: "2026-05-21", product: "Krom Mutfak Bataryası", group: "Tesisat", customer: "AutoLine Service", user: "OZGUR", type: "Satış", qty: 4, unitCost: 35, unitSale: 58, warehouse: "Ana Depo", address: "T-02-R04-G01" },
-  { id: "m4", date: "2026-05-20", product: "PVC Boru Bağlantı Seti", group: "Tesisat", customer: "AutoLine Service", user: "OZGUR", type: "İade", qty: 3, unitCost: 8, unitSale: 13, warehouse: "İade / Kontrol Deposu", address: "R-01-R01-G03" },
-  { id: "m5", date: "2026-05-19", product: "Toyota Corolla Yağ Filtresi", group: "Filtre", customer: "Giorgi Auto Service", user: "Depo Sorumlusu", type: "Satış", qty: 8, unitCost: 12, unitSale: 22, warehouse: "Ana Depo", address: "B-04-R02-G01" },
-  { id: "m6", date: "2026-05-18", product: "Universal Buji Seti", group: "Ateşleme", customer: "Batumi Garage", user: "Depo Sorumlusu", type: "Satış", qty: 5, unitCost: 20, unitSale: 38, warehouse: "Ana Depo", address: "C-02-R01-G05" },
-  { id: "m7", date: "2026-05-15", product: "Ford Escape Fren Balatası", group: "Fren Sistemi", customer: "Giorgi Auto Service", user: "ALTANCANCI", type: "Satış", qty: 5, unitCost: 45, unitSale: 75, warehouse: "Ana Depo", address: "A-03-R12-G04" },
-  { id: "m8", date: "2026-05-12", product: "Toyota Corolla Yağ Filtresi", group: "Filtre", customer: "AutoLine Service", user: "Depo Sorumlusu", type: "Satış", qty: 12, unitCost: 12, unitSale: 22, warehouse: "Ana Depo", address: "B-04-R02-G01" }
-];
-
 function money(value: number) {
   return `${value.toLocaleString("tr-TR", { maximumFractionDigits: 0 })} GEL`;
 }
@@ -39,18 +27,33 @@ export default function ReportsPage() {
   const [query, setQuery] = useState("");
   const [type, setType] = useState("Tümü");
   const [group, setGroup] = useState("Tümü");
+  const [movementsList, setMovementsList] = useState<StockMovement[]>([]);
   
   // Date Range Filters
   const [startDate, setStartDate] = useState("2026-05-01");
   const [endDate, setEndDate] = useState("2026-05-31");
 
-  const groups = useMemo(() => ["Tümü", ...Array.from(new Set(INITIAL_MOVEMENTS.map((m) => m.group)))], []);
+  useEffect(() => {
+    const saved = window.localStorage.getItem("hbs-store-stock-movements");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setMovementsList(parsed);
+        }
+      } catch (e) {
+        console.error("Error loading stock movements in reports:", e);
+      }
+    }
+  }, []);
+
+  const groups = useMemo(() => ["Tümü", ...Array.from(new Set(movementsList.map((m) => m.group)))], [movementsList]);
   const types = ["Tümü", "Giriş", "Satış", "İade", "Transfer", "Fire"];
 
   // Filtered dataset incorporating dates
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return INITIAL_MOVEMENTS.filter((m) => {
+    return movementsList.filter((m) => {
       const matchesQ = !q || [m.product, m.group, m.customer, m.user, m.warehouse, m.address].some((v) => v.toLowerCase().includes(q));
       const matchesType = type === "Tümü" || m.type === type;
       const matchesGroup = group === "Tümü" || m.group === group;
@@ -59,7 +62,7 @@ export default function ReportsPage() {
       
       return matchesQ && matchesType && matchesGroup && inDateRange;
     });
-  }, [query, type, group, startDate, endDate]);
+  }, [query, type, group, startDate, endDate, movementsList]);
 
   // General Metrics
   const sales = filtered.filter((m) => m.type === "Satış");

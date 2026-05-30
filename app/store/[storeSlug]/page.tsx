@@ -220,7 +220,7 @@ export default function StorePage() {
               )}
             </div>
 
-            {products.length === 0 ? (
+            {products.filter(p => p.visibility !== "hidden").length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center max-w-lg mx-auto shadow-sm my-6">
                 <div className="text-4xl">🛍️</div>
                 <h3 className="font-black text-slate-800 mt-3 text-sm uppercase tracking-wider">Mağaza Kataloğu Boş</h3>
@@ -233,7 +233,7 @@ export default function StorePage() {
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {products.map((p) => {
+                {products.filter(p => p.visibility !== "hidden").map((p) => {
                   const hasVariants = p.variants && p.variants.length > 0;
                   const selectedVarId = selectedVariants[p.id];
                   const activeVariant = hasVariants ? p.variants?.find(v => v.id === selectedVarId) || p.variants?.[0] : null;

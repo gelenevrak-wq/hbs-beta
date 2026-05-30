@@ -35,63 +35,9 @@ type StockMovement = {
   createdAt: string;
 };
 
-const demoProducts: Product[] = [
-  {
-    id: "product-001",
-    name: "Ford Escape Fren Balatası",
-    barcode: "8690000000011",
-    sku: "FR-BALATA-ESCAPE-001",
-    oemCode: "FORD-OEM-ESC-BR-001",
-    currentStock: 12,
-    warehouse: "Ana Depo",
-    shelf: "A-01",
-  },
-  {
-    id: "product-002",
-    name: "Toyota Corolla Yağ Filtresi",
-    barcode: "8690000000028",
-    sku: "FR-FILTRE-COROLLA-002",
-    oemCode: "TOYOTA-OEM-COR-FLT-002",
-    currentStock: 30,
-    warehouse: "Ana Depo",
-    shelf: "B-04",
-  },
-  {
-    id: "product-003",
-    name: "Universal Buji Seti",
-    barcode: "8690000000042",
-    sku: "FR-BUJI-SET-004",
-    oemCode: "",
-    currentStock: 6,
-    warehouse: "Ana Depo",
-    shelf: "C-02",
-  },
-];
+const demoProducts: Product[] = [];
 
-const initialMovements: StockMovement[] = [
-  {
-    id: "mov-001",
-    productName: "Ford Escape Fren Balatası",
-    productCode: "FR-BALATA-ESCAPE-001",
-    movementType: "stock_in",
-    quantity: 5,
-    warehouse: "Ana Depo",
-    shelf: "A-01",
-    note: "Tedarikçiden gelen ürün girişi.",
-    createdAt: "Bugün 09:30",
-  },
-  {
-    id: "mov-002",
-    productName: "Toyota Corolla Yağ Filtresi",
-    productCode: "FR-FILTRE-COROLLA-002",
-    movementType: "sale",
-    quantity: 2,
-    warehouse: "Ana Depo",
-    shelf: "B-04",
-    note: "Müşteri siparişi için stok çıkışı.",
-    createdAt: "Bugün 11:10",
-  },
-];
+const initialMovements: StockMovement[] = [];
 
 function movementTypeText(type: MovementType) {
   switch (type) {

@@ -392,8 +392,9 @@ export default function LicensePage() {
       ].join(","))
     ];
 
-    const csvContent = "\uFEFF" + "sep=,\n" + csvRows.join("\n"); // Add BOM for Excel UTF-8 compliance
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const csvContent = "sep=,\n" + csvRows.join("\n"); // Add sep=, instruction for Excel column separation
+    const BOM = new Uint8Array([0xEF, 0xBB, 0xBF]); // Add UTF-8 BOM bytes
+    const blob = new Blob([BOM, csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
