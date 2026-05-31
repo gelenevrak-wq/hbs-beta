@@ -143,6 +143,59 @@ function pageTxt(key: string, lang: HbsLanguageCode): string {
   return translationsForLang[key] || pageTranslations.tr[key] || key;
 }
 
+const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
+  tr: {
+    bulletinBoard: "📢 İlan Panosu",
+    directContact: "📞 DOĞRUDAN MAĞAZA İLE İLETİŞİM",
+    quickCall: "📞 Hızlı Ara",
+    visibleNationwide: "Ülke Genelinde Görünür",
+    location: "Türkiye 🇹🇷 & Gürcistan 🇬🇪 Geneli",
+    salesMethod: "Kargolu Gönderim, Elden Teslim, Yerinde Kurulum & Teknik Eğitim",
+    note: "Bu ürün fiziksel bir yerel mağazada raf stoğunda tutulmamaktadır; sipariş üzerine temin edilip doğrudan müşterinin adresinde elden kurulur."
+  },
+  en: {
+    bulletinBoard: "📢 Bulletin Board",
+    directContact: "📞 DIRECT CONTACT WITH STORE",
+    quickCall: "📞 Quick Call",
+    visibleNationwide: "Visible nationwide",
+    location: "Turkey 🇹🇷 & Georgia 🇬🇪 Nationwide",
+    salesMethod: "Shipping, Hand Delivery, On-site Installation & Technical Training",
+    note: "This product is not kept in physical stock in a local store; it is procured upon order and installed directly at the customer's address."
+  },
+  de: {
+    bulletinBoard: "📢 Ausschreibungen",
+    directContact: "📞 DIREKTER KONTAKT MIT SHOP",
+    quickCall: "📞 Schnellanruf",
+    visibleNationwide: "Landesweit sichtbar",
+    location: "Türkei 🇹🇷 & Georgien 🇬🇪 Landesweit",
+    salesMethod: "Frachtversand, Handlieferung, Vor-Ort-Installation & Technisches Training",
+    note: "Dieses Produkt wird nicht in einer physischen Filiale gelagert; es wird auf Bestellung beschafft und direkt an der Adresse des Kunden installiert."
+  },
+  ru: {
+    bulletinBoard: "📢 Доска объявлений",
+    directContact: "📞 ПРЯМАЯ СВЯЗЬ С МАГАЗИНОМ",
+    quickCall: "📞 Быстрый звонок",
+    visibleNationwide: "Видно по всей стране",
+    location: "Турция 🇹🇷 и Грузия 🇬🇪 по всей стране",
+    salesMethod: "Доставка почтой, ручная доставка, установка на месте и обучение",
+    note: "Этот товар не хранится на физическом складе в местном магазине; он поставляется под заказ и устанавливается прямо по адресу клиента."
+  },
+  ka: {
+    bulletinBoard: "📢 განცხადებების დაფა",
+    directContact: "📞 პირდაპირი კავშირი მაღაზიასთან",
+    quickCall: "📞 სწრაფი ზარი",
+    visibleNationwide: "ხილვადია მთელ ქვეყანაში",
+    location: "თურქეთი 🇹🇷 და საქართველო 🇬🇪 მთელ ქვეყანაში",
+    salesMethod: "მიწოდება ფოსტით, ადგილზე ჩაბარება, მონტაჟი და ტექნიკური ტრენინგი",
+    note: "ეს პროდუქტი არ ინახება ადგილობრივი მაღაზიის ფიზიკურ საწყობში; იგი მოეწოდება შეკვეთით და მონტაჟდება პირდაპირ კლიენტის მისამართზე."
+  }
+};
+
+function getLocalText(key: string, lang: HbsLanguageCode): string {
+  const translationsForLang = virtualDeliveryTranslations[lang] || virtualDeliveryTranslations.en || virtualDeliveryTranslations.tr;
+  return translationsForLang[key] || virtualDeliveryTranslations.tr[key] || key;
+}
+
 export default function ProductDetailPage() {
   const params = useParams<{ productSlug: string }>();
   const { t, language, isReady } = useHbsLanguage();
@@ -590,7 +643,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
           <Link href="/" className="shrink-0 text-sm font-black tracking-wide sm:text-2xl">HBS</Link>
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <CompactLanguageSwitcher />
-            <Link href="/requests" className="hidden rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-750 px-3 py-2 text-xs font-bold hover:bg-indigo-105 sm:inline-flex sm:px-4 sm:text-sm transition">📢 {language === "tr" ? "İlan Panosu" : language === "de" ? "Ausschreibungen" : "Bulletin Board"}</Link>
+            <Link href="/requests" className="hidden rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-750 px-3 py-2 text-xs font-bold hover:bg-indigo-105 sm:inline-flex sm:px-4 sm:text-sm transition">{getLocalText("bulletinBoard", language)}</Link>
             <Link href={`/store/${activeProduct.storeSlug}`} className="hidden rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold hover:bg-slate-100 sm:inline-flex sm:px-4 sm:text-sm">{t.common.storefront}</Link>
             <Link href="/customer" className="hidden rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold hover:bg-slate-100 sm:inline-flex sm:px-4 sm:text-sm">{t.common.customerPortal}</Link>
             <Link href="/" className="hidden rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold hover:bg-slate-100 sm:block sm:px-4 sm:text-sm">{t.common.home}</Link>
@@ -639,7 +692,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               {(activeProduct.storePhone || activeProduct.storeWhatsapp) && (
                 <div className="mt-4 border-t border-blue-200/50 pt-3 space-y-2">
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-center">
-                    📞 DOĞRUDAN MAĞAZA İLE İLETİŞİM
+                    {getLocalText("directContact", language)}
                   </span>
                   <div className="grid grid-cols-2 gap-2">
                     {activeProduct.storePhone && (
@@ -647,7 +700,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                         href={`tel:${activeProduct.storePhone}`}
                         className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition shadow-sm"
                       >
-                        📞 Hızlı Ara
+                        {getLocalText("quickCall", language)}
                       </a>
                     )}
                     {activeProduct.storeWhatsapp && (
@@ -693,7 +746,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               {isVirtualDelivery ? (
                 <>
                   <p><span className="font-black">{pageTxt("serviceModel", language)}:</span> {pageTxt("virtualDelivery", language)}</p>
-                  <p><span className="font-black">{pageTxt("openStorefront", language)}:</span> {storefrontNames} ({language === "tr" ? "Ülke Genelinde Görünür" : language === "de" ? "Landesweit sichtbar" : "Visible nationwide"})</p>
+                  <p><span className="font-black">{pageTxt("openStorefront", language)}:</span> {storefrontNames} ({getLocalText("visibleNationwide", language)})</p>
                   <p><span className="font-black">{pageTxt("rule", language)}:</span> {pageTxt("virtualRuleDesc", language)}</p>
                 </>
               ) : (
@@ -728,9 +781,9 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               <p><span className="font-bold text-slate-950">{t.common.store}:</span> {activeProduct.storeName}</p>
               {isVirtualDelivery ? (
                 <>
-                  <p><span className="font-bold text-slate-950">{t.common.location}:</span> Türkiye 🇹🇷 & Gürcistan 🇬🇪 Geneli</p>
-                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.salesMethodLabel, language)}:</span> Kargolu Gönderim, Elden Teslim, Yerinde Kurulum & Teknik Eğitim</p>
-                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.note, language)}:</span> Bu ürün fiziksel bir yerel mağazada raf stoğunda tutulmamaktadır; sipariş üzerine temin edilip doğrudan müşterinin adresinde elden kurulur.</p>
+                  <p><span className="font-bold text-slate-950">{t.common.location}:</span> {getLocalText("location", language)}</p>
+                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.salesMethodLabel, language)}:</span> {getLocalText("salesMethod", language)}</p>
+                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.note, language)}:</span> {getLocalText("note", language)}</p>
                 </>
               ) : (
                 <>
