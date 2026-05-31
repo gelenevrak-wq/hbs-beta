@@ -151,7 +151,10 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     visibleNationwide: "Ülke Genelinde Görünür",
     location: "Türkiye 🇹🇷 & Gürcistan 🇬🇪 Geneli",
     salesMethod: "Kargolu Gönderim, Elden Teslim, Yerinde Kurulum & Teknik Eğitim",
-    note: "Bu ürün fiziksel bir yerel mağazada raf stoğunda tutulmamaktadır; sipariş üzerine temin edilip doğrudan müşterinin adresinde elden kurulur."
+    note: "Bu ürün fiziksel bir yerel mağazada raf stoğunda tutulmamaktadır; sipariş üzerine temin edilip doğrudan müşterinin adresinde elden kurulur.",
+    obdtrSalesMethod: "Türkiye'nin ve Gürcistan'ın her yerine ödeme gerçekleştikten sonra aynı gün kargoda...",
+    afterSalesService: "Satış Sonrası Hizmet",
+    obdtrAfterSales: "Uzaktan güncelleme, Cihaz hatalarına karşı 2 yıl garanti, Tamir ve 2. el satış."
   },
   en: {
     bulletinBoard: "📢 Bulletin Board",
@@ -160,7 +163,10 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     visibleNationwide: "Visible nationwide",
     location: "Turkey 🇹🇷 & Georgia 🇬🇪 Nationwide",
     salesMethod: "Shipping, Hand Delivery, On-site Installation & Technical Training",
-    note: "This product is not kept in physical stock in a local store; it is procured upon order and installed directly at the customer's address."
+    note: "This product is not kept in physical stock in a local store; it is procured upon order and installed directly at the customer's address.",
+    obdtrSalesMethod: "Same-day shipping to anywhere in Turkey and Georgia after payment is completed...",
+    afterSalesService: "After-Sales Service",
+    obdtrAfterSales: "Remote update, 2-year warranty against device faults, repair and second-hand sales.",
   },
   de: {
     bulletinBoard: "📢 Ausschreibungen",
@@ -169,7 +175,10 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     visibleNationwide: "Landesweit sichtbar",
     location: "Türkei 🇹🇷 & Georgien 🇬🇪 Landesweit",
     salesMethod: "Frachtversand, Handlieferung, Vor-Ort-Installation & Technisches Training",
-    note: "Dieses Produkt wird nicht in einer physischen Filiale gelagert; es wird auf Bestellung beschafft und direkt an der Adresse des Kunden installiert."
+    note: "Dieses Produkt wird nicht in einer physischen Filiale gelagert; es wird auf Bestellung beschafft und direkt an der Adresse des Kunden installiert.",
+    obdtrSalesMethod: "Versand am selben Tag überall in die Türkei und nach Georgien nach Zahlungseingang...",
+    afterSalesService: "After-Sales-Service",
+    obdtrAfterSales: "Fern-Update, 2 Jahre Garantie auf Gerätefehler, Reparatur und Gebrauchtverkauf.",
   },
   ru: {
     bulletinBoard: "📢 Доска объявлений",
@@ -178,7 +187,10 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     visibleNationwide: "Видно по всей стране",
     location: "Турция 🇹🇷 и Грузия 🇬🇪 по всей стране",
     salesMethod: "Доставка почтой, ручная доставка, установка на месте и обучение",
-    note: "Этот товар не хранится на физическом складе в местном магазине; он поставляется под заказ и устанавливается прямо по адресу клиента."
+    note: "Этот товар не хранится на физическом складе в местном магазине; он поставляется под заказ и устанавливается прямо по адресу клиента.",
+    obdtrSalesMethod: "Отправка в тот же день в любую точку Турции и Грузии после оплаты...",
+    afterSalesService: "Послепродажное обслуживание",
+    obdtrAfterSales: "Удаленное обновление, 2 года гарантии на дефекты устройства, ремонт и продажа б/у.",
   },
   ka: {
     bulletinBoard: "📢 განცხადებების დაფა",
@@ -187,7 +199,10 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     visibleNationwide: "ხილვადია მთელ ქვეყანაში",
     location: "თურქეთი 🇹🇷 და საქართველო 🇬🇪 მთელ ქვეყანაში",
     salesMethod: "მიწოდება ფოსტით, ადგილზე ჩაბარება, მონტაჟი და ტექნიკური ტრენინგი",
-    note: "ეს პროდუქტი არ ინახება ადგილობრივი მაღაზიის ფიზიკურ საწყობში; იგი მოეწოდება შეკვეთით და მონტაჟდება პირდაპირ კლიენტის მისამართზე."
+    note: "ეს პროდუქტი არ ინახება ადგილობრივი მაღაზიის ფიზიკურ საწყობში; იგი მოეწოდება შეკვეთით და მონტაჟდება პირდაპირ კლიენტის მისამართზე.",
+    obdtrSalesMethod: "იგივე დღეს გაგზავნა თურქეთსა და საქართველოში გადახდის დასრულებისთანავე...",
+    afterSalesService: "გაყიდვის შემდგომი მომსახურება",
+    obdtrAfterSales: "დისტანციური განახლება, 2 წლიანი გარანტია მოწყობილობის ხარვეზებზე, შეკეთება და მეორადი გაყიდვა."
   }
 };
 
@@ -782,8 +797,20 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               {isVirtualDelivery ? (
                 <>
                   <p><span className="font-bold text-slate-950">{t.common.location}:</span> {getLocalText("location", language)}</p>
-                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.salesMethodLabel, language)}:</span> {getLocalText("salesMethod", language)}</p>
-                  <p><span className="font-bold text-slate-950">{txt(dynamicUi.note, language)}:</span> {getLocalText("note", language)}</p>
+                  <p>
+                    <span className="font-bold text-slate-950">{txt(dynamicUi.salesMethodLabel, language)}:</span>{" "}
+                    {activeProduct.storeSlug === "obdtr"
+                      ? getLocalText("obdtrSalesMethod", language)
+                      : getLocalText("salesMethod", language)}
+                  </p>
+                  {activeProduct.storeSlug === "obdtr" ? (
+                    <p>
+                      <span className="font-bold text-slate-950">{getLocalText("afterSalesService", language)}:</span>{" "}
+                      {getLocalText("obdtrAfterSales", language)}
+                    </p>
+                  ) : (
+                    <p><span className="font-bold text-slate-950">{txt(dynamicUi.note, language)}:</span> {getLocalText("note", language)}</p>
+                  )}
                 </>
               ) : (
                 <>
