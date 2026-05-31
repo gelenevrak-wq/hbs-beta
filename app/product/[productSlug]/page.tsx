@@ -61,6 +61,21 @@ export default function ProductDetailPage() {
   const [customLoaded, setCustomLoaded] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<ProductData[]>([]);
 
+  const isVirtualDelivery = useMemo(() => {
+    if (typeof window === "undefined" || !product) return false;
+    try {
+      const localStoresStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+      const localStores = JSON.parse(localStoresStr);
+      const storeObj = localStores.find((st: any) => st.code === product.storeSlug) || (product.storeSlug === "obdtr" ? {
+        operatingModel: "virtual_delivery"
+      } : null);
+      return storeObj?.operatingModel === "virtual_delivery";
+    } catch (e) {
+      console.error("Error parsing local stores for virtual delivery check", e);
+      return false;
+    }
+  }, [product]);
+
   useEffect(() => {
     console.log("HBS_DEBUG: Product detail useEffect triggered", { productSlug: params.productSlug, isReady });
     if (!isReady || !params.productSlug) return;
@@ -306,16 +321,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const activeProduct: ProductData = product;
-  const isVirtualDelivery = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    const localStoresStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
-    const localStores = JSON.parse(localStoresStr);
-    const storeObj = localStores.find((st: any) => st.code === activeProduct.storeSlug) || (activeProduct.storeSlug === "obdtr" ? {
-      operatingModel: "virtual_delivery"
-    } : null);
-    return storeObj?.operatingModel === "virtual_delivery";
-  }, [activeProduct]);
+  const activeProduct: ProductData = product!;
   const displayGallery = Array.from(new Set([activeProduct.imageUrl, ...activeProduct.gallery])).slice(0, 4);
   const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Depo / A-03-R12-G04";
   const storefrontNames = activeProduct.storeSlug === "obdtr" ? "OBDTR Online Vitrin, Diagnostik Vitrini" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız Batum Vitrini, Tesisat Ürünleri" : "OBDTR Online Vitrin";
