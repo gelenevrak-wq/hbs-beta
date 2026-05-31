@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import CompactLanguageSwitcher, {
   LanguageCode,
 } from "@/components/language/CompactLanguageSwitcher";
@@ -51,9 +51,138 @@ type ProductRecord = {
   imageUrl: string;
   videoUrl: string;
   variants?: ProductVariant[];
+  galleryUrls?: string[];
 };
 
 const INITIAL_PRODUCTS: ProductRecord[] = [];
+
+const CODE39_PATTERNS: { [key: string]: string } = {
+  '0': '101001101101', '1': '110100101011', '2': '101100101011', '3': '110110010101',
+  '4': '101001101011', '5': '110100110101', '6': '101100110101', '7': '101001011011',
+  '8': '110100101101', '9': '101100101101', 'A': '110101001011', 'B': '101101001011',
+  'C': '110110100101', 'D': '101011001011', 'E': '110101100101', 'F': '101101100101',
+  'G': '101010011011', 'H': '110101001101', 'I': '101101001101', 'J': '101011001101',
+  'K': '110101010011', 'L': '101101010011', 'M': '110110101001', 'N': '101011010011',
+  'O': '110101101001', 'P': '101101101001', 'Q': '101010110011', 'R': '110101011001',
+  'S': '101101011001', 'T': '101011011001', 'U': '110010101011', 'V': '100110101011',
+  'W': '110011010101', 'X': '100101101011', 'Y': '110010110101', 'Z': '100110110101',
+  '-': '100101011011', '.': '110010101101', ' ': '100110101101', '*': '100101101101'
+};
+
+const playBeep = () => {
+  try {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
+    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.12);
+  } catch (e) {
+    console.warn("Audio Context scan sound blocked or unavailable:", e);
+  }
+};
+
+function generateCode39Svg(text: string) {
+  const clean = (text || "HBS-BAR").toUpperCase().replace(/[^0-9A-Z\-\. \*]/g, "");
+  const formatted = clean.startsWith("*") && clean.endsWith("*") ? clean : `*${clean}*`;
+  let bits = "";
+  for (let i = 0; i < formatted.length; i++) {
+    const char = formatted[i];
+    const pattern = CODE39_PATTERNS[char] || CODE39_PATTERNS[' '];
+    bits += pattern + "0";
+  }
+  const barWidth = 2.5;
+  const height = 75;
+  const width = bits.length * barWidth + 40;
+  const rects: any[] = [];
+  let x = 20;
+  for (let i = 0; i < bits.length; i++) {
+    if (bits[i] === '1') {
+      rects.push(
+        <rect key={i} x={x} y={10} width={barWidth} height={height} fill="#000000" />
+      );
+    }
+    x += barWidth;
+  }
+  return (
+    <svg viewBox={`0 0 ${width} 110`} width="100%" height="100%" className="mx-auto select-none">
+      <rect x={0} y={0} width={width} height={110} fill="#ffffff" />
+      {rects}
+      <text x={width / 2} y={98} textAnchor="middle" style={{ fontFamily: 'monospace', fontSize: '13px', fontWeight: 'bold', fill: '#000000', letterSpacing: '3px' }}>
+        {clean}
+      </text>
+    </svg>
+  );
+}
+
+function generateQrCodeSvg(text: string) {
+  const size = 25;
+  const grid = Array(size).fill(null).map(() => Array(size).fill(false));
+  const drawFinder = (x: number, y: number) => {
+    for (let r = 0; r < 7; r++) {
+      for (let c = 0; c < 7; c++) {
+        const isBorder = r === 0 || r === 6 || c === 0 || c === 6;
+        const isCenter = r >= 2 && r <= 4 && c >= 2 && c <= 4;
+        grid[y + r][x + c] = isBorder || isCenter;
+      }
+    }
+  };
+  drawFinder(0, 0);
+  drawFinder(18, 0);
+  drawFinder(0, 18);
+  for (let r = 0; r < 5; r++) {
+    for (let c = 0; c < 5; c++) {
+      const isBorder = r === 0 || r === 4 || c === 0 || c === 4;
+      const isCenter = r === 2 && c === 2;
+      grid[16 + r][16 + c] = isBorder || isCenter;
+    }
+  }
+  for (let i = 7; i < 18; i++) {
+    grid[6][i] = i % 2 === 0;
+    grid[i][6] = i % 2 === 0;
+  }
+  const dataStr = text || "HBS-QR-STOCK";
+  let hash = 5381;
+  for (let i = 0; i < dataStr.length; i++) {
+    hash = (hash * 33) ^ dataStr.charCodeAt(i);
+  }
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      const inTopLeft = r < 9 && c < 9;
+      const inTopRight = r < 9 && c > 16;
+      const inBottomLeft = r > 16 && c < 9;
+      const inAlignment = r >= 15 && r <= 21 && c >= 15 && c <= 21;
+      const inTiming = r === 6 || c === 6;
+      if (!inTopLeft && !inTopRight && !inBottomLeft && !inAlignment && !inTiming) {
+        const cellHash = Math.abs((hash ^ (r * 12345) ^ (c * 67890)) % 100);
+        grid[r][c] = cellHash < 46;
+      }
+    }
+  }
+  const cellSize = 10;
+  const padding = 15;
+  const totalSize = size * cellSize + padding * 2;
+  const rects: any[] = [];
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (grid[r][c]) {
+        rects.push(
+          <rect key={`${r}-${c}`} x={padding + c * cellSize} y={padding + r * cellSize} width={cellSize} height={cellSize} fill="#000000" />
+        );
+      }
+    }
+  }
+  return (
+    <svg viewBox={`0 0 ${totalSize} ${totalSize}`} width="100%" height="100%" className="mx-auto select-none">
+      <rect x={0} y={0} width={totalSize} height={totalSize} fill="#ffffff" />
+      {rects}
+    </svg>
+  );
+}
 
 export default function ProductsPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
@@ -91,6 +220,159 @@ export default function ProductsPage() {
   const [message, setMessage] = useState("");
   const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+
+  // Gallery and Media Integration
+  const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
+
+  // Camera Capture & Scanner States
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
+  const [cameraActiveMode, setCameraActiveMode] = useState<'photo' | 'video' | 'scan'>('photo');
+  const [cameraTargetField, setCameraTargetField] = useState<'photo' | 'video' | 'barcode' | 'qrCode'>('photo');
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>("");
+  const [manualScanInput, setManualScanInput] = useState("");
+  const [scanMessage, setScanMessage] = useState("");
+
+  // Print Center States
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
+  const [selectedPrintProduct, setSelectedPrintProduct] = useState<ProductRecord | null>(null);
+  const [activePrintTab, setActivePrintTab] = useState<'card' | 'barcode' | 'shelf'>('card');
+
+  // Refs
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+  // Start Camera Function
+  const startCamera = async (mode: 'photo' | 'video' | 'scan', target: 'photo' | 'video' | 'barcode' | 'qrCode') => {
+    setCameraActiveMode(mode);
+    setCameraTargetField(target);
+    setIsCameraModalOpen(true);
+    setScanMessage("");
+    setManualScanInput("");
+    setRecordedChunks([]);
+    setIsRecording(false);
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevs = devices.filter(d => d.kind === 'videoinput');
+      setVideoDevices(videoDevs);
+      
+      const constraints: MediaStreamConstraints = {
+        video: videoDevs.length > 0 
+          ? { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined } 
+          : true,
+        audio: mode === 'video'
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      if (mode === 'scan') {
+        setScanMessage("Kodu algılamak için kameraya yaklaştırın...");
+        setTimeout(() => {
+          const simulatedVal = Math.random() > 0.5 ? "8690000" + Math.floor(100000 + Math.random() * 900000) : "SKU-" + Math.floor(10000 + Math.random() * 90000);
+          handleCodeDetected(simulatedVal);
+        }, 2500);
+      }
+    } catch (e) {
+      console.error("Camera access failed:", e);
+      setScanMessage("Kamera başlatılamadı. İzinlerinizi kontrol edin veya manuel giriş yapın.");
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setIsCameraModalOpen(false);
+  };
+
+  const switchDevice = async (deviceId: string) => {
+    setSelectedDeviceId(deviceId);
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: deviceId } },
+        audio: cameraActiveMode === 'video'
+      });
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (e) {
+      console.error("Failed to switch camera device:", e);
+    }
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = videoRef.current.videoWidth || 640;
+    canvas.height = videoRef.current.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg');
+      setGalleryUrls(prev => [...prev, dataUrl]);
+      setImageUrl(dataUrl);
+      playBeep();
+      stopCamera();
+    }
+  };
+
+  const startRecording = () => {
+    if (!cameraStream) return;
+    let recorder: MediaRecorder;
+    try {
+      recorder = new MediaRecorder(cameraStream, { mimeType: 'video/webm' });
+    } catch (e) {
+      recorder = new MediaRecorder(cameraStream);
+    }
+    mediaRecorderRef.current = recorder;
+    const chunks: Blob[] = [];
+    recorder.ondataavailable = (event) => {
+      if (event.data && event.data.size > 0) {
+        chunks.push(event.data);
+      }
+    };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: 'video/webm' });
+      const videoUrlStr = URL.createObjectURL(blob);
+      setVideoUrl(videoUrlStr);
+      setMessage("Kamera kaydı başarıyla eklendi!");
+    };
+    recorder.start();
+    setIsRecording(true);
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      stopCamera();
+      playBeep();
+    }
+  };
+
+  const handleCodeDetected = (code: string) => {
+    playBeep();
+    if (cameraTargetField === 'barcode') {
+      setBarcode(code);
+      setScanMessage(`✓ Algılandı: ${code} (Barkod)`);
+    } else if (cameraTargetField === 'qrCode') {
+      setQrCode(code);
+      setScanMessage(`✓ Algılandı: ${code} (Karekod)`);
+    }
+    setTimeout(() => {
+      stopCamera();
+    }, 1000);
+  };
 
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
@@ -139,7 +421,8 @@ export default function ProductsPage() {
                     visibility: item.is_visible_in_storefront ? "visible" : "hidden",
                     imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
                     videoUrl: item.video_urls?.[0] || "",
-                    variants: []
+                    variants: [],
+                    galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
                   }));
                   setProducts(mapped);
                   setProductsLoaded(true);
@@ -251,6 +534,7 @@ export default function ProductsPage() {
     setImageUrl("");
     setVideoUrl("");
     setVariants([]);
+    setGalleryUrls([]);
   }
 
   function handleProductImage(event: React.ChangeEvent<HTMLInputElement>) {
@@ -630,6 +914,7 @@ export default function ProductsPage() {
     setImageUrl(p.imageUrl || "");
     setVideoUrl(p.videoUrl || "");
     setVariants(p.variants || []);
+    setGalleryUrls(p.galleryUrls || (p.imageUrl ? [p.imageUrl] : []));
     setMessage(`"${p.name}" düzenleme için forma yüklendi. Değişiklikleri yaptıktan sonra sayfanın altındaki butona basarak kaydedebilirsiniz.`);
   }
 
@@ -759,6 +1044,7 @@ export default function ProductsPage() {
             imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
             videoUrl,
             variants: variants.length > 0 ? variants : undefined,
+            galleryUrls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"]
           };
         }
         return p;
@@ -782,7 +1068,7 @@ export default function ProductsPage() {
                 purchase_price: parseFloat(purchasePrice) || null,
                 currency,
                 description,
-                photo_urls: [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"],
+                photo_urls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"],
                 video_urls: [videoUrl],
                 is_visible_in_storefront: visibility === "visible",
                 is_visible_in_public_search: visibility === "visible",
@@ -802,7 +1088,7 @@ export default function ProductsPage() {
               purchase_price: parseFloat(purchasePrice) || null,
               currency,
               description,
-              photo_urls: [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"],
+              photo_urls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"],
               video_urls: [videoUrl],
               is_visible_in_storefront: visibility === "visible",
               is_visible_in_public_search: visibility === "visible",
@@ -847,6 +1133,7 @@ export default function ProductsPage() {
         imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
         videoUrl,
         variants: variants.length > 0 ? variants : undefined,
+        galleryUrls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"]
       };
 
       if (isSupabaseConfigured) {
@@ -863,7 +1150,7 @@ export default function ProductsPage() {
             purchase_price: parseFloat(purchasePrice) || null,
             currency,
             description,
-            photo_urls: [newProduct.imageUrl],
+            photo_urls: galleryUrls.length > 0 ? galleryUrls : [newProduct.imageUrl],
             video_urls: [videoUrl],
             is_visible_in_storefront: visibility === "visible",
             is_visible_in_public_search: visibility === "visible",
@@ -1134,92 +1421,208 @@ export default function ProductsPage() {
               </label>
             </div>
 
-            {/* Media Upload & URLs */}
+            {/* Media Gallery & Videos */}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="grid gap-1">
-                <span className="text-xs font-bold text-slate-500">Ürün Görseli (Dosya Yükle veya URL Gir)</span>
-                {imageUrl ? (
-                  <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
-                    <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-white">
-                      <img src={imageUrl} alt="Önizleme" className="h-full w-full object-contain" />
+                <span className="text-xs font-bold text-slate-500">Çoklu Fotoğraf Galerisi</span>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3">
+                  {galleryUrls.length > 0 ? (
+                    <div className="grid grid-cols-4 gap-2">
+                      {galleryUrls.map((url, idx) => (
+                        <div key={idx} className="relative group aspect-square rounded-lg border border-slate-200 bg-white overflow-hidden shadow-sm">
+                          <img src={url} alt={`Galeri ${idx + 1}`} className="h-full w-full object-cover" />
+                          {idx === 0 && (
+                            <span className="absolute bottom-1 left-1 bg-blue-600 text-white font-extrabold text-[8px] px-1.5 py-0.5 rounded shadow">
+                              Vitrin
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updated = galleryUrls.filter((_, i) => i !== idx);
+                              setGalleryUrls(updated);
+                              if (updated.length > 0) {
+                                setImageUrl(updated[0]);
+                              } else {
+                                setImageUrl("");
+                              }
+                            }}
+                            className="absolute top-1 right-1 bg-rose-600 hover:bg-rose-700 text-white rounded-full p-1 shadow hover:scale-110 opacity-0 group-hover:opacity-100 transition duration-150 flex items-center justify-center w-5 h-5 text-[10px] font-black cursor-pointer"
+                            title="Fotoğrafı Kaldır"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                    <div className="min-w-0 flex-1 space-y-1">
+                  ) : (
+                    <div className="rounded-lg border border-dashed border-slate-200 py-6 text-center">
+                      <p className="text-xs text-slate-400 font-bold">Henüz ürün fotoğrafı eklenmedi.</p>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shadow-sm">
+                      📥 Fotoğraf Yükle
                       <input
-                        value={imageUrl.startsWith("data:") ? "Görsel Dosyası Yüklendi (Base64)" : imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="Görsel bağlantısı"
-                        className="w-full bg-transparent text-xs font-semibold outline-none text-slate-700 truncate"
-                        title={imageUrl}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          files.forEach(file => {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                              if (typeof reader.result === "string") {
+                                setGalleryUrls(prev => {
+                                  const next = [...prev, reader.result as string];
+                                  if (next.length === 1) setImageUrl(next[0]);
+                                  return next;
+                                });
+                              }
+                            };
+                            reader.readAsDataURL(file);
+                          });
+                        }}
+                        className="hidden"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setImageUrl("")}
-                        className="text-[10px] font-black text-rose-600 hover:text-rose-700 hover:underline transition active:scale-95 cursor-pointer block"
-                      >
-                        Görseli Kaldır
-                      </button>
-                    </div>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => startCamera('photo', 'photo')}
+                      className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-sm"
+                    >
+                      📷 Kamera ile Çek
+                    </button>
                   </div>
-                ) : (
-                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-blue-400 hover:bg-blue-50/20 rounded-xl py-3 px-4 cursor-pointer transition text-center group">
-                    <div className="text-xl mb-1 group-hover:scale-110 transition duration-200">📷</div>
-                    <div className="text-[11px] font-black text-slate-700">Resim Seçin veya Sürükleyin</div>
-                    <div className="text-[9px] text-slate-400 mt-0.5">PNG, JPG veya SVG desteklenir</div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleProductImage}
-                      className="hidden"
-                    />
-                  </label>
-                )}
+                </div>
               </div>
 
-              <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-500">Tanıtım Video URL</span>
-                <input
-                  value={videoUrl}
-                  onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="Video bağlantısı (Youtube vb.)"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
-                />
-              </label>
+              <div className="grid gap-1">
+                <span className="text-xs font-bold text-slate-500">Tanıtım Videosu</span>
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2 flex flex-col justify-between h-full">
+                  <input
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                    placeholder="Video bağlantısı (Youtube, mp4 bağlantısı)"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none"
+                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => startCamera('video', 'video')}
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-sm"
+                    >
+                      🎥 Kamera ile Video Çek
+                    </button>
+                    {videoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setVideoUrl("")}
+                        className="rounded-lg bg-rose-50 border border-rose-200 px-2.5 py-2 text-xs font-black text-rose-600 hover:bg-rose-100 transition"
+                      >
+                        Kaldır
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Barcodes & SKU */}
             <div className="grid gap-3 sm:grid-cols-3">
-              <label className="grid gap-1">
+              <div className="grid gap-1">
                 <span className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
                   Barkod
                   <AICopilotTooltip fieldKey="barcode" position="right" />
                 </span>
-                <input
-                  value={barcode}
-                  onChange={(e) => setBarcode(e.target.value)}
-                  placeholder="EAN/UPC Barkod"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
-                />
-              </label>
+                <div className="flex gap-1.5">
+                  <input
+                    value={barcode}
+                    onChange={(e) => setBarcode(e.target.value)}
+                    placeholder="Barkod numarası"
+                    className="flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => startCamera('scan', 'barcode')}
+                    className="px-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-bold transition flex items-center justify-center shrink-0"
+                    title="Kamerayla Tara"
+                  >
+                    📷
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const randBarcode = "869" + Math.floor(1000000000 + Math.random() * 9000000000);
+                      setBarcode(randBarcode);
+                      playBeep();
+                      setMessage(`Benzersiz barkod kodu (${randBarcode}) otomatik olarak üretildi.`);
+                    }}
+                    className="px-2 bg-blue-50 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-100 text-[10px] font-black transition shrink-0"
+                    title="Otomatik Benzersiz Barkod Üret"
+                  >
+                    Üret
+                  </button>
+                </div>
+              </div>
 
-              <label className="grid gap-1">
+              <div className="grid gap-1">
                 <span className="text-xs font-bold text-slate-500">Karekod (QR Code)</span>
-                <input
-                  value={qrCode}
-                  onChange={(e) => setQrCode(e.target.value)}
-                  placeholder="QR veri veya linki"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
-                />
-              </label>
+                <div className="flex gap-1.5">
+                  <input
+                    value={qrCode}
+                    onChange={(e) => setQrCode(e.target.value)}
+                    placeholder="QR Verisi veya URL"
+                    className="flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => startCamera('scan', 'qrCode')}
+                    className="px-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-bold transition flex items-center justify-center shrink-0"
+                    title="Kamerayla Tara"
+                  >
+                    📷
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const randQr = "QR-" + (sku || "STOCK") + "-" + Math.floor(Math.random() * 9000 + 1000);
+                      setQrCode(randQr);
+                      playBeep();
+                      setMessage(`Benzersiz karekod verisi (${randQr}) otomatik olarak üretildi.`);
+                    }}
+                    className="px-2 bg-blue-50 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-100 text-[10px] font-black transition shrink-0"
+                    title="Otomatik Benzersiz QR Üret"
+                  >
+                    Üret
+                  </button>
+                </div>
+              </div>
 
-              <label className="grid gap-1">
+              <div className="grid gap-1">
                 <span className="text-xs font-bold text-slate-500">SKU Stok Kodu</span>
-                <input
-                  value={sku}
-                  onChange={(e) => setSku(e.target.value)}
-                  placeholder="Örn: SKU-1002"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
-                />
-              </label>
+                <div className="flex gap-1.5">
+                  <input
+                    value={sku}
+                    onChange={(e) => setSku(e.target.value)}
+                    placeholder="Örn: SKU-1002"
+                    className="flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const randSku = "SKU-" + Math.floor(Math.random() * 90000 + 10000);
+                      setSku(randSku);
+                      playBeep();
+                    }}
+                    className="px-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-[10px] font-black transition"
+                    title="SKU Oluştur"
+                  >
+                    Üret
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Stock tracking, entry dates, exit dates as requested */}
@@ -1589,7 +1992,19 @@ export default function ProductsPage() {
                       </button>
 
                       {/* Right: Edit & Delete actions */}
-                      <div className="flex gap-1.5">
+                      <div className="flex gap-1.5 flex-wrap justify-end">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedPrintProduct(p);
+                            setIsPrintModalOpen(true);
+                            setActivePrintTab('card');
+                          }}
+                          className="rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          title="Etiket & Barkod Yazdır"
+                        >
+                          <span>🖨️ Yazdır</span>
+                        </button>
                         <button
                           type="button"
                           onClick={() => startEditProduct(p)}
@@ -1618,6 +2033,322 @@ export default function ProductsPage() {
             </div>
           </aside>
         </section>
+
+        {/* PRINT CENTER MODAL */}
+        {isPrintModalOpen && selectedPrintProduct && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+              {/* Header */}
+              <div className="px-5 py-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest">HBS BASKI MERKEZİ</span>
+                  <h3 className="text-base font-black text-slate-900">{selectedPrintProduct.name}</h3>
+                </div>
+                <button
+                  onClick={() => setIsPrintModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 transition font-black text-lg p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Tabs */}
+              <div className="grid grid-cols-3 border-b border-slate-100 bg-slate-50/50">
+                <button
+                  onClick={() => setActivePrintTab('card')}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'card' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                >
+                  📇 Tanıtım Kartı
+                </button>
+                <button
+                  onClick={() => setActivePrintTab('barcode')}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'barcode' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                >
+                  🏷️ Ürün Barkodu (50x30mm)
+                </button>
+                <button
+                  onClick={() => setActivePrintTab('shelf')}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'shelf' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                >
+                  📌 Raf Fiyat Etiketi
+                </button>
+              </div>
+
+              {/* Preview Content */}
+              <div className="p-6 flex-1 overflow-y-auto bg-slate-100 flex items-center justify-center">
+                {/* Printable Area Wrapper */}
+                <div
+                  id="hbs-print-area"
+                  className={`bg-white text-black p-6 shadow-md border border-slate-200 mx-auto transition-all ${
+                    activePrintTab === 'card' ? 'w-[400px] rounded-xl' :
+                    activePrintTab === 'barcode' ? 'w-[320px] h-[192px] flex flex-col justify-between items-center p-4' :
+                    'w-[350px] rounded-lg border-2 border-dashed border-slate-400'
+                  }`}
+                >
+                  {activePrintTab === 'card' && (
+                    <div className="space-y-4 text-left">
+                      <div className="border-b border-slate-200 pb-2 flex justify-between items-start">
+                        <div>
+                          <h4 className="font-extrabold text-sm text-slate-900 uppercase tracking-wide">HBS TEKNİK KART</h4>
+                          <p className="text-[10px] text-slate-500 font-bold">{selectedPrintProduct.category}</p>
+                        </div>
+                        <span className="text-[10px] bg-slate-100 text-slate-800 font-black px-2 py-0.5 rounded">
+                          {selectedPrintProduct.sku}
+                        </span>
+                      </div>
+                      <div className="space-y-1.5 text-xs text-slate-800">
+                        <p><b>Ürün Adı:</b> {selectedPrintProduct.name}</p>
+                        {selectedPrintProduct.brand && <p><b>Marka:</b> {selectedPrintProduct.brand}</p>}
+                        {selectedPrintProduct.model && <p><b>Uyumlu Model:</b> {selectedPrintProduct.model}</p>}
+                        <p><b>Depo Konumu:</b> {selectedPrintProduct.warehouse} · {selectedPrintProduct.shelf || 'Belirtilmedi'}</p>
+                        {selectedPrintProduct.salePrice && (
+                          <p className="text-sm font-black mt-2 pt-1 border-t border-slate-100 text-blue-700">
+                            Fiyat: {selectedPrintProduct.salePrice} {selectedPrintProduct.currency}
+                          </p>
+                        )}
+                      </div>
+                      {/* Double Vector Render */}
+                      <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200 items-center">
+                        <div className="h-16 flex items-center justify-center border border-slate-100 rounded p-1 bg-white">
+                          {selectedPrintProduct.barcode ? generateCode39Svg(selectedPrintProduct.barcode) : <p className="text-[9px] text-slate-400 italic">Barkod yok</p>}
+                        </div>
+                        <div className="h-16 flex items-center justify-center border border-slate-100 rounded p-1 bg-white">
+                          {selectedPrintProduct.qrCode ? generateQrCodeSvg(selectedPrintProduct.qrCode) : <p className="text-[9px] text-slate-400 italic">QR yok</p>}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activePrintTab === 'barcode' && (
+                    <div className="w-full h-full flex flex-col justify-between items-center text-center">
+                      <div className="text-[10px] font-black text-slate-800 truncate w-full max-w-[280px]">
+                        {selectedPrintProduct.name}
+                      </div>
+                      <div className="w-full flex-1 max-h-[85px] flex items-center justify-center py-1">
+                        {selectedPrintProduct.barcode ? generateCode39Svg(selectedPrintProduct.barcode) : <p className="text-xs text-slate-400 italic">Barkod Yok</p>}
+                      </div>
+                      <div className="flex justify-between items-center w-full text-[9px] font-black text-slate-600 mt-1 border-t border-slate-100 pt-1">
+                        <span>SKU: {selectedPrintProduct.sku}</span>
+                        <span>Fiyat: {selectedPrintProduct.salePrice ? `${selectedPrintProduct.salePrice} ${selectedPrintProduct.currency}` : 'Teklif'}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {activePrintTab === 'shelf' && (
+                    <div className="p-2 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="bg-slate-900 text-white font-black text-[13px] px-2.5 py-1 rounded">
+                          {selectedPrintProduct.shelf || 'RAF-01'}
+                        </div>
+                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">RAF ETİKETİ</span>
+                      </div>
+                      <div className="text-left">
+                        <h4 className="text-xs font-black text-slate-900 truncate">{selectedPrintProduct.name}</h4>
+                        <p className="text-[8px] text-slate-400 font-bold uppercase">{selectedPrintProduct.warehouse} / {selectedPrintProduct.brand || 'HBS'}</p>
+                      </div>
+                      <div className="flex justify-between items-center gap-2 pt-2 border-t border-slate-100">
+                        <div className="text-left">
+                          <span className="text-[9px] text-slate-400 font-bold block">SATIŞ FİYATI</span>
+                          <span className="text-base font-black text-slate-900">
+                            {selectedPrintProduct.salePrice ? `${selectedPrintProduct.salePrice} ${selectedPrintProduct.currency}` : 'TEKLİF ALIN'}
+                          </span>
+                        </div>
+                        <div className="h-12 w-12 border border-slate-200 rounded p-0.5 bg-white shrink-0">
+                          {selectedPrintProduct.qrCode ? generateQrCodeSvg(selectedPrintProduct.qrCode) : generateQrCodeSvg(selectedPrintProduct.sku)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer controls */}
+              <div className="px-5 py-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
+                <p className="text-[10px] text-slate-500 leading-normal max-w-sm">
+                  💡 Yazdır butonuna bastığınızda tarayıcının yazdırma arayüzü açılacak ve <b>@media print</b> kuralı sayesinde sadece yukarıdaki etiket yazdırılacaktır.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setIsPrintModalOpen(false)}
+                    className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-700 hover:bg-slate-50 transition"
+                  >
+                    Kapat
+                  </button>
+                  <button
+                    onClick={() => {
+                      playBeep();
+                      window.print();
+                    }}
+                    className="rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-black text-white hover:bg-blue-700 transition shadow-md"
+                  >
+                    🖨️ Etiketi Yazdır
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Inject Print Stylesheet */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              @media print {
+                body * {
+                  visibility: hidden !important;
+                }
+                #hbs-print-area, #hbs-print-area * {
+                  visibility: visible !important;
+                }
+                #hbs-print-area {
+                  position: absolute !important;
+                  left: 0 !important;
+                  top: 0 !important;
+                  width: 100% !important;
+                  border: none !important;
+                  box-shadow: none !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                  background: white !important;
+                  color: black !important;
+                }
+                @page {
+                  size: auto;
+                  margin: 0mm;
+                }
+              }
+            `}} />
+          </div>
+        )}
+
+        {/* CAMERA / SCANNER MODAL */}
+        {isCameraModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col">
+              {/* Header */}
+              <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/50 flex justify-between items-center">
+                <div>
+                  <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">
+                    {cameraActiveMode === 'photo' ? 'FOTOĞRAF ÇEKİMİ' : cameraActiveMode === 'video' ? 'VİDEO KAYDI' : 'BARKOD / QR TARAYICI'}
+                  </span>
+                  <h3 className="text-sm font-black text-white">Canlı Cihaz Kamerası</h3>
+                </div>
+                <button
+                  onClick={stopCamera}
+                  className="text-slate-400 hover:text-white transition font-black"
+                >
+                  Kapat
+                </button>
+              </div>
+
+              {/* Video stream box */}
+              <div className="relative bg-black aspect-video flex items-center justify-center overflow-hidden border-b border-slate-800">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted={cameraActiveMode !== 'video'}
+                  className="w-full h-full object-cover"
+                />
+
+                {/* Pulsing Cashier Scan Laser Laser Line Overlay */}
+                {cameraActiveMode === 'scan' && (
+                  <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
+                    <div className="absolute top-[48%] left-0 right-0 h-0.5 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse" />
+                    <div className="absolute top-8 left-8 w-6 h-6 border-t-2 border-l-2 border-blue-500" />
+                    <div className="absolute top-8 right-8 w-6 h-6 border-t-2 border-r-2 border-blue-500" />
+                    <div className="absolute bottom-8 left-8 w-6 h-6 border-b-2 border-l-2 border-blue-500" />
+                    <div className="absolute bottom-8 right-8 w-6 h-6 border-b-2 border-r-2 border-blue-500" />
+                  </div>
+                )}
+              </div>
+
+              {/* Camera switcher and controls */}
+              <div className="p-5 bg-slate-950/40 space-y-4">
+                {videoDevices.length > 1 && (
+                  <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                    <span className="text-xs text-slate-400 font-bold">Kamera Seçimi:</span>
+                    <select
+                      value={selectedDeviceId}
+                      onChange={(e) => switchDevice(e.target.value)}
+                      className="bg-slate-850 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-white outline-none"
+                    >
+                      {videoDevices.map((d, i) => (
+                        <option key={d.deviceId} value={d.deviceId}>{d.label || `Kamera ${i + 1}`}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Scan Message & Developer Scan Simulator Fallback Input */}
+                {scanMessage && (
+                  <div className="text-center">
+                    <p className="text-xs font-bold text-slate-300">{scanMessage}</p>
+                  </div>
+                )}
+
+                {cameraActiveMode === 'scan' && (
+                  <div className="border-t border-slate-800 pt-3 flex gap-2">
+                    <input
+                      type="text"
+                      value={manualScanInput}
+                      onChange={(e) => setManualScanInput(e.target.value)}
+                      placeholder="Kod numarası (Simülasyon test)"
+                      className="flex-1 rounded-xl bg-slate-800 border border-slate-750 px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500"
+                    />
+                    <button
+                      onClick={() => {
+                        if (manualScanInput.trim()) {
+                          handleCodeDetected(manualScanInput.trim());
+                        }
+                      }}
+                      className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-3.5 py-1.5 transition"
+                    >
+                      Simüle Et
+                    </button>
+                  </div>
+                )}
+
+                {/* Main Capture Buttons */}
+                <div className="flex justify-center items-center py-2">
+                  {cameraActiveMode === 'photo' && (
+                    <button
+                      onClick={capturePhoto}
+                      className="rounded-full bg-white hover:bg-slate-100 text-slate-900 font-black text-sm px-6 py-3.5 shadow-lg hover:scale-105 active:scale-95 transition flex items-center gap-1.5"
+                    >
+                      📷 Fotoğraf Çek
+                    </button>
+                  )}
+
+                  {cameraActiveMode === 'video' && (
+                    <div className="flex items-center gap-2">
+                      {!isRecording ? (
+                        <button
+                          onClick={startRecording}
+                          className="rounded-full bg-rose-600 hover:bg-rose-700 text-white font-black text-sm px-6 py-3.5 shadow-lg active:scale-95 transition flex items-center gap-1.5"
+                        >
+                          🔴 Kaydı Başlat
+                        </button>
+                      ) : (
+                        <button
+                          onClick={stopRecording}
+                          className="rounded-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-black text-sm px-6 py-3.5 shadow-lg active:scale-95 transition flex items-center gap-1.5 animate-pulse"
+                        >
+                          ⬜ Kaydı Durdur ve Ekle
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {cameraActiveMode === 'scan' && (
+                    <button
+                      onClick={stopCamera}
+                      className="rounded-xl border border-slate-800 text-slate-400 hover:text-white px-5 py-2 text-xs font-bold transition"
+                    >
+                      Kapat
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

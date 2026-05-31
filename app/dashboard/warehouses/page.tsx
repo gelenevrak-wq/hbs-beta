@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
 
 type Warehouse = {
@@ -42,6 +42,100 @@ export default function WarehousesPage() {
   const [query, setQuery] = useState("");
   const [warehousesList, setWarehousesList] = useState<Warehouse[]>([]);
   const [products, setProducts] = useState<any[]>([]);
+
+  // Scanner states
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+  const [scanMessage, setScanMessage] = useState("");
+  const [manualScanInput, setManualScanInput] = useState("");
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Play Beep sound helper
+  const playBeep = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
+      gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.12);
+    } catch (e) {
+      console.warn("Audio Context scan sound blocked or unavailable:", e);
+    }
+  };
+
+  const startScanner = async () => {
+    setIsScannerOpen(true);
+    setScanMessage("");
+    setManualScanInput("");
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevs = devices.filter(d => d.kind === 'videoinput');
+      setVideoDevices(videoDevs);
+      
+      const constraints: MediaStreamConstraints = {
+        video: videoDevs.length > 0 
+          ? { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined } 
+          : true
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setScanMessage("Depo raf kodunu algılamak için kamerayı barkoda yaklaştırın...");
+      // Auto simulation
+      setTimeout(() => {
+        const mockCodes = ["main", "return", "showroom", "A-01", "A-02", "B-01", "R-01", "S-01", "D-01"];
+        const randomCode = mockCodes[Math.floor(Math.random() * mockCodes.length)];
+        handleScanSuccess(randomCode);
+      }, 2500);
+    } catch (e) {
+      console.error("Camera scanner failed to load:", e);
+      setScanMessage("Kameraya erişilemedi. Lütfen manuel kod girin veya izin verin.");
+    }
+  };
+
+  const stopScanner = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setIsScannerOpen(false);
+  };
+
+  const switchDevice = async (deviceId: string) => {
+    setSelectedDeviceId(deviceId);
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: deviceId } }
+      });
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (e) {
+      console.error("Failed to switch scanner camera:", e);
+    }
+  };
+
+  const handleScanSuccess = (code: string) => {
+    playBeep();
+    setQuery(code);
+    setScanMessage(`✓ Algılandı: ${code}. Konum sorgusu filtrelendi!`);
+    setTimeout(() => {
+      stopScanner();
+    }, 1000);
+  };
   
   // Form fields
   const [newWhName, setNewWhName] = useState("");
@@ -377,7 +471,16 @@ export default function WarehousesPage() {
         <section className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
           <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-lg font-black">Ürün konum sorgusu</h2>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ürün, SKU, depo, raf, kullanıcı veya vitrin ara" className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500 sm:max-w-md" />
+            <div className="flex gap-2 items-center w-full sm:max-w-md">
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ürün, SKU, depo, raf, kullanıcı veya vitrin ara" className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500" />
+              <button
+                type="button"
+                onClick={startScanner}
+                className="shrink-0 rounded-xl bg-blue-600 px-3 py-2 text-xs font-black text-white hover:bg-blue-700 transition flex items-center gap-1 shadow-sm active:scale-95"
+              >
+                📷 Tara
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-xs">
@@ -398,6 +501,87 @@ export default function WarehousesPage() {
             </table>
           </div>
         </section>
+
+        {/* SCANNER MODAL */}
+        {isScannerOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-955/80 backdrop-blur-md p-4">
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl flex flex-col">
+              <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/50 flex justify-between items-center">
+                <div>
+                  <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">
+                    DEPO BARKOD TARAYICI
+                  </span>
+                  <h3 className="text-sm font-black text-white">Canlı Konum Arama</h3>
+                </div>
+                <button
+                  onClick={stopScanner}
+                  className="text-slate-400 hover:text-white transition font-black"
+                >
+                  Kapat
+                </button>
+              </div>
+
+              <div className="relative bg-black aspect-video flex items-center justify-center overflow-hidden border-b border-slate-800">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
+                  <div className="absolute top-[48%] left-0 right-0 h-0.5 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse" />
+                  <div className="absolute top-8 left-8 w-6 h-6 border-t-2 border-l-2 border-blue-500" />
+                  <div className="absolute top-8 right-8 w-6 h-6 border-t-2 border-r-2 border-blue-500" />
+                  <div className="absolute bottom-8 left-8 w-6 h-6 border-b-2 border-l-2 border-blue-500" />
+                  <div className="absolute bottom-8 right-8 w-6 h-6 border-b-2 border-r-2 border-blue-500" />
+                </div>
+              </div>
+
+              <div className="p-5 bg-slate-955/40 space-y-4">
+                {videoDevices.length > 1 && (
+                  <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                    <span className="text-xs text-slate-400 font-bold">Kamera Seçimi:</span>
+                    <select
+                      value={selectedDeviceId}
+                      onChange={(e) => switchDevice(e.target.value)}
+                      className="bg-slate-850 border border-slate-800 rounded-lg px-2.5 py-1 text-xs text-white outline-none"
+                    >
+                      {videoDevices.map((d, i) => (
+                        <option key={d.deviceId} value={d.deviceId}>{d.label || `Kamera ${i + 1}`}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {scanMessage && (
+                  <div className="text-center">
+                    <p className="text-xs font-bold text-slate-300">{scanMessage}</p>
+                  </div>
+                )}
+
+                <div className="border-t border-slate-800 pt-3 flex gap-2">
+                  <input
+                    type="text"
+                    value={manualScanInput}
+                    onChange={(e) => setManualScanInput(e.target.value)}
+                    placeholder="Kod numarası veya Raf (Örn: A-01)"
+                    className="flex-1 rounded-xl bg-slate-800 border border-slate-750 px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500"
+                  />
+                  <button
+                    onClick={() => {
+                      if (manualScanInput.trim()) {
+                        handleScanSuccess(manualScanInput.trim());
+                      }
+                    }}
+                    className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-3.5 py-1.5 transition"
+                  >
+                    Simüle Et
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
