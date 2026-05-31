@@ -65,10 +65,10 @@ const pageTranslations: Record<string, Record<string, string>> = {
     visualDesc: "Gerçek görsel yoksa kategoriye uygun temsili görsel kullanılır; canlı sistemde mağaza kendi fotoğrafını yükler.",
     warehouseConn: "Depo / vitrin bağlantısı",
     serviceModel: "Hizmet Modeli",
-    virtualDelivery: "Sanal Mağaza / Adrese Teslimat",
+    virtualDelivery: "Merkez Depo / Adrese Teslimat",
     openStorefront: "Müşteriye açık vitrin",
     rule: "Kural",
-    virtualRuleDesc: "Sanal depodaki ürünler kargo ile gönderilir veya adreste kurulum & eğitim verilir.",
+    virtualRuleDesc: "Merkez depodaki ürünler kargo ile gönderilir veya adreste kurulum & eğitim verilir.",
     internalWarehouse: "İç depo adresi",
     physicalRuleDesc: "Depo ürünün nerede durduğunu, vitrin müşteriye nerede göründüğünü anlatır."
   },
@@ -81,10 +81,10 @@ const pageTranslations: Record<string, Record<string, string>> = {
     visualDesc: "If there is no actual image, a representative image matching the category is used; in the live system, the store uploads its own photo.",
     warehouseConn: "Warehouse / storefront connection",
     serviceModel: "Service Model",
-    virtualDelivery: "Virtual Store / Address Delivery",
+    virtualDelivery: "Central Warehouse / Address Delivery",
     openStorefront: "Customer-facing storefront",
     rule: "Rule",
-    virtualRuleDesc: "Products in virtual warehouse are shipped or installed & trained on-site.",
+    virtualRuleDesc: "Products in central warehouse are shipped or installed & trained on-site.",
     internalWarehouse: "Internal warehouse address",
     physicalRuleDesc: "Warehouse shows where the product is kept; storefront shows where it is visible to customers."
   },
@@ -97,10 +97,10 @@ const pageTranslations: Record<string, Record<string, string>> = {
     visualDesc: "Falls kein echtes Bild vorhanden ist, wird ein passendes Symbolbild verwendet; im Live-System lädt der Shop eigene Fotos hoch.",
     warehouseConn: "Lager- / Schaufensterverbindung",
     serviceModel: "Servicemodell",
-    virtualDelivery: "Virtueller Shop / Hauslieferung",
+    virtualDelivery: "Zentrallager / Hauslieferung",
     openStorefront: "Kundenschaufenster",
     rule: "Regel",
-    virtualRuleDesc: "Produkte im virtuellen Lager werden per Fracht versandt oder vor Ort installiert & geschult.",
+    virtualRuleDesc: "Produkte im Zentrallager werden per Fracht versandt oder vor Ort installiert & geschult.",
     internalWarehouse: "Interne Lageradresse",
     physicalRuleDesc: "Lager zeigt den Lagerort; Schaufenster zeigt, wo der Kunde das Produkt online sieht."
   },
@@ -113,10 +113,10 @@ const pageTranslations: Record<string, Record<string, string>> = {
     visualDesc: "Если реального фото нет, используется подходящее изображение категории; в живой системе магазин загружает свои фото.",
     warehouseConn: "Связь склада и витрины",
     serviceModel: "Модель обслуживания",
-    virtualDelivery: "Виртуальный магазин / Доставка на адрес",
+    virtualDelivery: "Центральный склад / Доставка на адрес",
     openStorefront: "Публичная витрина",
     rule: "Правило",
-    virtualRuleDesc: "Товары с виртуального склада отправляются почтой или доставляются с установкой и обучением на месте.",
+    virtualRuleDesc: "Товары с центрального склада отправляются почтой или доставляются с установкой и обучением на месте.",
     internalWarehouse: "Внутренний адрес склада",
     physicalRuleDesc: "Склад показывает физическое место хранения; витрина показывает, где товар виден клиенту."
   },
@@ -129,10 +129,10 @@ const pageTranslations: Record<string, Record<string, string>> = {
     visualDesc: "თუ რეალური ფოტო არ არის, გამოიყენება კატეგორიის შესაბამისი ფოტო; ცოცხალ სისტემაში მაღაზია თავად ტვირთავს ფოტოს.",
     warehouseConn: "საწყობის / ვიტრინის კავშირი",
     serviceModel: "მომსახურების მოდელი",
-    virtualDelivery: "ვირტუალური მაღაზია / ადგილზე მიწოდება",
+    virtualDelivery: "ცენტრალური საწყობი / ადგილზე მიწოდება",
     openStorefront: "საჯარო ვიტრინა",
     rule: "წესი",
-    virtualRuleDesc: "ვირტუალური საწყობის პროდუქტები იგზავნება ფოსტით ან ხდება ადგილზე მონტაჟი და ტრენინგი.",
+    virtualRuleDesc: "ცენტრალური საწყობის პროდუქტები იგზავნება ფოსტით ან ხდება ადგილზე მონტაჟი და ტრენინგი.",
     internalWarehouse: "საწყობის შიდა მისამართი",
     physicalRuleDesc: "საწყობი აჩვენებს სად ინახება პროდუქტი; ვიტრინა აჩვენებს სად ხედავს მას კლიენტი."
   }
@@ -147,7 +147,7 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
   tr: {
     bulletinBoard: "📢 İlan Panosu",
     directContact: "📞 DOĞRUDAN MAĞAZA İLE İLETİŞİM",
-    quickCall: "📞 Hızlı Ara",
+    quickCall: "Telefon",
     visibleNationwide: "Ülke Genelinde Görünür",
     location: "Türkiye 🇹🇷 & Gürcistan 🇬🇪 Geneli",
     salesMethod: "Kargolu Gönderim, Elden Teslim, Yerinde Kurulum & Teknik Eğitim",
@@ -159,7 +159,7 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
   en: {
     bulletinBoard: "📢 Bulletin Board",
     directContact: "📞 DIRECT CONTACT WITH STORE",
-    quickCall: "📞 Quick Call",
+    quickCall: "Phone",
     visibleNationwide: "Visible nationwide",
     location: "Turkey 🇹🇷 & Georgia 🇬🇪 Nationwide",
     salesMethod: "Shipping, Hand Delivery, On-site Installation & Technical Training",
@@ -171,7 +171,7 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
   de: {
     bulletinBoard: "📢 Ausschreibungen",
     directContact: "📞 DIREKTER KONTAKT MIT SHOP",
-    quickCall: "📞 Schnellanruf",
+    quickCall: "Telefon",
     visibleNationwide: "Landesweit sichtbar",
     location: "Türkei 🇹🇷 & Georgien 🇬🇪 Landesweit",
     salesMethod: "Frachtversand, Handlieferung, Vor-Ort-Installation & Technisches Training",
@@ -183,7 +183,7 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
   ru: {
     bulletinBoard: "📢 Доска объявлений",
     directContact: "📞 ПРЯМАЯ СВЯЗЬ С МАГАЗИНОМ",
-    quickCall: "📞 Быстрый звонок",
+    quickCall: "Телефон",
     visibleNationwide: "Видно по всей стране",
     location: "Турция 🇹🇷 и Грузия 🇬🇪 по всей стране",
     salesMethod: "Доставка почтой, ручная доставка, установка на месте и обучение",
@@ -195,7 +195,7 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
   ka: {
     bulletinBoard: "📢 განცხადებების დაფა",
     directContact: "📞 პირდაპირი კავშირი მაღაზიასთან",
-    quickCall: "📞 სწრაფი ზარი",
+    quickCall: "ტელეფონი",
     visibleNationwide: "ხილვადია მთელ ქვეყანაში",
     location: "თურქეთი 🇹🇷 და საქართველო 🇬🇪 მთელ ქვეყანაში",
     salesMethod: "მიწოდება ფოსტით, ადგილზე ჩაბარება, მონტაჟი და ტექნიკური ტრენინგი",
@@ -713,9 +713,10 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                     {activeProduct.storePhone && (
                       <a
                         href={`tel:${activeProduct.storePhone}`}
-                        className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition shadow-sm"
+                        className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition shadow-sm"
                       >
-                        {getLocalText("quickCall", language)}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <span>{getLocalText("quickCall", language)}</span>
                       </a>
                     )}
                     {activeProduct.storeWhatsapp && (
@@ -723,9 +724,10 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                         href={`https://wa.me/${activeProduct.storeWhatsapp.replace(/[^0-9]/g, "")}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-1.5 rounded-xl border border-green-200 bg-green-50 px-3 py-2.5 text-xs font-bold text-green-800 hover:bg-green-100 transition shadow-sm"
+                        className="flex items-center justify-center gap-1.5 rounded-xl border border-green-200 bg-green-50 px-3.5 py-2.5 text-xs font-bold text-green-800 hover:bg-green-100 transition shadow-sm"
                       >
-                        💬 WhatsApp
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" className="w-3.5 h-3.5" viewBox="0 0 16 16"><path d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.907h.004c4.368 0 7.926-3.559 7.93-7.93a7.9 7.9 0 0 0-2.327-5.645ZM7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592m3.69-4.98c-.202-.1-.374-.195-.614-.307-.24-.113-.28-.09-.386.033-.11.121-.422.534-.517.64-.095.105-.19.117-.39.017-.2-.1-.843-.312-1.606-.992-.593-.53-1.002-1.185-1.119-1.39-.117-.2-.013-.31.087-.41.09-.09.2-.23.3-.35.1-.117.135-.19.2-.317.065-.13.033-.245-.015-.345-.047-.1-.422-1.02-.579-1.396-.153-.371-.322-.32-.44-.326-.113-.005-.243-.006-.374-.006-.13 0-.34.049-.517.243-.177.194-.677.662-.677 1.617 0 .955.697 1.878.795 2.01.1.13 1.369 2.091 3.316 2.93.464.2.825.32 1.107.41.467.15.893.129 1.23.078.374-.056 1.15-.47 1.31-1.026.16-.556.16-1.034.113-1.134-.047-.1-.17-.195-.37-.307Z"/></svg>
+                        <span>WhatsApp</span>
                       </a>
                     )}
                   </div>
