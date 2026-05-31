@@ -7,6 +7,8 @@ import { useParams } from "next/navigation";
 import { LocalizedText, dynamicUi, pickLocalizedText } from "@/lib/i18n/dynamicContent";
 import { HbsLanguageCode } from "@/lib/i18n/translations";
 import { useHbsLanguage } from "@/lib/i18n/useHbsLanguage";
+import { supabase } from "@/lib/supabaseClient";
+
 
 type StockKey = "inStock" | "limited" | "quote";
 
@@ -57,8 +59,10 @@ export default function ProductDetailPage() {
   const [message, setMessage] = useState("");
   const [product, setProduct] = useState<ProductData | null>(null);
   const [customLoaded, setCustomLoaded] = useState(false);
+  const [similarProducts, setSimilarProducts] = useState<ProductData[]>([]);
 
   useEffect(() => {
+    console.log("HBS_DEBUG: Product detail useEffect triggered", { productSlug: params.productSlug, isReady });
     if (!isReady || !params.productSlug) return;
     
     // 1. Static demo products check
@@ -69,88 +73,234 @@ export default function ProductDetailPage() {
       return;
     }
 
-    // 2. Custom local storage products check
-    try {
-      const savedProducts = window.localStorage.getItem("hbs-store-products");
-      if (savedProducts) {
-        const parsedProducts = JSON.parse(savedProducts) as Array<{
-          id: string;
-          name: string;
-          category: string;
-          brand: string;
-          model: string;
-          description: string;
-          salePrice: string;
-          currency: string;
-          sku: string;
-          imageUrl?: string;
-          visibility?: string;
-          pricingMode?: string;
-          barcode?: string;
-          qrCode?: string;
-          oemCode?: string;
-          warehouse?: string;
-          shelf?: string;
-        }>;
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
-        const found = parsedProducts.find(p => p.id === params.productSlug || p.sku === params.productSlug);
-        if (found) {
-          const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
-          const matchingStore = localStores.find((st: any) => st.code === "obdtr") || {
-            code: "obdtr",
-            name: "OBDTR Diagnostics",
-            city: "İstanbul",
-            operatingModel: "virtual_delivery",
-            serviceCountries: ["TR", "GE"]
-          };
+    console.log("HBS_DEBUG: Supabase configuration status:", { isSupabaseConfigured, url: process.env.NEXT_PUBLIC_SUPABASE_URL });
 
+    if (isSupabaseConfigured) {
+      // Safely check if the slug is a valid UUID to prevent PostgREST 400 error on type cast
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.productSlug);
+      
+      let query = supabase.from("offerable_items").select("*, companies(*)");
+      
+      if (isUuid) {
+        query = query.or(`id.eq.${params.productSlug},code.eq.${params.productSlug}`);
+      } else {
+        query = query.eq("code", params.productSlug);
+      }
+
+      console.log("HBS_DEBUG: Querying Supabase...", { isUuid });
+
+      query.then(({ data, error }) => {
+        console.log("HBS_DEBUG: Supabase query resolved:", { data, error });
+        if (data && data.length > 0 && !error) {
+          const item = data[0];
           const mapped: ProductData = {
-            slug: found.id,
-            name: { tr: found.name, en: found.name, de: found.name, ru: found.name, ka: found.name },
-            brand: found.brand || "Genel",
-            model: { tr: found.model || "Genel", en: found.model || "General" },
-            category: { tr: found.category || "Diğer", en: found.category || "Other" },
-            storeName: matchingStore.name,
-            storeSlug: matchingStore.code,
-            country: matchingStore.city.toLowerCase().includes("batum") ? "Georgia" : "Türkiye",
-            city: matchingStore.city || "İstanbul",
-            description: { tr: found.description || "", en: found.description || "" },
+            slug: item.id,
+            name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
+            brand: item.brand || "Genel",
+            model: { tr: item.code || "Genel", en: item.code || "General" },
+            category: { tr: item.category || "Diğer", en: item.category || "Other" },
+            storeName: item.companies?.name || "HBS Mağaza",
+            storeSlug: item.companies?.code || "unknown",
+            country: item.companies?.country || "Türkiye",
+            city: item.companies?.city || "İstanbul",
+            description: { tr: item.description || "", en: item.description || "", de: item.description || "", ru: item.description || "", ka: item.description || "" },
             priceText: {
-              tr: found.pricingMode === "quote" ? "Teklif isteyin" : found.pricingMode === "bidding" ? "Teklif verin" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
-              en: found.pricingMode === "quote" ? "Request quote" : found.pricingMode === "bidding" ? "Make an offer" : `${found.salePrice || "0"} ${found.currency || "GEL"}`
+              tr: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Teklif isteyin",
+              en: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Request quote",
+              de: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Anfrage erforderlich",
+              ru: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Цена по запросу",
+              ka: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "ფასი მოთხოვნით"
             },
-            imageUrl: found.imageUrl || "/product-images/diagnostic-scanner.svg",
-            gallery: [found.imageUrl || "/product-images/diagnostic-scanner.svg"],
-            priceValue: found.salePrice ? parseFloat(found.salePrice) : undefined,
-            currency: found.currency || "GEL",
-            stockStatus: found.pricingMode === "quote" ? "quote" : "inStock",
-            barcode: found.barcode,
-            sku: found.sku,
-            oemCode: found.oemCode
+            imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+            gallery: item.photo_urls || ["/product-images/diagnostic-scanner.svg"],
+            priceValue: item.sale_price ? parseFloat(item.sale_price) : undefined,
+            currency: item.currency || "GEL",
+            stockStatus: item.sale_price ? "inStock" : "quote",
+            sku: item.code,
+            barcode: item.barcode || item.code || ""
           };
           setProduct(mapped);
-        }
-      }
-    } catch (e) {
-      console.error("Error loading product detail from localStorage", e);
-    }
-    setCustomLoaded(true);
-  }, [params.productSlug, isReady]);
 
-  const similarProducts = useMemo(() => {
-    if (!product) return [];
-    return demoProducts.filter((item) => item.slug !== product.slug && item.storeSlug === product.storeSlug);
-  }, [product]);
+          // Fetch similar products from same store
+          supabase
+            .from("offerable_items")
+            .select("*, companies(*)")
+            .eq("company_id", item.company_id)
+            .neq("id", item.id)
+            .eq("is_visible_in_storefront", true)
+            .limit(3)
+            .then(({ data: similarData, error: similarErr }) => {
+              if (similarData && !similarErr) {
+                const mappedSimilar: ProductData[] = similarData.map((sim: any) => ({
+                  slug: sim.id,
+                  name: { tr: sim.name, en: sim.name, de: sim.name, ru: sim.name, ka: sim.name },
+                  brand: sim.brand || "Genel",
+                  model: { tr: sim.code || "Genel", en: sim.code || "General" },
+                  category: { tr: sim.category || "Diğer", en: sim.category || "Other" },
+                  storeName: sim.companies?.name || "HBS Mağaza",
+                  storeSlug: sim.companies?.code || "unknown",
+                  country: sim.companies?.country || "Türkiye",
+                  city: sim.companies?.city || "İstanbul",
+                  description: { tr: sim.description || "", en: sim.description || "", de: sim.description || "", ru: sim.description || "", ka: sim.description || "" },
+                  priceText: {
+                    tr: sim.sale_price ? `${sim.sale_price} ${sim.currency || "GEL"}` : "Teklif isteyin",
+                    en: sim.sale_price ? `${sim.sale_price} ${sim.currency || "GEL"}` : "Request quote",
+                    de: sim.sale_price ? `${sim.sale_price} ${sim.currency || "GEL"}` : "Anfrage erforderlich",
+                    ru: sim.sale_price ? `${sim.sale_price} ${sim.currency || "GEL"}` : "Цена по запросу",
+                    ka: sim.sale_price ? `${sim.sale_price} ${sim.currency || "GEL"}` : "ფასი მოთხოვნით"
+                  },
+                  imageUrl: sim.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                  gallery: sim.photo_urls || ["/product-images/diagnostic-scanner.svg"],
+                  priceValue: sim.sale_price ? parseFloat(sim.sale_price) : undefined,
+                  currency: sim.currency || "GEL",
+                  stockStatus: sim.sale_price ? "inStock" : "quote",
+                  sku: sim.code,
+                  barcode: sim.barcode || sim.code || ""
+                }));
+                setSimilarProducts(mappedSimilar);
+              }
+            });
+
+          setCustomLoaded(true);
+        } else {
+          if (error) console.error("Supabase product load error:", error);
+          loadFromLocalStorage();
+        }
+      });
+    } else {
+      loadFromLocalStorage();
+    }
+
+    // 2. Custom local storage products check
+    function loadFromLocalStorage() {
+      try {
+        const savedProducts = window.localStorage.getItem("hbs-store-products");
+        if (savedProducts) {
+          const parsedProducts = JSON.parse(savedProducts) as Array<{
+            id: string;
+            name: string;
+            category: string;
+            brand: string;
+            model: string;
+            description: string;
+            salePrice: string;
+            currency: string;
+            sku: string;
+            imageUrl?: string;
+            visibility?: string;
+            pricingMode?: string;
+            barcode?: string;
+            qrCode?: string;
+            oemCode?: string;
+            warehouse?: string;
+            shelf?: string;
+          }>;
+
+          const found = parsedProducts.find(p => p.id === params.productSlug || p.sku === params.productSlug);
+          if (found) {
+            const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+            const matchingStore = localStores.find((st: any) => st.code === "obdtr") || {
+              code: "obdtr",
+              name: "OBDTR Diagnostics",
+              city: "İstanbul",
+              operatingModel: "virtual_delivery",
+              serviceCountries: ["TR", "GE"]
+            };
+
+            const mapped: ProductData = {
+              slug: found.id,
+              name: { tr: found.name, en: found.name, de: found.name, ru: found.name, ka: found.name },
+              brand: found.brand || "Genel",
+              model: { tr: found.model || "Genel", en: found.model || "General" },
+              category: { tr: found.category || "Diğer", en: found.category || "Other" },
+              storeName: matchingStore.name,
+              storeSlug: matchingStore.code,
+              country: matchingStore.city.toLowerCase().includes("batum") ? "Georgia" : "Türkiye",
+              city: matchingStore.city || "İstanbul",
+              description: { tr: found.description || "", en: found.description || "" },
+              priceText: {
+                tr: found.pricingMode === "quote" ? "Teklif isteyin" : found.pricingMode === "bidding" ? "Teklif verin" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
+                en: found.pricingMode === "quote" ? "Request quote" : found.pricingMode === "bidding" ? "Make an offer" : `${found.salePrice || "0"} ${found.currency || "GEL"}`
+              },
+              imageUrl: found.imageUrl || "/product-images/diagnostic-scanner.svg",
+              gallery: [found.imageUrl || "/product-images/diagnostic-scanner.svg"],
+              priceValue: found.salePrice ? parseFloat(found.salePrice) : undefined,
+              currency: found.currency || "GEL",
+              stockStatus: found.pricingMode === "quote" ? "quote" : "inStock",
+              barcode: found.barcode,
+              sku: found.sku,
+              oemCode: found.oemCode
+            };
+            setProduct(mapped);
+
+            // Set similar local storage products
+            const localSimilars = parsedProducts
+              .filter(p => p.id !== found.id)
+              .slice(0, 3)
+              .map(sim => ({
+                slug: sim.id,
+                name: { tr: sim.name, en: sim.name, de: sim.name, ru: sim.name, ka: sim.name },
+                brand: sim.brand || "Genel",
+                model: { tr: sim.model || "Genel", en: sim.model || "General" },
+                category: { tr: sim.category || "Diğer", en: sim.category || "Other" },
+                storeName: matchingStore.name,
+                storeSlug: matchingStore.code,
+                country: matchingStore.city.toLowerCase().includes("batum") ? "Georgia" : "Türkiye",
+                city: matchingStore.city || "İstanbul",
+                description: { tr: sim.description || "", en: sim.description || "" },
+                priceText: {
+                  tr: sim.pricingMode === "quote" ? "Teklif isteyin" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`,
+                  en: sim.pricingMode === "quote" ? "Request quote" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`
+                },
+                imageUrl: sim.imageUrl || "/product-images/diagnostic-scanner.svg",
+                gallery: [sim.imageUrl || "/product-images/diagnostic-scanner.svg"],
+                priceValue: sim.salePrice ? parseFloat(sim.salePrice) : undefined,
+                currency: sim.currency || "GEL",
+                stockStatus: sim.pricingMode === "quote" ? "quote" : ("inStock" as StockKey),
+                barcode: sim.barcode,
+                sku: sim.sku,
+                oemCode: sim.oemCode
+              }));
+            setSimilarProducts(localSimilars);
+          }
+        }
+      } catch (e) {
+        console.error("Error loading product detail from localStorage", e);
+      }
+      setCustomLoaded(true);
+    }
+  }, [params.productSlug, isReady]);
 
   if (!isReady || !customLoaded) return <main className="min-h-screen bg-slate-50" />;
 
   if (!product) {
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
     return (
       <main className="min-h-screen hbs-market-page px-6 py-8 text-slate-950">
         <div className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center text-center">
           <h1 className="text-4xl font-black">{t.product.productNotFound}</h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">{t.product.productNotFoundText}</p>
           <Link href="/customer" className="mt-6 rounded-2xl bg-white px-6 py-3 font-black text-slate-950 hover:bg-slate-200">{t.product.goToCustomerPortal}</Link>
+          
+          {/* HBS Teknik Teşhis Paneli - Premium DX */}
+          <div className="mt-12 mx-auto w-full max-w-xl rounded-[1.5rem] border border-red-200 bg-red-50/40 p-5 text-left shadow-lg backdrop-blur">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-red-800 block mb-3">⚙️ HBS TEKNİK TEŞHİS & ENTEGRASYON PANELİ</span>
+            <div className="text-xs leading-relaxed text-slate-800 font-bold space-y-2">
+              <p>• <b>Aranan Ürün SKU/ID (slug):</b> <code className="bg-white px-2 py-0.5 rounded border border-red-200 text-red-750 font-black">{params.productSlug || "Parametre Boş"}</code></p>
+              <p>• <b>Supabase Bağlantı Durumu:</b> <span className={isSupabaseConfigured ? "text-emerald-700 font-extrabold" : "text-rose-700 font-extrabold"}>{isSupabaseConfigured ? "✓ AKTİF (Bağlantı Başarılı)" : "✗ PASİF (LocalStorage Modu)"}</span></p>
+              <p>• <b>Aktif Dil Seçimi:</b> <code className="bg-white px-2 py-0.5 rounded border border-red-200">{language}</code> (Kullanıma Hazır: {isReady ? "Evet" : "Hayır"})</p>
+            </div>
+            <div className="mt-4 border-t border-red-200 pt-3 text-[11px] leading-5 text-slate-600 font-semibold">
+              💡 <b>Hata Giderme Adımı:</b> Eğer yukarıdaki bağlantı durumu <span className="text-rose-700 font-extrabold">PASİF</span> görünüyorsa veya yeni tanımlamalarınız yansımadıysa, lütfen terminaldeki yerel Next.js geliştirici sunucunuzu durdurup <b>npm run dev</b> komutuyla yeniden başlatın. <code>.env.local</code> dosyasındaki yeni tanımlamalar ancak sunucu yeniden başlatıldığında geçerli olur.
+            </div>
+          </div>
         </div>
       </main>
     );

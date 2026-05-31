@@ -308,19 +308,21 @@ export default function StorePage() {
                   return (
                     <article key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 flex flex-col justify-between">
                       <div className="space-y-3">
-                        <div className="aspect-[4/3] rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+                        <Link href={`/product/${p.id}`} className="block aspect-[4/3] rounded-xl bg-slate-50 border border-slate-100 overflow-hidden hover:opacity-90 transition">
                           {p.imageUrl ? (
                             <img src={p.imageUrl} alt={p.name} className="object-contain h-full w-full p-2" />
                           ) : (
                             <span className="text-3xl">⚙️</span>
                           )}
-                        </div>
+                        </Link>
                         
                         <div>
                           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[9px] font-black text-blue-800 uppercase">
                             {p.category}
                           </span>
-                          <h3 className="font-black text-sm text-slate-800 mt-1">{p.name}</h3>
+                          <h3 className="font-black text-sm text-slate-800 mt-1 hover:text-blue-600 transition">
+                            <Link href={`/product/${p.id}`}>{p.name}</Link>
+                          </h3>
                           {p.description && (
                             <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{p.description}</p>
                           )}
