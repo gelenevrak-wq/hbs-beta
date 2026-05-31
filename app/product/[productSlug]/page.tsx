@@ -55,6 +55,94 @@ function availabilityUrl(stockStatus: StockKey) {
   return "https://schema.org/PreOrder";
 }
 
+const pageTranslations: Record<string, Record<string, string>> = {
+  tr: {
+    descTitle: "Ürün açıklaması ve kullanım bilgisi",
+    detail: "Detay",
+    compatibility: "Uyumluluk / kullanım",
+    compatibilityDesc: "Mağaza onayıyla kesinleştirilir; araç, cihaz veya tesisat ölçüsü kontrol edilir.",
+    visualStatus: "Görsel durumu",
+    visualDesc: "Gerçek görsel yoksa kategoriye uygun temsili görsel kullanılır; canlı sistemde mağaza kendi fotoğrafını yükler.",
+    warehouseConn: "Depo / vitrin bağlantısı",
+    serviceModel: "Hizmet Modeli",
+    virtualDelivery: "Sanal Mağaza / Adrese Teslimat",
+    openStorefront: "Müşteriye açık vitrin",
+    rule: "Kural",
+    virtualRuleDesc: "Sanal depodaki ürünler kargo ile gönderilir veya adreste kurulum & eğitim verilir.",
+    internalWarehouse: "İç depo adresi",
+    physicalRuleDesc: "Depo ürünün nerede durduğunu, vitrin müşteriye nerede göründüğünü anlatır."
+  },
+  en: {
+    descTitle: "Product description and usage",
+    detail: "Detail",
+    compatibility: "Compatibility / usage",
+    compatibilityDesc: "Confirmed upon store approval; vehicle, device, or installation size is checked.",
+    visualStatus: "Visual status",
+    visualDesc: "If there is no actual image, a representative image matching the category is used; in the live system, the store uploads its own photo.",
+    warehouseConn: "Warehouse / storefront connection",
+    serviceModel: "Service Model",
+    virtualDelivery: "Virtual Store / Address Delivery",
+    openStorefront: "Customer-facing storefront",
+    rule: "Rule",
+    virtualRuleDesc: "Products in virtual warehouse are shipped or installed & trained on-site.",
+    internalWarehouse: "Internal warehouse address",
+    physicalRuleDesc: "Warehouse shows where the product is kept; storefront shows where it is visible to customers."
+  },
+  de: {
+    descTitle: "Produktbeschreibung und Verwendung",
+    detail: "Detail",
+    compatibility: "Kompatibilität / Verwendung",
+    compatibilityDesc: "Wird nach Shop-Freigabe bestätigt; Fahrzeug-, Geräte- oder Installationsmaß wird geprüft.",
+    visualStatus: "Bildstatus",
+    visualDesc: "Falls kein echtes Bild vorhanden ist, wird ein passendes Symbolbild verwendet; im Live-System lädt der Shop eigene Fotos hoch.",
+    warehouseConn: "Lager- / Schaufensterverbindung",
+    serviceModel: "Servicemodell",
+    virtualDelivery: "Virtueller Shop / Hauslieferung",
+    openStorefront: "Kundenschaufenster",
+    rule: "Regel",
+    virtualRuleDesc: "Produkte im virtuellen Lager werden per Fracht versandt oder vor Ort installiert & geschult.",
+    internalWarehouse: "Interne Lageradresse",
+    physicalRuleDesc: "Lager zeigt den Lagerort; Schaufenster zeigt, wo der Kunde das Produkt online sieht."
+  },
+  ru: {
+    descTitle: "Описание товара и использование",
+    detail: "Детали",
+    compatibility: "Совместимость / использование",
+    compatibilityDesc: "Подтверждается магазином; проверяются размеры автомобиля, устройства или установки.",
+    visualStatus: "Статус изображения",
+    visualDesc: "Если реального фото нет, используется подходящее изображение категории; в живой системе магазин загружает свои фото.",
+    warehouseConn: "Связь склада и витрины",
+    serviceModel: "Модель обслуживания",
+    virtualDelivery: "Виртуальный магазин / Доставка на адрес",
+    openStorefront: "Публичная витрина",
+    rule: "Правило",
+    virtualRuleDesc: "Товары с виртуального склада отправляются почтой или доставляются с установкой и обучением на месте.",
+    internalWarehouse: "Внутренний адрес склада",
+    physicalRuleDesc: "Склад показывает физическое место хранения; витрина показывает, где товар виден клиенту."
+  },
+  ka: {
+    descTitle: "პროდუქტის აღწერა და გამოყენება",
+    detail: "დეტალი",
+    compatibility: "თავსებადობა / გამოყენება",
+    compatibilityDesc: "დასტურდება მაღაზიის მიერ; მოწმდება ავტომობილის, მოწყობილობის ან მონტაჟის ზომები.",
+    visualStatus: "გამოსახულების სტატუსი",
+    visualDesc: "თუ რეალური ფოტო არ არის, გამოიყენება კატეგორიის შესაბამისი ფოტო; ცოცხალ სისტემაში მაღაზია თავად ტვირთავს ფოტოს.",
+    warehouseConn: "საწყობის / ვიტრინის კავშირი",
+    serviceModel: "მომსახურების მოდელი",
+    virtualDelivery: "ვირტუალური მაღაზია / ადგილზე მიწოდება",
+    openStorefront: "საჯარო ვიტრინა",
+    rule: "წესი",
+    virtualRuleDesc: "ვირტუალური საწყობის პროდუქტები იგზავნება ფოსტით ან ხდება ადგილზე მონტაჟი და ტრენინგი.",
+    internalWarehouse: "საწყობის შიდა მისამართი",
+    physicalRuleDesc: "საწყობი აჩვენებს სად ინახება პროდუქტი; ვიტრინა აჩვენებს სად ხედავს მას კლიენტი."
+  }
+};
+
+function pageTxt(key: string, lang: HbsLanguageCode): string {
+  const translationsForLang = pageTranslations[lang] || pageTranslations.en || pageTranslations.tr;
+  return translationsForLang[key] || pageTranslations.tr[key] || key;
+}
+
 export default function ProductDetailPage() {
   const params = useParams<{ productSlug: string }>();
   const { t, language, isReady } = useHbsLanguage();
@@ -333,7 +421,42 @@ export default function ProductDetailPage() {
     );
   }
 
-  const activeProduct: ProductData = product!;
+  const activeProduct: ProductData = useMemo(() => {
+    if (!product) return product!;
+    
+    const names: Record<string, string> = {
+      tr: "Autel MX808S Arıza Tespit Cihazı",
+      en: "Autel MX808S Diagnostic Scanner",
+      de: "Autel MX808S Diagnosegerät",
+      ru: "Диагностический автосканер Autel MX808S",
+      ka: "Autel MX808S სადიაგნოსტიკო აპარატი"
+    };
+
+    const descriptions: Record<string, string> = {
+      tr: `Autel MX808S Arıza Tespit Cihazı, günlük servis işlemlerini hızlandırmak, arızaları doğru ve net şekilde tespit etmek isteyen ustalar ve servisler için geliştirilmiş pratik, güçlü ve ekonomik bir diagnostik çözümdür. Kompat yapısı, hızlı arayüzü ve geniş servis fonksiyonları sayesinde MX808S; hem rutin bakım işlemlerinde hem de detaylı sistem kontrollerinde yüksek verim sağlar. "Hızlı bağlan, hızlı teşhis et, doğru çöz" mantığıyla çalışan bu cihaz, servisinizde zaman kaybını minimuma indirir. TEKNİK DONANIM & ÖZELLİKLER:\n• 7.0" dokunmatik ekran (net ve hızlı kullanım)\n• Gelişmiş Servis & Günlük Kullanım özellikleri\n• Yağ sıfırlama, EPB, SAS, DPF, BMS ve diğer 30+ servis sıfırlama işlevi\n• Aktif testler ve tüm sistem teşhisleri\n• Android 11 işletim sistemi\n• Autel MX808S, karmaşık cihazlara ihtiyaç duymadan hızlı ve doğru teşhis yapmak isteyenler için ideal bir çözümdür.`,
+      en: `The Autel MX808S Diagnostic Scanner is a practical, powerful, and economical diagnostic solution developed for technicians and workshops wanting to speed up daily service operations and detect faults accurately and clearly. Thanks to its compact structure, fast interface, and wide service functions, the MX808S ensures high efficiency in both routine maintenance and detailed system checks. Operating with the logic of "connect fast, diagnose fast, solve right," this device minimizes time loss in your workshop. TECHNICAL EQUIPMENT & FEATURES:\n• 7.0" touch screen (clear and fast operation)\n• Advanced Service & Daily Use features\n• Oil reset, EPB, SAS, DPF, BMS, and 30+ other service reset functions\n• Active tests and all-system diagnostics\n• Android 11 operating system\n• The Autel MX808S is an ideal solution for those who want fast and accurate diagnosis without needing complex equipment.`,
+      de: `Das Autel MX808S Diagnosegerät ist eine praktische, leistungsstarke und wirtschaftliche Diagnoselösung für Techniker und Werkstätten, die alltägliche Servicearbeiten beschleunigen und Fehler präzise erkennen möchten. Dank seines kompakten Designs, der schnellen Benutzeroberfläche und der umfangreichen Servicefunktionen bietet das MX808S eine hohe Effizienz sowohl bei routinemäßigen Wartungsarbeiten als auch bei detaillierten Systemprüfungen. Getreu dem Motto "Schnell verbinden, schnell diagnostizieren, richtig lösen" minimiert dieses Gerät Zeitverluste in Ihrer Werkstatt. TECHNISCHE AUSSTATTUNG & MERKMALE:\n• 7,0" Touchscreen (klare und schnelle Bedienung)\n• Fortschrittliche Service- und Alltagsfunktionen\n• Ölrückstellung, EPB, SAS, DPF, BMS und über 30 weitere Servicefunktionen\n• Aktive Tests und vollständige Systemdiagnose\n• Android 11 Betriebssystem\n• Das Autel MX808S ist die ideale Lösung für alle, die eine schnelle und präzise Diagnose wünschen, ohne auf komplizierte Geräte angewiesen zu sein.`,
+      ru: `Автомобильный диагностический сканер Autel MX808S — это практичное, мощное и экономичное диагностическое решение, разработанное для мастеров и автосервисов, стремящихся ускорить ежедневные сервисные операции и точно определять неисправности. Благодаря компактной конструкции, быстрому интерфейсу и широким сервисным функциям MX808S обеспечивает высокую эффективность как при регламентном обслуживании, так и при детальной проверке систем. Устройство работает по принципу «быстрое подключение, быстрая диагностика, правильное решение», сводя к минимуму потери времени. ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ И ОСОБЕННОСТИ:\n• 7,0-дюймовый сенсорный экран (четкое и быстрое управление)\n• Расширенные сервисные функции\n• Сброс масла, EPB, SAS, DPF, BMS и более 30 других сервисных функций\n• Активные тесты и диагностика всех систем\n• Операционная система Android 11\n• Autel MX808S — идеальное решение для быстрого и точного поиска неисправностей.`,
+      ka: `Autel MX808S სადიაგნოსტიკო აპარატი არის პრაქტიკული, ძლიერი და ეკონომიური სადიაგნოსტიკო გადაწყვეტა, რომელიც შემუშავებულია ხელოსნებისა და ავტოსერვისებისთვის, რომლებსაც სურთ ყოველდღიური სერვისის ოპერაციების დაჩქარება და ხარვეზების ზუსტად დადგენა. კომპაქტური დიზაინის, სწრაფი ინტერფეისისა და ფართო სერვისული ფუნქციების წყალობით, MX808S უზრუნველყოფს მაღალ ეფექტურობას როგორც რუტინული ტექნიკური მომსახურების, ასევე სისტემის დეტალური შემოწმებისას. მოწყობილობა მუშაობს პრინციპით „სწრაფი კავშირი, სწრაფი დიაგნოსტიკა, სწორი გადაწყვეტა“, რაც მინიმუმამდე ამცირებს დროის კარგვას. ტექნიკური მახასიათებლები და ფუნქციები:\n• 7.0" სენსორული ეკრანი (ნათელი და სწრაფი გამოყენება)\n• გაფართოებული სერვისის ფუნქციები\n• ზეთის ჩამოყრა, EPB, SAS, DPF, BMS და 30-ზე მეტი სხვა სერვისული ფუნქცია\n• აქტიური ტესტები და ყველა სისტემის დიაგნოსტიკა\n• Android 11 ოპერაციული სისტემა\n• Autel MX808S არის იდეალური გადაწყვეტა ყველასთვის, ვისაც სურს სწრაფი და ზუსტი დიაგნოსტიკა.`
+    };
+
+    const isAutel = product.sku === "AUTEL-MX808S" || product.slug === "obdtr-autel-mx808s" || product.name.tr.includes("Autel MX808S");
+    
+    if (isAutel) {
+      return {
+        ...product,
+        name: {
+          ...product.name,
+          [language]: names[language] || names.en || product.name.en || product.name.tr
+        },
+        description: {
+          ...product.description,
+          [language]: descriptions[language] || descriptions.en || product.description.en || product.description.tr
+        }
+      };
+    }
+    return product;
+  }, [product, language]);
   const displayGallery = Array.from(new Set([activeProduct.imageUrl, ...activeProduct.gallery])).slice(0, 4);
   const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Depo / A-03-R12-G04";
   const storefrontNames = activeProduct.storeSlug === "obdtr" ? "OBDTR Online Vitrin, Diagnostik Vitrini" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız Batum Vitrini, Tesisat Ürünleri" : "OBDTR Online Vitrin";
@@ -464,7 +587,7 @@ export default function ProductDetailPage() {
           <Link href="/" className="shrink-0 text-sm font-black tracking-wide sm:text-2xl">HBS</Link>
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <CompactLanguageSwitcher />
-            <Link href="/requests" className="hidden rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-750 px-3 py-2 text-xs font-bold hover:bg-indigo-105 sm:inline-flex sm:px-4 sm:text-sm transition">📢 İlan Panosu</Link>
+            <Link href="/requests" className="hidden rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-750 px-3 py-2 text-xs font-bold hover:bg-indigo-105 sm:inline-flex sm:px-4 sm:text-sm transition">📢 {language === "tr" ? "İlan Panosu" : language === "de" ? "Ausschreibungen" : "Bulletin Board"}</Link>
             <Link href={`/store/${activeProduct.storeSlug}`} className="hidden rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold hover:bg-slate-100 sm:inline-flex sm:px-4 sm:text-sm">{t.common.storefront}</Link>
             <Link href="/customer" className="hidden rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold hover:bg-slate-100 sm:inline-flex sm:px-4 sm:text-sm">{t.common.customerPortal}</Link>
             <Link href="/" className="hidden rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold hover:bg-slate-100 sm:block sm:px-4 sm:text-sm">{t.common.home}</Link>
@@ -546,35 +669,35 @@ export default function ProductDetailPage() {
         <section className="mb-4 grid gap-3 sm:mb-6 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="text-lg font-black sm:text-xl">Ürün açıklaması ve kullanım bilgisi</h2>
-              <span className="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">Detay</span>
+              <h2 className="text-lg font-black sm:text-xl">{pageTxt("descTitle", language)}</h2>
+              <span className="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">{pageTxt("detail", language)}</span>
             </div>
-            <p className="text-sm leading-6 text-slate-700">{txt(activeProduct.description, language)}</p>
+            <p className="text-sm leading-6 text-slate-700 whitespace-pre-line">{txt(activeProduct.description, language)}</p>
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Uyumluluk / kullanım</p>
-                <p className="mt-1 text-sm font-semibold text-slate-800">Mağaza onayıyla kesinleştirilir; araç, cihaz veya tesisat ölçüsü kontrol edilir.</p>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{pageTxt("compatibility", language)}</p>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{pageTxt("compatibilityDesc", language)}</p>
               </div>
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Görsel durumu</p>
-                <p className="mt-1 text-sm font-semibold text-slate-800">Gerçek görsel yoksa kategoriye uygun temsili görsel kullanılır; canlı sistemde mağaza kendi fotoğrafını yükler.</p>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{pageTxt("visualStatus", language)}</p>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{pageTxt("visualDesc", language)}</p>
               </div>
             </div>
           </div>
           <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm sm:rounded-[2rem] sm:p-5">
-            <h2 className="text-lg font-black text-emerald-900 sm:text-xl">Depo / vitrin bağlantısı</h2>
+            <h2 className="text-lg font-black text-emerald-900 sm:text-xl">{pageTxt("warehouseConn", language)}</h2>
             <div className="mt-3 grid gap-2 text-sm leading-6 text-emerald-900/90">
               {isVirtualDelivery ? (
                 <>
-                  <p><span className="font-black">Hizmet Modeli:</span> Sanal Mağaza / Adrese Teslimat</p>
-                  <p><span className="font-black">Müşteriye açık vitrin:</span> {storefrontNames} (Ülke Genelinde Görünür)</p>
-                  <p><span className="font-black">Kural:</span> Sanal depodaki ürünler kargo ile gönderilir veya adreste kurulum & eğitim verilir.</p>
+                  <p><span className="font-black">{pageTxt("serviceModel", language)}:</span> {pageTxt("virtualDelivery", language)}</p>
+                  <p><span className="font-black">{pageTxt("openStorefront", language)}:</span> {storefrontNames} ({language === "tr" ? "Ülke Genelinde Görünür" : language === "de" ? "Landesweit sichtbar" : "Visible nationwide"})</p>
+                  <p><span className="font-black">{pageTxt("rule", language)}:</span> {pageTxt("virtualRuleDesc", language)}</p>
                 </>
               ) : (
                 <>
-                  <p><span className="font-black">İç depo adresi:</span> {internalWarehouseCode}</p>
-                  <p><span className="font-black">Müşteriye açık vitrin:</span> {storefrontNames}</p>
-                  <p><span className="font-black">Kural:</span> Depo ürünün nerede durduğunu, vitrin müşteriye nerede göründüğünü anlatır.</p>
+                  <p><span className="font-black">{pageTxt("internalWarehouse", language)}:</span> {internalWarehouseCode}</p>
+                  <p><span className="font-black">{pageTxt("openStorefront", language)}:</span> {storefrontNames}</p>
+                  <p><span className="font-black">{pageTxt("rule", language)}:</span> {pageTxt("physicalRuleDesc", language)}</p>
                 </>
               )}
             </div>
