@@ -405,12 +405,12 @@ export default function RegisterPage() {
                 <button type="button" onClick={() => setMode("select")} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black">{t.back}</button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <input name="fullName" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.fullName} autoComplete="off" />
-                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
-                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
-                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
-                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
-                <input name="city" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.cityOptional} autoComplete="off" />
+                <input name="fullName" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.fullName} autoComplete="off" />
+                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
+                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
+                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
+                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
+                <input name="city" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.cityOptional} autoComplete="off" />
               </div>
               <label className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold leading-5 text-slate-700">
                 <input type="checkbox" className="mt-1" />
@@ -429,16 +429,16 @@ export default function RegisterPage() {
               </div>
               <p className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs font-bold leading-5 text-blue-900">{t.storeNote}</p>
               <div className="grid gap-3 sm:grid-cols-2">
-                <input name="company" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.company} autoComplete="off" />
-                <input name="representative" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.representative} autoComplete="off" />
-                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
-                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
-                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
-                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
-                <input name="city" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.cityOptional.replace("(zorunlu değil)", "").replace("(optional)", "").replace("(необязательно)", "").replace("(არასავალდებულო)", "")} autoComplete="off" />
-                <input name="address" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.address} autoComplete="off" />
-                <input name="whatsapp" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.whatsapp} autoComplete="off" />
-                <input name="maps" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm outline-none focus:border-blue-500" placeholder={t.maps} autoComplete="off" />
+                <input name="company" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.company} autoComplete="off" />
+                <input name="representative" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.representative} autoComplete="off" />
+                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
+                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
+                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
+                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
+                <input name="city" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.cityOptional.replace("(zorunlu değil)", "").replace("(optional)", "").replace("(необязательно)", "").replace("(არასავალდებულო)", "")} autoComplete="off" />
+                <input name="address" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.address} autoComplete="off" />
+                <input name="whatsapp" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.whatsapp} autoComplete="off" />
+                <input name="maps" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.maps} autoComplete="off" />
               </div>
               <label className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-black leading-5 text-amber-950">
                 <input required type="checkbox" className="mt-1" />

@@ -602,7 +602,7 @@ export default function StorePage() {
                           value={offerValue}
                           onChange={(e) => setOfferValue(e.target.value)}
                           placeholder="Örn: 42.000 USD"
-                          className="flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs outline-none focus:border-blue-500"
+                          className="flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-900 outline-none focus:border-blue-500"
                         />
                         <button
                           type="button"
@@ -743,7 +743,7 @@ export default function StorePage() {
                     value={plateNumber}
                     onChange={(e) => setPlateNumber(e.target.value)}
                     placeholder="Örn: 34-OBD-34"
-                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white"
                   />
                   <button
                     type="button"
@@ -851,7 +851,7 @@ export default function StorePage() {
                   required
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
                   placeholder="Ahmet Yılmaz"
                 />
               </div>
@@ -863,7 +863,7 @@ export default function StorePage() {
                   required
                   value={profilePhone}
                   onChange={(e) => setProfilePhone(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
                   placeholder="+90 532 000 00 00"
                 />
               </div>
@@ -875,7 +875,7 @@ export default function StorePage() {
                   required
                   value={profileCity}
                   onChange={(e) => setProfileCity(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
                   placeholder="İstanbul"
                 />
               </div>

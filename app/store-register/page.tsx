@@ -316,7 +316,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setCompanyName(e.target.value)}
                     required
                     placeholder="Örn: OBDTR Yedek Parça"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                   />
                 </label>
 
@@ -327,7 +327,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setRepresentative(e.target.value)}
                     required
                     placeholder="Örn: Özgür Yıldız"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                   />
                 </label>
               </div>
@@ -340,7 +340,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setPhone(e.target.value)}
                     required
                     placeholder="+90 555 123 45 67"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                   />
                 </label>
 
@@ -352,7 +352,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="firma@email.com"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                   />
                 </label>
               </div>
@@ -365,7 +365,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setCity(e.target.value)}
                     required
                     placeholder="Örn: İzmir, İstanbul, Batumi"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                   />
                 </label>
 
@@ -377,7 +377,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="Güçlü bir şifre girin"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                   />
                 </label>
               </div>
@@ -389,7 +389,7 @@ export default function StoreRegisterPage() {
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Mağaza adresi verilmez ise sistem 'Sanal Mağaza, Türkiye çapında kargolama' olarak işaretleyecektir."
                   rows={2}
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                 />
               </label>
 
@@ -417,7 +417,7 @@ export default function StoreRegisterPage() {
                   <select
                     value={selectedIndustry}
                     onChange={(e) => setSelectedIndustry(e.target.value)}
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                   >
                     {industries.map((ind) => (
                       <option key={ind} value={ind}>{ind}</option>
@@ -434,7 +434,7 @@ export default function StoreRegisterPage() {
                       onChange={(e) => setCustomIndustry(e.target.value)}
                       required
                       placeholder="Yeni sektör ismini girin"
-                      className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm outline-none focus:border-blue-500 focus:bg-white transition"
+                      className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                     />
                     <p className="text-[10px] text-slate-500">Bu sektörü eklediğinizde sistem bir sonraki mağaza açılışlarında sektörü otomatik listeye dahil edecektir.</p>
                   </label>
@@ -555,7 +555,7 @@ export default function StoreRegisterPage() {
                       value={newWhName}
                       onChange={(e) => setNewWhName(e.target.value)}
                       placeholder="Yeni Depo..."
-                      className="rounded-lg border border-slate-200 px-2 py-1 text-xs outline-none focus:border-blue-500"
+                      className="rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-900 outline-none focus:border-blue-500"
                     />
                     <button
                       type="button"
@@ -575,7 +575,7 @@ export default function StoreRegisterPage() {
                       value={newShelf}
                       onChange={(e) => setNewShelf(e.target.value)}
                       placeholder="Örn: A-01 veya GRID-B"
-                      className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none focus:border-blue-500"
+                      className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-blue-500"
                     />
                     <button
                       type="button"

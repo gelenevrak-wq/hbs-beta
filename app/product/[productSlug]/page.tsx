@@ -172,6 +172,43 @@ export default function ProductDetailPage() {
     }
   }, [product]);
 
+const memoizedActiveProduct = useMemo<ProductData | null>(() => {
+    if (!product) return null;
+    
+    const names: Record<string, string> = {
+      tr: "Autel MX808S Arıza Tespit Cihazı",
+      en: "Autel MX808S Diagnostic Scanner",
+      de: "Autel MX808S Diagnosegerät",
+      ru: "Диагностический автосканер Autel MX808S",
+      ka: "Autel MX808S სადიაგნოსტიკო აპარატი"
+    };
+
+    const descriptions: Record<string, string> = {
+      tr: `Autel MX808S Arıza Tespit Cihazı, günlük servis işlemlerini hızlandırmak, arızaları doğru ve net şekilde tespit etmek isteyen ustalar ve servisler için geliştirilmiş pratik, güçlü ve ekonomik bir diagnostik çözümdür. Kompat yapısı, hızlı arayüzü ve geniş servis fonksiyonları sayesinde MX808S; hem rutin bakım işlemlerinde hem de detaylı sistem kontrollerinde yüksek verim sağlar. "Hızlı bağlan, hızlı teşhis et, doğru çöz" mantığıyla çalışan bu cihaz, servisinizde zaman kaybını minimuma indirir. TEKNİK DONANIM & ÖZELLİKLER:\n• 7.0" dokunmatik ekran (net ve hızlı kullanım)\n• Gelişmiş Servis & Günlük Kullanım özellikleri\n• Yağ sıfırlama, EPB, SAS, DPF, BMS ve diğer 30+ servis sıfırlama işlevi\n• Aktif testler ve tüm sistem teşhisleri\n• Android 11 işletim sistemi\n• Autel MX808S, karmaşık cihazlara ihtiyaç duymadan hızlı ve doğru teşhis yapmak isteyenler için ideal bir çözümdür.`,
+      en: `The Autel MX808S Diagnostic Scanner is a practical, powerful, and economical diagnostic solution developed for technicians and workshops wanting to speed up daily service operations and detect faults accurately and clearly. Thanks to its compact structure, fast interface, and wide service functions, the MX808S ensures high efficiency in both routine maintenance and detailed system checks. Operating with the logic of "connect fast, diagnose fast, solve right," this device minimizes time loss in your workshop. TECHNICAL EQUIPMENT & FEATURES:\n• 7.0" touch screen (clear and fast operation)\n• Advanced Service & Daily Use features\n• Oil reset, EPB, SAS, DPF, BMS, and 30+ other service reset functions\n• Active tests and all-system diagnostics\n• Android 11 operating system\n• The Autel MX808S is an ideal solution for those who want fast and accurate diagnosis without needing complex equipment.`,
+      de: `Das Autel MX808S Diagnosegerät ist eine praktische, leistungsstarke und wirtschaftliche Diagnoselösung für Techniker und Werkstätten, die alltägliche Servicearbeiten beschleunigen und Fehler präzise erkennen möchten. Dank seines kompakten Designs, der schnellen Benutzeroberfläche und der umfangreichen Servicefunktionen bietet das MX808S eine hohe Effizienz sowohl bei routinemäßigen Wartungsarbeiten als auch bei detaillierten Systemprüfungen. Getreu dem Motto "Schnell verbinden, schnell diagnostizieren, richtig lösen" minimiert dieses Gerät Zeitverluste in Ihrer Werkstatt. TECHNISCHE AUSSTATTUNG & MERKMALE:\n• 7,0" Touchscreen (klare und schnelle Bedienung)\n• Fortschrittliche Service- und Alltagsfunktionen\n• Ölrückstellung, EPB, SAS, DPF, BMS und über 30 weitere Servicefunktionen\n• Aktive Tests und vollständige Systemdiagnose\n• Android 11 Betriebssystem\n• Das Autel MX808S ist die ideale Lösung für alle, die eine schnelle und präzise Diagnose wünschen, ohne auf komplizierte Geräte angewiesen zu sein.`,
+      ru: `Автомобильный диагностический сканер Autel MX808S — это практичное, мощное и экономичное диагностическое решение, разработанное для мастеров и автосервисов, стремящихся ускорить ежедневные сервисные операции и точно определять неисправности. Благодаря компактной конструкции, быстрому интерфейсу и широким сервисным функциям MX808S обеспечивает высокую эффективность как при регламентном обслуживании, так и при детальной проверке систем. Устройство работает по принципу «быстрое подключение, быстрая диагностика, правильное решение», сводя к минимуму потери времени. ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ И ОСОБЕННОСТИ:\n• 7,0-дюймовый сенсорный экран (четкое и быстрое управление)\n• Расширенные сервисные функции\n• Сброс масла, EPB, SAS, DPF, BMS и более 30 других сервисных функций\n• Активные тесты и диагностика всех систем\n• Операционная система Android 11\n• Autel MX808S — идеальное решение для быстрого и точного поиска неисправностей.`,
+      ka: `Autel MX808S სადიაგნოსტიკო აპარატი არის პრაქტიკული, ძლიერი და ეკონომიური სადიაგნოსტიკო გადაწყვეტა, რომელიც შემუშავებულია ხელოსნებისა და ავტოსერვისებისთვის, რომლებსაც სურთ ყოველდღიური სერვისის ოპერაციების დაჩქარება და ხარვეზების ზუსტად დადგენა. კომპაქტური დიზაინის, სწრაფი ინტერფეისისა და ფართო სერვისული ფუნქციების წყალობით, MX808S უზრუნველყოფს მაღალ ეფექტურობას როგორც რუტინული ტექნიკური მომსახურების, ასევე სისტემის დეტალური შემოწმებისას. მოწყობილობა მუშაობს პრინციპით „სწრაფი კავშირი, სწრაფი დიაგნოსტიკა, სწორი გადაწყვეტა“, რაც მინიმუმამდე ამცირებს დროის კარგვას. ტექნიკური მახასიათებლები და ფუნქციები:\n• 7.0" სენსორული ეკრანი (ნათელი და სწრაფი გამოყენება)\n• გაფართოებული სერვისის ფუნქციები\n• ზეთის ჩამოყრა, EPB, SAS, DPF, BMS და 30-ზე მეტი სხვა სერვისული ფუნქცია\n• აქტიური ტესტები და ყველა სისტემის დიაგნოსტიკა\n• Android 11 ოპერაციული სისტემა\n• Autel MX808S არის იდეალური გადაწყვეტა ყველასთვის, ვისაც სურს სწრაფი და ზუსტი დიაგნოსტიკა.`
+    };
+
+    const isAutel = product.sku === "AUTEL-MX808S" || product.slug === "obdtr-autel-mx808s" || product.name.tr?.includes("Autel MX808S");
+    
+    if (isAutel) {
+      return {
+        ...product,
+        name: {
+          ...product.name,
+          [language]: names[language] || names.en || product.name.en || product.name.tr
+        },
+        description: {
+          ...product.description,
+          [language]: descriptions[language] || descriptions.en || product.description.en || product.description.tr
+        }
+      };
+    }
+    return product;
+  }, [product, language]);
+
   useEffect(() => {
     console.log("HBS_DEBUG: Product detail useEffect triggered", { productSlug: params.productSlug, isReady });
     if (!isReady || !params.productSlug) return;
@@ -421,42 +458,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const activeProduct: ProductData = useMemo(() => {
-    if (!product) return product!;
-    
-    const names: Record<string, string> = {
-      tr: "Autel MX808S Arıza Tespit Cihazı",
-      en: "Autel MX808S Diagnostic Scanner",
-      de: "Autel MX808S Diagnosegerät",
-      ru: "Диагностический автосканер Autel MX808S",
-      ka: "Autel MX808S სადიაგნოსტიკო აპარატი"
-    };
-
-    const descriptions: Record<string, string> = {
-      tr: `Autel MX808S Arıza Tespit Cihazı, günlük servis işlemlerini hızlandırmak, arızaları doğru ve net şekilde tespit etmek isteyen ustalar ve servisler için geliştirilmiş pratik, güçlü ve ekonomik bir diagnostik çözümdür. Kompat yapısı, hızlı arayüzü ve geniş servis fonksiyonları sayesinde MX808S; hem rutin bakım işlemlerinde hem de detaylı sistem kontrollerinde yüksek verim sağlar. "Hızlı bağlan, hızlı teşhis et, doğru çöz" mantığıyla çalışan bu cihaz, servisinizde zaman kaybını minimuma indirir. TEKNİK DONANIM & ÖZELLİKLER:\n• 7.0" dokunmatik ekran (net ve hızlı kullanım)\n• Gelişmiş Servis & Günlük Kullanım özellikleri\n• Yağ sıfırlama, EPB, SAS, DPF, BMS ve diğer 30+ servis sıfırlama işlevi\n• Aktif testler ve tüm sistem teşhisleri\n• Android 11 işletim sistemi\n• Autel MX808S, karmaşık cihazlara ihtiyaç duymadan hızlı ve doğru teşhis yapmak isteyenler için ideal bir çözümdür.`,
-      en: `The Autel MX808S Diagnostic Scanner is a practical, powerful, and economical diagnostic solution developed for technicians and workshops wanting to speed up daily service operations and detect faults accurately and clearly. Thanks to its compact structure, fast interface, and wide service functions, the MX808S ensures high efficiency in both routine maintenance and detailed system checks. Operating with the logic of "connect fast, diagnose fast, solve right," this device minimizes time loss in your workshop. TECHNICAL EQUIPMENT & FEATURES:\n• 7.0" touch screen (clear and fast operation)\n• Advanced Service & Daily Use features\n• Oil reset, EPB, SAS, DPF, BMS, and 30+ other service reset functions\n• Active tests and all-system diagnostics\n• Android 11 operating system\n• The Autel MX808S is an ideal solution for those who want fast and accurate diagnosis without needing complex equipment.`,
-      de: `Das Autel MX808S Diagnosegerät ist eine praktische, leistungsstarke und wirtschaftliche Diagnoselösung für Techniker und Werkstätten, die alltägliche Servicearbeiten beschleunigen und Fehler präzise erkennen möchten. Dank seines kompakten Designs, der schnellen Benutzeroberfläche und der umfangreichen Servicefunktionen bietet das MX808S eine hohe Effizienz sowohl bei routinemäßigen Wartungsarbeiten als auch bei detaillierten Systemprüfungen. Getreu dem Motto "Schnell verbinden, schnell diagnostizieren, richtig lösen" minimiert dieses Gerät Zeitverluste in Ihrer Werkstatt. TECHNISCHE AUSSTATTUNG & MERKMALE:\n• 7,0" Touchscreen (klare und schnelle Bedienung)\n• Fortschrittliche Service- und Alltagsfunktionen\n• Ölrückstellung, EPB, SAS, DPF, BMS und über 30 weitere Servicefunktionen\n• Aktive Tests und vollständige Systemdiagnose\n• Android 11 Betriebssystem\n• Das Autel MX808S ist die ideale Lösung für alle, die eine schnelle und präzise Diagnose wünschen, ohne auf komplizierte Geräte angewiesen zu sein.`,
-      ru: `Автомобильный диагностический сканер Autel MX808S — это практичное, мощное и экономичное диагностическое решение, разработанное для мастеров и автосервисов, стремящихся ускорить ежедневные сервисные операции и точно определять неисправности. Благодаря компактной конструкции, быстрому интерфейсу и широким сервисным функциям MX808S обеспечивает высокую эффективность как при регламентном обслуживании, так и при детальной проверке систем. Устройство работает по принципу «быстрое подключение, быстрая диагностика, правильное решение», сводя к минимуму потери времени. ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ И ОСОБЕННОСТИ:\n• 7,0-дюймовый сенсорный экран (четкое и быстрое управление)\n• Расширенные сервисные функции\n• Сброс масла, EPB, SAS, DPF, BMS и более 30 других сервисных функций\n• Активные тесты и диагностика всех систем\n• Операционная система Android 11\n• Autel MX808S — идеальное решение для быстрого и точного поиска неисправностей.`,
-      ka: `Autel MX808S სადიაგნოსტიკო აპარატი არის პრაქტიკული, ძლიერი და ეკონომიური სადიაგნოსტიკო გადაწყვეტა, რომელიც შემუშავებულია ხელოსნებისა და ავტოსერვისებისთვის, რომლებსაც სურთ ყოველდღიური სერვისის ოპერაციების დაჩქარება და ხარვეზების ზუსტად დადგენა. კომპაქტური დიზაინის, სწრაფი ინტერფეისისა და ფართო სერვისული ფუნქციების წყალობით, MX808S უზრუნველყოფს მაღალ ეფექტურობას როგორც რუტინული ტექნიკური მომსახურების, ასევე სისტემის დეტალური შემოწმებისას. მოწყობილობა მუშაობს პრინციპით „სწრაფი კავშირი, სწრაფი დიაგნოსტიკა, სწორი გადაწყვეტა“, რაც მინიმუმამდე ამცირებს დროის კარგვას. ტექნიკური მახასიათებლები და ფუნქციები:\n• 7.0" სენსორული ეკრანი (ნათელი და სწრაფი გამოყენება)\n• გაფართოებული სერვისის ფუნქციები\n• ზეთის ჩამოყრა, EPB, SAS, DPF, BMS და 30-ზე მეტი სხვა სერვისული ფუნქცია\n• აქტიური ტესტები და ყველა სისტემის დიაგნოსტიკა\n• Android 11 ოპერაციული სისტემა\n• Autel MX808S არის იდეალური გადაწყვეტა ყველასთვის, ვისაც სურს სწრაფი და ზუსტი დიაგნოსტიკა.`
-    };
-
-    const isAutel = product.sku === "AUTEL-MX808S" || product.slug === "obdtr-autel-mx808s" || product.name.tr.includes("Autel MX808S");
-    
-    if (isAutel) {
-      return {
-        ...product,
-        name: {
-          ...product.name,
-          [language]: names[language] || names.en || product.name.en || product.name.tr
-        },
-        description: {
-          ...product.description,
-          [language]: descriptions[language] || descriptions.en || product.description.en || product.description.tr
-        }
-      };
-    }
-    return product;
-  }, [product, language]);
+    const activeProduct = memoizedActiveProduct!;
   const displayGallery = Array.from(new Set([activeProduct.imageUrl, ...activeProduct.gallery])).slice(0, 4);
   const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Depo / A-03-R12-G04";
   const storefrontNames = activeProduct.storeSlug === "obdtr" ? "OBDTR Online Vitrin, Diagnostik Vitrini" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız Batum Vitrini, Tesisat Ürünleri" : "OBDTR Online Vitrin";
