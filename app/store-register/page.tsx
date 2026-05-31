@@ -34,6 +34,8 @@ export default function StoreRegisterPage() {
   const [password, setPassword] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState(""); // If empty -> "Sanal Mağaza, Türkiye çapında kargolama"
+  const [useCase, setUseCase] = useState<"stock_only" | "sales">("sales");
+  const [taxNumber, setTaxNumber] = useState("");
   
   // Sector Selection
   const [industries, setIndustries] = useState<string[]>(INITIAL_INDUSTRIES);
@@ -250,6 +252,8 @@ export default function StoreRegisterPage() {
         createdAt: new Date().toISOString(),
         operatingModel: operatingModel,
         serviceCountries: serviceCountries,
+        useCase: useCase,
+        taxNumber: useCase === "sales" ? taxNumber : "",
       };
 
       // Save company in local registry
@@ -306,6 +310,31 @@ export default function StoreRegisterPage() {
               <div>
                 <h1 className="text-2xl font-black tracking-tight">HBS İşletme Kaydı</h1>
                 <p className="mt-1 text-sm text-slate-500">Şirketinize ait genel bilgileri tanımlayın.</p>
+              </div>
+
+              {/* Kullanım Amacı Seçimi */}
+              <div className="space-y-2">
+                <span className="text-xs font-bold text-slate-600">Platform Kullanım Amacı *</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setUseCase("stock_only");
+                      // Reset tax number when stock_only is selected
+                      setTaxNumber("");
+                    }}
+                    className={`rounded-xl border p-3 text-center transition text-xs ${useCase === "stock_only" ? "border-blue-600 bg-blue-50 font-black text-blue-700" : "border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold"}`}
+                  >
+                    📦 Sadece Stok Kontrolü
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUseCase("sales")}
+                    className={`rounded-xl border p-3 text-center transition text-xs ${useCase === "sales" ? "border-blue-600 bg-blue-50 font-black text-blue-700" : "border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold"}`}
+                  >
+                    💰 Ürün Satışı & Teklif
+                  </button>
+                </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
@@ -382,12 +411,28 @@ export default function StoreRegisterPage() {
                 </label>
               </div>
 
+              {/* Dinamik Vergi Numarası Girişi (Sadece Satış Modelinde Zorunlu) */}
+              {useCase === "sales" && (
+                <label className="grid gap-1.5 animate-fadeIn">
+                  <span className="text-xs font-bold text-slate-600">Vergi Numarası *</span>
+                  <input
+                    value={taxNumber}
+                    onChange={(e) => setTaxNumber(e.target.value)}
+                    required
+                    placeholder="Vergi numaranızı veya vergi dairesini yazın"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
+                  />
+                </label>
+              )}
+
+              {/* Dinamik Adres Girişi (Stok Kontrolü Modelinde Zorunlu) */}
               <label className="grid gap-1.5">
-                <span className="text-xs font-bold text-slate-600">Mağaza Adresi (Opsiyonel)</span>
+                <span className="text-xs font-bold text-slate-600">Mağaza / Depo Adresi {useCase === "stock_only" ? "*" : "(Opsiyonel)"}</span>
                 <textarea
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Mağaza adresi verilmez ise sistem 'Sanal Mağaza, Türkiye çapında kargolama' olarak işaretleyecektir."
+                  placeholder={useCase === "stock_only" ? "Depo/Mağaza fiziksel adresinizi girin." : "Mağaza adresi verilmez ise sistem 'Sanal Mağaza, Türkiye çapında kargolama' olarak işaretleyecektir."}
+                  required={useCase === "stock_only"}
                   rows={2}
                   className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                 />
@@ -395,7 +440,16 @@ export default function StoreRegisterPage() {
 
               <button
                 type="button"
-                disabled={!companyName || !representative || !phone || !email || !city || !password}
+                disabled={
+                  !companyName ||
+                  !representative ||
+                  !phone ||
+                  !email ||
+                  !city ||
+                  !password ||
+                  (useCase === "stock_only" && !address.trim()) ||
+                  (useCase === "sales" && !taxNumber.trim())
+                }
                 onClick={() => setStep("sector")}
                 className="w-full mt-4 rounded-xl bg-blue-600 py-3 text-sm font-black text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none transition"
               >
