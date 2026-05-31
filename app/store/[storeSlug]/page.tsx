@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
 import { useParams } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 type ProductVariant = {
   id: string;
@@ -55,6 +56,15 @@ type StoreType = "products" | "realEstate" | "salon" | "autoRepair";
 export default function StorePage() {
   const params = useParams<{ storeSlug: string }>();
   
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [profileCity, setProfileCity] = useState("");
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+
+  const [storePhone, setStorePhone] = useState<string | undefined>(undefined);
+  const [storeWhatsapp, setStoreWhatsapp] = useState<string | undefined>(undefined);
+  
   const storeInfo = useMemo(() => {
     if (typeof window === "undefined") return null;
     const localStoresStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
@@ -67,6 +77,113 @@ export default function StorePage() {
   }, [params.storeSlug]);
 
   const isVirtualDelivery = storeInfo?.operatingModel === "virtual_delivery";
+
+  const storePhoneVal = storePhone || (params.storeSlug === "obdtr" ? "+905320000000" : undefined);
+  const storeWhatsappVal = storeWhatsapp || (params.storeSlug === "obdtr" ? "905320000000" : undefined);
+
+  const contactButtons = useMemo(() => {
+    if (!storePhoneVal && !storeWhatsappVal) return null;
+    return (
+      <div className="mt-4 flex flex-wrap gap-2 pt-1 border-t border-slate-100">
+        {storePhoneVal && (
+          <a
+            href={`tel:${storePhoneVal}`}
+            className="rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 font-extrabold text-[11px] px-4 py-2 flex items-center gap-1.5 shadow-sm hover:bg-emerald-100 transition duration-300"
+          >
+            Mağazayı Ara: {storePhoneVal}
+          </a>
+        )}
+        {storeWhatsappVal && (
+          <a
+            href={`https://wa.me/${storeWhatsappVal.replace(/[^0-9]/g, "")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl border border-green-200 bg-green-50 text-green-800 font-extrabold text-[11px] px-4 py-2 flex items-center gap-1.5 shadow-sm hover:bg-green-100 transition duration-300"
+          >
+            WhatsApp ile Ulaş
+          </a>
+        )}
+      </div>
+    );
+  }, [storePhoneVal, storeWhatsappVal]);
+
+  function requireLogin() {
+    const user = window.localStorage.getItem("hbs-current-user");
+    if (!user) {
+      window.location.href = "/login";
+      return false;
+    }
+    return true;
+  }
+
+  function checkProfileAndExecute(action: () => void) {
+    if (!requireLogin()) return;
+    const userStr = window.localStorage.getItem("hbs-current-user");
+    if (userStr) {
+      try {
+        const userObj = JSON.parse(userStr);
+        const name = userObj.displayName || "";
+        const phone = userObj.phone || "";
+        const city = userObj.city || "";
+        
+        if (!name.trim() || !phone.trim() || !city.trim()) {
+          setProfileName(name);
+          setProfilePhone(phone);
+          setProfileCity(city);
+          setPendingAction(() => action);
+          setProfileModalOpen(true);
+          return;
+        }
+      } catch (e) {
+        console.error("Error parsing current user", e);
+      }
+    }
+    action();
+  }
+
+  async function handleSaveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    if (!profileName.trim() || !profilePhone.trim() || !profileCity.trim()) {
+      alert("Lütfen tüm alanları doldurun.");
+      return;
+    }
+
+    const userStr = window.localStorage.getItem("hbs-current-user");
+    if (userStr) {
+      try {
+        const userObj = JSON.parse(userStr);
+        userObj.displayName = profileName;
+        userObj.phone = profilePhone;
+        userObj.city = profileCity;
+        window.localStorage.setItem("hbs-current-user", JSON.stringify(userObj));
+
+        const isSupabaseConfigured = 
+          process.env.NEXT_PUBLIC_SUPABASE_URL && 
+          process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+        
+        if (isSupabaseConfigured) {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await supabase.from("customers").upsert({
+              id: user.id,
+              full_name: profileName,
+              phone: profilePhone,
+              city: profileCity,
+              email: user.email
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error saving complete profile:", err);
+      }
+    }
+
+    setProfileModalOpen(false);
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+  }
   
   // Dynamic UI morphing simulator trigger
   const [storeType, setStoreType] = useState<StoreType>(
@@ -85,51 +202,50 @@ export default function StorePage() {
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
     if (isSupabaseConfigured) {
-      import("@/lib/supabaseClient").then(({ supabase }) => {
-        supabase
-          .from("offerable_items")
-          .select("*, companies!inner(code)")
-          .eq("companies.code", params.storeSlug)
-          .then(({ data, error }) => {
-            if (data && !error) {
-              const mapped: ProductRecord[] = data.map((item: any) => ({
-                id: item.id,
-                itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
-                name: item.name,
-                category: item.category || "Genel",
-                brand: item.brand || "",
-                model: "",
-                description: item.description || "",
-                salePrice: item.sale_price ? String(item.sale_price) : "",
-                purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
-                currency: item.currency || "GEL",
-                barcode: item.barcode || "",
-                qrCode: item.qr_code || "",
-                sku: item.code || "",
-                oemCode: "",
-                manufacturerCode: "",
-                stockTracking: true,
-                quantity: "10",
-                warehouse: "Ana Depo",
-                shelf: "",
-                entryDate: "",
-                exitDate: "",
-                pricingMode: item.sale_price ? "fixed" : "quote",
-                visibility: item.is_visible_in_storefront ? "visible" : "hidden",
-                imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
-                videoUrl: item.video_urls?.[0] || "",
-                variants: []
-              }));
-              setProducts(mapped);
-            } else {
-              if (error) console.error("Supabase storefront loading error:", error);
-              loadFromLocalStorage();
+      supabase
+        .from("offerable_items")
+        .select("*, companies!inner(*)")
+        .eq("companies.code", params.storeSlug)
+        .then(({ data, error }) => {
+          if (data && !error) {
+            if (data.length > 0 && data[0].companies) {
+              setStorePhone(data[0].companies.phone || undefined);
+              setStoreWhatsapp(data[0].companies.whatsapp || undefined);
             }
-          });
-      }).catch(err => {
-        console.error("Supabase import error:", err);
-        loadFromLocalStorage();
-      });
+            const mapped: ProductRecord[] = data.map((item: any) => ({
+              id: item.id,
+              itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+              name: item.name,
+              category: item.category || "Genel",
+              brand: item.brand || "",
+              model: "",
+              description: item.description || "",
+              salePrice: item.sale_price ? String(item.sale_price) : "",
+              purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+              currency: item.currency || "GEL",
+              barcode: item.barcode || "",
+              qrCode: item.qr_code || "",
+              sku: item.code || "",
+              oemCode: "",
+              manufacturerCode: "",
+              stockTracking: true,
+              quantity: "10",
+              warehouse: "Ana Depo",
+              shelf: "",
+              entryDate: "",
+              exitDate: "",
+              pricingMode: item.sale_price ? "fixed" : "quote",
+              visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+              imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+              videoUrl: item.video_urls?.[0] || "",
+              variants: []
+            }));
+            setProducts(mapped);
+          } else {
+            if (error) console.error("Supabase storefront loading error:", error);
+            loadFromLocalStorage();
+          }
+        });
     } else {
       loadFromLocalStorage();
     }
@@ -274,6 +390,7 @@ export default function StorePage() {
                   </span>
                 </div>
               )}
+              {contactButtons}
             </div>
 
             {products.filter(p => p.visibility !== "hidden").length === 0 ? (
@@ -379,8 +496,10 @@ export default function StorePage() {
                             <button
                               type="button"
                               onClick={() => {
-                                const variantName = activeVariant ? ` (${activeVariant.name})` : "";
-                                setMessage(`${p.name}${variantName} sepetinize eklendi.`);
+                                checkProfileAndExecute(() => {
+                                  const variantName = activeVariant ? ` (${activeVariant.name})` : "";
+                                  setMessage(`${p.name}${variantName} sepetinize eklendi.`);
+                                });
                               }}
                               className="rounded-lg bg-slate-900 px-3 py-1.5 text-[10px] font-black text-white hover:bg-slate-800 transition"
                             >
@@ -390,10 +509,12 @@ export default function StorePage() {
                             <button
                               type="button"
                               onClick={() => {
-                                const variantName = activeVariant ? ` (${activeVariant.name})` : "";
-                                const finalProductName = `${p.name}${variantName}`;
-                                saveCustomerOffer(finalProductName, "quote");
-                                setMessage(`${finalProductName} için fiyat teklif talebi satıcıya iletildi. 'Tekliflerim' sekmesinden takip edebilirsiniz.`);
+                                checkProfileAndExecute(() => {
+                                  const variantName = activeVariant ? ` (${activeVariant.name})` : "";
+                                  const finalProductName = `${p.name}${variantName}`;
+                                  saveCustomerOffer(finalProductName, "quote");
+                                  setMessage(`${finalProductName} için fiyat teklif talebi satıcıya iletildi. 'Tekliflerim' sekmesinden takip edebilirsiniz.`);
+                                });
                               }}
                               className="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1.5 text-[10px] font-black text-white shadow-md shadow-blue-500/10 hover:from-blue-500 hover:to-indigo-500 hover:shadow-lg active:scale-95 transition-all duration-300"
                             >
@@ -419,6 +540,7 @@ export default function StorePage() {
               <p className="text-xs text-slate-500 leading-relaxed max-w-4xl">
                 Depo mantığı olmayan emlak sektöründe, m² (alan), oda sayısı, kat, ısıtma ve kiralık/satılık filtreleri gibi sektörel özelliklerin yer aldığı emlak portföy vitrinidir.
               </p>
+              {contactButtons}
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
@@ -451,7 +573,11 @@ export default function StorePage() {
                   <div className="grid grid-cols-2 gap-2 pt-2">
                     <button
                       type="button"
-                      onClick={() => setMessage(`${estate.name} için inceleme randevu talebi emlak danışmanına iletildi.`)}
+                      onClick={() => {
+                        checkProfileAndExecute(() => {
+                          setMessage(`${estate.name} için inceleme randevu talebi emlak danışmanına iletildi.`);
+                        });
+                      }}
                       className="rounded-xl bg-slate-900 py-2 text-xs font-black text-white hover:bg-slate-800 transition"
                     >
                       📅 İnceleme Randevusu Al
@@ -481,9 +607,11 @@ export default function StorePage() {
                         <button
                           type="button"
                           onClick={() => {
-                            saveCustomerOffer(estate.name, "bid", offerValue);
-                            setMessage(`${estate.name} için ${offerValue} teklifiniz emlak danışmanına başarıyla iletildi. 'Tekliflerim' sekmesinden takip edebilirsiniz.`);
-                            setOfferProduct("");
+                            checkProfileAndExecute(() => {
+                              saveCustomerOffer(estate.name, "bid", offerValue);
+                              setMessage(`${estate.name} için ${offerValue} teklifiniz emlak danışmanına başarıyla iletildi. 'Tekliflerim' sekmesinden takip edebilirsiniz.`);
+                              setOfferProduct("");
+                            });
                           }}
                           className="rounded-lg bg-blue-600 px-3 text-xs font-black text-white hover:bg-blue-700"
                         >
@@ -507,6 +635,7 @@ export default function StorePage() {
               <p className="text-xs text-slate-500 leading-relaxed max-w-4xl">
                 Stok tutmayan hizmet odaklı kuaför, danışmanlık, yaşlı bakım gibi işletmeler için; hizmet tipi, süresi, işlemi uygulayacak uzmanı (staff) seçmeye yönelik takvim ve randevu vitrinidir.
               </p>
+              {contactButtons}
             </div>
 
             <div className="grid gap-3 lg:grid-cols-[1.1fr_0.9fr]">
@@ -576,8 +705,10 @@ export default function StorePage() {
                     type="button"
                     disabled={!selectedSlot}
                     onClick={() => {
-                      setMessage(`${selectedService} işlemi için ${selectedStaff} ile bugün saat ${selectedSlot} randevunuz başarıyla oluşturuldu!`);
-                      setSelectedSlot("");
+                      checkProfileAndExecute(() => {
+                        setMessage(`${selectedService} işlemi için ${selectedStaff} ile bugün saat ${selectedSlot} randevunuz başarıyla oluşturuldu!`);
+                        setSelectedSlot("");
+                      });
                     }}
                     className="w-full rounded-xl bg-slate-900 py-3 text-xs font-black text-white hover:bg-slate-800 transition disabled:opacity-50"
                   >
@@ -598,6 +729,7 @@ export default function StorePage() {
               <p className="text-xs text-slate-500 leading-relaxed max-w-4xl">
                 Oto servis ve tamirhanelerde müşterilerin arabalarının tamir sürecini (başlayan, biten ve bekleyen tüm görevleri) şeffaf şekilde izleyebildikleri canlı ilerleme takip vitrinidir.
               </p>
+              {contactButtons}
             </div>
 
             <div className="grid gap-3 lg:grid-cols-[0.8fr_1.2fr]">
@@ -695,6 +827,81 @@ export default function StorePage() {
         )}
 
       </div>
+
+      {profileModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-md transform overflow-hidden rounded-[2.5rem] border border-white/20 bg-white/80 p-7 shadow-2xl backdrop-blur-2xl transition-all dark:border-slate-800 dark:bg-slate-900/90 text-slate-950 dark:text-white">
+            {/* Header */}
+            <div className="mb-5 text-center">
+              <span className="inline-block rounded-full bg-blue-100 dark:bg-blue-900/30 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-800 dark:text-blue-300">
+                🔒 PROFİL DOĞRULAMA
+              </span>
+              <h3 className="mt-3 text-xl font-black">Profil Bilgilerinizi Tamamlayın</h3>
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                Alışverişe devam edebilmek için lütfen ad-soyad, telefon ve şehir bilgilerinizi girin. Bu bilgiler fatura ve lojistik aşamalarında kullanılacaktır.
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">Adınız Soyadınız *</label>
+                <input
+                  type="text"
+                  required
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
+                  placeholder="Ahmet Yılmaz"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">Telefon Numaranız *</label>
+                <input
+                  type="tel"
+                  required
+                  value={profilePhone}
+                  onChange={(e) => setProfilePhone(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
+                  placeholder="+90 532 000 00 00"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">Bulunduğunuz Şehir *</label>
+                <input
+                  type="text"
+                  required
+                  value={profileCity}
+                  onChange={(e) => setProfileCity(e.target.value)}
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
+                  placeholder="İstanbul"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProfileModalOpen(false);
+                    setPendingAction(null);
+                  }}
+                  className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 py-3 text-sm font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-500 dark:to-indigo-500 py-3 text-sm font-black text-white hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20 transition duration-300"
+                >
+                  Kaydet & Devam Et
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
