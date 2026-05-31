@@ -96,18 +96,86 @@ export default function ProductsPage() {
     const savedLanguage = window.localStorage.getItem("hbs-language");
     setLanguage((savedLanguage as LanguageCode) || "tr");
 
-    const savedProducts = window.localStorage.getItem("hbs-store-products");
-    if (savedProducts) {
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
       try {
-        const parsedProducts = JSON.parse(savedProducts) as ProductRecord[];
-        if (Array.isArray(parsedProducts)) {
-          setProducts(parsedProducts);
+        const currentUserStr = window.localStorage.getItem("hbs-current-user");
+        if (currentUserStr) {
+          const currentUser = JSON.parse(currentUserStr);
+          const storeSlug = currentUser.storeSlugs?.[0];
+          if (storeSlug) {
+            supabase
+              .from("offerable_items")
+              .select("*, companies!inner(code)")
+              .eq("companies.code", storeSlug)
+              .then(({ data, error }) => {
+                if (data && !error) {
+                  const mapped: ProductRecord[] = data.map((item: any) => ({
+                    id: item.id,
+                    itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+                    name: item.name,
+                    category: item.category || "Genel",
+                    brand: item.brand || "",
+                    model: "",
+                    description: item.description || "",
+                    salePrice: item.sale_price ? String(item.sale_price) : "",
+                    purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+                    currency: item.currency || "GEL",
+                    barcode: item.barcode || "",
+                    qrCode: item.qr_code || "",
+                    sku: item.code || "",
+                    oemCode: "",
+                    manufacturerCode: "",
+                    stockTracking: true,
+                    quantity: "10",
+                    warehouse: "Ana Depo",
+                    shelf: "",
+                    entryDate: "",
+                    exitDate: "",
+                    pricingMode: item.sale_price ? "fixed" : "quote",
+                    visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+                    imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                    videoUrl: item.video_urls?.[0] || "",
+                    variants: []
+                  }));
+                  setProducts(mapped);
+                  setProductsLoaded(true);
+                } else {
+                  if (error) console.error("Error loading products from Supabase:", error);
+                  loadLocalFallback();
+                }
+              });
+          } else {
+            loadLocalFallback();
+          }
+        } else {
+          loadLocalFallback();
         }
-      } catch {
-        setProducts(INITIAL_PRODUCTS);
+      } catch (e) {
+        console.error("Error loading products from Supabase:", e);
+        loadLocalFallback();
       }
+    } else {
+      loadLocalFallback();
     }
-    setProductsLoaded(true);
+
+    function loadLocalFallback() {
+      const savedProducts = window.localStorage.getItem("hbs-store-products");
+      if (savedProducts) {
+        try {
+          const parsedProducts = JSON.parse(savedProducts) as ProductRecord[];
+          if (Array.isArray(parsedProducts)) {
+            setProducts(parsedProducts);
+          }
+        } catch {
+          setProducts(INITIAL_PRODUCTS);
+        }
+      }
+      setProductsLoaded(true);
+    }
 
     // Load logged in store warehouses
     try {
@@ -637,6 +705,29 @@ export default function ProductsPage() {
       process.env.NEXT_PUBLIC_SUPABASE_URL && 
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
+    let targetCompanyId = "a123bc45-6789-abcd-ef01-234567890123"; // Default for OBDTR
+    if (isSupabaseConfigured) {
+      try {
+        const currentUserStr = window.localStorage.getItem("hbs-current-user");
+        if (currentUserStr) {
+          const currentUser = JSON.parse(currentUserStr);
+          const storeSlug = currentUser.storeSlugs?.[0];
+          if (storeSlug) {
+            const { data: compData } = await supabase
+              .from("companies")
+              .select("id")
+              .eq("code", storeSlug)
+              .single();
+            if (compData && compData.id) {
+              targetCompanyId = compData.id;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error looking up company ID for product save:", err);
+      }
+    }
+
     if (editingProductId) {
       // EDIT MODE
       const updatedProducts = products.map((p) => {
@@ -675,9 +766,31 @@ export default function ProductsPage() {
 
       if (isSupabaseConfigured) {
         try {
-          await supabase
-            .from("offerable_items")
-            .update({
+          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(editingProductId);
+          if (isUuid) {
+            await supabase
+              .from("offerable_items")
+              .update({
+                name,
+                type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
+                category,
+                brand,
+                code: sku || `SKU-${Date.now()}`,
+                barcode,
+                qr_code: qrCode,
+                sale_price: pricingMode === "fixed" ? parseFloat(salePrice) || null : null,
+                purchase_price: parseFloat(purchasePrice) || null,
+                currency,
+                description,
+                photo_urls: [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"],
+                video_urls: [videoUrl],
+                is_visible_in_storefront: visibility === "visible",
+                is_visible_in_public_search: visibility === "visible",
+                company_id: targetCompanyId
+              })
+              .eq("id", editingProductId);
+          } else {
+            await supabase.from("offerable_items").insert({
               name,
               type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
               category,
@@ -693,8 +806,9 @@ export default function ProductsPage() {
               video_urls: [videoUrl],
               is_visible_in_storefront: visibility === "visible",
               is_visible_in_public_search: visibility === "visible",
-            })
-            .or(`code.eq.${sku},name.eq.${name}`);
+              company_id: targetCompanyId
+            });
+          }
         } catch (err) {
           console.error("Supabase update error:", err);
         }
@@ -753,6 +867,7 @@ export default function ProductsPage() {
             video_urls: [videoUrl],
             is_visible_in_storefront: visibility === "visible",
             is_visible_in_public_search: visibility === "visible",
+            company_id: targetCompanyId
           });
         } catch (err) {
           console.error("Supabase saving error:", err);
