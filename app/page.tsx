@@ -548,9 +548,10 @@ export default function HomePage() {
       } : null);
 
       let distanceOk = false;
-      if (storeObj && storeObj.operatingModel === "virtual_delivery") {
+      const isAllCities = (item.city || "").toLowerCase().includes("tüm şehirler") || (item.city || "").toLowerCase().includes("all cities") || (item.city || "").toLowerCase().includes("her yer");
+      if (isAllCities || (storeObj && storeObj.operatingModel === "virtual_delivery")) {
         const activeCountryCode = locationLabel.toLowerCase().includes("gürcistan") || locationLabel.toLowerCase().includes("georgia") || locationLabel.toLowerCase().includes("batum") || locationLabel.toLowerCase().includes("tbilisi") ? "GE" : "TR";
-        distanceOk = storeObj.serviceCountries?.includes(activeCountryCode) || false;
+        distanceOk = storeObj?.serviceCountries?.includes(activeCountryCode) || true;
       } else {
         const coords = productCoordinates[item.city] ?? center;
         distanceOk = radiusKm >= 10000 || distanceKm(center, coords) <= radiusKm;

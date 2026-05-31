@@ -165,7 +165,8 @@ export default function ProductDetailPage() {
       const storeObj = localStores.find((st: any) => st.code === product.storeSlug) || (product.storeSlug === "obdtr" ? {
         operatingModel: "virtual_delivery"
       } : null);
-      return storeObj?.operatingModel === "virtual_delivery";
+      const isAllCities = (product.city || "").toLowerCase().includes("tüm şehirler") || (product.city || "").toLowerCase().includes("all cities") || (product.city || "").toLowerCase().includes("her yer");
+      return isAllCities || storeObj?.operatingModel === "virtual_delivery";
     } catch (e) {
       console.error("Error parsing local stores for virtual delivery check", e);
       return false;

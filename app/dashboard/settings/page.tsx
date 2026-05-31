@@ -554,12 +554,26 @@ export default function SettingsPage() {
                   required
                 />
 
-                <InputBlock
-                  label={currentText.city}
-                  value={city}
-                  onChange={setCity}
-                  placeholder={currentText.cityPlaceholder}
-                />
+                <div>
+                  <InputBlock
+                    label={currentText.city}
+                    value={city}
+                    onChange={setCity}
+                    placeholder={currentText.cityPlaceholder}
+                  />
+                  <div className="mt-1 flex items-center justify-between">
+                    <span className="text-[10px] text-slate-400 font-semibold">
+                      {language === "tr" ? "Fiziksel şube veya kargo bölgesi." : "Physical branch or delivery zone."}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setCity(language === "tr" ? "Tüm Şehirler" : "All Cities")}
+                      className="rounded bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-black text-emerald-700 hover:bg-emerald-100 transition shadow-sm"
+                    >
+                      ✈️ {language === "tr" ? "Tüm Şehirler (Kargo)" : "All Cities (Shipping)"}
+                    </button>
+                  </div>
+                </div>
 
                 <InputBlock
                   label={currentText.phone}
