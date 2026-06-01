@@ -866,8 +866,19 @@ export default function StorePage() {
 
   const isVirtualDelivery = storeInfo?.operatingModel === "virtual_delivery";
 
-  const storePhoneVal = storePhone || (params.storeSlug === "obdtr" ? "+905320000000" : undefined);
-  const storeWhatsappVal = storeWhatsapp || (params.storeSlug === "obdtr" ? "905320000000" : undefined);
+  const localSettings = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const saved = window.localStorage.getItem("hbs-company-settings");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error("Error parsing hbs-company-settings", e);
+    }
+    return null;
+  }, []);
+
+  const storePhoneVal = storePhone || storeInfo?.phone || (params.storeSlug === "obdtr" ? (localSettings?.phone || "+905320000000") : undefined);
+  const storeWhatsappVal = storeWhatsapp || storeInfo?.whatsapp || (params.storeSlug === "obdtr" ? (localSettings?.whatsapp || "905320000000") : undefined);
 
   const contactButtons = useMemo(() => {
     if (!storePhoneVal && !storeWhatsappVal) return null;

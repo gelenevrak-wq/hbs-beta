@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import CompactLanguageSwitcher, {
   LanguageCode,
@@ -452,12 +453,38 @@ export default function SettingsPage() {
               name: companyName,
               email: email,
               phone: phone,
+              whatsapp: whatsapp,
+              city: city,
               representative: officialTitle,
             };
           }
           return s;
         });
         window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+      }
+
+      // Sync to Supabase if configured
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+      if (isSupabaseConfigured) {
+        supabase
+          .from("companies")
+          .update({
+            name: companyName,
+            phone: phone,
+            whatsapp: whatsapp,
+            email: email,
+            address: address,
+          })
+          .eq("code", "obdtr")
+          .then(({ error }) => {
+            if (error) {
+              console.error("Supabase settings sync error:", error);
+            } else {
+              console.log("Supabase settings successfully synchronized!");
+            }
+          });
       }
 
       setMessage(currentText.saved);
