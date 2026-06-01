@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import CompactLanguageSwitcher, {
   LanguageCode,
 } from "@/components/language/CompactLanguageSwitcher";
@@ -353,6 +354,8 @@ export default function DashboardPage() {
       const activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
       setCurrentUser(activeUser);
 
+      const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+
       // 1 & 2 & 7: Check if company settings saved
       const savedSettings = window.localStorage.getItem("hbs-company-settings");
       if (savedSettings) {
@@ -360,7 +363,6 @@ export default function DashboardPage() {
       }
 
       // 3 & 4: Check if any custom warehouse is created for active store slug
-      const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
       const storesStr = window.localStorage.getItem("hbs-registered-stores");
       if (storesStr) {
         const stores = JSON.parse(storesStr);
@@ -370,7 +372,7 @@ export default function DashboardPage() {
         }
       }
 
-      // 5: Check if products exist in database
+      // 5: Check if products exist in local storage
       const productsStr = window.localStorage.getItem("hbs-store-products");
       let customProductsCount = 0;
       let lowStockCount = 0;
@@ -379,7 +381,6 @@ export default function DashboardPage() {
         if (Array.isArray(parsed) && parsed.length > 0) {
           setIsProductsDone(true);
           customProductsCount = parsed.length;
-          // Count items under low stock limit (e.g. qty <= 2)
           lowStockCount = parsed.filter((p: any) => p.stockTracking && Number(p.quantity) <= 2).length;
         }
       }
@@ -400,6 +401,138 @@ export default function DashboardPage() {
 
       // Load dynamic messages count (set to 0 initially)
       setWaitingMessages(0);
+
+      // ----------------------------------------------------
+      // SELF-HEALING / DATABASE-DRIVEN RECOVERY SYSTEM
+      // ----------------------------------------------------
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+      if (isSupabaseConfigured) {
+        // A) Recover/Sync Company Settings from Supabase
+        supabase
+          .from("companies")
+          .select("*")
+          .eq("code", storeSlug)
+          .single()
+          .then(({ data: companyData, error: companyError }) => {
+            if (companyData && !companyError) {
+              setIsCompanyDone(true);
+              const cachedSettingsStr = window.localStorage.getItem("hbs-company-settings");
+              if (!cachedSettingsStr) {
+                const settingsData = {
+                  companyName: companyData.name || "OBDTR Diagnostics",
+                  officialTitle: companyData.name ? `${companyData.name} LLC` : "OBDTR Diagnostics LLC",
+                  taxNumber: "",
+                  sector: "Oto Yedek Parça",
+                  description: companyData.address || "Oto yedek parça, filtre, buji, fren ve motor parçaları satışı.",
+                  country: "GE",
+                  phone: companyData.phone || "+995 555 000 001",
+                  whatsapp: companyData.whatsapp || "905331112233",
+                  email: companyData.email || "info@obdtr.ge",
+                  city: companyData.city || "Batumi",
+                  address: companyData.address || "Batumi Merkez",
+                  googleMap: "",
+                  portalVisible: true,
+                  showPrices: false,
+                  allowOrders: true,
+                  allowMessages: true,
+                  allowWhatsapp: true,
+                  requireEmployeeBiometrics: false,
+                };
+                window.localStorage.setItem("hbs-company-settings", JSON.stringify(settingsData));
+              }
+            }
+          });
+
+        // B) Recover/Sync Warehouses
+        const defaultWarehouses = [
+          { id: "main", name: "Ana Depo", purpose: "Satışa hazır ürün stoğu", customerVisible: false, city: "Batumi", zones: ["A", "B", "C", "D"], capacity: 1000, used: 0, shelves: ["A-01", "B-01", "C-01", "D-01"] },
+          { id: "return", name: "İade / Kontrol Deposu", purpose: "İade, arızalı veya kontrol bekleyen ürünler", customerVisible: false, city: "Batumi", zones: ["R", "Q"], capacity: 200, used: 0, shelves: ["R-01", "Q-01"] },
+          { id: "showroom", name: "Showroom Alanı", purpose: "Müşterinin görebileceği örnek ürünler", customerVisible: true, city: "Batumi", zones: ["S"], capacity: 150, used: 0, shelves: ["S-01"] },
+        ];
+        
+        let stores = [];
+        try {
+          stores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+        } catch (e) {
+          stores = [];
+        }
+        
+        let activeStore = stores.find((s: any) => s.code === storeSlug);
+        let updated = false;
+        if (!activeStore) {
+          activeStore = {
+            code: storeSlug,
+            name: storeSlug === "obdtr" ? "OBDTR Diagnostics" : storeSlug,
+            city: storeSlug === "obdtr" ? "İstanbul" : "Batumi",
+            operatingModel: "virtual_delivery",
+            serviceCountries: ["TR", "GE"],
+            warehouses: defaultWarehouses
+          };
+          stores.push(activeStore);
+          updated = true;
+        } else if (!activeStore.warehouses || activeStore.warehouses.length === 0) {
+          activeStore.warehouses = defaultWarehouses;
+          updated = true;
+        }
+        if (updated) {
+          window.localStorage.setItem("hbs-registered-stores", JSON.stringify(stores));
+        }
+        setIsWarehouseDone(true);
+
+        // C) Recover/Sync Products from Supabase
+        supabase
+          .from("offerable_items")
+          .select("*, companies!inner(code)")
+          .eq("companies.code", storeSlug)
+          .then(({ data: itemsData, error: itemsError }) => {
+            if (itemsData && !itemsError) {
+              if (itemsData.length > 0) {
+                setIsProductsDone(true);
+                
+                const mappedProducts = itemsData.map((item: any) => ({
+                  id: item.id,
+                  itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+                  name: item.name,
+                  category: item.category || "Genel",
+                  brand: item.brand || "",
+                  model: "",
+                  description: item.description || "",
+                  salePrice: item.sale_price ? String(item.sale_price) : "",
+                  purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+                  currency: item.currency || "GEL",
+                  barcode: item.barcode || "",
+                  qrCode: item.qr_code || "",
+                  sku: item.code || "",
+                  oemCode: "",
+                  manufacturerCode: "",
+                  stockTracking: true,
+                  quantity: "10",
+                  warehouse: "Ana Depo",
+                  shelf: "",
+                  entryDate: "",
+                  exitDate: "",
+                  pricingMode: item.sale_price ? "fixed" : "quote",
+                  visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+                  imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                  videoUrl: item.video_urls?.[0] || "",
+                  variants: [],
+                  galleryUrls: item.photo_urls || []
+                }));
+
+                // Update state
+                setActiveProducts(mappedProducts.length);
+                const lowStock = mappedProducts.filter((p: any) => p.stockTracking && Number(p.quantity) <= 2).length;
+                setStockAlerts(lowStock);
+                
+                // Save cache
+                window.localStorage.setItem("hbs-store-products", JSON.stringify(mappedProducts));
+              }
+            }
+          });
+      }
 
     } catch (e) {
       console.error("Dashboard states fetch error:", e);
