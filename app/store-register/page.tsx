@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
 import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
+import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
 
 type Step = "details" | "sector" | "warehouse" | "license" | "done";
 
@@ -172,8 +173,8 @@ export default function StoreRegisterPage() {
               industry_category: finalIndustry,
               default_language: "tr",
               main_currency: "GEL",
-              phone,
-              whatsapp: phone,
+              phone: sanitizeWhatsAppNumber(phone),
+              whatsapp: sanitizeWhatsAppNumber(phone),
               address: finalAddress,
               city,
               trial_ends_at: trialEnds,

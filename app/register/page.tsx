@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
+import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
 
 type RegisterMode = "select" | "customer" | "store" | "done";
 type DoneKind = "customer" | "store";
@@ -311,8 +312,8 @@ export default function RegisterPage() {
             code: companyCode,
             default_language: language,
             main_currency: "GEL",
-            phone,
-            whatsapp,
+            phone: sanitizeWhatsAppNumber(phone),
+            whatsapp: sanitizeWhatsAppNumber(whatsapp),
             address,
           })
           .select("id")

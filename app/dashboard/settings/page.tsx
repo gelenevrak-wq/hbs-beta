@@ -8,6 +8,7 @@ import CompactLanguageSwitcher, {
   LanguageCode,
 } from "@/components/language/CompactLanguageSwitcher";
 import CountrySelect, { CountryCode } from "@/components/common/CountrySelect";
+import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
 
 const texts = {
   tr: {
@@ -457,6 +458,9 @@ export default function SettingsPage() {
   const currentText = texts[language];
 
   function saveSettings() {
+    const sanitizedWhatsapp = sanitizeWhatsAppNumber(whatsapp);
+    setWhatsapp(sanitizedWhatsapp);
+
     const settingsData = {
       companyName,
       officialTitle,
@@ -465,7 +469,7 @@ export default function SettingsPage() {
       description,
       country,
       phone,
-      whatsapp,
+      whatsapp: sanitizedWhatsapp,
       email,
       city,
       address,
@@ -495,7 +499,7 @@ export default function SettingsPage() {
               name: companyName,
               email: email,
               phone: phone,
-              whatsapp: whatsapp,
+              whatsapp: sanitizedWhatsapp,
               city: city,
               representative: officialTitle,
             };
@@ -515,7 +519,7 @@ export default function SettingsPage() {
           .update({
             name: companyName,
             phone: phone,
-            whatsapp: whatsapp,
+            whatsapp: sanitizedWhatsapp,
             email: email,
             address: address,
           })

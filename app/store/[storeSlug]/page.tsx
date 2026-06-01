@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { HbsLanguageCode } from "@/lib/i18n/translations";
 import { useHbsLanguage } from "@/lib/i18n/useHbsLanguage";
 import { translateProductField } from "@/lib/i18n/dynamicContent";
+import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
 
 type ProductVariant = {
   id: string;
@@ -898,11 +899,11 @@ export default function StorePage() {
       const activeUser = typeof window !== "undefined" ? JSON.parse(window.localStorage.getItem("hbs-current-user") || "null") : null;
       const loggedInStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
       if (params.storeSlug === loggedInStoreSlug && localSettings?.whatsapp) {
-        return localSettings.whatsapp;
+        return sanitizeWhatsAppNumber(localSettings.whatsapp);
       }
-      return storeInfo?.whatsapp || "905320000000";
+      return sanitizeWhatsAppNumber(storeInfo?.whatsapp || "905320000000");
     }
-    return baseVal || (params.storeSlug === "obdtr" ? "905320000000" : undefined);
+    return sanitizeWhatsAppNumber(baseVal || (params.storeSlug === "obdtr" ? "905320000000" : undefined));
   }, [storeWhatsapp, storeInfo, localSettings, params.storeSlug]);
 
   const contactButtons = useMemo(() => {

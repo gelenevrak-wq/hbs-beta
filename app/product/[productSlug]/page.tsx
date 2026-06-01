@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import { LocalizedText, dynamicUi, pickLocalizedText, translateProductField } from "@/lib/i18n/dynamicContent";
 import { HbsLanguageCode } from "@/lib/i18n/translations";
 import { useHbsLanguage } from "@/lib/i18n/useHbsLanguage";
+import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
 import { supabase } from "@/lib/supabaseClient";
 
 
@@ -332,11 +333,11 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       const activeUser = typeof window !== "undefined" ? JSON.parse(window.localStorage.getItem("hbs-current-user") || "null") : null;
       const loggedInStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
       if (memoizedActiveProduct.storeSlug === loggedInStoreSlug && localSettings?.whatsapp) {
-        return localSettings.whatsapp;
+        return sanitizeWhatsAppNumber(localSettings.whatsapp);
       }
-      return storeInfo?.whatsapp || "905320000000";
+      return sanitizeWhatsAppNumber(storeInfo?.whatsapp || "905320000000");
     }
-    return baseVal;
+    return sanitizeWhatsAppNumber(baseVal);
   }, [memoizedActiveProduct, localSettings, storeInfo]);
 
   useEffect(() => {
