@@ -880,8 +880,13 @@ export default function StorePage() {
   const storePhoneVal = useMemo(() => {
     const baseVal = storePhone || storeInfo?.phone;
     const isPlaceholder = baseVal === "+905320000000" || baseVal === "905320000000" || !baseVal;
-    if (params.storeSlug === "obdtr" && isPlaceholder) {
-      return localSettings?.phone || storeInfo?.phone || "+905320000000";
+    if (isPlaceholder) {
+      const activeUser = typeof window !== "undefined" ? JSON.parse(window.localStorage.getItem("hbs-current-user") || "null") : null;
+      const loggedInStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+      if (params.storeSlug === loggedInStoreSlug && localSettings?.phone) {
+        return localSettings.phone;
+      }
+      return storeInfo?.phone || "+905320000000";
     }
     return baseVal || (params.storeSlug === "obdtr" ? "+905320000000" : undefined);
   }, [storePhone, storeInfo, localSettings, params.storeSlug]);
@@ -889,8 +894,13 @@ export default function StorePage() {
   const storeWhatsappVal = useMemo(() => {
     const baseVal = storeWhatsapp || storeInfo?.whatsapp;
     const isPlaceholder = baseVal === "905320000000" || baseVal === "+905320000000" || !baseVal;
-    if (params.storeSlug === "obdtr" && isPlaceholder) {
-      return localSettings?.whatsapp || storeInfo?.whatsapp || "905320000000";
+    if (isPlaceholder) {
+      const activeUser = typeof window !== "undefined" ? JSON.parse(window.localStorage.getItem("hbs-current-user") || "null") : null;
+      const loggedInStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+      if (params.storeSlug === loggedInStoreSlug && localSettings?.whatsapp) {
+        return localSettings.whatsapp;
+      }
+      return storeInfo?.whatsapp || "905320000000";
     }
     return baseVal || (params.storeSlug === "obdtr" ? "905320000000" : undefined);
   }, [storeWhatsapp, storeInfo, localSettings, params.storeSlug]);

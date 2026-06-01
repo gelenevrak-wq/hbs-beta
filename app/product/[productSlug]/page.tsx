@@ -313,8 +313,13 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     if (!memoizedActiveProduct) return undefined;
     const baseVal = memoizedActiveProduct.storePhone;
     const isPlaceholder = baseVal === "+905320000000" || baseVal === "905320000000" || !baseVal;
-    if (memoizedActiveProduct.storeSlug === "obdtr" && isPlaceholder) {
-      return localSettings?.phone || storeInfo?.phone || "+905320000000";
+    if (isPlaceholder) {
+      const activeUser = typeof window !== "undefined" ? JSON.parse(window.localStorage.getItem("hbs-current-user") || "null") : null;
+      const loggedInStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+      if (memoizedActiveProduct.storeSlug === loggedInStoreSlug && localSettings?.phone) {
+        return localSettings.phone;
+      }
+      return storeInfo?.phone || "+905320000000";
     }
     return baseVal;
   }, [memoizedActiveProduct, localSettings, storeInfo]);
@@ -323,8 +328,13 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     if (!memoizedActiveProduct) return undefined;
     const baseVal = memoizedActiveProduct.storeWhatsapp;
     const isPlaceholder = baseVal === "905320000000" || baseVal === "+905320000000" || !baseVal;
-    if (memoizedActiveProduct.storeSlug === "obdtr" && isPlaceholder) {
-      return localSettings?.whatsapp || storeInfo?.whatsapp || "905320000000";
+    if (isPlaceholder) {
+      const activeUser = typeof window !== "undefined" ? JSON.parse(window.localStorage.getItem("hbs-current-user") || "null") : null;
+      const loggedInStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+      if (memoizedActiveProduct.storeSlug === loggedInStoreSlug && localSettings?.whatsapp) {
+        return localSettings.whatsapp;
+      }
+      return storeInfo?.whatsapp || "905320000000";
     }
     return baseVal;
   }, [memoizedActiveProduct, localSettings, storeInfo]);

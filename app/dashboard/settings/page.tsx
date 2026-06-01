@@ -393,16 +393,18 @@ export default function SettingsPage() {
         if (s.allowWhatsapp !== undefined) setAllowWhatsapp(s.allowWhatsapp);
         if (s.requireEmployeeBiometrics !== undefined) setRequireEmployeeBiometrics(s.requireEmployeeBiometrics);
       } else {
+        const activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
+        const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
         const storesStr = window.localStorage.getItem("hbs-registered-stores");
         if (storesStr) {
           const stores = JSON.parse(storesStr);
-          const obdtr = stores.find((st: any) => st.code === "obdtr");
-          if (obdtr) {
-            setCompanyName(obdtr.name);
-            setOfficialTitle(obdtr.name + " LLC");
-            setEmail(obdtr.email);
-            setPhone(obdtr.phone || "+995 555 000 001");
-            setWhatsapp(obdtr.phone || "+995 555 000 001");
+          const activeStoreObj = stores.find((st: any) => st.code === storeSlug);
+          if (activeStoreObj) {
+            setCompanyName(activeStoreObj.name);
+            setOfficialTitle(activeStoreObj.name + " LLC");
+            setEmail(activeStoreObj.email);
+            setPhone(activeStoreObj.phone || "+995 555 000 001");
+            setWhatsapp(activeStoreObj.phone || "+995 555 000 001");
           }
         }
       }
@@ -442,12 +444,15 @@ export default function SettingsPage() {
     try {
       window.localStorage.setItem("hbs-company-settings", JSON.stringify(settingsData));
 
+      const activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
+      const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+
       // Sync settings to active stores
       const storesStr = window.localStorage.getItem("hbs-registered-stores");
       if (storesStr) {
         const stores = JSON.parse(storesStr);
         const updatedStores = stores.map((s: any) => {
-          if (s.code === "obdtr") {
+          if (s.code === storeSlug) {
             return {
               ...s,
               name: companyName,
@@ -477,7 +482,7 @@ export default function SettingsPage() {
             email: email,
             address: address,
           })
-          .eq("code", "obdtr")
+          .eq("code", storeSlug)
           .then(({ error }) => {
             if (error) {
               console.error("Supabase settings sync error:", error);
