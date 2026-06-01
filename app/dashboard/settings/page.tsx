@@ -408,6 +408,43 @@ export default function SettingsPage() {
           }
         }
       }
+
+      // Sync from Supabase if configured to guarantee multi-tenant settings consistency
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+      if (isSupabaseConfigured) {
+        const activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
+        const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+        supabase
+          .from("companies")
+          .select("*")
+          .eq("code", storeSlug)
+          .single()
+          .then(({ data, error }) => {
+            if (data && !error) {
+              if (data.name) setCompanyName(data.name);
+              if (data.phone) setPhone(data.phone);
+              if (data.whatsapp) setWhatsapp(data.whatsapp);
+              if (data.email) setEmail(data.email);
+              if (data.address) setAddress(data.address);
+
+              // Sync loaded db values to localSettings cache
+              const cachedSettingsStr = window.localStorage.getItem("hbs-company-settings");
+              const existing = cachedSettingsStr ? JSON.parse(cachedSettingsStr) : {};
+              const updatedSettings = {
+                ...existing,
+                companyName: data.name || existing.companyName,
+                phone: data.phone || existing.phone,
+                whatsapp: data.whatsapp || existing.whatsapp,
+                email: data.email || existing.email,
+                address: data.address || existing.address,
+              };
+              window.localStorage.setItem("hbs-company-settings", JSON.stringify(updatedSettings));
+            }
+          });
+      }
     } catch (e) {
       console.error("Load settings error:", e);
     }

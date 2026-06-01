@@ -1026,13 +1026,27 @@ export default function StorePage() {
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
     if (isSupabaseConfigured) {
+      // 1. Fetch store contact details directly from companies table to ensure multi-tenant robustness even with zero products
+      supabase
+        .from("companies")
+        .select("phone, whatsapp")
+        .eq("code", params.storeSlug)
+        .single()
+        .then(({ data: compData, error: compErr }) => {
+          if (compData && !compErr) {
+            setStorePhone(compData.phone || undefined);
+            setStoreWhatsapp(compData.whatsapp || undefined);
+          }
+        });
+
+      // 2. Load products
       supabase
         .from("offerable_items")
         .select("*, companies!inner(*)")
         .eq("companies.code", params.storeSlug)
         .then(({ data, error }) => {
           if (data && !error) {
-            if (data.length > 0 && data[0].companies) {
+            if (data.length > 0 && data[0].companies && !storePhone && !storeWhatsapp) {
               setStorePhone(data[0].companies.phone || undefined);
               setStoreWhatsapp(data[0].companies.whatsapp || undefined);
             }
