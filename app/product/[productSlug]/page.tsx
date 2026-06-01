@@ -245,6 +245,33 @@ export default function ProductDetailPage() {
     }
   }, [product]);
 
+  const localSettings = useMemo(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const saved = window.localStorage.getItem("hbs-company-settings");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error("Error parsing hbs-company-settings", e);
+    }
+    return null;
+  }, []);
+
+  const storeInfo = useMemo(() => {
+    if (typeof window === "undefined" || !product) return null;
+    try {
+      const localStoresStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+      const localStores = JSON.parse(localStoresStr);
+      return localStores.find((st: any) => st.code === product.storeSlug) || (product.storeSlug === "obdtr" ? {
+        name: "OBDTR Diagnostics",
+        operatingModel: "virtual_delivery",
+        serviceCountries: ["TR", "GE"]
+      } : null);
+    } catch (e) {
+      console.error("Error parsing local stores", e);
+      return null;
+    }
+  }, [product]);
+
 const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     if (!product) return null;
     
@@ -550,6 +577,27 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
   }
 
     const activeProduct = memoizedActiveProduct!;
+
+  const storePhoneVal = useMemo(() => {
+    if (!activeProduct) return undefined;
+    const baseVal = activeProduct.storePhone;
+    const isPlaceholder = baseVal === "+905320000000" || baseVal === "905320000000" || !baseVal;
+    if (activeProduct.storeSlug === "obdtr" && isPlaceholder) {
+      return localSettings?.phone || storeInfo?.phone || "+905320000000";
+    }
+    return baseVal;
+  }, [activeProduct, localSettings, storeInfo]);
+
+  const storeWhatsappVal = useMemo(() => {
+    if (!activeProduct) return undefined;
+    const baseVal = activeProduct.storeWhatsapp;
+    const isPlaceholder = baseVal === "905320000000" || baseVal === "+905320000000" || !baseVal;
+    if (activeProduct.storeSlug === "obdtr" && isPlaceholder) {
+      return localSettings?.whatsapp || storeInfo?.whatsapp || "905320000000";
+    }
+    return baseVal;
+  }, [activeProduct, localSettings, storeInfo]);
+
   const displayGallery = Array.from(new Set([activeProduct.imageUrl, ...activeProduct.gallery])).slice(0, 4);
   const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Depo / A-03-R12-G04";
   const storefrontNames = activeProduct.storeSlug === "obdtr" ? "OBDTR Online Vitrin, Diagnostik Vitrini" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız Batum Vitrini, Tesisat Ürünleri" : "OBDTR Online Vitrin";
@@ -725,24 +773,24 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                 <button type="button" onClick={askQuestion} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-black hover:bg-slate-100 sm:rounded-2xl sm:px-6 sm:py-4">{t.common.askStore}</button>
               </div>
 
-              {(activeProduct.storePhone || activeProduct.storeWhatsapp) && (
+              {(storePhoneVal || storeWhatsappVal) && (
                 <div className="mt-4 border-t border-blue-200/50 pt-3 space-y-2">
                   <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block text-center">
                     {getLocalText("directContact", language)}
                   </span>
                   <div className="grid grid-cols-2 gap-2">
-                    {activeProduct.storePhone && (
+                    {storePhoneVal && (
                       <a
-                        href={`tel:${activeProduct.storePhone}`}
+                        href={`tel:${storePhoneVal}`}
                         className="flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition shadow-sm"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                         <span>{getLocalText("quickCall", language)}</span>
                       </a>
                     )}
-                    {activeProduct.storeWhatsapp && (
+                    {storeWhatsappVal && (
                       <a
-                        href={`https://wa.me/${activeProduct.storeWhatsapp.replace(/[^0-9]/g, "")}`}
+                        href={`https://wa.me/${storeWhatsappVal.replace(/[^0-9]/g, "")}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-1.5 rounded-xl border border-green-200 bg-green-50 px-3.5 py-2.5 text-xs font-bold text-green-800 hover:bg-green-100 transition shadow-sm"
