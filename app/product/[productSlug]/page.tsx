@@ -309,6 +309,26 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     return product;
   }, [product, language]);
 
+  const storePhoneVal = useMemo(() => {
+    if (!memoizedActiveProduct) return undefined;
+    const baseVal = memoizedActiveProduct.storePhone;
+    const isPlaceholder = baseVal === "+905320000000" || baseVal === "905320000000" || !baseVal;
+    if (memoizedActiveProduct.storeSlug === "obdtr" && isPlaceholder) {
+      return localSettings?.phone || storeInfo?.phone || "+905320000000";
+    }
+    return baseVal;
+  }, [memoizedActiveProduct, localSettings, storeInfo]);
+
+  const storeWhatsappVal = useMemo(() => {
+    if (!memoizedActiveProduct) return undefined;
+    const baseVal = memoizedActiveProduct.storeWhatsapp;
+    const isPlaceholder = baseVal === "905320000000" || baseVal === "+905320000000" || !baseVal;
+    if (memoizedActiveProduct.storeSlug === "obdtr" && isPlaceholder) {
+      return localSettings?.whatsapp || storeInfo?.whatsapp || "905320000000";
+    }
+    return baseVal;
+  }, [memoizedActiveProduct, localSettings, storeInfo]);
+
   useEffect(() => {
     console.log("HBS_DEBUG: Product detail useEffect triggered", { productSlug: params.productSlug, isReady });
     if (!isReady || !params.productSlug) return;
@@ -577,26 +597,6 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
   }
 
     const activeProduct = memoizedActiveProduct!;
-
-  const storePhoneVal = useMemo(() => {
-    if (!activeProduct) return undefined;
-    const baseVal = activeProduct.storePhone;
-    const isPlaceholder = baseVal === "+905320000000" || baseVal === "905320000000" || !baseVal;
-    if (activeProduct.storeSlug === "obdtr" && isPlaceholder) {
-      return localSettings?.phone || storeInfo?.phone || "+905320000000";
-    }
-    return baseVal;
-  }, [activeProduct, localSettings, storeInfo]);
-
-  const storeWhatsappVal = useMemo(() => {
-    if (!activeProduct) return undefined;
-    const baseVal = activeProduct.storeWhatsapp;
-    const isPlaceholder = baseVal === "905320000000" || baseVal === "+905320000000" || !baseVal;
-    if (activeProduct.storeSlug === "obdtr" && isPlaceholder) {
-      return localSettings?.whatsapp || storeInfo?.whatsapp || "905320000000";
-    }
-    return baseVal;
-  }, [activeProduct, localSettings, storeInfo]);
 
   const displayGallery = Array.from(new Set([activeProduct.imageUrl, ...activeProduct.gallery])).slice(0, 4);
   const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Depo / A-03-R12-G04";
