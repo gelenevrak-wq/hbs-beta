@@ -709,11 +709,11 @@ export default function HomePage() {
           <div className="flex items-center gap-1.5 sm:gap-3">
             <Link href="/" className="shrink-0 text-base font-black tracking-tight text-blue-700 sm:text-xl">HBS</Link>
             <CompactLanguageSwitcher />
-          </div>
-          <div className="flex items-center gap-1 sm:gap-1.5">
-            <Link href="/requests" className="hidden sm:flex rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-indigo-100 transition shrink-0">
+            <Link href="/requests" className="rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2 py-1.5 text-[8px] sm:text-[10px] flex items-center gap-1 hover:bg-indigo-100 transition shrink-0 shadow-sm">
               📢 {t.tendersBoard}
             </Link>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-1.5">
             
             {currentUser ? (
               <div className="flex items-center gap-2">
@@ -748,12 +748,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Mobile Quick Action Pill-Buttons */}
-        <div className="mx-auto flex sm:hidden max-w-[1800px] items-center gap-1.5 px-2 pb-2 overflow-x-auto hbs-scrollbar">
-          <Link href="/requests" className="rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2.5 py-1 text-[10px] flex items-center gap-1 hover:bg-indigo-100 transition shrink-0">
-            📢 {t.tendersBoard}
-          </Link>
-        </div>
 
         <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
           <form className="flex w-full items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 shadow-inner transition focus-within:border-blue-400 focus-within:bg-white focus-within:shadow-md" onSubmit={(e) => e.preventDefault()}>
