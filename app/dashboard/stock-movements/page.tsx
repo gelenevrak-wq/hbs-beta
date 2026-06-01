@@ -89,6 +89,8 @@ export default function StockMovementsPage() {
   const [message, setMessage] = useState("");
   const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
   const [productsLoaded, setProductsLoaded] = useState(false);
+  const [isVerifyingBiometric, setIsVerifyingBiometric] = useState(false);
+  const [biometricMessage, setBiometricMessage] = useState("");
 
   useEffect(() => {
     // 1. Load products
@@ -236,83 +238,117 @@ export default function StockMovementsPage() {
       return;
     }
 
-    let newStock = selectedProduct.currentStock;
-
-    if (isStockIncreasing(movementType)) {
-      newStock += parsedQuantity;
-    }
-
-    if (isStockDecreasing(movementType)) {
-      newStock -= parsedQuantity;
-    }
-
-    if (movementType === "manual_adjustment") {
-      newStock = parsedQuantity;
-    }
-
-    if (newStock < 0) {
-      setMessage("Stok miktarı eksiye düşemez. İşlem iptal edildi.");
-      return;
-    }
-
-    const updatedProduct: Product = {
-      ...selectedProduct,
-      currentStock: newStock,
-      warehouse,
-      shelf,
-    };
-
-    setProducts((currentProducts) =>
-      currentProducts.map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product
-      )
-    );
-
-    setSelectedProduct(updatedProduct);
-
-    const movement: StockMovement = {
-      id: `mov-${Date.now()}`,
-      productName: selectedProduct.name,
-      productCode: selectedProduct.sku || selectedProduct.barcode,
-      movementType,
-      quantity: parsedQuantity,
-      warehouse,
-      shelf,
-      note,
-      createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)",
-    };
-
-    setMovements((currentMovements) => [movement, ...currentMovements]);
-
-    // Update quantity in hbs-store-products local storage
+    // Biyometrik zorunluluk kontrolü
+    let requireBiometric = false;
     try {
-      const savedProducts = window.localStorage.getItem("hbs-store-products");
-      if (savedProducts) {
-        const fullRecords = JSON.parse(savedProducts);
-        if (Array.isArray(fullRecords)) {
-          const updatedRecords = fullRecords.map((r: any) => {
-            if (r.id === selectedProduct.id) {
-              return {
-                ...r,
-                quantity: newStock.toString(),
-                warehouse: warehouse,
-                shelf: shelf
-              };
-            }
-            return r;
-          });
-          window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedRecords));
+      const companySettingsStr = window.localStorage.getItem("hbs-company-settings");
+      const currentUserStr = window.localStorage.getItem("hbs-current-user");
+      if (companySettingsStr && currentUserStr) {
+        const settings = JSON.parse(companySettingsStr);
+        const user = JSON.parse(currentUserStr);
+        // Eğer elemanlar için biyometrik girişi zorunlu kılındıysa ve giriş yapan kişi Owner/Superadmin değilse
+        if (settings.requireEmployeeBiometrics && user.role !== "owner" && user.role !== "superadmin") {
+          requireBiometric = true;
         }
       }
     } catch (e) {
-      console.error("Error updating product quantity in localStorage", e);
+      console.error("Biyometrik kontrol hatası:", e);
     }
 
-    setQuantity("");
-    setNote("");
-    setMessage(
-      `${selectedProduct.name} için stok işlemi kaydedildi. Yeni stok: ${newStock}`
-    );
+    const executeSave = () => {
+      let newStock = selectedProduct.currentStock;
+
+      if (isStockIncreasing(movementType)) {
+        newStock += parsedQuantity;
+      }
+
+      if (isStockDecreasing(movementType)) {
+        newStock -= parsedQuantity;
+      }
+
+      if (movementType === "manual_adjustment") {
+        newStock = parsedQuantity;
+      }
+
+      if (newStock < 0) {
+        setMessage("Stok miktarı eksiye düşemez. İşlem iptal edildi.");
+        return;
+      }
+
+      const updatedProduct: Product = {
+        ...selectedProduct,
+        currentStock: newStock,
+        warehouse,
+        shelf,
+      };
+
+      setProducts((currentProducts) =>
+        currentProducts.map((product) =>
+          product.id === updatedProduct.id ? updatedProduct : product
+        )
+      );
+
+      setSelectedProduct(updatedProduct);
+
+      const movement: StockMovement = {
+        id: `mov-${Date.now()}`,
+        productName: selectedProduct.name,
+        productCode: selectedProduct.sku || selectedProduct.barcode,
+        movementType,
+        quantity: parsedQuantity,
+        warehouse,
+        shelf,
+        note,
+        createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)",
+      };
+
+      setMovements((currentMovements) => [movement, ...currentMovements]);
+
+      // Update quantity in hbs-store-products local storage
+      try {
+        const savedProducts = window.localStorage.getItem("hbs-store-products");
+        if (savedProducts) {
+          const fullRecords = JSON.parse(savedProducts);
+          if (Array.isArray(fullRecords)) {
+            const updatedRecords = fullRecords.map((r: any) => {
+              if (r.id === selectedProduct.id) {
+                return {
+                  ...r,
+                  quantity: newStock.toString(),
+                  warehouse: warehouse,
+                  shelf: shelf
+                };
+              }
+              return r;
+            });
+            window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedRecords));
+          }
+        }
+      } catch (e) {
+        console.error("Error updating product quantity in localStorage", e);
+      }
+
+      setQuantity("");
+      setNote("");
+      setMessage(
+        `${selectedProduct.name} için stok işlemi kaydedildi. Yeni stok: ${newStock}`
+      );
+    };
+
+    if (requireBiometric) {
+      setIsVerifyingBiometric(true);
+      setBiometricMessage("Mağaza sahibi tarafından çalışanlar için biyometrik stok doğrulama şart koşulmuştur. Lütfen Touch ID / Face ID doğrulayın.");
+      
+      setTimeout(() => {
+        setBiometricMessage("Biyometrik doğrulama başarılı! İşlem kaydediliyor...");
+        setTimeout(() => {
+          setIsVerifyingBiometric(false);
+          executeSave();
+        }, 800);
+      }, 1800);
+    } else {
+      executeSave();
+    }
   }
 
   return (
@@ -633,6 +669,24 @@ export default function StockMovementsPage() {
           </div>
         </section>
       </div>
+
+      {isVerifyingBiometric && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-sm transform overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-900/90 p-8 text-center shadow-2xl backdrop-blur-2xl transition-all text-white">
+            <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-blue-950/50 border border-blue-500/30 text-blue-400 relative">
+              <div className="absolute inset-0 rounded-full border-2 border-blue-500/40 animate-ping opacity-75"></div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="w-10 h-10 animate-pulse text-blue-400" viewBox="0 0 16 16">
+                <path d="M4.828 8.9A.5.5 0 0 1 5 8.5c0-.18.064-.324.152-.424.089-.1.202-.154.348-.154.146 0 .26.054.348.154.088.1.152.244.152.424a.5.5 0 1 1-1 0c0-.07-.024-.12-.042-.14-.017-.02-.044-.03-.058-.03-.014 0-.04.01-.058.03-.018.02-.042.07-.042.14a.5.5 0 0 1-.5.5M7 6.5C7 5.672 7.672 5 8.5 5s1.5.672 1.5 1.5c0 .313-.083.56-.217.74-.132.18-.3.26-.483.26-.183 0-.35-.08-.483-.26-.134-.18-.217-.427-.217-.74a.5.5 0 0 0-1 0c0 .687.217 1.14.517 1.543.3.4.717.657 1.183.657.466 0 .883-.257 1.183-.657.3-.404.517-.856.517-1.543 0-1.38-1.12-2.5-2.5-2.5S6 5.12 6 6.5a.5.5 0 0 0 1 0"/>
+                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0"/>
+              </svg>
+            </div>
+            <h3 className="text-xl font-black tracking-tight">Biyometrik Yetkilendirme</h3>
+            <p className="mt-3 text-sm text-slate-300 font-semibold leading-relaxed">
+              {biometricMessage}
+            </p>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

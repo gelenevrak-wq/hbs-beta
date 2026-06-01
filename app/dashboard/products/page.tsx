@@ -947,6 +947,71 @@ export default function ProductsPage() {
     }
   }
 
+  async function duplicateProduct(p: ProductRecord) {
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    const newId = `product-${Date.now()}`;
+    const newSku = p.sku ? `${p.sku}-KOPYA` : "";
+    const newBarcode = p.barcode ? `${p.barcode}99` : "";
+    const newQrCode = p.qrCode ? `${p.qrCode}-KOPYA` : "";
+    const newName = `${p.name} (Kopya)`;
+
+    const duplicated: ProductRecord = {
+      ...p,
+      id: newId,
+      name: newName,
+      sku: newSku,
+      barcode: newBarcode,
+      qrCode: newQrCode,
+      entryDate: new Date().toISOString().split("T")[0],
+    };
+
+    if (isSupabaseConfigured) {
+      try {
+        const currentUserStr = window.localStorage.getItem("hbs-current-user");
+        let targetCompanyId = "a123bc45-6789-abcd-ef01-234567890123"; // Default for OBDTR
+        if (currentUserStr) {
+          const currentUser = JSON.parse(currentUserStr);
+          const storeSlug = currentUser.storeSlugs?.[0];
+          if (storeSlug) {
+            const registeredStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+            const myStore = registeredStores.find((s: any) => s.code === storeSlug);
+            if (myStore && myStore.id) {
+              targetCompanyId = myStore.id;
+            }
+          }
+        }
+
+        const supabasePayload = {
+          company_id: targetCompanyId,
+          type: p.itemType,
+          name: newName,
+          code: newSku,
+          category: p.category,
+          brand: p.brand || "",
+          description: p.description || "",
+          photo_urls: p.imageUrl ? [p.imageUrl] : [],
+          video_urls: p.videoUrl ? [p.videoUrl] : [],
+          currency: p.currency || "GEL",
+          sale_price: p.pricingMode === "fixed" && p.salePrice ? parseFloat(p.salePrice) : null,
+          is_visible_in_storefront: p.visibility === "visible",
+          is_visible_in_public_search: p.visibility === "visible",
+          barcode: newBarcode
+        };
+
+        const { error } = await supabase.from("offerable_items").insert(supabasePayload);
+        if (error) console.error("Supabase duplicate error:", error);
+      } catch (err) {
+        console.error("Supabase duplicate insert error:", err);
+      }
+    }
+
+    setProducts((current) => [duplicated, ...current]);
+    setMessage(`"${p.name}" başarıyla kopyalandı! Yeni kopyalanan ürün listede en başa yerleştirildi.`);
+  }
+
   async function toggleVisibility(id: string) {
     const updatedProducts = products.map((p) => {
       if (p.id === id) {
@@ -2012,6 +2077,14 @@ export default function ProductsPage() {
                           title="Ürünü Düzenle"
                         >
                           <span>✏️ Düzenle</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => duplicateProduct(p)}
+                          className="rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          title="Ürünün Kopyasını Üret (Çoğalt)"
+                        >
+                          <span>👯 Kopya Üret</span>
                         </button>
                         <button
                           type="button"

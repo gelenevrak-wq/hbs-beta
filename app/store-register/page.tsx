@@ -425,14 +425,14 @@ export default function StoreRegisterPage() {
                 </label>
               )}
 
-              {/* Dinamik Adres Girişi (Stok Kontrolü Modelinde Zorunlu) */}
+              {/* Adres Girişi (Her iki model için de zorunlu kılınmıştır) */}
               <label className="grid gap-1.5">
-                <span className="text-xs font-bold text-slate-600">Mağaza / Depo Adresi {useCase === "stock_only" ? "*" : "(Opsiyonel)"}</span>
+                <span className="text-xs font-bold text-slate-600">Mağaza / Depo Adresi *</span>
                 <textarea
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder={useCase === "stock_only" ? "Depo/Mağaza fiziksel adresinizi girin." : "Mağaza adresi verilmez ise sistem 'Sanal Mağaza, Türkiye çapında kargolama' olarak işaretleyecektir."}
-                  required={useCase === "stock_only"}
+                  placeholder="Depo veya mağaza fiziksel adresinizi girin."
+                  required
                   rows={2}
                   className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
                 />
@@ -447,7 +447,7 @@ export default function StoreRegisterPage() {
                   !email ||
                   !city ||
                   !password ||
-                  (useCase === "stock_only" && !address.trim()) ||
+                  !address.trim() ||
                   (useCase === "sales" && !taxNumber.trim())
                 }
                 onClick={() => setStep("sector")}

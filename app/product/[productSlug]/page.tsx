@@ -4,7 +4,7 @@ import Link from "next/link";
 import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { LocalizedText, dynamicUi, pickLocalizedText } from "@/lib/i18n/dynamicContent";
+import { LocalizedText, dynamicUi, pickLocalizedText, translateProductField } from "@/lib/i18n/dynamicContent";
 import { HbsLanguageCode } from "@/lib/i18n/translations";
 import { useHbsLanguage } from "@/lib/i18n/useHbsLanguage";
 import { supabase } from "@/lib/supabaseClient";
@@ -45,8 +45,12 @@ const stockText: Record<StockKey, LocalizedText> = {
 
 const demoProducts: ProductData[] = [];
 
-function txt(value: LocalizedText | string, language: HbsLanguageCode) {
-  return pickLocalizedText(value, language);
+function txt(
+  value: LocalizedText | string,
+  language: HbsLanguageCode,
+  fieldType: 'name' | 'category' | 'description' = 'name'
+) {
+  return translateProductField(value, fieldType, language);
 }
 
 function availabilityUrl(stockStatus: StockKey) {
@@ -442,10 +446,19 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               storeSlug: matchingStore.code,
               country: matchingStore.city.toLowerCase().includes("batum") ? "Georgia" : "Türkiye",
               city: matchingStore.city || "İstanbul",
-              description: { tr: found.description || "", en: found.description || "" },
+              description: {
+                tr: found.description || "",
+                en: found.description || "",
+                de: found.description || "",
+                ru: found.description || "",
+                ka: found.description || ""
+              },
               priceText: {
                 tr: found.pricingMode === "quote" ? "Teklif isteyin" : found.pricingMode === "bidding" ? "Teklif verin" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
-                en: found.pricingMode === "quote" ? "Request quote" : found.pricingMode === "bidding" ? "Make an offer" : `${found.salePrice || "0"} ${found.currency || "GEL"}`
+                en: found.pricingMode === "quote" ? "Request quote" : found.pricingMode === "bidding" ? "Make an offer" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
+                de: found.pricingMode === "quote" ? "Anfrage erforderlich" : found.pricingMode === "bidding" ? "Angebot machen" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
+                ru: found.pricingMode === "quote" ? "Цена по запросу" : found.pricingMode === "bidding" ? "Сделать предложение" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
+                ka: found.pricingMode === "quote" ? "ფასი მოთხოვნით" : found.pricingMode === "bidding" ? "ფასის შეთავაზება" : `${found.salePrice || "0"} ${found.currency || "GEL"}`
               },
               imageUrl: found.imageUrl || "/product-images/diagnostic-scanner.svg",
               gallery: [found.imageUrl || "/product-images/diagnostic-scanner.svg"],
@@ -472,10 +485,19 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                 storeSlug: matchingStore.code,
                 country: matchingStore.city.toLowerCase().includes("batum") ? "Georgia" : "Türkiye",
                 city: matchingStore.city || "İstanbul",
-                description: { tr: sim.description || "", en: sim.description || "" },
+                description: {
+                  tr: sim.description || "",
+                  en: sim.description || "",
+                  de: sim.description || "",
+                  ru: sim.description || "",
+                  ka: sim.description || ""
+                },
                 priceText: {
                   tr: sim.pricingMode === "quote" ? "Teklif isteyin" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`,
-                  en: sim.pricingMode === "quote" ? "Request quote" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`
+                  en: sim.pricingMode === "quote" ? "Request quote" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`,
+                  de: sim.pricingMode === "quote" ? "Anfrage erforderlich" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`,
+                  ru: sim.pricingMode === "quote" ? "Цена по запросу" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`,
+                  ka: sim.pricingMode === "quote" ? "ფასი მოთხოვნით" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`
                 },
                 imageUrl: sim.imageUrl || "/product-images/diagnostic-scanner.svg",
                 gallery: [sim.imageUrl || "/product-images/diagnostic-scanner.svg"],
@@ -682,7 +704,6 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-800/80 sm:text-sm">{t.product.eyebrow}</p>
               <h1 className="mt-2 text-2xl font-black leading-tight sm:mt-3 sm:text-4xl">{txt(activeProduct.name, language)}</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-5 text-slate-600 sm:mt-5 sm:text-base sm:leading-8">{txt(activeProduct.description, language)}</p>
               <div className="mt-3 flex flex-wrap gap-2 sm:mt-4">
                 <span className="rounded-full bg-blue-100 px-3 py-2 text-xs font-bold text-blue-800 sm:px-4 sm:text-sm">{txt(activeProduct.category, language)}</span>
                 <span className="rounded-full bg-slate-100 px-3 py-2 text-xs text-slate-600 sm:px-4 sm:text-sm">{activeProduct.country} / {activeProduct.city}</span>

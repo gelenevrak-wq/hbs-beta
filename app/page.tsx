@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
+import { translateProductField } from "@/lib/i18n/dynamicContent";
 
 type Localized = Partial<Record<LanguageCode, string>> & { tr: string };
 
@@ -57,6 +58,27 @@ const ui = {
     radius: "Çap",
     mapPick: "Haritadan seç",
     allWorld: "Tüm dünya",
+    customerPanel: "MÜŞTERİ PANELİ",
+    myOffers: "Tekliflerim & B2B Pazarlıklarım",
+    offersSub: "Satıcılardan talep ettiğiniz fiyat tekliflerini, iskontolu pazarlık taleplerinizi ve güncel onay durumlarını buradan canlı takip edebilirsiniz.",
+    tableProduct: "Ürün / Portföy",
+    tableType: "Pazarlık Türü",
+    tablePrice: "Sunulan Fiyat",
+    tableDate: "Talep Tarihi",
+    tableStatus: "Durum",
+    discountOffer: "İskonto Teklifi",
+    quoteRequest: "Fiyat Teklifi İstemi",
+    pending: "Bekliyor",
+    approved: "Onaylandı",
+    rejected: "Reddedildi",
+    locateMe: "Konumu Bul",
+    findMyLocation: "Konumumu Bul",
+    searchRadius: "Arama Yarıçapı",
+    searchCityPlaceholder: "Şehir ara... (Örn: Antalya)",
+    scanCameraTitle: "Kamera ile Fotoğraf, Barkod veya QR Kod Tara",
+    tendersBoard: "İlan Panosu",
+    aiAnalyzing: "🔍 Fotoğraf yüklendi. HBS Yapay Zeka analiz ediyor...",
+    aiCompleted: "✓ Yapay Zeka Barkod/Görsel Analizi Tamamlandı!\nEşleşen Parça Kodu: "
   },
   en: {
     login: "Login",
@@ -84,6 +106,27 @@ const ui = {
     radius: "Radius",
     mapPick: "Pick on map",
     allWorld: "Worldwide",
+    customerPanel: "CUSTOMER PANEL",
+    myOffers: "My Offers & B2B Negotiations",
+    offersSub: "You can track your price quotes, discounted negotiation requests, and real-time approval status from sellers here.",
+    tableProduct: "Product / Portfolio",
+    tableType: "Negotiation Type",
+    tablePrice: "Offered Price",
+    tableDate: "Request Date",
+    tableStatus: "Status",
+    discountOffer: "Discount Offer",
+    quoteRequest: "Quote Request",
+    pending: "Pending",
+    approved: "Approved",
+    rejected: "Rejected",
+    locateMe: "Locate Me",
+    findMyLocation: "Find My Location",
+    searchRadius: "Search Radius",
+    searchCityPlaceholder: "Search city... (e.g. Batumi)",
+    scanCameraTitle: "Scan Photo, Barcode or QR Code with Camera",
+    tendersBoard: "Tenders Board",
+    aiAnalyzing: "🔍 Photo uploaded. HBS AI is analyzing...",
+    aiCompleted: "✓ AI Barcode/Image Analysis Completed!\nMatching Part Code: "
   },
   de: {
     login: "Login",
@@ -111,6 +154,27 @@ const ui = {
     radius: "Radius",
     mapPick: "Auf Karte wählen",
     allWorld: "Weltweit",
+    customerPanel: "KUNDENPANEL",
+    myOffers: "Meine Angebote & B2B-Verhandlungen",
+    offersSub: "Hier können Sie Ihre Preisangebote, Rabattanfragen und den Echtzeit-Genehmigungsstatus der Verkäufer verfolgen.",
+    tableProduct: "Produkt / Portfolio",
+    tableType: "Verhandlungsart",
+    tablePrice: "Angebotener Preis",
+    tableDate: "Anfragedatum",
+    tableStatus: "Status",
+    discountOffer: "Rabattangebot",
+    quoteRequest: "Preisanfrage",
+    pending: "Ausstehend",
+    approved: "Genehmigt",
+    rejected: "Abgelehnt",
+    locateMe: "Standort ermitteln",
+    findMyLocation: "Meinen Standort finden",
+    searchRadius: "Suchradius",
+    searchCityPlaceholder: "Stadt suchen... (z. B. Berlin)",
+    scanCameraTitle: "Foto, Barcode oder QR-Code mit der Kamera scannen",
+    tendersBoard: "Ausschreibungen",
+    aiAnalyzing: "🔍 Foto hochgeladen. HBS KI analysiert...",
+    aiCompleted: "✓ KI Barcode/Bildanalyse abgeschlossen!\nPassender Teilecode: "
   },
   ru: {
     login: "Вход",
@@ -138,6 +202,27 @@ const ui = {
     radius: "Радиус",
     mapPick: "Выбрать на карте",
     allWorld: "Весь мир",
+    customerPanel: "ПАНЕЛЬ КЛИЕНТА",
+    myOffers: "Мои предложения и B2B переговоры",
+    offersSub: "Здесь вы можете отслеживать свои ценовые предложения, запросы на скидки и статус согласования продавцами в реальном времени.",
+    tableProduct: "Товар / Портфолио",
+    tableType: "Тип переговоров",
+    tablePrice: "Предложенная цена",
+    tableDate: "Дата запроса",
+    tableStatus: "Статус",
+    discountOffer: "Предложение скидки",
+    quoteRequest: "Запрос цены",
+    pending: "В ожидании",
+    approved: "Одобрено",
+    rejected: "Отклонено",
+    locateMe: "Найти меня",
+    findMyLocation: "Найти мое положение",
+    searchRadius: "Радиус поиска",
+    searchCityPlaceholder: "Поиск города... (напр.: Батуми)",
+    scanCameraTitle: "Сканировать фото, штрихкод или QR-код камерой",
+    tendersBoard: "Доска тендеров",
+    aiAnalyzing: "🔍 Фотография загружена. ИИ HBS анализирует...",
+    aiCompleted: "✓ Анализ штрихкода/изображения ИИ завершен!\nСоответствующий код детали: "
   },
   ka: {
     login: "შესვლა",
@@ -165,6 +250,27 @@ const ui = {
     radius: "რადიუსი",
     mapPick: "რუკაზე არჩევა",
     allWorld: "მთელი მსოფლიო",
+    customerPanel: "მომხმარებლის პანელი",
+    myOffers: "ჩემი შეთავაზებები და B2B მოლაპარაკებები",
+    offersSub: "აქ შეგიძლიათ თვალი ადევნოთ ფასის შეთავაზებებს, ფასდაკლების მოთხოვნებს და გამყიდველების რეალურ დროში დამტკიცების სტატუსს.",
+    tableProduct: "პროდუქტი / პორტფოლიო",
+    tableType: "მოლაპარაკების ტიპი",
+    tablePrice: "შემოთავაზებული ფასი",
+    tableDate: "მოთხოვნის თარიღი",
+    tableStatus: "სტატუსი",
+    discountOffer: "ფასდაკლების შეთავაზება",
+    quoteRequest: "ფასის მოთხოვნა",
+    pending: "მოლოდინშია",
+    approved: "დამტკიცებულია",
+    rejected: "უარყოფილია",
+    locateMe: "ჩემი მდებარეობა",
+    findMyLocation: "ჩემი მდებარეობის პოვნა",
+    searchRadius: "ძებნის რადიუსი",
+    searchCityPlaceholder: "მოძებნე ქალაქი... (მაგ: ბათუმი)",
+    scanCameraTitle: "სკანირება ფოტოთი, ბარკოდით ან QR კოდით კამერით",
+    tendersBoard: "ტენდერების დაფა",
+    aiAnalyzing: "🔍 ფოტო აიტვირთა. HBS AI აანალიზებს...",
+    aiCompleted: "✓ AI ბარკოდის/გამოსახულების ანალიზი დასრულდა!\nშესაბამისი ნაწილის კოდი: "
   },
 };
 
@@ -211,8 +317,12 @@ function isLanguageCode(value: string | null): value is LanguageCode {
   return value === "tr" || value === "en" || value === "ru" || value === "ka" || value === "de";
 }
 
-function l(value: Localized, language: LanguageCode) {
-  return value[language] ?? value.en ?? value.tr;
+function l(
+  value: Localized,
+  language: LanguageCode,
+  fieldType: 'name' | 'category' | 'description' = 'name'
+) {
+  return translateProductField(value, fieldType, language as any);
 }
 
 export default function HomePage() {
@@ -225,7 +335,7 @@ export default function HomePage() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    alert(language === "tr" ? "🔍 Fotoğraf yüklendi. HBS Yapay Zeka analiz ediyor..." : "🔍 Photo uploaded. HBS AI is analyzing...");
+    alert(t.aiAnalyzing);
     
     let targetSku = "SKU-AUTEL-001";
     try {
@@ -243,11 +353,7 @@ export default function HomePage() {
 
     setTimeout(() => {
       setQuery(targetSku);
-      alert(
-        language === "tr"
-          ? `✓ Yapay Zeka Barkod/Görsel Analizi Tamamlandı!\nEşleşen Parça Kodu: ${targetSku}`
-          : `✓ AI Barcode/Image Analysis Completed!\nMatching Part Code: ${targetSku}`
-      );
+      alert(`${t.aiCompleted}${targetSku}`);
     }, 1500);
   };
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -405,8 +511,20 @@ export default function HomePage() {
               city: item.companies?.city || "İstanbul",
               country: item.companies?.country || "Türkiye",
               image: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
-              price: { tr: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Bilgi / teklif alın" },
-              tag: { tr: item.type === "product" ? "Ürün" : item.type === "service" ? "Hizmet" : "Kiralık" },
+              price: {
+                tr: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Bilgi / teklif alın",
+                en: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Information / request offer",
+                de: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Information / Angebot anfragen",
+                ru: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Информация / запросить цену",
+                ka: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "ინფორმაცია / ფასის მოთხოვნა"
+              },
+              tag: {
+                tr: item.type === "product" ? "Ürün" : item.type === "service" ? "Hizmet" : "Kiralık",
+                en: item.type === "product" ? "Product" : item.type === "service" ? "Service" : "Rental",
+                de: item.type === "product" ? "Produkt" : item.type === "service" ? "Dienstleistung" : "Miete",
+                ru: item.type === "product" ? "Товар" : item.type === "service" ? "Услуга" : "Аренда",
+                ka: item.type === "product" ? "პროდუქტი" : item.type === "service" ? "სერვისი" : "ქირავდება"
+              },
               sku: item.code || item.id,
             }));
             setUploadedProducts(mappedProducts);
@@ -451,15 +569,27 @@ export default function HomePage() {
 
               return {
                 slug: item.id,
-                name: { tr: item.name },
-                category: { tr: item.category },
+                name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
+                category: { tr: item.category, en: item.category, de: item.category, ru: item.category, ka: item.category },
                 store: matchingStore.name,
                 storeSlug: matchingStore.code,
                 city: matchingStore.city,
                 country: matchingStore.city.toLowerCase().includes("batum") ? "Gürcistan" : "Türkiye",
                 image: item.imageUrl || "/product-images/diagnostic-scanner.svg",
-                price: { tr: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Teklif isteyin" },
-                tag: { tr: "Mağaza ürünü" },
+                price: {
+                  tr: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Teklif isteyin",
+                  en: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Request quote",
+                  de: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Angebot anfragen",
+                  ru: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "Запросить цену",
+                  ka: item.salePrice ? `${item.salePrice} ${item.currency || "GEL"}` : "ფასის მოთხოვნა"
+                },
+                tag: {
+                  tr: "Mağaza ürünü",
+                  en: "Store product",
+                  de: "Shop-Produkt",
+                  ru: "Товар магазина",
+                  ka: "მაღაზიის პროდუქტი"
+                },
                 sku: item.sku || item.id,
               };
             });
@@ -582,7 +712,7 @@ export default function HomePage() {
           </div>
           <div className="flex items-center gap-1 sm:gap-1.5">
             <Link href="/requests" className="hidden sm:flex rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2 py-1 text-[9px] sm:px-3 sm:py-1 sm:text-xs flex items-center gap-1 hover:bg-indigo-100 transition shrink-0">
-              📢 {language === "tr" ? "İlan Panosu" : "Tenders Board"}
+              📢 {t.tendersBoard}
             </Link>
             
             {currentUser ? (
@@ -595,7 +725,7 @@ export default function HomePage() {
                     href="/dashboard"
                     className="rounded-full bg-blue-600 px-2.5 py-1.5 text-[10px] font-black text-white hover:bg-blue-700 sm:px-3 sm:text-xs"
                   >
-                    Panelim
+                    {label("Panelim", "Dashboard", "Mein Panel", "Мой кабинет", "ჩემი პანელი")}
                   </Link>
                 )}
                 <button
@@ -606,7 +736,7 @@ export default function HomePage() {
                   }}
                   className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-black text-red-700 hover:bg-red-100 sm:px-3 sm:text-xs cursor-pointer active:scale-95 transition"
                 >
-                  Çıkış
+                  {label("Çıkış", "Logout", "Abmelden", "Выход", "გასვლა")}
                 </button>
               </div>
             ) : (
@@ -621,7 +751,7 @@ export default function HomePage() {
         {/* Mobile Quick Action Pill-Buttons */}
         <div className="mx-auto flex sm:hidden max-w-[1800px] items-center gap-1.5 px-2 pb-2 overflow-x-auto hbs-scrollbar">
           <Link href="/requests" className="rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2.5 py-1 text-[10px] flex items-center gap-1 hover:bg-indigo-100 transition shrink-0">
-            📢 {language === "tr" ? "İlan Panosu" : "Tenders Board"}
+            📢 {t.tendersBoard}
           </Link>
         </div>
 
@@ -638,7 +768,7 @@ export default function HomePage() {
             {/* Elegant Lens/Scanner native mobile camera trigger */}
             <label
               className="mx-2 text-slate-400 hover:text-blue-600 transition active:scale-90 cursor-pointer text-xs sm:text-sm flex items-center select-none"
-              title={language === "tr" ? "Kamera ile Fotoğraf, Barkod veya QR Kod Tara" : "Scan Photo, Barcode or QR Code with Camera"}
+              title={t.scanCameraTitle}
             >
               <span>📷</span>
               <input
@@ -670,7 +800,7 @@ export default function HomePage() {
                     setShowSuggestions(true);
                   }}
                   onFocus={() => setShowSuggestions(true)}
-                  placeholder={language === "tr" ? "Şehir ara... (Örn: Antalya)" : "Search city... (e.g. Batumi)"}
+                  placeholder={t.searchCityPlaceholder}
                   className="h-8 w-full rounded-full border border-slate-200 bg-slate-50 px-3 text-[11px] font-black text-slate-800 outline-none focus:border-blue-500 focus:bg-white placeholder:text-slate-400"
                 />
                 {showSuggestions && filteredSuggestions.length > 0 && (
@@ -698,15 +828,15 @@ export default function HomePage() {
                 type="button"
                 onClick={detectLocation}
                 className="h-8 rounded-full border border-blue-200 bg-blue-50 px-3 text-[10px] font-black text-blue-700 flex items-center gap-1 hover:bg-blue-100 transition active:scale-95 shrink-0"
-                title={language === "tr" ? "Konumumu Bul" : "Find My Location"}
+                title={t.findMyLocation}
               >
-                🎯 {language === "tr" ? "Konumu Bul" : "Locate Me"}
+                🎯 {t.locateMe}
               </button>
             </div>
             </div>
             <div className="mt-2.5 px-1 pb-1">
               <div className="flex items-center justify-between text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5">
-                <span>📍 {language === "tr" ? "Arama Yarıçapı" : "Search Radius"}</span>
+                <span>📍 {t.searchRadius}</span>
                 <span className="rounded-full bg-blue-100 px-2 py-0.5 text-blue-700 font-extrabold text-[10px] shadow-sm">{radiusKm} km</span>
               </div>
               <input
@@ -787,10 +917,10 @@ export default function HomePage() {
         <div className="mx-auto max-w-[1800px] px-2 pb-6 sm:px-6">
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">MÜŞTERİ PANELİ</p>
-              <h2 className="text-sm font-black sm:text-lg">Tekliflerim & B2B Pazarlıklarım</h2>
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">{t.customerPanel}</p>
+              <h2 className="text-sm font-black sm:text-lg">{t.myOffers}</h2>
               <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Satıcılardan talep ettiğiniz fiyat tekliflerini, iskontolu pazarlık taleplerinizi ve güncel onay durumlarını buradan canlı takip edebilirsiniz.
+                {t.offersSub}
               </p>
             </div>
             
@@ -798,33 +928,45 @@ export default function HomePage() {
               <table className="min-w-full text-left text-xs font-semibold">
                 <thead className="bg-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-200">
                   <tr>
-                    <th className="p-3">Ürün / Portföy</th>
-                    <th className="p-3">Pazarlık Türü</th>
-                    <th className="p-3">Sunulan Fiyat</th>
-                    <th className="p-3">Talep Tarihi</th>
-                    <th className="p-3 text-right">Durum</th>
+                    <th className="p-3">{t.tableProduct}</th>
+                    <th className="p-3">{t.tableType}</th>
+                    <th className="p-3">{t.tablePrice}</th>
+                    <th className="p-3">{t.tableDate}</th>
+                    <th className="p-3 text-right">{t.tableStatus}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {customerOffers
                     .filter(o => o.customerEmail === currentUser.username)
-                    .map((o) => (
-                      <tr key={o.id} className="align-middle">
-                        <td className="p-3 font-black text-slate-900">{o.productName}</td>
-                        <td className="p-3">
-                          <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black ${o.type === "bid" ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}>
-                            {o.type === "bid" ? "İskonto Teklifi" : "Fiyat Teklifi İstemi"}
-                          </span>
-                        </td>
-                        <td className="p-3 font-bold text-slate-700">{o.offerValue}</td>
-                        <td className="p-3 text-slate-500 font-bold">{o.date}</td>
-                        <td className="p-3 text-right">
-                          <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-[10px] font-black border border-amber-200">
-                            {o.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
+                    .map((o) => {
+                      const translatedName = translateProductField(o.productName, 'name', language as any);
+                      
+                      const getStatusLabel = (statusStr: string) => {
+                        const norm = (statusStr || "").toLowerCase().trim();
+                        if (norm === "bekliyor" || norm === "pending") return t.pending;
+                        if (norm === "onaylandı" || norm === "onaylandi" || norm === "approved") return t.approved;
+                        if (norm === "reddedildi" || norm === "rejected") return t.rejected;
+                        return statusStr;
+                      };
+
+                      return (
+                        <tr key={o.id} className="align-middle">
+                          <td className="p-3 font-black text-slate-900">{translatedName}</td>
+                          <td className="p-3">
+                            <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black ${o.type === "bid" ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}>
+                              {o.type === "bid" ? t.discountOffer : t.quoteRequest}
+                            </span>
+                          </td>
+                          <td className="p-3 font-bold text-slate-700">{o.offerValue}</td>
+                          <td className="p-3 text-slate-500 font-bold">{o.date}</td>
+                          <td className="p-3 text-right">
+                            <span className="rounded-full bg-amber-100 text-amber-800 px-3 py-1 text-[10px] font-black border border-amber-200">
+                              {getStatusLabel(o.status)}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>

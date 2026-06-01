@@ -43,6 +43,18 @@ export default function LoginPage() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState("");
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [activeDemoGlow, setActiveDemoGlow] = useState<string | null>(null);
+
+  const fillDemoUser = (demo: DemoUser) => {
+    setActiveDemoGlow(demo.username);
+    setUsername(demo.username);
+    setPassword(demo.password);
+    setTimeout(() => {
+      setActiveDemoGlow(null);
+    }, 1000);
+  };
+
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : "tr");
@@ -227,35 +239,268 @@ export default function LoginPage() {
     }
   }
   return (
-    <main className="hbs-market-page min-h-screen px-3 py-3 text-slate-950 sm:px-6 sm:py-8">
-      <div className="mx-auto max-w-5xl">
-        <header className="mb-3 flex items-center justify-between gap-2">
-          <Link href="/" className="text-lg font-black tracking-wide sm:text-2xl">HBS</Link>
-          <div className="flex items-center gap-2"><CompactLanguageSwitcher /><Link href="/" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black hover:bg-slate-50">{currentText.home}</Link></div>
-        </header>
-        <section className="grid gap-4 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-2xl md:grid-cols-[1fr_0.9fr] md:p-5">
-          <div className="rounded-2xl bg-gradient-to-br from-blue-50 via-white to-emerald-50 p-4 md:p-5">
-            <h1 className="text-2xl font-black tracking-tight sm:text-4xl">{currentText.title}</h1>
-            <p className="mt-3 text-sm leading-6 text-slate-600">{currentText.description}</p>
-          </div>
-          <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <label className="grid gap-1.5"><span className="text-xs font-bold text-slate-600">{currentText.username}</span><input value={username} onChange={(event) => setUsername(event.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500" placeholder="" autoComplete="username" /></label>
-            <label className="mt-3 grid gap-1.5"><span className="text-xs font-bold text-slate-600">{currentText.password}</span><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none focus:border-blue-500" placeholder="••••••" autoComplete="current-password" /></label>
-            {error && <div className="mt-3 rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700">{error}</div>}
-            <button className="mt-4 w-full rounded-xl bg-slate-950 px-4 py-2.5 text-sm font-black text-white hover:bg-slate-800">{currentText.login}</button>
-            
-            {hasBiometricKey && (
-              <button
-                type="button"
-                onClick={handleBiometricLogin}
-                className="mt-2 w-full rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-black text-blue-700 hover:bg-blue-100 transition flex items-center justify-center gap-1.5 shadow-sm"
-              >
-                👤 Parmak İzi / Yüz Tanıma (Passkey) ile Giriş
-              </button>
-            )}
+    <main className="hbs-market-page relative min-h-screen flex flex-col justify-center items-center px-4 py-8 overflow-hidden">
+      {/* Premium Ambient Background Glows */}
+      <div className="absolute top-[-10%] left-[-10%] w-[35rem] h-[35rem] sm:w-[45rem] sm:h-[45rem] rounded-full bg-blue-400/20 blur-[130px] pointer-events-none select-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[30rem] h-[30rem] sm:w-[40rem] sm:h-[40rem] rounded-full bg-purple-300/15 blur-[120px] pointer-events-none select-none" />
+      <div className="absolute top-[35%] right-[15%] w-[25rem] h-[25rem] rounded-full bg-emerald-300/10 blur-[110px] pointer-events-none select-none" />
 
-            <div className="mt-3 grid grid-cols-2 gap-2"><Link href="/forgot-password" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-center text-xs font-bold hover:bg-slate-100">{currentText.forgot}</Link><Link href="/register" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-center text-xs font-bold hover:bg-slate-100">{currentText.register}</Link></div>
-          </form>
+      {/* Decorative Grid Mesh */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#f3f6fc_100%)] opacity-30 pointer-events-none select-none" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(99, 102, 241, 0.15) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+
+      <div className="relative w-full max-w-5xl z-10 space-y-4">
+        {/* Sleek Minimalist Header */}
+        <header className="flex items-center justify-between gap-4 px-2 sm:px-6">
+          <Link href="/" className="group flex items-center gap-2 select-none">
+            <span className="text-xl sm:text-2xl font-black tracking-tighter bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-300">
+              HBS
+            </span>
+            <span className="rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-extrabold px-2 py-0.5 text-[8px] sm:text-[9px] uppercase tracking-wider shadow-sm">
+              Connected
+            </span>
+          </Link>
+          <div className="flex items-center gap-3">
+            <CompactLanguageSwitcher />
+            <Link 
+              href="/" 
+              className="rounded-full border border-slate-200 bg-white/80 hover:bg-white px-4 py-2 text-xs font-black text-slate-700 hover:text-blue-700 shadow-sm transition-all active:scale-95 flex items-center gap-1.5"
+            >
+              <span>🏠</span> {currentText.home}
+            </Link>
+          </div>
+        </header>
+
+        {/* Main Split Screen Container */}
+        <section className="relative overflow-hidden rounded-[2.5rem] border border-white/50 bg-white/70 backdrop-blur-3xl shadow-[0_32px_64px_-16px_rgba(99,102,241,0.12)] grid gap-0 md:grid-cols-[1.1fr_0.9fr] p-2 sm:p-3 animate-fadeIn">
+          
+          {/* Left Column: Brand Powers & Value Prop Showcase */}
+          <div className="rounded-[2rem] bg-gradient-to-br from-blue-50/50 via-indigo-50/20 to-purple-50/40 p-6 sm:p-8 md:p-10 flex flex-col justify-between space-y-8 relative overflow-hidden border border-white/40">
+            {/* Ambient inner glow */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-200/20 rounded-full blur-[60px] pointer-events-none" />
+
+            <div className="space-y-4">
+              <h1 className="text-3xl sm:text-4xl md:text-[2.6rem] font-black tracking-tight leading-none text-slate-900">
+                {language === "tr" ? (
+                  <>
+                    Tek HBS Hesabı,<br/>
+                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tüm Güç Elinizde.</span>
+                  </>
+                ) : (
+                  <>
+                    One HBS Account,<br/>
+                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Complete Control.</span>
+                  </>
+                )}
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 font-semibold leading-relaxed max-w-md">
+                {currentText.description}
+              </p>
+            </div>
+
+            {/* Premium Feature Showcase Grid */}
+            <div className="grid gap-4 py-2">
+              {[
+                {
+                  icon: (
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  ),
+                  title: language === "tr" ? "Merkez Depo & Akıllı Raf" : "Central Warehouse & Smart Shelf",
+                  text: language === "tr" ? "Sanal mağaza kalıplarını geride bırakın; ürünlerinizi fiziksel konum ve raf bazlı entegre edin." : "Leave placeholders behind; integrate your goods with physical locations and shelves."
+                },
+                {
+                  icon: (
+                    <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  ),
+                  title: language === "tr" ? "B2B Canlı Pazarlık & Teklif" : "Live B2B Offer & Bidding",
+                  text: language === "tr" ? "Müşterilerinizin iskontolu fiyat ve pazarlık taleplerini tek ekrandan onaylayın." : "Approve custom discount requests and negotiation offers in real time."
+                },
+                {
+                  icon: (
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 009 11V7a3 3 0 116 0v4c0 .879.222 1.705.616 2.427M12 21a2 2 0 100-4 2 2 0 000 4z" />
+                    </svg>
+                  ),
+                  title: language === "tr" ? "Gelişmiş Touch ID & Passkey" : "Advanced Touch ID & Passkey",
+                  text: language === "tr" ? "Dünya standartlarında biyometrik güvenlik ile şifresiz, tek dokunuşla hızlı giriş." : "World-class biometric security for passwordless, single-touch logins."
+                }
+              ].map((item, index) => (
+                <div 
+                  key={index}
+                  className="group flex gap-4 p-3.5 rounded-2xl bg-white/60 hover:bg-white border border-white/20 hover:border-blue-100 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/5 select-none"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-slate-100 group-hover:scale-110 group-hover:bg-blue-50/50 transition-all duration-300 shadow-sm">
+                    {item.icon}
+                  </div>
+                  <div className="space-y-0.5">
+                    <h3 className="text-xs font-black text-slate-800 group-hover:text-blue-700 transition-colors">{item.title}</h3>
+                    <p className="text-[11px] font-semibold text-slate-450 leading-normal">{item.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Bottom mini teaser */}
+            <div className="text-[11px] font-black tracking-wide text-indigo-500/80 uppercase select-none border-t border-slate-200/50 pt-4 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+              {language === "tr" ? "YILLIK ÜCRET YOK · AÇILIŞA ÖZEL LİSANS" : "NO ANNUAL FEE · OPENING LICENSE"}
+            </div>
+          </div>
+
+          {/* Right Column: Interactive Login Form */}
+          <div className="p-6 sm:p-8 md:p-10 flex flex-col justify-center bg-white/50 backdrop-blur rounded-[2rem] border border-white/30">
+            <div className="space-y-6">
+              <div className="text-center md:text-left">
+                <h2 className="text-2xl font-black text-slate-800 tracking-tight">{currentText.title}</h2>
+                <p className="text-xs font-semibold text-slate-400 mt-1">{language === "tr" ? "Lütfen kimlik bilgilerinizi doğrulayın." : "Please authenticate your identity."}</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Username Input Wrapper */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-600 block pl-1">{currentText.username}</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 select-none">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </span>
+                    <input 
+                      value={username} 
+                      onChange={(event) => setUsername(event.target.value)} 
+                      className={`w-full rounded-2xl border ${activeDemoGlow ? 'border-blue-500 ring-4 ring-blue-500/20 bg-blue-50/10' : 'border-slate-200 bg-white'} pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-sm`}
+                      placeholder={language === "tr" ? "örn: MUSTERI veya e-posta" : "e.g. MUSTERI or email"} 
+                      autoComplete="username" 
+                    />
+                  </div>
+                </div>
+
+                {/* Password Input Wrapper */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center px-1">
+                    <label className="text-xs font-bold text-slate-600 block">{currentText.password}</label>
+                    <Link href="/forgot-password" className="text-[11px] font-black text-indigo-600 hover:text-indigo-700 transition">
+                      {currentText.forgot}
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 select-none">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </span>
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      value={password} 
+                      onChange={(event) => setPassword(event.target.value)} 
+                      className={`w-full rounded-2xl border ${activeDemoGlow ? 'border-blue-500 ring-4 ring-blue-500/20 bg-blue-50/10' : 'border-slate-200 bg-white'} pl-11 pr-11 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-sm`}
+                      placeholder="••••••" 
+                      autoComplete="current-password" 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 transition active:scale-90"
+                      title={showPassword ? "Şifreyi Gizle" : "Şifreyi Göster"}
+                    >
+                      {showPassword ? (
+                        <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {error && (
+                  <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-xs font-black text-red-700 leading-normal flex items-start gap-2 shadow-sm">
+                    <span className="text-base select-none">⚠️</span>
+                    <div>{error}</div>
+                  </div>
+                )}
+
+                {/* Primary login button */}
+                <button 
+                  type="submit"
+                  className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-4 py-3.5 text-sm font-black text-white hover:shadow-[0_12px_24px_-6px_rgba(37,99,235,0.4)] hover:shadow-blue-500/20 active:scale-[0.98] transition-all duration-300 select-none cursor-pointer flex items-center justify-center gap-1.5 shadow-md text-center"
+                >
+                  <span>🔑</span> {currentText.login}
+                </button>
+                
+                {/* Biometric flow triggers */}
+                {hasBiometricKey && (
+                  <button
+                    type="button"
+                    onClick={handleBiometricLogin}
+                    className="w-full rounded-2xl border border-blue-200 bg-blue-50/80 hover:bg-blue-50 px-4 py-3.5 text-xs font-black text-blue-700 transition flex items-center justify-center gap-2 hover:shadow-md hover:shadow-blue-500/5 active:scale-[0.98] cursor-pointer"
+                  >
+                    <span className="text-sm select-none">👤</span>
+                    {language === "tr" ? "Parmak İzi / Yüz Tanıma (Passkey) ile Giriş" : "Sign in with Fingerprint / Face ID (Passkey)"}
+                  </button>
+                )}
+              </form>
+
+              {/* B2B Dynamic Quick Demo Login Badges */}
+              <div className="border-t border-slate-100 pt-5 space-y-2.5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block text-center select-none">
+                  {language === "tr" ? "⚡ Hızlı B2B Erişim Kartları (Demo)" : "⚡ Quick B2B Access Cards (Demo)"}
+                </span>
+                <div className="grid gap-2">
+                  {demoUsers.map((demo) => {
+                    const isSuperadmin = demo.role === "superadmin";
+                    const isStoreOwner = demo.role === "storeOwner";
+                    const badgeBg = isSuperadmin 
+                      ? "bg-red-50 border-red-100 hover:bg-red-50/80 text-red-700 hover:border-red-300" 
+                      : isStoreOwner 
+                        ? "bg-amber-50 border-amber-100 hover:bg-amber-50/80 text-amber-700 hover:border-amber-300"
+                        : "bg-emerald-50 border-emerald-100 hover:bg-emerald-50/80 text-emerald-700 hover:border-emerald-300";
+
+                    const roleLabel = isSuperadmin 
+                      ? (language === "tr" ? "Gözetmen / Kurucu" : "Platform Director")
+                      : isStoreOwner 
+                        ? (language === "tr" ? "Mağaza Sahibi (OBDTR)" : "Store Owner (OBDTR)")
+                        : (language === "tr" ? "Saha Müşterisi" : "B2B Client");
+
+                    return (
+                      <button
+                        key={demo.username}
+                        type="button"
+                        onClick={() => fillDemoUser(demo)}
+                        className={`w-full text-left rounded-2xl border px-4 py-2.5 ${badgeBg} flex items-center justify-between gap-2 transition-all duration-300 active:scale-[0.98] cursor-pointer hover:shadow-md hover:shadow-slate-500/5`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-black">{demo.displayName}</span>
+                          <span className="text-[9px] uppercase tracking-wider font-extrabold opacity-75">· {demo.username}</span>
+                        </div>
+                        <span className="rounded-full bg-white/70 border border-current/10 px-2 py-0.5 text-[8px] font-extrabold uppercase shadow-inner tracking-wider">
+                          {roleLabel}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Call to action for registration */}
+              <div className="text-center pt-2 select-none">
+                <span className="text-xs font-semibold text-slate-400">
+                  {language === "tr" ? "Hâlâ HBS hesabınız yok mu?" : "Don't have an HBS account yet?"}{" "}
+                </span>
+                <Link href="/register" className="text-xs font-black text-blue-600 hover:text-blue-700 hover:underline transition">
+                  {currentText.register}
+                </Link>
+              </div>
+
+            </div>
+          </div>
         </section>
       </div>
 

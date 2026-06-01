@@ -362,6 +362,7 @@ export default function SettingsPage() {
   const [allowOrders, setAllowOrders] = useState(true);
   const [allowMessages, setAllowMessages] = useState(true);
   const [allowWhatsapp, setAllowWhatsapp] = useState(true);
+  const [requireEmployeeBiometrics, setRequireEmployeeBiometrics] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -389,6 +390,7 @@ export default function SettingsPage() {
         if (s.allowOrders !== undefined) setAllowOrders(s.allowOrders);
         if (s.allowMessages !== undefined) setAllowMessages(s.allowMessages);
         if (s.allowWhatsapp !== undefined) setAllowWhatsapp(s.allowWhatsapp);
+        if (s.requireEmployeeBiometrics !== undefined) setRequireEmployeeBiometrics(s.requireEmployeeBiometrics);
       } else {
         const storesStr = window.localStorage.getItem("hbs-registered-stores");
         if (storesStr) {
@@ -433,6 +435,7 @@ export default function SettingsPage() {
       allowOrders,
       allowMessages,
       allowWhatsapp,
+      requireEmployeeBiometrics,
     };
 
     try {
@@ -672,6 +675,16 @@ export default function SettingsPage() {
                     allowWhatsapp
                       ? currentText.allowWhatsapp
                       : currentText.blockWhatsapp
+                  }
+                />
+
+                <ToggleButton
+                  active={requireEmployeeBiometrics}
+                  onClick={() => setRequireEmployeeBiometrics(!requireEmployeeBiometrics)}
+                  label={
+                    requireEmployeeBiometrics
+                      ? (language === "tr" ? "👤 Çalışan Biyometrisi (Passkey) Zorunlu" : "👤 Employee Biometrics Required")
+                      : (language === "tr" ? "👤 Çalışan Biyometrisi İsteğe Bağlı" : "👤 Employee Biometrics Optional")
                   }
                 />
               </div>
