@@ -60,10 +60,13 @@ export default function CompactLanguageSwitcher() {
         const flagCode = item.code === "en" ? "gb" : item.code === "ka" ? "ge" : item.code;
         
         return (
-          <button
+          <a
             key={item.code}
-            type="button"
-            onClick={() => changeLanguage(item.code)}
+            href={`?lang=${item.code}`}
+            onClick={(e) => {
+              e.preventDefault();
+              changeLanguage(item.code);
+            }}
             title={item.title}
             className={`flex items-center justify-center p-0.5 rounded-lg border transition duration-200 hover:scale-110 active:scale-95 ${
               isSelected
@@ -76,7 +79,7 @@ export default function CompactLanguageSwitcher() {
               alt={item.title}
               className="h-4 w-6 rounded-sm object-cover sm:h-5 sm:w-8"
             />
-          </button>
+          </a>
         );
       })}
     </div>

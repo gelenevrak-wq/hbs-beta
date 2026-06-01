@@ -73,6 +73,18 @@ export function getInitialLanguage(): HbsLanguageCode {
     return "en";
   }
 
+  // 1. URL Query Parameter Check (Critical for SEO & Search Engine Indexing in multiple languages)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get("lang");
+    if (urlLang && isHbsLanguageCode(urlLang)) {
+      window.localStorage.setItem("hbs-language", urlLang);
+      return urlLang;
+    }
+  } catch (e) {
+    console.error("Error reading lang parameter:", e);
+  }
+
   const savedLanguage = window.localStorage.getItem("hbs-language");
 
   if (isHbsLanguageCode(savedLanguage)) {
