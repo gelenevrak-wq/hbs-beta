@@ -448,47 +448,6 @@ export default function LoginPage() {
                 )}
               </form>
 
-              {/* B2B Dynamic Quick Demo Login Badges */}
-              <div className="border-t border-slate-100 pt-5 space-y-2.5">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block text-center select-none">
-                  {language === "tr" ? "⚡ Hızlı B2B Erişim Kartları (Demo)" : "⚡ Quick B2B Access Cards (Demo)"}
-                </span>
-                <div className="grid gap-2">
-                  {demoUsers.map((demo) => {
-                    const isSuperadmin = demo.role === "superadmin";
-                    const isStoreOwner = demo.role === "storeOwner";
-                    const badgeBg = isSuperadmin 
-                      ? "bg-red-50 border-red-100 hover:bg-red-50/80 text-red-700 hover:border-red-300" 
-                      : isStoreOwner 
-                        ? "bg-amber-50 border-amber-100 hover:bg-amber-50/80 text-amber-700 hover:border-amber-300"
-                        : "bg-emerald-50 border-emerald-100 hover:bg-emerald-50/80 text-emerald-700 hover:border-emerald-300";
-
-                    const roleLabel = isSuperadmin 
-                      ? (language === "tr" ? "Gözetmen / Kurucu" : "Platform Director")
-                      : isStoreOwner 
-                        ? (language === "tr" ? "Mağaza Sahibi (OBDTR)" : "Store Owner (OBDTR)")
-                        : (language === "tr" ? "Saha Müşterisi" : "B2B Client");
-
-                    return (
-                      <button
-                        key={demo.username}
-                        type="button"
-                        onClick={() => fillDemoUser(demo)}
-                        className={`w-full text-left rounded-2xl border px-4 py-2.5 ${badgeBg} flex items-center justify-between gap-2 transition-all duration-300 active:scale-[0.98] cursor-pointer hover:shadow-md hover:shadow-slate-500/5`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-black">{demo.displayName}</span>
-                          <span className="text-[9px] uppercase tracking-wider font-extrabold opacity-75">· {demo.username}</span>
-                        </div>
-                        <span className="rounded-full bg-white/70 border border-current/10 px-2 py-0.5 text-[8px] font-extrabold uppercase shadow-inner tracking-wider">
-                          {roleLabel}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
               {/* Call to action for registration */}
               <div className="text-center pt-2 select-none">
                 <span className="text-xs font-semibold text-slate-400">
