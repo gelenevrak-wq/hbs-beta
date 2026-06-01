@@ -877,8 +877,23 @@ export default function StorePage() {
     return null;
   }, []);
 
-  const storePhoneVal = storePhone || storeInfo?.phone || (params.storeSlug === "obdtr" ? (localSettings?.phone || "+905320000000") : undefined);
-  const storeWhatsappVal = storeWhatsapp || storeInfo?.whatsapp || (params.storeSlug === "obdtr" ? (localSettings?.whatsapp || "905320000000") : undefined);
+  const storePhoneVal = useMemo(() => {
+    const baseVal = storePhone || storeInfo?.phone;
+    const isPlaceholder = baseVal === "+905320000000" || baseVal === "905320000000" || !baseVal;
+    if (params.storeSlug === "obdtr" && isPlaceholder) {
+      return localSettings?.phone || storeInfo?.phone || "+905320000000";
+    }
+    return baseVal || (params.storeSlug === "obdtr" ? "+905320000000" : undefined);
+  }, [storePhone, storeInfo, localSettings, params.storeSlug]);
+
+  const storeWhatsappVal = useMemo(() => {
+    const baseVal = storeWhatsapp || storeInfo?.whatsapp;
+    const isPlaceholder = baseVal === "905320000000" || baseVal === "+905320000000" || !baseVal;
+    if (params.storeSlug === "obdtr" && isPlaceholder) {
+      return localSettings?.whatsapp || storeInfo?.whatsapp || "905320000000";
+    }
+    return baseVal || (params.storeSlug === "obdtr" ? "905320000000" : undefined);
+  }, [storeWhatsapp, storeInfo, localSettings, params.storeSlug]);
 
   const contactButtons = useMemo(() => {
     if (!storePhoneVal && !storeWhatsappVal) return null;
