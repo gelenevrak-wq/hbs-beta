@@ -223,6 +223,8 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<ProductData | null>(null);
   const [customLoaded, setCustomLoaded] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<ProductData[]>([]);
+  const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [profileName, setProfileName] = useState("");
@@ -576,6 +578,10 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     }
   }, [params.productSlug, isReady]);
 
+  useEffect(() => {
+    setSelectedGalleryImage(null);
+  }, [params.productSlug]);
+
   if (!isReady || !customLoaded) return <main className="min-h-screen bg-slate-50" />;
 
   if (!product) {
@@ -608,6 +614,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
   }
 
     const activeProduct = memoizedActiveProduct!;
+    const currentMainImage = selectedGalleryImage || activeProduct.imageUrl;
 
   const displayGallery = Array.from(new Set([activeProduct.imageUrl, ...activeProduct.gallery])).slice(0, 4);
   const internalWarehouseCode = activeProduct.storeSlug === "obdtr" ? "OBDTR / Ana Depo / D-01-R03-G02" : activeProduct.storeSlug === "yildiz-hirdavat" ? "Yıldız / Ana Depo / T-02-R04-G01" : "Depo / A-03-R12-G04";
@@ -749,15 +756,31 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
         <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl sm:mb-6 sm:rounded-[2rem] sm:p-5">
           <div className="grid gap-4 lg:grid-cols-[0.82fr_1.18fr_0.74fr] sm:gap-5">
             <div>
-              <div className="hbs-product-image">
-                <img src={activeProduct.imageUrl} alt={txt(activeProduct.name, language)} />
+              <div 
+                className="hbs-product-image cursor-pointer hover:opacity-95 hover:scale-[1.01] transition-all duration-300 relative group shadow-sm"
+                onClick={() => setLightboxImage(currentMainImage)}
+                title={language === "tr" ? "Resmi tam ekran görmek için tıklayın" : "Click to view full screen"}
+              >
+                <img src={currentMainImage} alt={txt(activeProduct.name, language)} />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center pointer-events-none">
+                  <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white rounded-full px-3 py-1.5 text-xs flex items-center gap-1.5 shadow-md">
+                    🔍 {language === "tr" ? "Tam Ekran Gör" : "View Full Screen"}
+                  </span>
+                </div>
               </div>
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                {displayGallery.map((image) => (
-                  <div key={image} className="hbs-product-image rounded-xl">
-                    <img src={image} alt={txt(activeProduct.name, language)} />
-                  </div>
-                ))}
+              <div className="mt-2 grid grid-cols-4 gap-2">
+                {displayGallery.map((image) => {
+                  const isActive = currentMainImage === image;
+                  return (
+                    <div 
+                      key={image} 
+                      className={`hbs-product-image rounded-xl cursor-pointer hover:ring-2 hover:ring-blue-500/50 hover:scale-105 active:scale-95 transition-all duration-300 ${isActive ? "ring-2 ring-blue-600 shadow-md" : "opacity-80 hover:opacity-100"}`}
+                      onClick={() => setSelectedGalleryImage(image)}
+                    >
+                      <img src={image} alt={txt(activeProduct.name, language)} />
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div>
@@ -964,6 +987,40 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {lightboxImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/95 p-4 sm:p-8 backdrop-blur-md animate-fadeIn cursor-zoom-out"
+          onClick={() => setLightboxImage(null)}
+        >
+          {/* Close button */}
+          <button 
+            type="button"
+            className="absolute top-4 right-4 z-[110] flex h-12 w-12 items-center justify-center rounded-full bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-lg"
+            onClick={(e) => {
+              e.stopPropagation();
+              setLightboxImage(null);
+            }}
+            aria-label="Kapat"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="3" stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          {/* Image Container with scale-up animation */}
+          <div 
+            className="relative max-w-full max-h-[90vh] flex items-center justify-center scale-up-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={lightboxImage} 
+              alt={txt(activeProduct.name, language)} 
+              className="max-w-full max-h-[88vh] object-contain rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] border border-white/10 cursor-default"
+            />
           </div>
         </div>
       )}
