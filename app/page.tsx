@@ -696,7 +696,6 @@ export default function HomePage() {
   const radiusLabel = radiusKm >= 10000 ? t.allWorld : `${radiusKm} km`;
   const searchHref = query.trim() ? `/customer?q=${encodeURIComponent(query.trim())}` : "/customer";
   const countLabel = language === "tr" ? "kayıt" : language === "de" ? "Eintrag" : language === "ru" ? "позиция" : language === "ka" ? "ჩანაწერი" : "items";
-  const openingOffer = language === "tr" ? "Açılışa özel ücretsiz mağaza kaydınızı şimdi yaptırın" : language === "de" ? "Zur Eröffnung: Jetzt kostenlos Ihren Shop registrieren" : language === "ru" ? "К открытию: зарегистрируйте магазин бесплатно" : language === "ka" ? "გახსნის შეთავაზება: დაარეგისტრირეთ მაღაზია უფასოდ" : "Opening offer: register your store for free now";
   const label = (tr: string, en: string, de = en, ru = en, ka = en) =>
     language === "tr" ? tr : language === "de" ? de : language === "ru" ? ru : language === "ka" ? ka : en;
 
@@ -966,13 +965,23 @@ export default function HomePage() {
         </div>
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-blue-100 bg-white/95 py-1.5 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur">
-        <div className="overflow-hidden whitespace-nowrap">
-          <div className="inline-block animate-hbs-marquee text-[12px] font-black text-blue-700">
-            {openingOffer} • {openingOffer} • {openingOffer} • {openingOffer} •
-          </div>
-        </div>
-      </div>
+      <Link
+        href="/requests"
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t border-indigo-100 bg-gradient-to-r from-indigo-50/95 via-white/95 to-blue-50/95 py-2.5 px-4 sm:px-8 shadow-[0_-8px_30px_rgba(79,70,229,0.12)] backdrop-blur-md transition-all duration-300 hover:from-indigo-100/95 hover:to-blue-100/95 group cursor-pointer"
+      >
+        <span className="text-[11px] sm:text-xs font-black tracking-wide text-indigo-950 flex items-center gap-2 group-hover:text-blue-800 transition-colors">
+          💡 {label(
+            "Aradığınızı bulamadıysanız, ilan bırakın, insanlar ve işletmeler size ulaşsın",
+            "Didn't find what you were looking for? Post an ad, and let people and businesses reach you",
+            "Haben Sie nicht gefunden, was Sie suchen? Schalten Sie eine Anzeige, damit Menschen und Unternehmen Sie erreichen",
+            "Не нашли то, что искали? Разместите объявление, чтобы люди и компании могли связаться с вами",
+            "ვერ იპოვეთ ის, რასაც ეძებდით? განათავსეთ განცხადება და ხალხი და ბიზნესი დაგიკავშირდებათ"
+          )}
+        </span>
+        <span className="text-base sm:text-xl filter drop-shadow-sm transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 flex items-center shrink-0">
+          📢
+        </span>
+      </Link>
 
     </main>
   );
