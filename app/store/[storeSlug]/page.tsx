@@ -827,7 +827,7 @@ const autoRepairTasks = [
 ];
 
 export default function StorePage() {
-  const params = useParams<{ storeSlug: string }>();
+  const params = useParams<{ storeSlug: string }>() || { storeSlug: "" };
   const { language, isReady } = useHbsLanguage();
   
   // Safe helper to pick language translation value

@@ -222,7 +222,7 @@ function getLocalText(key: string, lang: HbsLanguageCode): string {
 }
 
 export default function ProductDetailPage() {
-  const params = useParams<{ productSlug: string }>();
+  const params = useParams<{ productSlug: string }>() || { productSlug: "" };
   const { t, language, isReady } = useHbsLanguage();
   const [message, setMessage] = useState("");
   const [product, setProduct] = useState<ProductData | null>(null);
