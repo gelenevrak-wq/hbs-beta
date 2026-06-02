@@ -710,15 +710,16 @@ export default function HomePage() {
             <Link href="/" className="shrink-0 text-base font-black tracking-tight text-blue-700 sm:text-xl">HBS</Link>
             <CompactLanguageSwitcher />
             <Link href="/requests" className="rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2 py-1.5 text-[8px] sm:text-[10px] flex items-center gap-1 hover:bg-indigo-100 transition shrink-0 shadow-sm">
-              📢 {t.tendersBoard}
+              📢 <span className="hidden sm:inline">{t.tendersBoard}</span>
             </Link>
           </div>
           <div className="flex items-center gap-1 sm:gap-1.5">
             
             {currentUser ? (
               <div className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-xs font-black text-slate-700 flex items-center gap-1 bg-slate-100 px-2.5 py-1.5 rounded-full border border-slate-200">
-                  👤 {currentUser.displayName}
+                <span className="text-[10px] sm:text-xs font-black text-slate-700 flex items-center gap-1 bg-slate-100 px-2.5 py-1.5 rounded-full border border-slate-200 whitespace-nowrap shrink-0">
+                  👤 <span className="hidden sm:inline">{currentUser.displayName}</span>
+                  <span className="sm:hidden">{currentUser.displayName.split(" ")[0]}</span>
                 </span>
                 {(currentUser.role === "owner" || currentUser.role === "superadmin" || currentUser.role === "storeOwner") && (
                   <Link
@@ -783,10 +784,6 @@ export default function HomePage() {
 
         <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
           <div className="rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
-            <div className="mb-1 flex items-center justify-between gap-2 px-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">
-               <span>📍 {t.region}</span>
-               <span className="text-blue-700">{locationLabel} · {radiusLabel}</span>
-            </div>
             <div className="relative grid grid-cols-[1fr_auto] gap-1.5">
               <div className="relative">
                 <input
@@ -797,7 +794,7 @@ export default function HomePage() {
                     setShowSuggestions(true);
                   }}
                   onFocus={() => setShowSuggestions(true)}
-                  placeholder={t.searchCityPlaceholder}
+                  placeholder={locationLabel || t.searchCityPlaceholder}
                   className="h-8 w-full rounded-full border border-slate-200 bg-slate-50 px-3 text-[11px] font-black text-slate-800 outline-none focus:border-blue-500 focus:bg-white placeholder:text-slate-400"
                 />
                 {showSuggestions && filteredSuggestions.length > 0 && (
