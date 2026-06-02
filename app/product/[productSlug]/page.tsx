@@ -150,7 +150,8 @@ function pageTxt(key: string, lang: HbsLanguageCode): string {
 
 const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
   tr: {
-    bulletinBoard: "📢 İlan Panosu",
+    bulletinBoard: "İlan Panosu",
+    findWhatYouWantPrompt: "Aradığınızı bulamadıysanız, ilan bırakın, insanlar ve işletmeler size ulaşsın",
     directContact: "📞 DOĞRUDAN MAĞAZA İLE İLETİŞİM",
     quickCall: "Telefon",
     visibleNationwide: "Ülke Genelinde Görünür",
@@ -162,7 +163,8 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     obdtrAfterSales: "Uzaktan güncelleme, Cihaz hatalarına karşı 2 yıl garanti, Tamir ve 2. el satış."
   },
   en: {
-    bulletinBoard: "📢 Bulletin Board",
+    bulletinBoard: "Bulletin Board",
+    findWhatYouWantPrompt: "Didn't find what you were looking for? Post an ad, and let people and businesses reach you",
     directContact: "📞 DIRECT CONTACT WITH STORE",
     quickCall: "Phone",
     visibleNationwide: "Visible nationwide",
@@ -174,7 +176,8 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     obdtrAfterSales: "Remote update, 2-year warranty against device faults, repair and second-hand sales.",
   },
   de: {
-    bulletinBoard: "📢 Ausschreibungen",
+    bulletinBoard: "Ausschreibungen",
+    findWhatYouWantPrompt: "Haben Sie nicht gefunden, was Sie suchen? Schalten Sie eine Anzeige, damit Menschen und Unternehmen Sie erreichen",
     directContact: "📞 DIREKTER KONTAKT MIT SHOP",
     quickCall: "Telefon",
     visibleNationwide: "Landesweit sichtbar",
@@ -186,7 +189,8 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     obdtrAfterSales: "Fern-Update, 2 Jahre Garantie auf Gerätefehler, Reparatur und Gebrauchtverkauf.",
   },
   ru: {
-    bulletinBoard: "📢 Доска объявлений",
+    bulletinBoard: "Доска объявлений",
+    findWhatYouWantPrompt: "Не нашли то, что искали? Разместите объявление, чтобы люди и компании могли связаться с вами",
     directContact: "📞 ПРЯМАЯ СВЯЗЬ С МАГАЗИНОМ",
     quickCall: "Телефон",
     visibleNationwide: "Видно по всей стране",
@@ -198,7 +202,8 @@ const virtualDeliveryTranslations: Record<string, Record<string, string>> = {
     obdtrAfterSales: "Удаленное обновление, 2 года гарантии на дефекты устройства, ремонт и продажа б/у.",
   },
   ka: {
-    bulletinBoard: "📢 განცხადებების დაფა",
+    bulletinBoard: "განცხადებების დაფა",
+    findWhatYouWantPrompt: "ვერ იპოვეთ ის, რაც ეძებდით? განათავსეთ განცხადება და ხალხი და ბიზნესი დაგიკავშირდებათ",
     directContact: "📞 პირდაპირი კავშირი მაღაზიასთან",
     quickCall: "ტელეფონი",
     visibleNationwide: "ხილვადია მთელ ქვეყანაში",
@@ -1573,6 +1578,23 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
           </div>
         </div>
       )}
+
+      {/* Premium B2B Open Bulletin / Requests Board Call-To-Action Floating Bar */}
+      <Link
+        href="/requests"
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t-2 border-indigo-500/50 bg-[#070c18]/90 py-4 px-5 sm:px-8 shadow-[0_-15px_40px_rgba(99,102,241,0.25)] backdrop-blur-lg transition-all duration-300 hover:bg-[#0b1328] group cursor-pointer ring-1 ring-indigo-500/20"
+      >
+        <span className="text-[11px] sm:text-sm font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-blue-200 uppercase flex items-center gap-2 group-hover:text-blue-100 transition-colors">
+          <span className="flex h-2.5 w-2.5 relative shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          💡 {getLocalText("findWhatYouWantPrompt", language)}
+        </span>
+        <span className="text-xl sm:text-3xl filter drop-shadow-[0_0_10px_rgba(99,102,241,0.8)] animate-bounce transform group-hover:scale-125 transition-all duration-300 flex items-center shrink-0 text-white bg-indigo-600/30 p-2.5 rounded-full ring-2 ring-indigo-405 animate-pulse">
+          📢
+        </span>
+      </Link>
     </main>
   );
 }

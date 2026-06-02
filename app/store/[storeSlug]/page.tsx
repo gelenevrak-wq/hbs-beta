@@ -156,7 +156,8 @@ const pageTranslations: Record<string, Record<string, string>> = {
     saveContinueBtn: "Kaydet & Devam Et",
     verificationTitle: "🔒 PROFİL DOĞRULAMA",
     alertFillAll: "Lütfen tüm alanları doldurun.",
-    tendersBoard: "📢 İlan Panosu",
+    tendersBoard: "İlan Panosu",
+    findWhatYouWantPrompt: "Aradığınızı bulamadıysanız, ilan bırakın, insanlar ve işletmeler size ulaşsın",
     customerPortal: "Müşteri Portalı",
     storePanel: "Mağaza Paneli",
     hbsVitrin: "HBS Vitrin",
@@ -259,7 +260,8 @@ const pageTranslations: Record<string, Record<string, string>> = {
     saveContinueBtn: "Save & Continue",
     verificationTitle: "🔒 PROFILE VERIFICATION",
     alertFillAll: "Please fill in all fields.",
-    tendersBoard: "📢 Tenders Board",
+    tendersBoard: "Tenders Board",
+    findWhatYouWantPrompt: "Didn't find what you were looking for? Post an ad, and let people and businesses reach you",
     customerPortal: "Customer Portal",
     storePanel: "Store Panel",
     hbsVitrin: "HBS Showcase",
@@ -362,7 +364,8 @@ const pageTranslations: Record<string, Record<string, string>> = {
     saveContinueBtn: "Speichern & Fortfahren",
     verificationTitle: "🔒 PROFILVERIFIZIERUNG",
     alertFillAll: "Bitte füllen Sie alle Felder aus.",
-    tendersBoard: "📢 Ausschreibungen",
+    tendersBoard: "Ausschreibungen",
+    findWhatYouWantPrompt: "Haben Sie nicht gefunden, was Sie suchen? Schalten Sie eine Anzeige, damit Menschen und Unternehmen Sie erreichen",
     customerPortal: "Kundenportal",
     storePanel: "Shop-Panel",
     hbsVitrin: "HBS Schaufenster",
@@ -465,7 +468,8 @@ const pageTranslations: Record<string, Record<string, string>> = {
     saveContinueBtn: "Сохранить и продолжить",
     verificationTitle: "🔒 ВЕРИФИКАЦИЯ ПРОФИЛЯ",
     alertFillAll: "Пожалуйста, заполните все поля.",
-    tendersBoard: "📢 Доска тендеров",
+    tendersBoard: "Доска тендеров",
+    findWhatYouWantPrompt: "Не нашли то, что искали? Разместите объявление, чтобы люди и компании могли связаться с вами",
     customerPortal: "Портал клиента",
     storePanel: "Панель магазина",
     hbsVitrin: "Витрина HBS",
@@ -568,7 +572,8 @@ const pageTranslations: Record<string, Record<string, string>> = {
     saveContinueBtn: "შენახვა & გაგრძელება",
     verificationTitle: "🔒 პროფილის ვერიფიკაცია",
     alertFillAll: "გთხოვთ შეავსოთ ყველა ველი.",
-    tendersBoard: "📢 ტენდერების დაფა",
+    tendersBoard: "ტენდერების დაფა",
+    findWhatYouWantPrompt: "ვერ იპოვეთ ის, რასაც ეძებდით? განათავსეთ განცხადება და ხალხი და ბიზნესი დაგიკავშირდებათ",
     customerPortal: "კლიენტის პორტალი",
     storePanel: "მაღაზიის პანელი",
     hbsVitrin: "HBS ვიტრინა",
@@ -1759,6 +1764,23 @@ export default function StorePage() {
           </div>
         </div>
       )}
+
+      {/* Premium B2B Open Bulletin / Requests Board Call-To-Action Floating Bar */}
+      <Link
+        href="/requests"
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t-2 border-indigo-500/50 bg-[#070c18]/90 py-4 px-5 sm:px-8 shadow-[0_-15px_40px_rgba(99,102,241,0.25)] backdrop-blur-lg transition-all duration-300 hover:bg-[#0b1328] group cursor-pointer ring-1 ring-indigo-500/20"
+      >
+        <span className="text-[11px] sm:text-sm font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-blue-200 uppercase flex items-center gap-2 group-hover:text-blue-100 transition-colors">
+          <span className="flex h-2.5 w-2.5 relative shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          💡 {getTxt("findWhatYouWantPrompt")}
+        </span>
+        <span className="text-xl sm:text-3xl filter drop-shadow-[0_0_10px_rgba(99,102,241,0.8)] animate-bounce transform group-hover:scale-125 transition-all duration-300 flex items-center shrink-0 text-white bg-indigo-600/30 p-2.5 rounded-full ring-2 ring-indigo-405 animate-pulse">
+          📢
+        </span>
+      </Link>
     </main>
   );
 }

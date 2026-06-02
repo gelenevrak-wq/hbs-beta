@@ -87,7 +87,7 @@ const pageTranslations: Record<string, Record<string, string>> = {
   tr: {
     home: "Ana Sayfa",
     portal: "Müşteri Portalı",
-    heroBadge: "📢 HBS B2B Açık İlan & İhale Panosu",
+    heroBadge: "HBS B2B Açık İlan & İhale Panosu",
     heroTitle: "Aradığınız Ürünü veya Hizmeti Bulamadınız mı?",
     heroDesc: "B2B ihale ve ilan panomuzda kural tanımaz özgürlük! İster 30 katlı plaza sıvası yaptırmak isteyin, ister özel dil eğitimi, fotoğraf çekimi veya nadir bir diagnostik soketi arayın... İlanınızı hemen bırakın, kayıtlı HBS mağazaları kapalı-zarf usulüyle size özel gizli tekliflerini sunsun. Teklifleri yalnızca siz görebilirsiniz.",
     activeTitle: "Aktif Açık İlanlar & İhaleler",
@@ -137,7 +137,7 @@ const pageTranslations: Record<string, Record<string, string>> = {
   en: {
     home: "Home",
     portal: "Customer Portal",
-    heroBadge: "📢 HBS B2B Open Bulletin & Tenders Board",
+    heroBadge: "HBS B2B Open Bulletin & Tenders Board",
     heroTitle: "Didn't Find the Product or Service You Are Looking For?",
     heroDesc: "Unrestricted freedom in our B2B tenders and requests board! Whether you want to award a plastering contract for a 30-story plaza, request private language tutoring, catalog photography, or find a rare diagnostic connector... Leave your request here, and registered HBS stores will submit custom sealed bids. Bids are completely private and visible only to you.",
     activeTitle: "Active Open Requests & Tenders",
@@ -187,7 +187,7 @@ const pageTranslations: Record<string, Record<string, string>> = {
   de: {
     home: "Startseite",
     portal: "Kundenportal",
-    heroBadge: "📢 HBS B2B Ausschreibungen & Marktplatz",
+    heroBadge: "HBS B2B Ausschreibungen & Marktplatz",
     heroTitle: "Nicht das passende Produkt oder Dienstleistung gefunden?",
     heroDesc: "Grenzenlose Freiheit auf unserem B2B-Ausschreibungs- und Anfragen-Board! Ob Sie eine Verputzarbeit für ein 30-stöckiges Gebäude vergeben möchten, privaten Sprachunterricht, Produktfotografie oder einen seltenen Diagnosestecker suchen... Erstellen Sie Ihre Anfrage, und registrierte HBS-Shops werden vertrauliche Angebote abgeben. Die Angebote sind vollkommen privat und nur für Sie sichtbar.",
     activeTitle: "Aktive Ausschreibungen & Anfragen",
@@ -237,7 +237,7 @@ const pageTranslations: Record<string, Record<string, string>> = {
   ru: {
     home: "Главная",
     portal: "Портал клиента",
-    heroBadge: "📢 HBS B2B Открытая доска тендеров и объявлений",
+    heroBadge: "HBS B2B Открытая доска тендеров и объявлений",
     heroTitle: "Не нашли нужный товар или услугу?",
     heroDesc: "Полная свобода на нашей B2B доске тендеров и запросов! Хотите ли вы заказать штукатурку 30-этажного здания, найти репетитора по языкам, фотографа для каталога или редкий разъем для диагностики... Оставьте запрос здесь, и зарегистрированные магазины HBS отправят вам закрытые индивидуальные предложения. Предложения конфиденциальны и видны только вам.",
     activeTitle: "Активные открытые объявления и тендеры",
@@ -287,7 +287,7 @@ const pageTranslations: Record<string, Record<string, string>> = {
   ka: {
     home: "მთავარი",
     portal: "კლიენტის პორტალი",
-    heroBadge: "📢 HBS B2B ღია განცხადებების & ტენდერების დაფა",
+    heroBadge: "HBS B2B ღია განცხადებების & ტენდერების დაფა",
     heroTitle: "ვერ იპოვეთ თქვენთვის საქონელი ან მომსახურება?",
     heroDesc: "სრული თავისუფლება B2B მოთხოვნებისა და ტენდერების დაფაზე! გსურთ 30-სართულიანი შენობის გარე ფასადის შელესვა, კერძო გაკვეთილები, კატალოგის ფოტოგადაღება თუ იშვიათი სადიაგნოსტიკო კონექტორის პოვნა... დატოვეთ თქვენი მოთხოვნა აქ და დარეგისტრირებული HBS მაღაზიები გამოგიგზავნიან ფარულ შემოთავაზებებს. შემოთავაზებები კონფიდენციალურია და მხოლოდ თქვენთვისაა ხილული.",
     activeTitle: "აქტიური ღია განცხადებები & ტენდერები",
