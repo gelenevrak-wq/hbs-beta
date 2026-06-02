@@ -184,7 +184,12 @@ export default function AICopilotTooltip({ fieldKey, position = "top", className
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    const savedLang = window.localStorage.getItem("hbs-language") || "tr";
+    let savedLang = "tr";
+    try {
+      savedLang = window.localStorage.getItem("hbs-language") || "tr";
+    } catch (e) {
+      console.error("localStorage is disabled or secure:", e);
+    }
     setLang(savedLang);
   }, []);
 

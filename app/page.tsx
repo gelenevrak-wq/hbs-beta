@@ -490,51 +490,10 @@ export default function HomePage() {
       console.error(e);
     }
 
-    const isSupabaseConfigured = 
-      process.env.NEXT_PUBLIC_SUPABASE_URL && 
-      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
-
-    if (isSupabaseConfigured) {
-      // Supabase'den gerçek verileri çek
-      supabase
-        .from("offerable_items")
-        .select("*, companies(*)")
-        .eq("is_visible_in_public_search", true)
-        .then(({ data: items, error }) => {
-          if (items && !error) {
-            const mappedProducts: Product[] = items.map((item) => ({
-              slug: item.id,
-              name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
-              category: { tr: item.category || "Genel", en: item.category || "General", de: item.category || "Allgemein", ru: item.category || "Общий", ka: item.category || "საერთო" },
-              store: item.companies?.name || "HBS Mağaza",
-              storeSlug: item.companies?.code || "unknown",
-              city: item.companies?.city || "İstanbul",
-              country: item.companies?.country || "Türkiye",
-              image: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
-              price: {
-                tr: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Bilgi / teklif alın",
-                en: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Information / request offer",
-                de: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Information / Angebot anfragen",
-                ru: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Информация / запросить цену",
-                ka: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "ინფორმაცია / ფასის მოთხოვნა"
-              },
-              tag: {
-                tr: item.type === "product" ? "Ürün" : item.type === "service" ? "Hizmet" : "Kiralık",
-                en: item.type === "product" ? "Product" : item.type === "service" ? "Service" : "Rental",
-                de: item.type === "product" ? "Produkt" : item.type === "service" ? "Dienstleistung" : "Miete",
-                ru: item.type === "product" ? "Товар" : item.type === "service" ? "Услуга" : "Аренда",
-                ka: item.type === "product" ? "პროდუქტი" : item.type === "service" ? "სერვისი" : "ქირავდება"
-              },
-              sku: item.code || item.id,
-            }));
-            setUploadedProducts(mappedProducts);
-          }
-        });
-    } else {
-      // LocalStorage'dan mock ürünleri çek
-      const savedProducts = window.localStorage.getItem("hbs-store-products");
-      if (savedProducts) {
-        try {
+    const loadFromLocalStorage = () => {
+      try {
+        const savedProducts = window.localStorage.getItem("hbs-store-products");
+        if (savedProducts) {
           const parsedProducts = JSON.parse(savedProducts) as Array<{
             id: string;
             name: string;
@@ -587,7 +546,7 @@ export default function HomePage() {
                   tr: "Mağaza ürünü",
                   en: "Store product",
                   de: "Shop-Produkt",
-                  ru: "Товар магазина",
+                  ru: "Тоvar магазина",
                   ka: "მაღაზიის პროდუქტი"
                 },
                 sku: item.sku || item.id,
@@ -595,10 +554,63 @@ export default function HomePage() {
             });
 
           setUploadedProducts(mappedProducts);
-        } catch {
-          setUploadedProducts([]);
         }
+      } catch (e) {
+        console.error("Error loading products from local storage fallback:", e);
+        setUploadedProducts([]);
       }
+    };
+
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
+      Promise.resolve(
+        supabase
+          .from("offerable_items")
+          .select("*, companies(*)")
+          .eq("is_visible_in_public_search", true)
+      )
+        .then(({ data: items, error }) => {
+          if (items && !error) {
+            const mappedProducts: Product[] = items.map((item) => ({
+              slug: item.id,
+              name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
+              category: { tr: item.category || "Genel", en: item.category || "General", de: item.category || "Allgemein", ru: item.category || "Общий", ka: item.category || "საერთო" },
+              store: item.companies?.name || "HBS Mağaza",
+              storeSlug: item.companies?.code || "unknown",
+              city: item.companies?.city || "İstanbul",
+              country: item.companies?.country || "Türkiye",
+              image: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+              price: {
+                tr: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Bilgi / teklif alın",
+                en: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Information / request offer",
+                de: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Information / Angebot anfragen",
+                ru: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Информация / запросить цену",
+                ka: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "ინფორმაცია / ფასის მოთხოვნა"
+              },
+              tag: {
+                tr: item.type === "product" ? "Ürün" : item.type === "service" ? "Hizmet" : "Kiralık",
+                en: item.type === "product" ? "Product" : item.type === "service" ? "Service" : "Rental",
+                de: item.type === "product" ? "Produkt" : item.type === "service" ? "Dienstleistung" : "Miete",
+                ru: item.type === "product" ? "Товар" : item.type === "service" ? "Услуга" : "Аренда",
+                ka: item.type === "product" ? "პროდუქტი" : item.type === "service" ? "სერვისი" : "ქირავდება"
+              },
+              sku: item.code || item.id,
+            }));
+            setUploadedProducts(mappedProducts);
+          } else {
+            if (error) console.error("Supabase items query error:", error);
+            loadFromLocalStorage();
+          }
+        })
+        .catch((err) => {
+          console.error("Supabase homepage query failed:", err);
+          loadFromLocalStorage();
+        });
+    } else {
+      loadFromLocalStorage();
     }
   }, []);
 

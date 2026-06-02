@@ -23,7 +23,12 @@ export function isLanguageCode(value: string | null): value is LanguageCode {
 }
 
 function detectInitialLanguage(): LanguageCode {
-  const saved = window.localStorage.getItem("hbs-language");
+  let saved: string | null = null;
+  try {
+    saved = window.localStorage.getItem("hbs-language");
+  } catch (e) {
+    console.error("localStorage is disabled or secure:", e);
+  }
   if (isLanguageCode(saved)) return saved;
 
   const browserLanguage = window.navigator.language.slice(0, 2).toLowerCase();
@@ -38,7 +43,11 @@ export default function CompactLanguageSwitcher() {
   useEffect(() => {
     const initialLanguage = detectInitialLanguage();
     setLanguage(initialLanguage);
-    window.localStorage.setItem("hbs-language", initialLanguage);
+    try {
+      window.localStorage.setItem("hbs-language", initialLanguage);
+    } catch (e) {
+      console.error("localStorage is disabled or secure:", e);
+    }
     document.documentElement.lang = initialLanguage;
     document.documentElement.dir = "ltr";
   }, []);
@@ -47,7 +56,11 @@ export default function CompactLanguageSwitcher() {
 
   const changeLanguage = (languageCode: LanguageCode) => {
     setLanguage(languageCode);
-    window.localStorage.setItem("hbs-language", languageCode);
+    try {
+      window.localStorage.setItem("hbs-language", languageCode);
+    } catch (e) {
+      console.error("localStorage is disabled or secure:", e);
+    }
     document.documentElement.lang = languageCode;
     document.documentElement.dir = "ltr";
     window.location.reload();

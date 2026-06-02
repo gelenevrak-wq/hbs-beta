@@ -78,14 +78,23 @@ export function getInitialLanguage(): HbsLanguageCode {
     const urlParams = new URLSearchParams(window.location.search);
     const urlLang = urlParams.get("lang");
     if (urlLang && isHbsLanguageCode(urlLang)) {
-      window.localStorage.setItem("hbs-language", urlLang);
+      try {
+        window.localStorage.setItem("hbs-language", urlLang);
+      } catch (e) {
+        console.error("localStorage is disabled or secure:", e);
+      }
       return urlLang;
     }
   } catch (e) {
     console.error("Error reading lang parameter:", e);
   }
 
-  const savedLanguage = window.localStorage.getItem("hbs-language");
+  let savedLanguage: string | null = null;
+  try {
+    savedLanguage = window.localStorage.getItem("hbs-language");
+  } catch (e) {
+    console.error("localStorage is disabled or secure:", e);
+  }
 
   if (isHbsLanguageCode(savedLanguage)) {
     return savedLanguage;

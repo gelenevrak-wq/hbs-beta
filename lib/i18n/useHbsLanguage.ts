@@ -29,7 +29,11 @@ export function useHbsLanguage() {
 
     setLanguageState(nextLanguage);
 
-    window.localStorage.setItem("hbs-language", nextLanguage);
+    try {
+      window.localStorage.setItem("hbs-language", nextLanguage);
+    } catch (e) {
+      console.error("localStorage is disabled or secure:", e);
+    }
 
     document.documentElement.lang = nextLanguage;
     document.documentElement.dir = getLanguageDirection(nextLanguage);
