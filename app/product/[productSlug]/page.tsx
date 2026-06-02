@@ -819,41 +819,13 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
 
         {message && <div className="mb-4 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm leading-6 text-blue-800 sm:mb-6 sm:rounded-3xl sm:p-5">{message}</div>}
 
-        <section className="mb-4 grid gap-3 sm:mb-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <section className="mb-4 sm:mb-6">
           <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:rounded-[2rem] sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
               <h2 className="text-lg font-black sm:text-xl">{pageTxt("descTitle", language)}</h2>
               <span className="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">{pageTxt("detail", language)}</span>
             </div>
             <p className="text-sm leading-6 text-slate-700 whitespace-pre-line">{txt(activeProduct.description, language)}</p>
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{pageTxt("compatibility", language)}</p>
-                <p className="mt-1 text-sm font-semibold text-slate-800">{pageTxt("compatibilityDesc", language)}</p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-slate-500">{pageTxt("visualStatus", language)}</p>
-                <p className="mt-1 text-sm font-semibold text-slate-800">{pageTxt("visualDesc", language)}</p>
-              </div>
-            </div>
-          </div>
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-sm sm:rounded-[2rem] sm:p-5">
-            <h2 className="text-lg font-black text-emerald-900 sm:text-xl">{pageTxt("warehouseConn", language)}</h2>
-            <div className="mt-3 grid gap-2 text-sm leading-6 text-emerald-900/90">
-              {isVirtualDelivery ? (
-                <>
-                  <p><span className="font-black">{pageTxt("serviceModel", language)}:</span> {pageTxt("virtualDelivery", language)}</p>
-                  <p><span className="font-black">{pageTxt("openStorefront", language)}:</span> {storefrontNames} ({getLocalText("visibleNationwide", language)})</p>
-                  <p><span className="font-black">{pageTxt("rule", language)}:</span> {pageTxt("virtualRuleDesc", language)}</p>
-                </>
-              ) : (
-                <>
-                  <p><span className="font-black">{pageTxt("internalWarehouse", language)}:</span> {internalWarehouseCode}</p>
-                  <p><span className="font-black">{pageTxt("openStorefront", language)}:</span> {storefrontNames}</p>
-                  <p><span className="font-black">{pageTxt("rule", language)}:</span> {pageTxt("physicalRuleDesc", language)}</p>
-                </>
-              )}
-            </div>
           </div>
         </section>
 
@@ -866,10 +838,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               <p><span className="font-bold text-slate-950">{t.common.oem}:</span> {activeProduct.oemCode || "-"}</p>
               <p><span className="font-bold text-slate-950">{t.common.manufacturerCode}:</span> {activeProduct.manufacturerCode || "-"}</p>
             </div>
-            <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:mt-6 sm:rounded-3xl sm:p-5">
-              <h3 className="font-black text-amber-800">{t.product.googleVisibility}</h3>
-              <p className="mt-2 text-sm leading-6 text-amber-800/90 sm:mt-3">{t.common.seoNotice}</p>
-            </div>
+
           </aside>
 
           <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:rounded-[2rem] sm:p-6">
