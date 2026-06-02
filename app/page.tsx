@@ -430,7 +430,13 @@ export default function HomePage() {
         (position) => {
           const { latitude, longitude } = position.coords;
           setCustomCoords({ lat: latitude, lng: longitude });
-          setLocationLabel(window.localStorage.getItem("hbs-language") === "tr" ? "📍 Mevcut Konumunuz" : "📍 Current Location");
+          let activeLang = "tr";
+          try {
+            activeLang = window.localStorage.getItem("hbs-language") || "tr";
+          } catch (e) {
+            console.error(e);
+          }
+          setLocationLabel(activeLang === "tr" ? "📍 Mevcut Konumunuz" : "📍 Current Location");
         },
         (error) => {
           console.log("GPS Location Access Denied or Failed", error);
@@ -441,7 +447,12 @@ export default function HomePage() {
 
   useEffect(() => {
     detectLocation();
-    const saved = window.localStorage.getItem("hbs-language");
+    let saved = null;
+    try {
+      saved = window.localStorage.getItem("hbs-language");
+    } catch (e) {
+      console.error(e);
+    }
     setLanguage(isLanguageCode(saved) ? saved : "tr");
 
     // Load current user session

@@ -387,7 +387,14 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     const baseVal = memoizedActiveProduct.storePhone;
     const isPlaceholder = baseVal === "+905320000000" || baseVal === "905320000000" || !baseVal;
     if (isPlaceholder) {
-      const activeUser = typeof window !== "undefined" ? JSON.parse(window.localStorage.getItem("hbs-current-user") || "null") : null;
+      let activeUser = null;
+      try {
+        if (typeof window !== "undefined") {
+          activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
+        }
+      } catch (e) {
+        console.error("Error reading hbs-current-user in storePhoneVal:", e);
+      }
       const loggedInStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
       if (memoizedActiveProduct.storeSlug === loggedInStoreSlug && localSettings?.phone) {
         return localSettings.phone;
@@ -402,7 +409,14 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     const baseVal = memoizedActiveProduct.storeWhatsapp;
     const isPlaceholder = baseVal === "905320000000" || baseVal === "+905320000000" || !baseVal;
     if (isPlaceholder) {
-      const activeUser = typeof window !== "undefined" ? JSON.parse(window.localStorage.getItem("hbs-current-user") || "null") : null;
+      let activeUser = null;
+      try {
+        if (typeof window !== "undefined") {
+          activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
+        }
+      } catch (e) {
+        console.error("Error reading hbs-current-user in storeWhatsappVal:", e);
+      }
       const loggedInStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
       if (memoizedActiveProduct.storeSlug === loggedInStoreSlug && localSettings?.whatsapp) {
         return sanitizeWhatsAppNumber(localSettings.whatsapp);
@@ -723,7 +737,12 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
   };
 
   function requireLogin() {
-    const user = window.localStorage.getItem("hbs-current-user");
+    let user = null;
+    try {
+      user = window.localStorage.getItem("hbs-current-user");
+    } catch (e) {
+      console.error("Error reading hbs-current-user in requireLogin:", e);
+    }
     if (!user) {
       window.location.href = "/login";
       return false;
@@ -733,7 +752,12 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
 
   function checkProfileAndExecute(action: () => void) {
     if (!requireLogin()) return;
-    const userStr = window.localStorage.getItem("hbs-current-user");
+    let userStr = null;
+    try {
+      userStr = window.localStorage.getItem("hbs-current-user");
+    } catch (e) {
+      console.error("Error reading hbs-current-user in checkProfileAndExecute:", e);
+    }
     if (userStr) {
       try {
         const userObj = JSON.parse(userStr);
@@ -763,14 +787,23 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       return;
     }
 
-    const userStr = window.localStorage.getItem("hbs-current-user");
+    let userStr = null;
+    try {
+      userStr = window.localStorage.getItem("hbs-current-user");
+    } catch (e) {
+      console.error("Error reading hbs-current-user in handleSaveProfile:", e);
+    }
     if (userStr) {
       try {
         const userObj = JSON.parse(userStr);
         userObj.displayName = profileName;
         userObj.phone = profilePhone;
         userObj.city = profileCity;
-        window.localStorage.setItem("hbs-current-user", JSON.stringify(userObj));
+        try {
+          window.localStorage.setItem("hbs-current-user", JSON.stringify(userObj));
+        } catch (e) {
+          console.error("Error saving hbs-current-user:", e);
+        }
 
         const isSupabaseConfigured = 
           process.env.NEXT_PUBLIC_SUPABASE_URL && 
