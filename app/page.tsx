@@ -708,9 +708,6 @@ export default function HomePage() {
           <div className="flex items-center gap-1.5 sm:gap-3">
             <Link href="/" className="shrink-0 text-base font-black tracking-tight text-blue-700 sm:text-xl">HBS</Link>
             <CompactLanguageSwitcher />
-            <Link href="/requests" className="rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-black px-2 py-1.5 text-[8px] sm:text-[10px] flex items-center gap-1 hover:bg-indigo-100 transition shrink-0 shadow-sm">
-              📢 <span className="hidden sm:inline">{t.tendersBoard}</span>
-            </Link>
           </div>
           <div className="flex items-center gap-1 sm:gap-1.5">
             
@@ -967,9 +964,13 @@ export default function HomePage() {
 
       <Link
         href="/requests"
-        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t border-indigo-100 bg-gradient-to-r from-indigo-50/95 via-white/95 to-blue-50/95 py-2.5 px-4 sm:px-8 shadow-[0_-8px_30px_rgba(79,70,229,0.12)] backdrop-blur-md transition-all duration-300 hover:from-indigo-100/95 hover:to-blue-100/95 group cursor-pointer"
+        className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between border-t border-indigo-200 bg-gradient-to-r from-indigo-600 via-indigo-700 to-blue-600 py-3.5 px-4 sm:px-8 shadow-[0_-10px_40px_rgba(79,70,229,0.35)] backdrop-blur-md transition-all duration-300 hover:from-indigo-700 hover:to-blue-700 group cursor-pointer"
       >
-        <span className="text-[11px] sm:text-xs font-black tracking-wide text-indigo-950 flex items-center gap-2 group-hover:text-blue-800 transition-colors">
+        <span className="text-[11px] sm:text-sm font-black tracking-wide text-white flex items-center gap-2 group-hover:text-blue-100 transition-colors">
+          <span className="flex h-2 w-2 relative shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
           💡 {label(
             "Aradığınızı bulamadıysanız, ilan bırakın, insanlar ve işletmeler size ulaşsın",
             "Didn't find what you were looking for? Post an ad, and let people and businesses reach you",
@@ -978,7 +979,7 @@ export default function HomePage() {
             "ვერ იპოვეთ ის, რასაც ეძებდით? განათავსეთ განცხადება და ხალხი და ბიზნესი დაგიკავშირდებათ"
           )}
         </span>
-        <span className="text-base sm:text-xl filter drop-shadow-sm transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 flex items-center shrink-0">
+        <span className="text-base sm:text-2xl filter drop-shadow-md transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 flex items-center shrink-0 text-white">
           📢
         </span>
       </Link>
