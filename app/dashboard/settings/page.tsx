@@ -365,6 +365,8 @@ export default function SettingsPage() {
   const [allowMessages, setAllowMessages] = useState(true);
   const [allowWhatsapp, setAllowWhatsapp] = useState(true);
   const [requireEmployeeBiometrics, setRequireEmployeeBiometrics] = useState(false);
+  const [defaultCurrency, setDefaultCurrency] = useState("GEL");
+  const [exchangeHedgingBuffer, setExchangeHedgingBuffer] = useState(1.5);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -393,6 +395,8 @@ export default function SettingsPage() {
         if (s.allowMessages !== undefined) setAllowMessages(s.allowMessages);
         if (s.allowWhatsapp !== undefined) setAllowWhatsapp(s.allowWhatsapp);
         if (s.requireEmployeeBiometrics !== undefined) setRequireEmployeeBiometrics(s.requireEmployeeBiometrics);
+        if (s.defaultCurrency) setDefaultCurrency(s.defaultCurrency);
+        if (s.exchangeHedgingBuffer !== undefined) setExchangeHedgingBuffer(s.exchangeHedgingBuffer);
       } else {
         const activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
         const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
@@ -480,6 +484,8 @@ export default function SettingsPage() {
       allowMessages,
       allowWhatsapp,
       requireEmployeeBiometrics,
+      defaultCurrency,
+      exchangeHedgingBuffer,
     };
 
     try {
@@ -786,13 +792,40 @@ export default function SettingsPage() {
                   <label className="mb-1 block text-xs font-bold text-slate-500 uppercase tracking-wider">
                     {currentText.defaultCurrency}
                   </label>
-                  <select className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition">
-                    <option>GEL</option>
-                    <option>TRY</option>
-                    <option>USD</option>
-                    <option>EUR</option>
-                    <option>RUB</option>
+                  <select 
+                    value={defaultCurrency}
+                    onChange={(e) => setDefaultCurrency(e.target.value)}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition"
+                  >
+                    <option value="GEL">GEL</option>
+                    <option value="TRY">TRY</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="RUB">RUB</option>
                   </select>
+                </div>
+
+                <div>
+                  <div className="mb-1 flex items-center justify-between">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      {language === "tr" ? "🛡️ Kur Kalkanı Marjı (%)" : "🛡️ Exchange Hedging Buffer (%)"}
+                    </label>
+                    <span className="text-xs font-extrabold text-blue-600">%{exchangeHedgingBuffer}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    value={exchangeHedgingBuffer}
+                    onChange={(e) => setExchangeHedgingBuffer(Number(e.target.value))}
+                    className="w-full h-1.5 cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none"
+                  />
+                  <span className="text-[10px] text-slate-400 font-semibold block mt-1 leading-normal">
+                    {language === "tr" 
+                      ? "Çapraz döviz çevirilerinde kur dalgalanma riskine karşı fiyata eklenecek emniyet payı." 
+                      : "Risk buffer added during dynamic currency conversions to protect against rate drops."}
+                  </span>
                 </div>
 
                 <div>

@@ -241,6 +241,11 @@ export default function ProductsPage() {
   const [selectedPrintProduct, setSelectedPrintProduct] = useState<ProductRecord | null>(null);
   const [activePrintTab, setActivePrintTab] = useState<'card' | 'barcode' | 'shelf'>('card');
 
+  // Interactive Mobile QR/Barcode Warehousing Assistant States
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [terminalScannedProduct, setTerminalScannedProduct] = useState<ProductRecord | null>(null);
+  const [terminalMessage, setTerminalMessage] = useState("");
+
   // Refs
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -2422,6 +2427,265 @@ export default function ProductsPage() {
             </div>
           </div>
         )}
+
+        {/* Mobile QR & Barcode Warehousing Assistant (El Terminali) Drawer/Overlay */}
+        {isTerminalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-fadeIn">
+            {/* Terminal Body Container */}
+            <div className="relative w-full max-w-sm overflow-hidden rounded-[2.5rem] border-[10px] border-slate-800 bg-[#0d1527] shadow-2xl flex flex-col h-[640px] max-h-[90vh] text-slate-100 ring-4 ring-orange-500/20">
+              
+              {/* Phone Speaker & Sensor Notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-2xl z-20 flex items-center justify-center gap-1.5">
+                <div className="w-12 h-1 bg-slate-700 rounded-full" />
+                <div className="w-2 h-2 bg-slate-900 rounded-full" />
+              </div>
+
+              {/* Honeywell / Zebra Brand Header */}
+              <div className="pt-8 pb-2 px-6 flex justify-between items-center bg-[#152342] border-b border-slate-800 text-[10px] font-black tracking-widest text-slate-400 select-none">
+                <span>⚡ HBS SCANNER-9000</span>
+                <span className="flex items-center gap-1 text-orange-400">
+                  <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-ping" />
+                  ONLINE (🔋 98%)
+                </span>
+              </div>
+
+              {/* Terminal Screen Contents */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-4 flex flex-col justify-between">
+                
+                <div className="space-y-4">
+                  {/* Title & Close */}
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-black text-slate-100 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>📱</span> Mobil Depo El Terminali
+                      </h3>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">HBS Mobile OS v4.2</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setIsTerminalOpen(false);
+                        setTerminalScannedProduct(null);
+                        setTerminalMessage("");
+                      }}
+                      className="rounded-full bg-slate-800 hover:bg-slate-700 p-1.5 text-xs text-slate-400 hover:text-white transition"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  {/* Laser Sweeper Simulator (Visual Scan Window) */}
+                  <div className="relative h-32 rounded-2xl bg-black border border-slate-800 overflow-hidden flex items-center justify-center group shadow-inner">
+                    {/* Laser lines */}
+                    <div className="absolute inset-x-0 top-1/2 h-0.5 bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.9)] z-10 animate-scanLine" />
+                    
+                    {/* Glowing corner brackets */}
+                    <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-orange-500 rounded-tl" />
+                    <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-orange-500 rounded-tr" />
+                    <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-orange-500 rounded-bl" />
+                    <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-orange-500 rounded-br" />
+
+                    {/* Scan indicator overlay */}
+                    <div className="text-center space-y-1.5 z-10 px-4">
+                      <span className="text-[10px] font-black bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2 py-0.5 rounded-full tracking-wider block animate-pulse uppercase">
+                        Sistem Barkod Tarayıcı Hazır
+                      </span>
+                      <p className="text-[9px] text-slate-550 font-bold">Barkod simüle etmek için aşağıdaki listeden seçin veya okutun.</p>
+                    </div>
+                  </div>
+
+                  {/* Simulator Scan Trigger - Dropdown Select Product to "Scan" */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-400 block uppercase tracking-wider">
+                      Simüle Depo Barkod Seçimi (Okutma)
+                    </label>
+                    <select
+                      onChange={(e) => {
+                        const prodId = e.target.value;
+                        if (prodId) {
+                          const matched = products.find(p => p.id === prodId);
+                          if (matched) {
+                            setTerminalScannedProduct(matched);
+                            setTerminalMessage(`✓ ${matched.name} başarıyla tarandı!`);
+                            playBeep();
+                          }
+                        } else {
+                          setTerminalScannedProduct(null);
+                        }
+                      }}
+                      className="w-full rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-100 outline-none focus:border-orange-500"
+                    >
+                      <option value="">-- Lütfen bir ürün barkodu seçin --</option>
+                      {products.map(p => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.sku || p.barcode || "KODSUZ"})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Scanned Card Results */}
+                  {terminalScannedProduct ? (
+                    <div className="rounded-2xl border border-slate-800 bg-[#121c35] p-3.5 space-y-3 shadow-inner">
+                      <div>
+                        <span className="text-[8px] font-black bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full tracking-wider uppercase">
+                          Tarandı: {terminalScannedProduct.sku || terminalScannedProduct.barcode || "Mevcut"}
+                        </span>
+                        <h4 className="text-xs font-black text-slate-100 mt-1.5 leading-snug">
+                          {terminalScannedProduct.name}
+                        </h4>
+                        <p className="text-[9px] text-slate-400 font-bold">Marka: {terminalScannedProduct.brand || "Belirtilmedi"} | Kategori: {terminalScannedProduct.category}</p>
+                      </div>
+
+                      {/* Stock Adjuster Row */}
+                      <div className="flex items-center justify-between gap-3 bg-[#0c1224] p-2.5 rounded-xl border border-slate-800">
+                        <div>
+                          <span className="text-[8px] font-black text-slate-500 block uppercase tracking-wider">Depo Stoğu</span>
+                          <span className="text-sm font-black text-orange-400">{terminalScannedProduct.quantity || "0"} Adet</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentQty = parseInt(terminalScannedProduct.quantity || "0");
+                              const nextQty = Math.max(0, currentQty - 1);
+                              
+                              // Mutate global products state
+                              const updated = products.map(p => {
+                                if (p.id === terminalScannedProduct.id) {
+                                  const updatedProd = { ...p, quantity: String(nextQty) };
+                                  setTerminalScannedProduct(updatedProd);
+                                  return updatedProd;
+                                }
+                                return p;
+                              });
+                              setProducts(updated);
+                              playBeep();
+                              setTerminalMessage("Stok miktarı -1 azaltıldı.");
+                            }}
+                            className="w-8 h-8 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 font-black border border-rose-600/30 flex items-center justify-center transition active:scale-95 text-sm"
+                          >
+                            -1
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const currentQty = parseInt(terminalScannedProduct.quantity || "0");
+                              const nextQty = currentQty + 1;
+                              
+                              // Mutate global products state
+                              const updated = products.map(p => {
+                                if (p.id === terminalScannedProduct.id) {
+                                  const updatedProd = { ...p, quantity: String(nextQty) };
+                                  setTerminalScannedProduct(updatedProd);
+                                  return updatedProd;
+                                }
+                                return p;
+                              });
+                              setProducts(updated);
+                              playBeep();
+                              setTerminalMessage("Stok miktarı +1 artırıldı.");
+                            }}
+                            className="w-8 h-8 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-black border border-emerald-600/30 flex items-center justify-center transition active:scale-95 text-sm"
+                          >
+                            +1
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Shelf Relocate Input */}
+                      <div className="space-y-1">
+                        <label className="text-[8px] font-black text-slate-500 block uppercase tracking-wider">
+                          Depo Raf Konumu / Adresi
+                        </label>
+                        <input
+                          type="text"
+                          value={terminalScannedProduct.shelf || ""}
+                          onChange={(e) => {
+                            const newShelf = e.target.value;
+                            const updated = products.map(p => {
+                              if (p.id === terminalScannedProduct.id) {
+                                const updatedProd = { ...p, shelf: newShelf };
+                                setTerminalScannedProduct(updatedProd);
+                                return updatedProd;
+                              }
+                              return p;
+                            });
+                            setProducts(updated);
+                          }}
+                          placeholder="Raf Konumu örn: A-01, B-12"
+                          className="w-full rounded-lg bg-[#0c1224] border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-slate-800 p-6 text-center space-y-1 select-none">
+                      <p className="text-xs font-bold text-slate-400">Ürün Taranmadı</p>
+                      <p className="text-[10px] text-slate-650 font-bold leading-normal">
+                        Lütfen listeden simüle edilmiş bir barkod seçerek depo işlemlerini başlatın.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Terminal Console Feedback Message */}
+                  {terminalMessage && (
+                    <div className="rounded-xl bg-orange-500/5 border border-orange-500/10 p-2.5 text-center text-[10px] font-black text-orange-400 tracking-wide animate-fadeIn">
+                      💡 {terminalMessage}
+                    </div>
+                  )}
+                </div>
+
+                {/* Industrial Hardware Orange Trigger Button */}
+                <div className="pt-4 border-t border-slate-800/60 flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (terminalScannedProduct) {
+                        playBeep();
+                        setTerminalMessage(`[SAYIM BAŞARILI] ${terminalScannedProduct.name} depo konumu (${terminalScannedProduct.shelf || "Belirtilmedi"}) ve ${terminalScannedProduct.quantity} adet stok başarıyla doğrulandı.`);
+                      } else {
+                        alert("Lütfen önce bir ürün barkodu seçerek tarama yapın.");
+                      }
+                    }}
+                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-black text-xs shadow-lg tracking-widest uppercase active:scale-[0.98] transition border border-orange-600/30 flex items-center justify-center gap-1.5"
+                  >
+                    <span>🎯</span> SAYIMI ONAYLA & KİLİTLE
+                  </button>
+                  <span className="text-[8px] text-slate-500 text-center font-bold">
+                    HBS WAREHOUSE SYSTEM INDEPENDENT CONTROLLER
+                  </span>
+                </div>
+
+              </div>
+
+              {/* Local Keyframe Animation block */}
+              <style>{`
+                @keyframes scanLine {
+                  0% { top: 0%; }
+                  50% { top: 100%; }
+                  100% { top: 0%; }
+                }
+                .animate-scanLine {
+                  position: absolute;
+                  animation: scanLine 3s infinite linear;
+                }
+              `}</style>
+
+            </div>
+          </div>
+        )}
+
+        {/* Floating Scanner Activation Widget (FAB) */}
+        <button
+          type="button"
+          onClick={() => {
+            setIsTerminalOpen(true);
+            playBeep();
+          }}
+          className="fixed bottom-6 right-6 z-40 bg-gradient-to-tr from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-300 border border-orange-400/40 ring-4 ring-orange-500/10 cursor-pointer"
+          title="Depo Barkod El Terminali"
+        >
+          <span className="text-xl animate-pulse">📱</span>
+        </button>
       </div>
     </main>
   );

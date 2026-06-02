@@ -232,6 +232,14 @@ export default function ProductDetailPage() {
   const [profileCity, setProfileCity] = useState("");
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
+  // B2B Canlı Pazarlık & Teklif Kilitleme Odası (Negotiation Sandbox) States
+  const [isNegotiationOpen, setIsNegotiationOpen] = useState(false);
+  const [negotiatedPrice, setNegotiatedPrice] = useState<number>(0);
+  const [chatMessages, setChatMessages] = useState<Array<{ sender: "rep" | "customer"; text: string; time: string }>>([]);
+  const [isDealLocked, setIsDealLocked] = useState(false);
+  const [lockedOfferCode, setLockedOfferCode] = useState("");
+  const [isCelebrationActive, setIsCelebrationActive] = useState(false);
+
   const isVirtualDelivery = useMemo(() => {
     if (typeof window === "undefined" || !product) return false;
     try {
@@ -258,6 +266,63 @@ export default function ProductDetailPage() {
     }
     return null;
   }, []);
+
+  const convertedPricing = useMemo(() => {
+    if (!product) return null;
+    
+    // Get base currency & price
+    const basePrice = product.priceValue || 3500;
+    const baseCurrency = product.currency || "GEL";
+
+    // Determine target currency: if localSettings has defaultCurrency, use it. Otherwise, default based on language:
+    let targetCurrency = "GEL";
+    if (localSettings?.defaultCurrency) {
+      targetCurrency = localSettings.defaultCurrency;
+    } else {
+      if (language === "tr") targetCurrency = "TRY";
+      else if (language === "en") targetCurrency = "USD";
+      else if (language === "de") targetCurrency = "EUR";
+      else if (language === "ka") targetCurrency = "GEL";
+      else targetCurrency = "USD";
+    }
+
+    // Standard rates mapping relative to USD (1 USD = X target)
+    const usdRates: Record<string, number> = {
+      USD: 1.0,
+      GEL: 2.65,
+      TRY: 34.20,
+      EUR: 0.92,
+      RUB: 92.50
+    };
+
+    // Convert from baseCurrency to USD first, then to targetCurrency
+    const baseToUsd = usdRates[baseCurrency] ? (1 / usdRates[baseCurrency]) : (1 / 2.65);
+    const usdToTarget = usdRates[targetCurrency] || 1;
+    
+    let rawConverted = basePrice * baseToUsd * usdToTarget;
+
+    // Apply Kur Kalkanı (exchangeHedgingBuffer) if enabled
+    const isHedgingEnabled = localSettings?.exchangeHedgingMode !== "disabled";
+    const bufferPercent = parseFloat(localSettings?.exchangeHedgingBuffer || "1.5");
+    
+    let finalPrice = rawConverted;
+    let hedgeFee = 0;
+    if (isHedgingEnabled && bufferPercent > 0) {
+      hedgeFee = rawConverted * (bufferPercent / 100);
+      finalPrice = rawConverted + hedgeFee;
+    }
+
+    return {
+      basePrice,
+      baseCurrency,
+      targetCurrency,
+      rawConverted: rawConverted.toFixed(2),
+      finalPrice: finalPrice.toFixed(2),
+      hedgeFee: hedgeFee.toFixed(2),
+      bufferPercent,
+      isHedgingEnabled
+    };
+  }, [product, localSettings, language]);
 
   const storeInfo = useMemo(() => {
     if (typeof window === "undefined" || !product) return null;
@@ -720,21 +785,285 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     }
   }
 
+  // B2B Live Negotiation Sandbox Handlers
+  const [inputText, setInputText] = useState("");
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
+    const msg = {
+      sender: "customer" as const,
+      text: inputText.trim(),
+      time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+    };
+    setChatMessages(prev => [...prev, msg]);
+    const customerMsg = inputText.trim();
+    setInputText("");
+    
+    // Simulate smart representative answer based on input text
+    setTimeout(() => {
+      let replyText = `Mesajınızı aldım. Teklifinizi sürgü üzerinden ${negotiatedPrice.toLocaleString()} ${activeProduct.currency || "GEL"} seviyesinde tuttunuz.`;
+      const txtLower = customerMsg.toLowerCase();
+      if (txtLower.includes("indirim") || txtLower.includes("fiyat") || txtLower.includes("ucuz")) {
+        replyText = `Müşteri temsilcimiz olarak sizi kazanmak istiyoruz. Sürgü üzerinden bütçenize en uygun fiyatı belirleyip hemen 'Teklifi Kabul Et & Kilitle 🔒' butonuna tıklayarak proforma oluşturabilirsiniz!`;
+      } else if (txtLower.includes("kargo") || txtLower.includes("teslim") || txtLower.includes("batum")) {
+        replyText = `Sınır ötesi lojistiğimiz Gürcistan ve Türkiye genelinde 48 saat içinde teslimat güvencesi sunmaktadır. Gümrük masrafları fiyat teklifine dahildir.`;
+      } else if (txtLower.includes("garanti") || txtLower.includes("bozuk") || txtLower.includes("arıza")) {
+        replyText = `Autel diagnostik ürünlerimize karşı 2 yıl resmi HBS ve üretici garantisi vermekteyiz. Herhangi bir arızada birebir değişim imkanı sunuyoruz.`;
+      }
+      setChatMessages(prev => [...prev, {
+        sender: "rep",
+        text: replyText,
+        time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+      }]);
+    }, 1000);
+  };
+
+  const handleSuggestPrice = () => {
+    const msg = {
+      sender: "customer" as const,
+      text: `Önerdiğim B2B Özel Fiyat: ${negotiatedPrice.toLocaleString()} ${activeProduct.currency || "GEL"}`,
+      time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+    };
+    setChatMessages(prev => [...prev, msg]);
+    
+    setTimeout(() => {
+      const discountRatio = negotiatedPrice / (activeProduct.priceValue || 3500);
+      let replyText = "";
+      if (discountRatio >= 0.94) {
+        replyText = `Mükemmel bir teklif! Uzun vadeli iş ortaklığımıza dayanarak bu fiyatı anında kabul ediyoruz. Anlaşmayı resmiyete dökmek için lütfen aşağıdaki 'Teklifi Kabul Et & Kilitle 🔒' butonuna tıklayın.`;
+      } else if (discountRatio >= 0.88) {
+        replyText = `Teklifiniz makul görünüyor. Lojistik departmanımızla görüştüm; bu fiyatı onaylayabiliriz. Resmi B2B Proforma İrsaliyesini oluşturup stoğu adınıza rezerve etmek için teklifi kilitleyebilirsiniz!`;
+      } else {
+        const midPoint = Math.round((activeProduct.priceValue || 3500) * 0.92);
+        replyText = `Bu teklif maalesef gümrük ve ithalat masraflarımızı karşılamıyor. Ancak, sizi memnun etmek adına ${midPoint.toLocaleString()} ${activeProduct.currency || "GEL"} fiyatına inebiliriz. Sürgüyü bu fiyata çekip kilitleyebilirsiniz!`;
+      }
+      setChatMessages(prev => [...prev, {
+        sender: "rep",
+        text: replyText,
+        time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+      }]);
+    }, 1000);
+  };
+
+  const handleLockDeal = () => {
+    const offerCode = `HBS-OFFER-${Math.floor(100000 + Math.random() * 900000)}`;
+    setLockedOfferCode(offerCode);
+    setIsDealLocked(true);
+    setIsCelebrationActive(true);
+
+    // 1. Deduct stock from hbs-store-products local storage reactively
+    try {
+      const savedProducts = window.localStorage.getItem("hbs-store-products");
+      if (savedProducts) {
+        const parsed = JSON.parse(savedProducts);
+        const updated = parsed.map((p: any) => {
+          if (p.id === activeProduct.slug || p.sku === activeProduct.sku) {
+            const currentQty = parseInt(p.quantity || "10");
+            const nextQty = Math.max(0, currentQty - 1);
+            return { ...p, quantity: String(nextQty) };
+          }
+          return p;
+        });
+        window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+      }
+    } catch (e) {
+      console.error("Error deducting stock in deal lock", e);
+    }
+
+    // 2. Register finalised offer in hbs-store-customer-offers
+    try {
+      const savedOffers = window.localStorage.getItem("hbs-store-customer-offers") || "[]";
+      const parsedOffers = JSON.parse(savedOffers);
+      const newOffer = {
+        offerCode,
+        productName: txt(activeProduct.name, language),
+        productSku: activeProduct.sku || "-",
+        negotiatedPrice,
+        currency: activeProduct.currency || "GEL",
+        customerName: profileName || "B2B Customer",
+        customerPhone: profilePhone || "-",
+        storeName: activeProduct.storeName,
+        date: new Date().toLocaleString("tr-TR")
+      };
+      parsedOffers.push(newOffer);
+      window.localStorage.setItem("hbs-store-customer-offers", JSON.stringify(parsedOffers));
+    } catch (e) {
+      console.error("Error registering offer", e);
+    }
+
+    // 3. Play success double beep sound
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.1);
+      
+      setTimeout(() => {
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        gain2.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        osc2.start();
+        osc2.stop(audioCtx.currentTime + 0.15);
+      }, 150);
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
+  const handleDownloadProforma = () => {
+    const htmlInvoice = `
+      <html>
+      <head>
+        <title>HBS B2B Proforma Invoice - ${lockedOfferCode}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+          .header { border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
+          .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
+          .title { font-size: 20px; font-weight: bold; margin-top: 10px; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+          .section-title { font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 5px; margin-bottom: 10px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th { background: #f3f4f6; border: 1px solid #ddd; padding: 10px; text-align: left; }
+          td { border: 1px solid #ddd; padding: 10px; }
+          .total { font-weight: bold; font-size: 16px; background: #eff6ff; }
+          .footer { margin-top: 50px; font-size: 11px; text-align: center; color: #777; border-top: 1px solid #ddd; padding-top: 20px; }
+          .signature-box { display: flex; justify-content: space-between; margin-top: 50px; }
+          .sig { border-top: 1px dashed #999; width: 200px; text-align: center; padding-top: 5px; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">HYBRID BUSINESS SYSTEM (HBS)</div>
+          <div class="title">RESMİ B2B ANLAŞMA PROFORMA FATURASI</div>
+          <div>Referans No: <b>${lockedOfferCode}</b></div>
+          <div>Tarih: ${new Date().toLocaleDateString("tr-TR")}</div>
+        </div>
+
+        <div class="grid">
+          <div>
+            <div class="section-title">SATICI BİLGİLERİ</div>
+            <div><b>Şirket:</b> ${activeProduct.storeName}</div>
+            <div><b>Şehir/Ülke:</b> ${activeProduct.city}, ${activeProduct.country}</div>
+            <div><b>Lojistik Durumu:</b> Sınır Ötesi Teslimat Hazır</div>
+          </div>
+          <div>
+            <div class="section-title">ALICI BİLGİLERİ</div>
+            <div><b>Müşteri:</b> ${profileName || "B2B İş Ortağı"}</div>
+            <div><b>Telefon:</b> ${profilePhone || "-"}</div>
+            <div><b>Konum:</b> ${profileCity || "-"}</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Ürün Açıklaması / SKU</th>
+              <th>Miktar</th>
+              <th>Birim Fiyat</th>
+              <th>Toplam Tutar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <b>${txt(activeProduct.name, language)}</b><br/>
+                SKU: ${activeProduct.sku || "-"}<br/>
+                Marka: ${activeProduct.brand}
+              </td>
+              <td>1 Adet</td>
+              <td>${negotiatedPrice.toLocaleString()} ${activeProduct.currency || "GEL"}</td>
+              <td>${negotiatedPrice.toLocaleString()} ${activeProduct.currency || "GEL"}</td>
+            </tr>
+            <tr class="total">
+              <td colspan="3" style="text-align: right;">KİLİTLENEN ANLAŞMA TOPLAMI:</td>
+              <td>${negotiatedPrice.toLocaleString()} ${activeProduct.currency || "GEL"}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top: 30px; font-size: 11px; background: #fffbeb; border: 1px solid #fef3c7; padding: 15px; border-radius: 10px;">
+          ⚠️ <b>Yasal Uyarı ve Koşullar:</b> Bu proforma fatura HBS B2B Canlı Pazarlık Odasında iki tarafın rızası ve teklif kilitleme mührüyle dijital olarak üretilmiştir. Tutar üzerine HBS Sınır Ötesi Gümrük ve Döviz Kalkanı garantisi eklenmiştir. Fiyat 24 saat boyunca döviz dalgalanmalarına karşı sabitlenmiştir.
+        </div>
+
+        <div class="signature-box">
+          <div class="sig">
+            Alıcı Yetkili İmza<br/>
+            <b>${profileName || "Müşteri"}</b>
+          </div>
+          <div class="sig">
+            Satıcı Yetkili İmza<br/>
+            <b>${activeProduct.storeName} Temsilcisi</b>
+          </div>
+        </div>
+
+        <div class="footer">
+          HBS Sınır Ötesi Güvenli Ticaret Altyapısı © 2026. Tüm hakları saklıdır.
+        </div>
+      </body>
+      </html>
+    `;
+    const blob = new Blob([htmlInvoice], { type: "text/html;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `hbs_proforma_${lockedOfferCode}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   function addToCart() {
     checkProfileAndExecute(() => {
-      setMessage(`${txt(activeProduct.name, language)} ${t.product.addedToCart}`);
+      setIsNegotiationOpen(true);
+      const initialPrice = activeProduct.priceValue || 3500;
+      setNegotiatedPrice(initialPrice);
+      setChatMessages([
+        {
+          sender: "rep",
+          text: `Merhaba! Ben ${activeProduct.storeName} Satış Temsilcisiyim. "${txt(activeProduct.name, language)}" ürünümüz için canlı B2B pazarlık odamıza hoş geldiniz. HBS platformu üzerinden teklifinizi doğrudan müzakere edebilir ve anlaşmayı resmi proforma fatura ile anında kilitleyebiliriz. Sürgüyü kullanarak teklifinizi belirleyin!`,
+          time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+        }
+      ]);
     });
   }
   
   function askQuestion() {
     checkProfileAndExecute(() => {
-      setMessage(`${txt(activeProduct.name, language)} ${t.product.questionDemo}`);
+      setIsNegotiationOpen(true);
+      const initialPrice = activeProduct.priceValue || 3500;
+      setNegotiatedPrice(initialPrice);
+      setChatMessages([
+        {
+          sender: "rep",
+          text: `Merhaba! Cihaz özellikleri, sınır ötesi lojistik veya gümrük süreçleri hakkında sormak istediğiniz soruları yanıtlamaya hazırım. Eğer fiyatta anlaşmak isterseniz teklif sürgüsünü kullanarak bir teklif de iletebilirsiniz.`,
+          time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+        }
+      ]);
     });
   }
   
   function requestOffer() {
     checkProfileAndExecute(() => {
-      setMessage(`${txt(activeProduct.name, language)} ${t.product.offerDemo}`);
+      setIsNegotiationOpen(true);
+      const initialPrice = activeProduct.priceValue || 3500;
+      setNegotiatedPrice(initialPrice);
+      setChatMessages([
+        {
+          sender: "rep",
+          text: `Değerli iş ortağımız, toplu alım veya özel döviz korumalı teklif talebiniz için pazarlık odamız aktif edildi! Fiyat sürgüsünü ayarlayarak teklif sunabilir ve anlaşmayı onayladığınızda dijital proforma belgenizi anında indirebilirsiniz.`,
+          time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
+        }
+      ]);
     });
   }
 
@@ -793,18 +1122,82 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-blue-200 bg-blue-50 p-3 sm:rounded-3xl sm:p-4">
-              <h2 className="text-lg font-black text-blue-800 sm:text-xl">{txt(activeProduct.priceText, language)}</h2>
-              <div className="mt-4 grid gap-2 text-sm leading-6 text-blue-800/90 sm:mt-5 sm:gap-3">
-                <p><span className="font-bold text-slate-950">{t.common.store}:</span> {activeProduct.storeName}</p>
-                <p><span className="font-bold text-slate-950">{t.common.brand}:</span> {activeProduct.brand}</p>
-                <p><span className="font-bold text-slate-950">{t.common.model}:</span> {txt(activeProduct.model, language)}</p>
-                <p><span className="font-bold text-slate-950">{t.common.city}:</span> {activeProduct.city}</p>
+            <div className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-blue-50/50 to-indigo-50/80 p-3 sm:rounded-3xl sm:p-4 shadow-sm relative overflow-hidden">
+              {/* Premium Kur Kalkanı Shield in Background */}
+              <div className="absolute -right-4 -bottom-4 text-blue-500/5 select-none pointer-events-none text-9xl">🛡️</div>
+
+              {/* Dynamic Currency Price Container */}
+              <div className="space-y-1.5 relative z-10">
+                {convertedPricing ? (
+                  <>
+                    <span className="text-[10px] font-black text-blue-700 bg-blue-100/70 border border-blue-200/50 px-2 py-0.5 rounded-md uppercase tracking-wider inline-flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+                      {language === "tr" ? "🛡️ HBS Kur Korumalı Fiyat" : "🛡️ HBS Exchange Hedged"}
+                    </span>
+                    <h2 className="text-2xl font-black text-blue-900 tracking-tight">
+                      {parseFloat(convertedPricing.finalPrice).toLocaleString(language === "tr" ? "tr-TR" : "en-US", {minimumFractionDigits: 2})} {convertedPricing.targetCurrency}
+                    </h2>
+                    
+                    {convertedPricing.baseCurrency !== convertedPricing.targetCurrency && (
+                      <p className="text-[10px] text-slate-500 font-semibold">
+                        {language === "tr" 
+                          ? `Orijinal Taban Fiyat: ${convertedPricing.basePrice} ${convertedPricing.baseCurrency}` 
+                          : `Original Base Price: ${convertedPricing.basePrice} ${convertedPricing.baseCurrency}`}
+                      </p>
+                    )}
+
+                    {/* Breakdown Tooltip/Panel for absolute transparency */}
+                    <div className="mt-2.5 rounded-xl bg-white/70 border border-blue-100 p-2 text-[10px] leading-relaxed text-slate-600 font-bold space-y-1">
+                      <p className="flex justify-between">
+                        <span>{language === "tr" ? "Ham Çevrim:" : "Raw Rate:"}</span>
+                        <span className="text-slate-900">{parseFloat(convertedPricing.rawConverted).toFixed(2)} {convertedPricing.targetCurrency}</span>
+                      </p>
+                      {convertedPricing.isHedgingEnabled && (
+                        <p className="flex justify-between text-indigo-700">
+                          <span>{language === "tr" ? `Döviz Koruma Kalkanı (+%${convertedPricing.bufferPercent}):` : `Exchange Hedging (+${convertedPricing.bufferPercent}%):`}</span>
+                          <span className="font-extrabold">+{parseFloat(convertedPricing.hedgeFee).toFixed(2)} {convertedPricing.targetCurrency}</span>
+                        </p>
+                      )}
+                      <p className="border-t border-slate-100 pt-1 text-[9px] text-slate-400 font-semibold italic">
+                        {language === "tr" 
+                          ? "* Sınır ötesi kur riskine karşı 24 saat boyunca HBS garantisiyle kilitlenmiştir."
+                          : "* Locked with HBS cross-border exchange rate protection guarantee for 24h."}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <h2 className="text-lg font-black text-blue-800 sm:text-xl">{txt(activeProduct.priceText, language)}</h2>
+                )}
               </div>
-              <div className="mt-5 grid gap-2 sm:mt-6 sm:gap-3">
-                <button type="button" onClick={addToCart} className="rounded-lg bg-slate-950 px-3 py-2 text-xs font-black text-white hover:bg-slate-200 sm:rounded-2xl sm:px-6 sm:py-4">{t.common.addToCart}</button>
-                <button type="button" onClick={requestOffer} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-black hover:bg-slate-100 sm:rounded-2xl sm:px-6 sm:py-4">{t.common.requestOffer}</button>
-                <button type="button" onClick={askQuestion} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-black hover:bg-slate-100 sm:rounded-2xl sm:px-6 sm:py-4">{t.common.askStore}</button>
+
+              <div className="mt-4 grid gap-2 text-xs leading-5 text-slate-700 sm:mt-5 sm:gap-2.5 relative z-10 font-bold">
+                <p><span className="text-slate-400 font-black uppercase text-[9px] tracking-wider block">{t.common.store}</span> {activeProduct.storeName}</p>
+                <p><span className="text-slate-400 font-black uppercase text-[9px] tracking-wider block">{t.common.brand}</span> {activeProduct.brand} / {txt(activeProduct.model, language)}</p>
+                <p><span className="text-slate-400 font-black uppercase text-[9px] tracking-wider block">{t.common.city}</span> 📍 {activeProduct.city}, {activeProduct.country}</p>
+              </div>
+
+              <div className="mt-5 grid gap-2 sm:mt-6 sm:gap-2.5 relative z-10">
+                <button 
+                  type="button" 
+                  onClick={addToCart} 
+                  className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 py-3 text-xs font-black text-white shadow-md active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  🤝 {language === "tr" ? "Canlı B2B Pazarlık Odası" : "B2B Live Negotiation"}
+                </button>
+                <button 
+                  type="button" 
+                  onClick={requestOffer} 
+                  className="w-full rounded-xl border border-slate-200 bg-white hover:bg-slate-50 py-3 text-xs font-black text-slate-800 active:scale-[0.98] transition flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  🔒 {language === "tr" ? "Özel Teklif İste & Kilitle" : "Request Custom Quote"}
+                </button>
+                <button 
+                  type="button" 
+                  onClick={askQuestion} 
+                  className="w-full rounded-xl border border-slate-200 bg-white hover:bg-slate-50 py-3 text-xs font-black text-slate-800 active:scale-[0.98] transition flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  💬 {language === "tr" ? "Temsilciye Soru Sor" : "Ask Representative"}
+                </button>
               </div>
 
               {(storePhoneVal || storeWhatsappVal) && (
@@ -1021,6 +1414,162 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               alt={txt(activeProduct.name, language)} 
               className="max-w-full max-h-[88vh] object-contain rounded-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.5)] border border-white/10 cursor-default"
             />
+          </div>
+        </div>
+      )}
+
+      {/* B2B Live Negotiation Sandbox Drawer */}
+      {isNegotiationOpen && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-end bg-slate-950/60 p-0 backdrop-blur-sm animate-fadeIn">
+          {/* Backdrop click close */}
+          <div className="absolute inset-0" onClick={() => setIsNegotiationOpen(false)} />
+
+          {/* Drawer Container (Right Slideover) */}
+          <div className="relative w-full max-w-md bg-[#0d1627] text-slate-100 shadow-2xl h-full flex flex-col animate-slideLeft border-l border-slate-800 z-10">
+            
+            {/* Header contact card */}
+            <div className="p-4 bg-[#141f36] border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-lg shadow-inner">
+                  👨‍💼
+                </div>
+                <div>
+                  <h3 className="text-xs font-black text-slate-100 flex items-center gap-1.5">
+                    Altan Cancı
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" />
+                  </h3>
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{activeProduct.storeName} Satış Temsilcisi</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <span className="text-[8px] font-black bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded uppercase">
+                  B2B Canlı
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsNegotiationOpen(false)}
+                  className="text-slate-400 hover:text-white font-bold p-1 hover:scale-105 active:scale-95 transition"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Chat Messages Log */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0a0f1d] scrollbar-thin">
+              {chatMessages.map((msg, idx) => {
+                const isRep = msg.sender === "rep";
+                return (
+                  <div key={idx} className={`flex ${isRep ? "justify-start" : "justify-end"} animate-fadeIn`}>
+                    <div className={`max-w-[85%] rounded-2xl p-3 text-xs leading-relaxed space-y-1 shadow ${isRep ? "bg-[#142038] text-slate-200 rounded-tl-none border border-slate-800" : "bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-tr-none"}`}>
+                      <p className="font-medium whitespace-pre-line">{msg.text}</p>
+                      <span className="text-[8px] text-slate-400 font-semibold block text-right select-none">{msg.time}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom Panel controls */}
+            <div className="p-4 bg-[#141f36] border-t border-slate-800 space-y-4">
+              {!isDealLocked ? (
+                <>
+                  {/* Fiyat Sürgüsü Slider */}
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                      <span>Müzakere Edilen Teklif</span>
+                      <span className="text-orange-400 font-extrabold text-xs">
+                        {negotiatedPrice.toLocaleString()} {activeProduct.currency || "GEL"}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min={Math.round((activeProduct.priceValue || 3500) * 0.80)}
+                        max={Math.round((activeProduct.priceValue || 3500) * 1.05)}
+                        step={10}
+                        value={negotiatedPrice}
+                        onChange={(e) => setNegotiatedPrice(parseInt(e.target.value))}
+                        className="flex-1 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSuggestPrice}
+                        className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white font-black text-[10px] rounded-lg shadow transition-all duration-150 active:scale-95 shrink-0"
+                      >
+                        Teklifi Sun ⚡
+                      </button>
+                    </div>
+                    
+                    <div className="flex justify-between text-[8px] text-slate-500 font-bold select-none">
+                      <span>Min: {Math.round((activeProduct.priceValue || 3500) * 0.80).toLocaleString()} {activeProduct.currency || "GEL"} (-20%)</span>
+                      <span>Maks: {Math.round((activeProduct.priceValue || 3500) * 1.05).toLocaleString()} {activeProduct.currency || "GEL"} (+5%)</span>
+                    </div>
+                  </div>
+
+                  {/* Lock deal trigger button */}
+                  <div className="pt-2 border-t border-slate-800/60 flex flex-col gap-2">
+                    <button
+                      type="button"
+                      onClick={handleLockDeal}
+                      className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs rounded-xl shadow-lg shadow-emerald-700/20 tracking-wider uppercase active:scale-[0.98] transition border border-emerald-500/20 flex items-center justify-center gap-1.5"
+                    >
+                      🤝 Teklifi Kabul Et & Kilitle 🔒
+                    </button>
+                    <p className="text-[8px] text-slate-500 text-center font-semibold">
+                      Teklifi kilitlediğinizde HBS platformunda resmi B2B anlaşması tescil edilir ve stok rezerve edilir.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                /* Locked deal screen */
+                <div className="bg-[#122822] border border-emerald-500/30 rounded-2xl p-3.5 text-center space-y-3 shadow-inner animate-fadeIn relative overflow-hidden">
+                  
+                  {/* Subtle success sparkles in background */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent pointer-events-none" />
+                  
+                  <div className="space-y-1 relative z-10">
+                    <span className="text-[9px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full tracking-widest uppercase block w-max mx-auto">
+                      🎉 B2B ANLAŞMA KİLİTLENDİ
+                    </span>
+                    <h4 className="text-xs font-black text-emerald-400 mt-2">
+                      Teklif Resmiyet Kazandı!
+                    </h4>
+                    <p className="text-[10px] text-slate-300 font-bold leading-normal">
+                      Anlaşma Referans Kodu: <strong className="text-white font-extrabold">{lockedOfferCode}</strong><br/>
+                      Final Fiyat: <strong className="text-white font-extrabold">{negotiatedPrice.toLocaleString()} {activeProduct.currency || "GEL"}</strong>
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-emerald-800/40 flex flex-col gap-2 relative z-10">
+                    <button
+                      type="button"
+                      onClick={handleDownloadProforma}
+                      className="w-full py-3 bg-[#1e4e3b] hover:bg-[#256348] text-white font-black text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5 border border-emerald-600/30 cursor-pointer active:scale-95"
+                    >
+                      📄 Resmi Proforma Faturayı İndir
+                    </button>
+                    <p className="text-[8px] text-emerald-400/70 font-semibold leading-relaxed">
+                      Proforma fatura sınır ötesi gümrük ve HBS döviz koruması mühürlerini içermektedir.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Slideover Animation style helper */}
+            <style>{`
+              @keyframes slideLeft {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+              }
+              .animate-slideLeft {
+                animation: slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+              }
+            `}</style>
+
           </div>
         </div>
       )}

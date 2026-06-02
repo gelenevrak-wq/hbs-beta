@@ -495,6 +495,8 @@ export default function RequestsBoardPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
+  const [storeProducts, setStoreProducts] = useState<any[]>([]);
+
   const t = pageTranslations[language] || pageTranslations.tr;
 
   const l = (val: string): string => {
@@ -545,7 +547,108 @@ export default function RequestsBoardPage() {
       window.localStorage.setItem("hbs-tender-bids", JSON.stringify(initialBids));
       setBids(initialBids);
     }
+
+    // Load or seed store products for AI matching
+    const savedProducts = window.localStorage.getItem("hbs-store-products");
+    if (savedProducts) {
+      try {
+        setStoreProducts(JSON.parse(savedProducts));
+      } catch (e) {
+        console.error(e);
+      }
+    } else {
+      const demoProducts = [
+        {
+          id: "prod-siva",
+          name: "Süper Elastik Kaba Dış Cephe Sıvası (Cem IV)",
+          category: "İnşaat / Hizmet",
+          brand: "Batum Çimento A.Ş.",
+          model: "Cem-IV 50KG",
+          description: "Dış cephe sıvaları için geliştirilmiş, yüksek elastikiyet ve çatlama direnci sunan premium çimento bazlı sıva harcı.",
+          salePrice: "18.50",
+          purchasePrice: "12.00",
+          currency: "GEL",
+          barcode: "8691234567890",
+          qrCode: "QR-SIVA-CEM4",
+          sku: "SIVA-30K-PREM",
+          quantity: "850",
+          warehouse: "Batum Merkez Depo",
+          shelf: "Raf: A-04",
+          pricingMode: "fixed",
+          visibility: "visible"
+        },
+        {
+          id: "prod-photo",
+          name: "Katalog & Sosyal Medya Tanıtım Filmi Paketi",
+          category: "Fotoğrafçılık / Hizmet",
+          brand: "HBS Creative Studio",
+          model: "Pro 60s",
+          description: "60 saniyelik kurgulanmış reklam tanıtım filmi, drone çekimi ve stüdyo ürün fotoğraf paket hizmeti.",
+          salePrice: "3200.00",
+          purchasePrice: "1500.00",
+          currency: "GEL",
+          barcode: "8699876543210",
+          qrCode: "QR-PRO-PHOTO",
+          sku: "FOTO-REK-60S",
+          quantity: "12",
+          warehouse: "Hizmet Departmanı",
+          shelf: "Dijital Depo",
+          pricingMode: "fixed",
+          visibility: "visible"
+        }
+      ];
+      window.localStorage.setItem("hbs-store-products", JSON.stringify(demoProducts));
+      setStoreProducts(demoProducts);
+    }
   }, []);
+
+  // AI RFQ Matching Logic
+  const findSmartMatch = (tender: Tender) => {
+    if (!isStoreOwner || storeProducts.length === 0) return null;
+    return storeProducts.find(product => {
+      const tCat = (tender.category || "").toLowerCase();
+      const pCat = (product.category || "").toLowerCase();
+      const tTitle = (tender.title || "").toLowerCase();
+      const tDesc = (tender.description || "").toLowerCase();
+      const pName = (product.name || "").toLowerCase();
+      const pBrand = (product.brand || "").toLowerCase();
+      const pSku = (product.sku || "").toLowerCase();
+
+      // Check category match
+      if (tCat === pCat) return true;
+      
+      // Fuzzy keywords
+      if (tTitle.includes("sıva") && pName.includes("sıva")) return true;
+      if (tTitle.includes("fotoğraf") && pName.includes("fotoğraf")) return true;
+      if (tTitle.includes("reklam") && pName.includes("tanıtım")) return true;
+      if (tTitle.includes(pSku) || tDesc.includes(pSku)) return true;
+
+      return false;
+    });
+  };
+
+  const handleOneClickBid = (tenderId: string, matchedProduct: any, price: string) => {
+    const suggestedMessage = `[HBS AI Akıllı Eşleşme ⚡] Talebinizle %100 uyumlu "${matchedProduct.name}" (${matchedProduct.brand} ${matchedProduct.model}) ürünümüz/hizmetimiz için kapalı teklifimizi sunuyoruz. Raf konumumuzda (${matchedProduct.warehouse} - ${matchedProduct.shelf || "A-01"}) yeterli miktarda stok bulunmaktadır. En kısa sürede teslim etmeye hazırız.`;
+    
+    const newBidObj: Bid = {
+      id: `bid-${Date.now()}`,
+      tenderId,
+      storeName: currentStore?.name || "OBDTR Diagnostics",
+      storeSlug: currentStore?.code || "obdtr",
+      amount: price,
+      duration: matchedProduct.category.includes("Hizmet") ? "10 Gün" : "2 Gün",
+      message: suggestedMessage,
+      date: new Date().toLocaleDateString("tr-TR") + " " + new Date().toLocaleTimeString("tr-TR", {hour: "2-digit", minute: "2-digit"})
+    };
+
+    const updatedBids = [newBidObj, ...bids];
+    window.localStorage.setItem("hbs-tender-bids", JSON.stringify(updatedBids));
+    setBids(updatedBids);
+    alert(language === "tr" 
+      ? `Tebrikler! "${matchedProduct.name}" için ${price} tutarındaki akıllı kapalı teklifiniz başarıyla iletildi!` 
+      : `Success! Your smart sealed bid of ${price} for "${matchedProduct.name}" was successfully submitted!`
+    );
+  };
 
   function handleCreateTender(e: React.FormEvent) {
     e.preventDefault();
@@ -704,6 +807,69 @@ export default function RequestsBoardPage() {
                         <span className="mt-0.5 block text-indigo-700 font-black">{tenderBidsCount} {t.offersCount}</span>
                       </div>
                     </div>
+
+                    {/* AI Smart Match Card */}
+                    {(() => {
+                      const match = findSmartMatch(tender);
+                      if (!match) return null;
+
+                      // Calculate suggested bid price
+                      let suggestedPrice = "";
+                      if (tender.budget.includes("GEL")) {
+                        const numBudget = parseFloat(tender.budget.replace(/[^0-9.]/g, ""));
+                        if (!isNaN(numBudget)) {
+                          suggestedPrice = `${Math.round(numBudget * 0.92).toLocaleString("tr-TR")} GEL`;
+                        }
+                      }
+                      if (!suggestedPrice && match.salePrice) {
+                        suggestedPrice = `${match.salePrice} ${match.currency || "GEL"}`;
+                      }
+                      if (!suggestedPrice) {
+                        suggestedPrice = "Anlaşmaya Bağlı";
+                      }
+
+                      return (
+                        <div className="rounded-2xl border border-emerald-300 bg-gradient-to-r from-emerald-500/10 via-emerald-500/[0.03] to-teal-500/10 p-4 space-y-3 relative overflow-hidden shadow-sm animate-fadeIn">
+                          <div className="absolute right-2 top-2 text-xs font-black text-emerald-600 bg-emerald-100/80 px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 border border-emerald-200">
+                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping" />
+                            HBS Smart AI
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <h4 className="text-xs font-black text-emerald-800 flex items-center gap-1.5">
+                              <span>💡</span> {language === "tr" ? "Akıllı RFQ Eşleşmesi Tespit Edildi!" : "Smart RFQ Match Detected!"}
+                            </h4>
+                            <p className="text-[11px] font-semibold text-slate-700 leading-normal">
+                              {language === "tr" ? (
+                                <>
+                                  Stoğunuzdaki <strong className="text-emerald-800 font-black">{match.name}</strong> ({match.sku}) ürünü/hizmeti bu taleple eşleşiyor! Depoda <strong className="text-emerald-800 font-black">{match.quantity}</strong> adet stok hazır.
+                                </>
+                              ) : (
+                                <>
+                                  The product/service <strong className="text-emerald-800 font-black">{match.name}</strong> ({match.sku}) in your inventory matches this request! You have <strong className="text-emerald-800 font-black">{match.quantity}</strong> units in stock.
+                                </>
+                              )}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between gap-3 bg-white/70 backdrop-blur-sm p-2.5 rounded-xl border border-emerald-100">
+                            <div>
+                              <span className="text-[9px] font-black text-slate-400 block uppercase tracking-wider">
+                                {language === "tr" ? "HBS Önerilen Teklif" : "Suggested Bid"}
+                              </span>
+                              <span className="text-xs font-black text-emerald-700">{suggestedPrice}</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleOneClickBid(tender.id, match, suggestedPrice)}
+                              className="px-3.5 py-1.5 text-[11px] font-black text-white bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-sm transition-all duration-200 active:scale-[0.97]"
+                            >
+                              ⚡ {language === "tr" ? "Tek Tıkla Kapalı Teklif Ver" : "One-Click Bid"}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Sealed Confidential Bids (Visible only to the Tender Owner) */}
                     {isOwner && (
