@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: "HBS | Hybrid Business System",
   description:
     "Cloud-based multi-store, multi-customer stock, warehouse, order and storefront platform.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
