@@ -30,6 +30,7 @@ const texts = {
     step4: "Depo haritasını hazırla",
     step5: "İlk ürün veya hizmeti ekle",
     step6: "Müşteri portalı görünürlüğünü ayarla",
+    stepCalendar: "Hizmet/kiralama/tur çalışıyorsanız takvim ve kapasiteyi ayarla",
     statusWaiting: "Bekliyor",
     statusCompleted: "TAMAMLANDI",
     actionStart: "Başla",
@@ -94,6 +95,7 @@ const texts = {
     step4: "Prepare the warehouse map",
     step5: "Add the first product or service",
     step6: "Set customer portal visibility",
+    stepCalendar: "If you work with service/rental/tours, set up calendar & capacity",
     statusWaiting: "Waiting",
     statusCompleted: "COMPLETED",
     actionStart: "Start",
@@ -158,6 +160,7 @@ const texts = {
     step4: "Подготовить карту склада",
     step5: "Добавить первый товар или услугу",
     step6: "Настроить видимость в клиентском портале",
+    stepCalendar: "Если вы работаете с услугами/арендой/турами, настройте календарь и вместимость",
     statusWaiting: "Ожидает",
     statusCompleted: "ЗАВЕРШЕНО",
     actionStart: "Начать",
@@ -222,6 +225,7 @@ const texts = {
     step4: "საწყობის რუკის მომზადება",
     step5: "პირველი პროდუქტის ან სერვისის დამატება",
     step6: "კლიენტის პორტალის ხილვადობის დაყენება",
+    stepCalendar: "თუ მუშაობთ სერვისებთან/იჯარასთან/ტურებთან, დააყენეთ კალენდარი და ტევადობა",
     statusWaiting: "ელოდება",
     statusCompleted: "დასრულებული",
     actionStart: "დაწყება",
@@ -237,9 +241,9 @@ const texts = {
     moduleProducts: "პროდუქტის / სერვისის მართვა",
     moduleProductsDesc:
       "მართეთ პროდუქტი, შტრიხკოდი, SKU, OEM კოდი, ფასი, მარაგი და ვიტრინის ხილვადობა.",
-    moduleServices: "Hizmet / Randevu / Tur Yönetimi",
+    moduleServices: "სერვისების / შეხვედრების / ტურების მართვა",
     moduleServicesDesc:
-      "Hizmet süresi, personel, kapasite, boş zaman dilimleri, tur kontenjanı, kiralama süresi ve rezervasyon fiyatlarını yönetin.",
+      "მართეთ მომსახურების ხანგრძლივობა, პერსონალი, ტევადობა, თავისუფალი სლოტები, ტურის ადგილები, ქირავნობის პერიოდი და ჯავშნის ფასები.",
     moduleWarehouse: "საწყობი და მარაგი",
     moduleWarehouseDesc:
       "მართეთ მარაგის მიღება/გასვლა, საწყობი, თარო, გადატანა, დანაკარგი, დაბრუნება და კორექცია.",
@@ -286,6 +290,7 @@ const texts = {
     step4: "Lagerplan vorbereiten",
     step5: "Erstes Produkt oder Service hinzufügen",
     step6: "Sichtbarkeit im Kundenportal einstellen",
+    stepCalendar: "Wenn Sie mit Dienstleistungen/Vermietung/Touren arbeiten, richten Sie Kalender & Kapazität ein",
     statusWaiting: "Wartet",
     statusCompleted: "ABGESCHLOSSEN",
     actionStart: "Starten",
@@ -301,9 +306,9 @@ const texts = {
     moduleProducts: "Produkt- / Serviceverwaltung",
     moduleProductsDesc:
       "Verwalten Sie Produkte, Barcode, SKU, OEM-Code, Preise, Bestand und Sichtbarkeit.",
-    moduleServices: "Hizmet / Randevu / Tur Yönetimi",
+    moduleServices: "Service- / Termin- / Tourverwaltung",
     moduleServicesDesc:
-      "Hizmet süresi, personel, kapasite, boş zaman dilimleri, tur kontenjanı, kiralama süresi ve rezervasyon fiyatlarını yönetin.",
+      "Verwalten Sie Servicezeiträume, Mitarbeiter, Kapazitäten, freie Zeiten, Tourplätze, Mietdauer und Buchungspreise.",
     moduleWarehouse: "Lager- und Bestandsverwaltung",
     moduleWarehouseDesc:
       "Verwalten Sie Wareneingang/-ausgang, Lager, Regal, Transfer, Ausschuss, Rückgabe und Korrekturen.",
@@ -583,7 +588,7 @@ export default function DashboardPage() {
       href: "/dashboard/products",
     },
     {
-      label: "Hizmet/kiralama/tur çalışıyorsanız takvim ve kapasiteyi ayarla",
+      label: currentText.stepCalendar,
       completed: isCalendarDone,
       href: "/dashboard/services",
     },

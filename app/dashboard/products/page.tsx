@@ -224,6 +224,7 @@ export default function ProductsPage() {
   const [message, setMessage] = useState("");
   const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
   // Gallery and Media Integration
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
@@ -1076,6 +1077,63 @@ export default function ProductsPage() {
       resetForm();
     }
   }
+
+  const toggleSelectProduct = (id: string) => {
+    setSelectedProductIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAllProducts = () => {
+    const allFilteredIds = filteredProducts.map((p) => p.id);
+    const allSelected = allFilteredIds.every((id) => selectedProductIds.includes(id));
+    if (allSelected) {
+      setSelectedProductIds((prev) => prev.filter((id) => !allFilteredIds.includes(id)));
+    } else {
+      setSelectedProductIds((prev) => {
+        const union = new Set([...prev, ...allFilteredIds]);
+        return Array.from(union);
+      });
+    }
+  };
+
+  const deleteSelectedProducts = async () => {
+    const count = selectedProductIds.length;
+    if (count === 0) return;
+    if (!window.confirm(language === "en" 
+      ? `Are you sure you want to delete the ${count} selected products?` 
+      : `Seçilen ${count} ürünü silmek istediğinize emin misiniz?`
+    )) {
+      return;
+    }
+
+    const productsToDelete = products.filter((p) => selectedProductIds.includes(p.id));
+    
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
+      try {
+        for (const p of productsToDelete) {
+          await supabase
+            .from("offerable_items")
+            .delete()
+            .or(`code.eq.${p.sku},name.eq.${p.name}`);
+        }
+      } catch (err) {
+        console.error("Supabase bulk delete error:", err);
+      }
+    }
+
+    const remainingProducts = products.filter((p) => !selectedProductIds.includes(p.id));
+    setProducts(remainingProducts);
+    setSelectedProductIds([]);
+    setMessage(language === "en" 
+      ? `Successfully deleted ${count} products.` 
+      : `${count} adet ürün başarıyla silindi.`
+    );
+  };
 
   async function duplicateProduct(p: ProductRecord) {
     const isSupabaseConfigured = 
@@ -2154,7 +2212,32 @@ export default function ProductsPage() {
           {/* Product list preview */}
           <aside className="space-y-3">
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h2 className="text-lg font-black">Mevcut Ürünler ({filteredProducts.length})</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-2.5">
+                <h2 className="text-lg font-black">{language === "en" ? "Available Products" : "Mevcut Ürünler"} ({filteredProducts.length})</h2>
+                {filteredProducts.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-1.5 text-xs font-black text-slate-700 cursor-pointer select-none bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:bg-slate-100">
+                      <input
+                        type="checkbox"
+                        checked={filteredProducts.map(p => p.id).every(id => selectedProductIds.includes(id))}
+                        onChange={toggleSelectAllProducts}
+                        className="h-3.5 w-3.5 rounded border-slate-350 text-blue-650 cursor-pointer"
+                      />
+                      {language === "en" ? "Select All" : "Tümünü Seç"}
+                    </label>
+                    {selectedProductIds.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={deleteSelectedProducts}
+                        className="rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs px-3 py-1.5 shadow transition active:scale-95 flex items-center gap-1"
+                      >
+                        🗑️ {language === "en" ? `Delete Selected (${selectedProductIds.length})` : `Seçilenleri Sil (${selectedProductIds.length})`}
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -2164,10 +2247,18 @@ export default function ProductsPage() {
 
               <div className="mt-4 space-y-3 max-h-[600px] overflow-y-auto pr-1">
                 {filteredProducts.map((p) => (
-                  <article key={p.id} className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-xs space-y-2">
+                  <article key={p.id} className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-xs space-y-2 relative group hover:border-slate-250 transition">
                     <div className="flex justify-between items-start gap-2">
-                      <h3 className="font-black text-slate-800">{p.name}</h3>
-                      <span className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold ${p.pricingMode === "fixed" ? "bg-emerald-100 text-emerald-800 border border-emerald-200" : p.pricingMode === "quote" ? "bg-amber-100 text-amber-800 border border-amber-200" : "bg-purple-100 text-purple-800 border border-purple-200"}`}>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <input
+                          type="checkbox"
+                          checked={selectedProductIds.includes(p.id)}
+                          onChange={() => toggleSelectProduct(p.id)}
+                          className="h-4 w-4 rounded border-slate-350 text-blue-650 cursor-pointer shrink-0"
+                        />
+                        <h3 className="font-black text-slate-800 truncate">{p.name}</h3>
+                      </div>
+                      <span className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold shrink-0 ${p.pricingMode === "fixed" ? "bg-emerald-100 text-emerald-800 border border-emerald-200" : p.pricingMode === "quote" ? "bg-amber-100 text-amber-800 border border-amber-200" : "bg-purple-100 text-purple-800 border border-purple-200"}`}>
                         {p.pricingMode === "fixed" ? "Fiyat Göster" : p.pricingMode === "quote" ? "Teklif Alın" : "Teklif Verin"}
                       </span>
                     </div>
