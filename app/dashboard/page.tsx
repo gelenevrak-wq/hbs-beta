@@ -31,7 +31,9 @@ const texts = {
     step5: "İlk ürün veya hizmeti ekle",
     step6: "Müşteri portalı görünürlüğünü ayarla",
     statusWaiting: "Bekliyor",
+    statusCompleted: "TAMAMLANDI",
     actionStart: "Başla",
+    actionEdit: "Düzenle",
     modulesTitle: "Mağaza Modülleri",
     tagNew: "Yeni",
     tagNext: "Sıradaki",
@@ -93,7 +95,9 @@ const texts = {
     step5: "Add the first product or service",
     step6: "Set customer portal visibility",
     statusWaiting: "Waiting",
+    statusCompleted: "COMPLETED",
     actionStart: "Start",
+    actionEdit: "Edit",
     modulesTitle: "Store Modules",
     tagNew: "New",
     tagNext: "Next",
@@ -155,7 +159,9 @@ const texts = {
     step5: "Добавить первый товар или услугу",
     step6: "Настроить видимость в клиентском портале",
     statusWaiting: "Ожидает",
+    statusCompleted: "ЗАВЕРШЕНО",
     actionStart: "Начать",
+    actionEdit: "Редактировать",
     modulesTitle: "Модули магазина",
     tagNew: "Новое",
     tagNext: "Следующее",
@@ -217,7 +223,9 @@ const texts = {
     step5: "პირველი პროდუქტის ან სერვისის დამატება",
     step6: "კლიენტის პორტალის ხილვადობის დაყენება",
     statusWaiting: "ელოდება",
+    statusCompleted: "დასრულებული",
     actionStart: "დაწყება",
+    actionEdit: "რედაქტირება",
     modulesTitle: "მაღაზიის მოდულები",
     tagNew: "ახალი",
     tagNext: "შემდეგი",
@@ -279,7 +287,9 @@ const texts = {
     step5: "Erstes Produkt oder Service hinzufügen",
     step6: "Sichtbarkeit im Kundenportal einstellen",
     statusWaiting: "Wartet",
+    statusCompleted: "ABGESCHLOSSEN",
     actionStart: "Starten",
+    actionEdit: "Bearbeiten",
     modulesTitle: "Shop-Module",
     tagNew: "Neu",
     tagNext: "Nächster Schritt",
@@ -667,7 +677,7 @@ export default function DashboardPage() {
   ];
 
   const adminLinks = [
-    ["Ana marketplace", "/"], ["OBDTR vitrini", "/store/obdtr"], ["Yıldız Hırdavat", "/store/yildiz-hirdavat"], ["Ürün yönetimi", "/dashboard/products"], ["Hizmet/Randevu", "/dashboard/services"], ["Stok hareketleri", "/dashboard/stock-movements"], ["Siparişler", "/dashboard/orders"], ["Müşteriler", "/dashboard/customers"], ["Mağaza kullanıcıları", "/dashboard/users"], ["Raporlar", "/dashboard/reports"], ["Mesajlar", "/dashboard/messages"], ["Ayarlar", "/dashboard/settings"],
+    ["★ Süper Yönetici Paneli", "/dashboard/admin"], ["Ana marketplace", "/"], ["OBDTR vitrini", "/store/obdtr"], ["Yıldız Hırdavat", "/store/yildiz-hirdavat"], ["Ürün yönetimi", "/dashboard/products"], ["Hizmet/Randevu", "/dashboard/services"], ["Stok hareketleri", "/dashboard/stock-movements"], ["Siparişler", "/dashboard/orders"], ["Müşteriler", "/dashboard/customers"], ["Mağaza kullanıcıları", "/dashboard/users"], ["Raporlar", "/dashboard/reports"], ["Mesajlar", "/dashboard/messages"], ["Ayarlar", "/dashboard/settings"],
   ];
 
   return (
@@ -790,7 +800,7 @@ export default function DashboardPage() {
                       }`}>{step.label}</div>
                       <div className="mt-1 text-[10px] font-black uppercase tracking-wider">
                         {step.completed ? (
-                          <span className="text-emerald-700">✓ Tamamlandı</span>
+                          <span className="text-emerald-700">✓ {currentText.statusCompleted}</span>
                         ) : (
                           <span className="text-amber-600">⏳ {currentText.statusWaiting}</span>
                         )}
@@ -806,7 +816,7 @@ export default function DashboardPage() {
                         : "bg-slate-900 text-white hover:bg-slate-800 shadow-md shadow-slate-950/15"
                     }`}
                   >
-                    {step.completed ? "Düzenle" : currentText.actionStart}
+                    {step.completed ? currentText.actionEdit : currentText.actionStart}
                   </Link>
                 </div>
               ))}

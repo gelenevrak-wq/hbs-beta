@@ -52,6 +52,8 @@ type ProductRecord = {
   videoUrl: string;
   variants?: ProductVariant[];
   galleryUrls?: string[];
+  trackExpirationDate?: boolean;
+  expirationDate?: string;
 };
 
 const INITIAL_PRODUCTS: ProductRecord[] = [];
@@ -208,6 +210,8 @@ export default function ProductsPage() {
   const [shelf, setShelf] = useState("");
   const [entryDate, setEntryDate] = useState("");
   const [exitDate, setExitDate] = useState("");
+  const [trackExpirationDate, setTrackExpirationDate] = useState(false);
+  const [expirationDate, setExpirationDate] = useState("");
   const [pricingMode, setPricingMode] = useState<PricingMode>("fixed");
   const [visibility, setVisibility] = useState<Visibility>("visible");
   const [imageUrl, setImageUrl] = useState("");
@@ -245,10 +249,32 @@ export default function ProductsPage() {
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
   const [terminalScannedProduct, setTerminalScannedProduct] = useState<ProductRecord | null>(null);
   const [terminalMessage, setTerminalMessage] = useState("");
+  const [terminalScannedShelf, setTerminalScannedShelf] = useState<string | null>(null);
+  const [terminalInputVal, setTerminalInputVal] = useState("");
 
   // Refs
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const zxingReaderRef = useRef<any>(null);
+
+  const loadZXing = () => {
+    return new Promise((resolve) => {
+      if ((window as any).ZXing) {
+        resolve((window as any).ZXing);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+      script.async = true;
+      script.onload = () => {
+        resolve((window as any).ZXing);
+      };
+      script.onerror = () => {
+        resolve(null);
+      };
+      document.head.appendChild(script);
+    });
+  };
 
   // Start Camera Function
   const startCamera = async (mode: 'photo' | 'video' | 'scan', target: 'photo' | 'video' | 'barcode' | 'qrCode') => {
@@ -272,15 +298,31 @@ export default function ProductsPage() {
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       setCameraStream(stream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-      if (mode === 'scan') {
-        setScanMessage("Kodu algılamak için kameraya yaklaştırın...");
-        setTimeout(() => {
-          const simulatedVal = Math.random() > 0.5 ? "8690000" + Math.floor(100000 + Math.random() * 900000) : "SKU-" + Math.floor(10000 + Math.random() * 90000);
-          handleCodeDetected(simulatedVal);
-        }, 2500);
+      
+      const videoEl = videoRef.current;
+      if (videoEl) {
+        videoEl.srcObject = stream;
+        videoEl.setAttribute("playsinline", "true");
+        
+        if (mode === 'scan') {
+          setScanMessage("Tarayıcı yükleniyor... Lütfen bekleyin.");
+          const ZXingClass = await loadZXing();
+          if (!ZXingClass) {
+            setScanMessage("Tarayıcı kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.");
+            return;
+          }
+
+          if (!zxingReaderRef.current) {
+            zxingReaderRef.current = new (window as any).ZXing.BrowserMultiFormatReader();
+          }
+
+          setScanMessage("Kamera hazır. Barkodu veya karekodu hizalayın...");
+          zxingReaderRef.current.decodeFromVideoElement(videoEl, (result: any, err: any) => {
+            if (result && result.text) {
+              handleCodeDetected(result.text);
+            }
+          });
+        }
       }
     } catch (e) {
       console.error("Camera access failed:", e);
@@ -289,6 +331,11 @@ export default function ProductsPage() {
   };
 
   const stopCamera = () => {
+    if (zxingReaderRef.current) {
+      try {
+        zxingReaderRef.current.reset();
+      } catch (e) {}
+    }
     if (cameraStream) {
       cameraStream.getTracks().forEach(track => track.stop());
       setCameraStream(null);
@@ -298,6 +345,11 @@ export default function ProductsPage() {
 
   const switchDevice = async (deviceId: string) => {
     setSelectedDeviceId(deviceId);
+    if (zxingReaderRef.current) {
+      try {
+        zxingReaderRef.current.reset();
+      } catch (e) {}
+    }
     if (cameraStream) {
       cameraStream.getTracks().forEach(track => track.stop());
     }
@@ -307,8 +359,23 @@ export default function ProductsPage() {
         audio: cameraActiveMode === 'video'
       });
       setCameraStream(stream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+      const videoEl = videoRef.current;
+      if (videoEl) {
+        videoEl.srcObject = stream;
+        videoEl.setAttribute("playsinline", "true");
+        if (cameraActiveMode === 'scan') {
+          const ZXingClass = await loadZXing();
+          if (ZXingClass) {
+            if (!zxingReaderRef.current) {
+              zxingReaderRef.current = new (window as any).ZXing.BrowserMultiFormatReader();
+            }
+            zxingReaderRef.current.decodeFromVideoElement(videoEl, (result: any, err: any) => {
+              if (result && result.text) {
+                handleCodeDetected(result.text);
+              }
+            });
+          }
+        }
       }
     } catch (e) {
       console.error("Failed to switch camera device:", e);
@@ -513,6 +580,60 @@ export default function ProductsPage() {
     });
   }, [products, search]);
 
+  function handleTerminalScan(code: string) {
+    const cleanCode = code.trim().toLowerCase();
+    if (!cleanCode) return;
+
+    const playBeep = () => {
+      try {
+        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.1);
+      } catch (e) {}
+    };
+
+    // 1. Check if it matches a shelf code
+    const allShelves = availableWarehouses.flatMap(wh => wh.shelves || []);
+    const matchedShelf = allShelves.find(sh => sh.toLowerCase() === cleanCode);
+
+    if (matchedShelf) {
+      setTerminalScannedShelf(matchedShelf);
+      setTerminalScannedProduct(null);
+      setTerminalMessage(`✓ Lokasyon okundu: Raf ${matchedShelf}`);
+      playBeep();
+      return;
+    }
+
+    // 2. Check if it matches a product SKU, barcode, oem code, or name
+    const matchedProd = products.find(p => 
+      (p.barcode && p.barcode.toLowerCase() === cleanCode) ||
+      (p.sku && p.sku.toLowerCase() === cleanCode) ||
+      (p.oemCode && p.oemCode.toLowerCase() === cleanCode) ||
+      p.name.toLowerCase().includes(cleanCode)
+    );
+
+    if (matchedProd) {
+      setTerminalScannedProduct(matchedProd);
+      setTerminalScannedShelf(null);
+      setTerminalMessage(`✓ Ürün okundu: ${matchedProd.name}`);
+      playBeep();
+      return;
+    }
+
+    // 3. Fallback
+    setTerminalScannedProduct(null);
+    setTerminalScannedShelf(null);
+    setTerminalMessage(`⚠️ "${code}" ile eşleşen raf veya ürün bulunamadı!`);
+    playBeep();
+  }
+
   function resetForm() {
     setItemType("product");
     setName("");
@@ -534,6 +655,8 @@ export default function ProductsPage() {
     setShelf("");
     setEntryDate("");
     setExitDate("");
+    setTrackExpirationDate(false);
+    setExpirationDate("");
     setPricingMode("fixed");
     setVisibility("visible");
     setImageUrl("");
@@ -914,6 +1037,8 @@ export default function ProductsPage() {
     setShelf(p.shelf || "");
     setEntryDate(p.entryDate || "");
     setExitDate(p.exitDate || "");
+    setTrackExpirationDate(p.trackExpirationDate || false);
+    setExpirationDate(p.expirationDate || "");
     setPricingMode(p.pricingMode || "fixed");
     setVisibility(p.visibility || "visible");
     setImageUrl(p.imageUrl || "");
@@ -1109,6 +1234,8 @@ export default function ProductsPage() {
             shelf,
             entryDate,
             exitDate,
+            trackExpirationDate,
+            expirationDate: trackExpirationDate ? expirationDate : "",
             pricingMode,
             visibility,
             imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
@@ -1198,6 +1325,8 @@ export default function ProductsPage() {
         shelf,
         entryDate,
         exitDate,
+        trackExpirationDate,
+        expirationDate: trackExpirationDate ? expirationDate : "",
         pricingMode,
         visibility,
         imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
@@ -1791,6 +1920,30 @@ export default function ProductsPage() {
                     className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
                   />
                 </label>
+              </div>
+
+              <div className="border-t border-slate-200/60 pt-3 space-y-3">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={trackExpirationDate}
+                    onChange={(e) => setTrackExpirationDate(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-blue-650 focus:ring-blue-500 cursor-pointer"
+                  />
+                  Son Kullanım Tarihi (SKT) Takibi Yapılsın
+                </label>
+
+                {trackExpirationDate && (
+                  <label className="grid gap-1 animate-fadeIn">
+                    <span className="text-xs font-bold text-slate-500">Son Kullanım Tarihi</span>
+                    <input
+                      type="date"
+                      value={expirationDate}
+                      onChange={(e) => setExpirationDate(e.target.value)}
+                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                    />
+                  </label>
+                )}
               </div>
             </div>
 
@@ -2465,6 +2618,7 @@ export default function ProductsPage() {
                       onClick={() => {
                         setIsTerminalOpen(false);
                         setTerminalScannedProduct(null);
+                        setTerminalScannedShelf(null);
                         setTerminalMessage("");
                       }}
                       className="rounded-full bg-slate-800 hover:bg-slate-700 p-1.5 text-xs text-slate-400 hover:text-white transition"
@@ -2493,10 +2647,43 @@ export default function ProductsPage() {
                     </div>
                   </div>
 
-                  {/* Simulator Scan Trigger - Dropdown Select Product to "Scan" */}
+                  {/* Unified Barcode / Shelf Scanner Input */}
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 block uppercase tracking-wider">
-                      Simüle Depo Barkod Seçimi (Okutma)
+                      Barkod, SKU veya Raf Kodu Girişi
+                    </label>
+                    <div className="flex gap-1.5">
+                      <input
+                        type="text"
+                        value={terminalInputVal}
+                        onChange={(e) => setTerminalInputVal(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleTerminalScan(terminalInputVal);
+                            setTerminalInputVal("");
+                          }
+                        }}
+                        placeholder="Kod girin (Örn: A-01, TT-MASTER...)"
+                        className="flex-1 rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-100 outline-none focus:border-orange-500 font-mono"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleTerminalScan(terminalInputVal);
+                          setTerminalInputVal("");
+                        }}
+                        className="rounded-xl bg-orange-600 hover:bg-orange-500 px-3 py-2 text-xs font-black text-white transition active:scale-95"
+                      >
+                        OKUT
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Simulator Scan Trigger - Dropdown Select Product to "Scan" */}
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-slate-450 block uppercase tracking-wider">
+                      Simüle Ürün Seçimi (Hızlı Test)
                     </label>
                     <select
                       onChange={(e) => {
@@ -2505,8 +2692,21 @@ export default function ProductsPage() {
                           const matched = products.find(p => p.id === prodId);
                           if (matched) {
                             setTerminalScannedProduct(matched);
+                            setTerminalScannedShelf(null);
                             setTerminalMessage(`✓ ${matched.name} başarıyla tarandı!`);
-                            playBeep();
+                            
+                            // Trigger beep sound
+                            try {
+                              const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+                              const osc = audioCtx.createOscillator();
+                              const gain = audioCtx.createGain();
+                              osc.connect(gain);
+                              gain.connect(audioCtx.destination);
+                              osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                              gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                              osc.start();
+                              osc.stop(audioCtx.currentTime + 0.1);
+                            } catch (e) {}
                           }
                         } else {
                           setTerminalScannedProduct(null);
@@ -2523,17 +2723,17 @@ export default function ProductsPage() {
                     </select>
                   </div>
 
-                  {/* Scanned Card Results */}
+                  {/* Scanned Card Results (Product, Shelf or Placeholder) */}
                   {terminalScannedProduct ? (
-                    <div className="rounded-2xl border border-slate-800 bg-[#121c35] p-3.5 space-y-3 shadow-inner">
+                    <div className="rounded-2xl border border-slate-800 bg-[#121c35] p-3.5 space-y-3 shadow-inner animate-fadeIn">
                       <div>
                         <span className="text-[8px] font-black bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full tracking-wider uppercase">
-                          Tarandı: {terminalScannedProduct.sku || terminalScannedProduct.barcode || "Mevcut"}
+                          Ürün Tarandı: {terminalScannedProduct.sku || terminalScannedProduct.barcode || "Mevcut"}
                         </span>
                         <h4 className="text-xs font-black text-slate-100 mt-1.5 leading-snug">
                           {terminalScannedProduct.name}
                         </h4>
-                        <p className="text-[9px] text-slate-400 font-bold">Marka: {terminalScannedProduct.brand || "Belirtilmedi"} | Kategori: {terminalScannedProduct.category}</p>
+                        <p className="text-[9px] text-slate-400 font-bold">Marka: {terminalScannedProduct.brand || "Belirtilmedi"} | Konum: {terminalScannedProduct.warehouse || "—"} - {terminalScannedProduct.shelf || "—"}</p>
                       </div>
 
                       {/* Stock Adjuster Row */}
@@ -2559,7 +2759,7 @@ export default function ProductsPage() {
                                 return p;
                               });
                               setProducts(updated);
-                              playBeep();
+                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
                               setTerminalMessage("Stok miktarı -1 azaltıldı.");
                             }}
                             className="w-8 h-8 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 font-black border border-rose-600/30 flex items-center justify-center transition active:scale-95 text-sm"
@@ -2582,7 +2782,7 @@ export default function ProductsPage() {
                                 return p;
                               });
                               setProducts(updated);
-                              playBeep();
+                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
                               setTerminalMessage("Stok miktarı +1 artırıldı.");
                             }}
                             className="w-8 h-8 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-black border border-emerald-600/30 flex items-center justify-center transition active:scale-95 text-sm"
@@ -2611,42 +2811,131 @@ export default function ProductsPage() {
                               return p;
                             });
                             setProducts(updated);
+                            window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
                           }}
                           placeholder="Raf Konumu örn: A-01, B-12"
-                          className="w-full rounded-lg bg-[#0c1224] border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 outline-none focus:border-blue-500"
+                          className="w-full rounded-lg bg-[#0c1224] border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 outline-none focus:border-blue-500 font-mono"
                         />
+                      </div>
+                    </div>
+                  ) : terminalScannedShelf ? (
+                    <div className="rounded-2xl border border-slate-800 bg-[#121c35] p-3.5 space-y-3 shadow-inner animate-fadeIn">
+                      <div className="flex justify-between items-start border-b border-slate-850 pb-2">
+                        <div>
+                          <span className="text-[8px] font-black bg-orange-500/15 text-orange-400 border border-orange-500/20 px-2 py-0.5 rounded-full tracking-wider uppercase">
+                            Raf Tarandı
+                          </span>
+                          <h4 className="text-xs font-black text-slate-100 mt-1.5">
+                            📍 Raf: {terminalScannedShelf}
+                          </h4>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`${terminalScannedShelf} konumundaki tüm ürün bağlarını kaldırmak istediğinize emin misiniz?`)) {
+                              const updated = products.map(p => {
+                                if (p.shelf && p.shelf.toLowerCase() === terminalScannedShelf.toLowerCase()) {
+                                  return { ...p, shelf: "" };
+                                }
+                                return p;
+                              });
+                              setProducts(updated);
+                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                              setTerminalMessage(`✓ Raf ${terminalScannedShelf} boşaltıldı.`);
+                            }
+                          }}
+                          className="text-[9px] font-bold text-rose-450 hover:text-rose-400 bg-rose-500/5 px-2 py-1 rounded border border-rose-500/10"
+                        >
+                          Tümünü Boşalt
+                        </button>
+                      </div>
+
+                      {/* Products list on this shelf */}
+                      <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                        {products.filter(p => p.shelf && p.shelf.toLowerCase() === terminalScannedShelf.toLowerCase()).length > 0 ? (
+                          products.filter(p => p.shelf && p.shelf.toLowerCase() === terminalScannedShelf.toLowerCase()).map(p => (
+                            <div key={p.id} className="bg-[#0b1122] border border-slate-800/80 rounded-xl p-2 flex justify-between items-center text-xs">
+                              <div className="truncate pr-2">
+                                <span className="font-bold text-slate-200 block truncate">{p.name}</span>
+                                <span className="text-[9px] text-slate-500 font-mono">SKU: {p.sku || "—"}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <span className="text-orange-400 font-black text-[11px] font-mono mr-1">{p.quantity || "0"} ad</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const nextQty = Math.max(0, parseInt(p.quantity || "0") - 1);
+                                    const updated = products.map(prod => prod.id === p.id ? { ...prod, quantity: String(nextQty) } : prod);
+                                    setProducts(updated);
+                                    window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                                  }}
+                                  className="w-5 h-5 rounded bg-rose-600/20 text-rose-400 flex items-center justify-center font-bold"
+                                >
+                                  -
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const nextQty = parseInt(p.quantity || "0") + 1;
+                                    const updated = products.map(prod => prod.id === p.id ? { ...prod, quantity: String(nextQty) } : prod);
+                                    setProducts(updated);
+                                    window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                                  }}
+                                  className="w-5 h-5 rounded bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-[10px] text-slate-500 italic py-2 text-center">Bu rafa kayıtlı envanter yok.</p>
+                        )}
                       </div>
                     </div>
                   ) : (
                     <div className="rounded-2xl border border-dashed border-slate-800 p-6 text-center space-y-1 select-none">
-                      <p className="text-xs font-bold text-slate-400">Ürün Taranmadı</p>
-                      <p className="text-[10px] text-slate-650 font-bold leading-normal">
-                        Lütfen listeden simüle edilmiş bir barkod seçerek depo işlemlerini başlatın.
+                      <p className="text-xs font-bold text-slate-400 font-sans">Giriş Bekleniyor</p>
+                      <p className="text-[9px] text-slate-655 font-bold leading-normal">
+                        Barkod okuyucuyla okutun, üstteki kutudan seçin ya da manuel kod yazıp OKUT'a basın. (Örn: A-01, TT-MASTER-01)
                       </p>
                     </div>
                   )}
 
                   {/* Terminal Console Feedback Message */}
                   {terminalMessage && (
-                    <div className="rounded-xl bg-orange-500/5 border border-orange-500/10 p-2.5 text-center text-[10px] font-black text-orange-400 tracking-wide animate-fadeIn">
+                    <div className="rounded-xl bg-orange-500/5 border border-orange-500/10 p-2 text-center text-[9px] font-black text-orange-400 tracking-wide animate-fadeIn">
                       💡 {terminalMessage}
                     </div>
                   )}
                 </div>
 
                 {/* Industrial Hardware Orange Trigger Button */}
-                <div className="pt-4 border-t border-slate-800/60 flex flex-col gap-2">
+                <div className="pt-3 border-t border-slate-800/60 flex flex-col gap-1.5 font-sans">
                   <button
                     type="button"
                     onClick={() => {
+                      try {
+                        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.15);
+                      } catch (e) {}
+
                       if (terminalScannedProduct) {
-                        playBeep();
                         setTerminalMessage(`[SAYIM BAŞARILI] ${terminalScannedProduct.name} depo konumu (${terminalScannedProduct.shelf || "Belirtilmedi"}) ve ${terminalScannedProduct.quantity} adet stok başarıyla doğrulandı.`);
+                      } else if (terminalScannedShelf) {
+                        setTerminalMessage(`[SAYIM BAŞARILI] Raf ${terminalScannedShelf} üzerindeki tüm ürünlerin sayımları onaylandı.`);
                       } else {
-                        alert("Lütfen önce bir ürün barkodu seçerek tarama yapın.");
+                        alert("Lütfen önce bir ürün barkodu veya raf kodu seçerek tarama yapın.");
                       }
                     }}
-                    className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-black text-xs shadow-lg tracking-widest uppercase active:scale-[0.98] transition border border-orange-600/30 flex items-center justify-center gap-1.5"
+                    className="w-full py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white font-black text-xs shadow-lg tracking-widest uppercase active:scale-[0.98] transition border border-orange-600/30 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <span>🎯</span> SAYIMI ONAYLA & KİLİTLE
                   </button>

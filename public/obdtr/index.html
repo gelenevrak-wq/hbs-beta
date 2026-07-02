@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OBDTR | Türkiye'nin En Kapsamlı Online OBD Mağazası</title>
+  <meta name="description" content="Launch, Autel, ThinkTool ve Zenith OBD arıza tespit cihazları yetkili bayi güvencesiyle. Orijinal ürünler, kurulum desteği ve WhatsApp üzerinden hızlı teklif.">
+  <link rel="icon" href="/logo.png" type="image/png">
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              dark: '#030712',
+              card: '#090d16',
+              accent: '#3b82f6',
+              purple: '#6366f1',
+              neon: '#00d2ff'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Custom Styling for Premium Feel & Glowing Effects -->
+  <style>
+    body {
+      background-color: #030712;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.12) 0px, transparent 50%);
+    }
+    .glass-card {
+      background: rgba(9, 13, 22, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card:hover {
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.2);
+    }
+    .active-tab {
+      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+      color: white !important;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.25);
+      border-color: transparent !important;
+    }
+    .text-glow {
+      text-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-none {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="text-slate-300 font-sans antialiased min-h-screen flex flex-col selection:bg-blue-500/30 selection:text-white">
+
+  <!-- Sticky Header Nav -->
+  <header class="sticky top-0 z-40 glass-card border-b border-white/5 transition-all duration-300 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-3 group">
+        <img src="/logo.png" alt="OBDTR Logo" class="h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+        <span class="font-display text-2xl font-black tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">OBDTR</span>
+      </a>
+      
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center gap-8 text-sm font-semibold">
+        <a href="#cihazlar" class="hover:text-blue-400 transition-colors">OBD Cihazları</a>
+        <a href="#kampanyalar" class="hover:text-blue-400 text-amber-400 flex items-center gap-1.5 transition-colors">🔥 Kampanyalar</a>
+        <a href="#iletisim" class="hover:text-blue-400 transition-colors">İletişim</a>
+      </nav>
+      
+      <!-- WhatsApp CTA -->
+      <div>
+        <a href="https://wa.me/905518540622?text=Merhaba%20ürünler%20hakkında%20bilgi%20almak%20istiyorum" target="_blank" class="rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm px-5 py-2.5 flex items-center gap-2 shadow-lg shadow-emerald-950/30 transition active:scale-95">
+          <span>💬 WhatsApp Destek</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section with Striking Brand Cards -->
+  <section class="relative py-12 lg:py-16 overflow-hidden px-4 sm:px-6 lg:px-8 text-center border-b border-white/5">
+    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"></div>
+    
+    <div class="max-w-7xl mx-auto relative z-10">
+      <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 mb-4">
+        <span class="h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
+        Yetkili Bayi Güvencesiyle
+      </span>
+      
+      <h1 class="font-display text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-white mb-10 max-w-4xl mx-auto">
+        Türkiye'nin En Kapsamlı <span class="bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">Online OBD Mağazası</span>
+      </h1>
+      
+      <!-- Striking Brand Cards Grid (Acts as Navigation Buttons) -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 max-w-6xl mx-auto mb-12">
+        <!-- AUTEL Button -->
+        <div onclick="filterBrandAndScroll('autel')" class="glass-card rounded-2xl p-6 border border-white/5 cursor-pointer flex flex-col items-center justify-center min-h-[140px] group transition-all duration-300 hover:border-red-500/40 hover:shadow-[0_0_20px_rgba(239,68,68,0.15)]">
+          <span class="font-display text-2xl font-black text-slate-100 group-hover:text-red-400 transition-colors tracking-wider">AUTEL</span>
+          <span class="text-[10px] text-slate-500 mt-2 font-bold group-hover:text-slate-300">Cihazları İncele →</span>
+        </div>
+
+        <!-- THINKTOOL Button -->
+        <div onclick="filterBrandAndScroll('thinktool')" class="glass-card rounded-2xl p-6 border border-white/5 cursor-pointer flex flex-col items-center justify-center min-h-[140px] group transition-all duration-300 hover:border-cyan-400/40 hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]">
+          <span class="font-display text-2xl font-black text-slate-100 group-hover:text-cyan-400 transition-colors tracking-wide">THINKTOOL</span>
+          <span class="text-[10px] text-slate-500 mt-2 font-bold group-hover:text-slate-300">Cihazları İncele →</span>
+        </div>
+
+        <!-- LAUNCH Button -->
+        <div onclick="filterBrandAndScroll('launch')" class="glass-card rounded-2xl p-6 border border-white/5 cursor-pointer flex flex-col items-center justify-center min-h-[140px] group transition-all duration-300 hover:border-red-600/40 hover:shadow-[0_0_20px_rgba(220,38,38,0.15)]">
+          <span class="font-display text-2xl font-black text-slate-100 group-hover:text-red-500 transition-colors tracking-widest">LAUNCH</span>
+          <span class="text-[10px] text-slate-500 mt-2 font-bold group-hover:text-slate-300">Cihazları İncele →</span>
+        </div>
+
+        <!-- ZENITH Button -->
+        <div onclick="filterBrandAndScroll('zenith')" class="glass-card rounded-2xl p-6 border border-white/5 cursor-pointer flex flex-col items-center justify-center min-h-[140px] group transition-all duration-300 hover:border-amber-400/40 hover:shadow-[0_0_20px_rgba(251,191,36,0.15)]">
+          <span class="font-display text-2xl font-black text-slate-100 group-hover:text-amber-400 transition-colors tracking-wide">ZENITH</span>
+          <span class="text-[10px] text-slate-500 mt-2 font-bold group-hover:text-slate-300">Cihazları İncele →</span>
+        </div>
+
+        <!-- ARAÇ GRUPLARI Button -->
+        <div onclick="filterBrandAndScroll('araba-gruplari')" class="col-span-2 md:col-span-1 glass-card rounded-2xl p-6 border border-white/5 cursor-pointer flex flex-col items-center justify-center min-h-[140px] group transition-all duration-300 hover:border-indigo-400/40 hover:shadow-[0_0_20px_rgba(129,140,248,0.15)]">
+          <span class="font-display text-lg font-black text-slate-100 group-hover:text-indigo-300 text-center leading-tight transition-colors">ARAÇ GRUPLARI</span>
+          <span class="text-[10px] text-slate-500 mt-2 font-bold group-hover:text-slate-300">OBD Setleri →</span>
+        </div>
+      </div>
+
+      <!-- Extra Privileges Row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto text-left">
+        <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/40 border border-white/5">
+          <span class="text-xl">📦</span>
+          <div>
+            <p class="text-xs text-slate-200 font-bold leading-tight">Hızlı Kargo</p>
+            <p class="text-[10px] text-slate-500">Türkiye'nin her yerine kargo</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/40 border border-white/5">
+          <span class="text-xl">🔧</span>
+          <div>
+            <p class="text-xs text-slate-200 font-bold leading-tight">Kurulum & Eğitim</p>
+            <p class="text-[10px] text-slate-500">Yerinde veya uzaktan eğitim</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/40 border border-white/5">
+          <span class="text-xl">🛡️</span>
+          <div>
+            <p class="text-xs text-slate-200 font-bold leading-tight">2 Yıl Garanti</p>
+            <p class="text-[10px] text-slate-500">Bayi onaylı cihaz garantisi</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/40 border border-white/5">
+          <span class="text-xl">🔄</span>
+          <div>
+            <p class="text-xs text-slate-200 font-bold leading-tight">2 Yıl Güncelleme</p>
+            <p class="text-[10px] text-slate-500">Ücretsiz yazılım desteği</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Brand Filter & Cihazlar Showcase Section -->
+  <section id="cihazlar" class="py-16 bg-[#040912]/50 px-4 sm:px-6 lg:px-8 relative">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-4">
+          📦 ÜRÜN VİTRİNİ
+        </span>
+        <h2 class="font-display text-3xl font-extrabold text-white">Tüm OBD Arıza Tespit Cihazlarımız</h2>
+        <p class="text-slate-400 max-w-xl mx-auto mt-2">Dilediğiniz markayı seçerek orijinal cihazlarımızın ayrıntılarını anında filtreleyip inceleyin.</p>
+      </div>
+
+      <!-- Brand Filtering Tabs (Mobile horizontal scrollable) -->
+      <div class="flex overflow-x-auto gap-2 pb-4 mb-10 scrollbar-none justify-start md:justify-center -mx-4 px-4">
+        <button onclick="filterBrand('all')" id="tab-all" class="tab-btn shrink-0 px-6 py-3.5 rounded-full border border-white/5 bg-brand-card text-slate-300 font-bold text-sm active-tab transition active:scale-95">
+          Tüm Cihazlar
+        </button>
+        <button onclick="filterBrand('launch')" id="tab-launch" class="tab-btn shrink-0 px-6 py-3.5 rounded-full border border-white/5 bg-brand-card text-slate-300 font-bold text-sm transition active:scale-95">
+          Launch
+        </button>
+        <button onclick="filterBrand('thinktool')" id="tab-thinktool" class="tab-btn shrink-0 px-6 py-3.5 rounded-full border border-white/5 bg-brand-card text-slate-300 font-bold text-sm transition active:scale-95">
+          ThinkTool
+        </button>
+        <button onclick="filterBrand('autel')" id="tab-autel" class="tab-btn shrink-0 px-6 py-3.5 rounded-full border border-white/5 bg-brand-card text-slate-300 font-bold text-sm transition active:scale-95">
+          Autel
+        </button>
+        <button onclick="filterBrand('zenith')" id="tab-zenith" class="tab-btn shrink-0 px-6 py-3.5 rounded-full border border-white/5 bg-brand-card text-slate-300 font-bold text-sm transition active:scale-95">
+          Zenith
+        </button>
+        <button onclick="filterBrand('araba-gruplari')" id="tab-araba-gruplari" class="tab-btn shrink-0 px-6 py-3.5 rounded-full border border-white/5 bg-brand-card text-slate-300 font-bold text-sm transition active:scale-95">
+          Araç Grupları
+        </button>
+      </div>
+
+      <!-- Products Grid -->
+      <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- 1: Autel Ultra S2 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="autel" onclick="openProductModal('autel-ultra-s2-ev-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/autel-ultra-s2.jpg" alt="Autel Ultra S2 EV Kit & VCMI 2" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-blue-500/20 text-blue-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-blue-500/30">Autel</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Autel Ultra S2 EV Kit & VCMI 2</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Gelişmiş elektrikli araç teşhis paketi, 13.7" yansıma önleyici ekran, 12GB RAM, 512GB depolama ve yüksek hızlı VCMI 5'i 1 arada osiloskop/multimetre modülü.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 2: Autel MS919 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="autel" onclick="openProductModal('44444444-4444-4444-4444-444444444444')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/autel-ms919.jpg" alt="Autel MS919 Gelişmiş Teşhis ve Ölçüm Platformu" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-blue-500/20 text-blue-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-blue-500/30">Autel</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Autel MS919 Gelişmiş Teşhis</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Osiloskop, multimetre ve sinyal jeneratörlü 5'i 1 arada VCMI modülü, 9.7 inç dokunmatik ekranlı üst segment teşhis ve ölçüm platformu.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 3: Autel MS909 S2 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="autel" onclick="openProductModal('22222222-2222-2222-2222-222222222222')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/autel-ms909-s2.jpg" alt="AUTEL MS 909 S2" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-blue-500/20 text-blue-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-blue-500/30">Autel</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">AUTEL MS 909 S2</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              9.7 inç ekran, topoloji haritası, online ECU kodlama/programlama ve J2534 Pass-Thru desteğiyle profesyonel servislerin diagnostik çözümü.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 4: Autel MS908 S3 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="autel" onclick="openProductModal('33333333-3333-3333-3333-333333333333')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/autel-ms908-s3.jpg" alt="Autel MS908 S3" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-blue-500/20 text-blue-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-blue-500/30">Autel</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Autel MS908 S3</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              10.1" dokunmatik ekran, 4GB RAM, 128GB depolama, J2534 Pass-Thru desteğiyle online ECU kodlama ve programlama yapabilen profesyonel servis cihazı.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 5: Autel MX900 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="autel" onclick="openProductModal('autel-mx900-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/autel-mx900.jpg" alt="Autel MX900 Profesyonel Servis ve Teşhis Cihazı" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-blue-500/20 text-blue-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-blue-500/30">Autel</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Autel MX900 Servis ve Teşhis</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              8 inç ekran, Android 11, DoIP ve CAN-FD protokol desteği, çift yönlü aktif testler ve 40'tan fazla servis sıfırlama fonksiyonu.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 6: Autel DS900 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="autel" onclick="openProductModal('11111111-1111-1111-1111-111111111111')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/autel-ds900.jpg" alt="AUTeL DS900" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-blue-500/20 text-blue-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-blue-500/30">Autel</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">AUTeL DS900</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              8.0" dokunmatik ekran, tüm sistemlerde derin teşhis, aktif testler, enjektör kodlama ve 36'dan fazla servis sıfırlama işlevi.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 7: Autel MX808S -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="autel" onclick="openProductModal('8047a167-77ef-465d-a2d7-4ec5da4670a5')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/autel-mx808s.png" alt="Autel MX808S" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-blue-500/20 text-blue-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-blue-500/30">Autel</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Autel MX808S</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              7.0" dokunmatik ekran, yağ sıfırlama, EPB, SAS, DPF, BMS ve diğer 30'dan fazla servis sıfırlama işlevi içeren pratik arıza tespit cihazı.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 8: Launch CRP 919 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="launch" onclick="openProductModal('launch-crp919-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/launch-crp919.jpg" alt="Launch CRP 919" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-purple-500/20 text-purple-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-purple-500/30">Launch</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Launch CRP 919 Kablosuz</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Kablosuz Bluetooth VCI bağlantısı, enjektör kodlama, çift yönlü kontrol, 31'den fazla servis fonksiyonu ve hızlı tüm sistem tarama desteği.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 9: ThinkTool Lite 2 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="thinktool" onclick="openProductModal('thinktool-lite2-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/thinktool-lite2.jpg" alt="ThinkTool Lite 2" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-teal-500/20 text-teal-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-teal-500/30">ThinkTool</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">ThinkTool Lite 2</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Kompakt ve dayanıklı endüstriyel tasarım, 34'ten fazla servis sıfırlama, çift yönlü aktif testler, CAN FD ve DoIP protokol desteği.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 10: ThinkTool Expert 391 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="thinktool" onclick="openProductModal('thinktool-expert391-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/thinktool-expert391.jpg" alt="ThinkTool Expert 391" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-teal-500/20 text-teal-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-teal-500/30">ThinkTool</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">ThinkTool Expert 391</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              10.1 inç ekran, J2534 Pass-Thru, CAN FD, DoIP desteği, 120'den fazla binek araç kapsama alanı ve online ECU kodlama/programlama.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 11: ThinkTool Expert 394 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="thinktool" onclick="openProductModal('thinktool-expert394-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/thinktool-expert394.jpg" alt="ThinkTool Expert 394" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-teal-500/20 text-teal-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-teal-500/30">ThinkTool</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">THINKTOOL Expert 394</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Yapay zekâ destekli arayüz, 12 inç ultra net geniş ekran, online programlama, ECU kodlama, CAN FD and DoIP desteğiyle yeni nesil teşhis platformu.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 12: ThinkTool Master 2 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="thinktool" onclick="openProductModal('thinktool-master2-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/thinktool-master2.jpg" alt="ThinkTool Master 2" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-teal-500/20 text-teal-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-teal-500/30">ThinkTool</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">ThinkTool Master 2</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              10 inç ekran, binek ve ağır vasıta (12V/24V) uyumluluğu, topoloji haritası, J2534 online programlama ve 41 servis sıfırlama işlevi.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 13: Zenith Z5 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="zenith" onclick="openProductModal('zenith-z5-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/zenith-z5.jpg" alt="Zenith Z5" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-red-500/20 text-red-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-red-500/30">Zenith</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-red-400 transition-colors">ZENITH Z5</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              8.0" Full HD ekranlı, sağlam ve hafif endüstriyel gövde, hızlı ve kararlı işletim sistemi ile tüm binek/hafif ticari araçlarda yüksek başarı oranlı teşhis.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Orijinal Cihaz</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 14: Opel MD2 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="araba-gruplari" onclick="openProductModal('opel-md2-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/opel-md2.jpg" alt="Opel MD2" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-amber-500/20 text-amber-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-amber-500/30">Araç Grupları</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">Opel Grubu MD2 Yetkili Servis</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Opel ve GM grubu araçlarda yetkili servis seviyesinde arıza tespiti, kodlama, adaptasyon ve modül tanıtma yapabilen orijinal diagnostik kiti.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Yetkili Servis</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 15: Toyota OTC -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="araba-gruplari" onclick="openProductModal('toyota-otc-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/toyota-otc.jpg" alt="Toyota OTC" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-amber-500/20 text-amber-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-amber-500/30">Araç Grupları</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">Toyota Grubu OTC Yetkili Servis</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Toyota ve Lexus binek/hibrit araçlarda fabrika seviyesinde teşhis, Techstream yazılım entegrasyonu, adaptasyon ve enjektör kodlama seti.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Yetkili Servis</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 16: Fiat vLinker -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="araba-gruplari" onclick="openProductModal('fiat-vlinker-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/fiat-vlinker.jpg" alt="Fiat vLinker" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-amber-500/20 text-amber-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-amber-500/30">Araç Grupları</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">Fiat Grubu vLinker Servis Seti</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Fiat, Alfa Romeo, Jeep gruplarında proxy hizalama, kadran güncelleme, gövde bilgisayarı (BCM) kodlama ve MS-CAN/HS-CAN protokol desteği.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Yetkili Servis</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 17: Mercedes C6 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="araba-gruplari" onclick="openProductModal('mercedes-c6-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/mercedes-c6.jpg" alt="Mercedes C6" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-amber-500/20 text-amber-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-amber-500/30">Araç Grupları</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">Mercedes C6 Yetkili Servis</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Xentry yazılım uyumluluğu, DoIP desteği, online SCN kodlama, adaptasyon, şanzıman kodlama yeteneklerine sahip kablosuz C6 VCI seti.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Yetkili Servis</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+        <!-- 18: VAG 5054 -->
+        <div class="product-card glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer group" data-brand="araba-gruplari" onclick="openProductModal('vag-5054-special')">
+          <div>
+            <div class="aspect-video w-full rounded-xl bg-slate-950/50 flex items-center justify-center p-4 mb-5 border border-white/5 relative overflow-hidden">
+              <img src="/kampanya/vag-5054.jpg" alt="VAG 5054" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-105">
+              <span class="absolute top-3 left-3 bg-amber-500/20 text-amber-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-amber-500/30">Araç Grupları</span>
+            </div>
+            <h3 class="font-display text-lg font-bold text-white mb-2 group-hover:text-amber-400 transition-colors">VAG Grubu 5054 VAS Yetkili</h3>
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
+              Volkswagen, Audi, Seat, Skoda gruplarında ODIS kılavuzlu arıza tespiti, ECU yazılım güncellemeleri, adaptasyon ve gizli özellik açma seti.
+            </p>
+          </div>
+          <div class="border-t border-white/5 pt-4 mt-4 flex items-center justify-between gap-3">
+            <span class="text-emerald-400 text-xs font-bold bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">Yetkili Servis</span>
+            <button class="rounded-lg bg-blue-600 hover:bg-blue-500 px-4 py-2 text-xs font-black text-white transition">İncele</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Campaigns Section (Zoom-Only Banners) -->
+  <section id="kampanyalar" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
+    <div class="absolute -right-20 -top-20 w-80 h-80 bg-amber-500/5 rounded-full blur-[100px] pointer-events-none"></div>
+    
+    <div class="glass-card rounded-3xl p-6 sm:p-10 border border-amber-500/20 relative overflow-hidden">
+      <!-- Background Glow inside card -->
+      <div class="absolute -right-10 -top-10 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl"></div>
+      
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div>
+          <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-3">
+            ⚡ AKTİF KAMPANYALAR
+          </span>
+          <h2 class="font-display text-2xl sm:text-3xl font-extrabold text-white">OBDTR Özel Fırsat ve Paket Kampanyaları</h2>
+          <p class="text-slate-400 text-sm mt-1">Broşür ve afişleri görmek için görsellerin üzerine tıklayarak tam ekran büyütebilirsiniz.</p>
+        </div>
+        <div>
+          <a href="https://wa.me/905518540622?text=Merhaba%20güncel%20kampanyalı%20paketleriniz%20ve%20cihaz%20fırsatları%20hakkında%20bilgi%20almak%20istiyorum." target="_blank" class="rounded-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm px-6 py-3 transition active:scale-95 flex items-center justify-center gap-2">
+            💬 Kampanya Detayları İçin Yazın
+          </a>
+        </div>
+      </div>
+
+      <!-- Campaign Visual Grid (Flyers) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Campaign Flyer 1 (Autel Banner) -->
+        <div class="rounded-2xl overflow-hidden border border-blue-500/25 glass-card relative group cursor-zoom-in" onclick="openDirectLightbox('/kampanya/autel-banner.jpg')">
+          <div class="aspect-[21/9] md:aspect-[2.2/1] w-full relative">
+            <img src="/kampanya/autel-banner.jpg" alt="Autel Kampanya Banner" class="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent flex items-end p-6">
+              <div>
+                <span class="bg-blue-500/20 text-blue-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-blue-500/30 mb-2 inline-block">Yetkili Bayi Özel</span>
+                <h3 class="font-display text-lg sm:text-xl font-bold text-white">Autel Cihaz Modelleri & Kampanyalı Paketleri</h3>
+              </div>
+            </div>
+            <!-- Zoom indicator -->
+            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+              <span class="bg-black/70 backdrop-blur-md text-white text-xs font-bold px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
+                🔍 Görseli Büyüt (Tam Ekran)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campaign Flyer 2 (Custom promo using thinktool banner) -->
+        <div class="rounded-2xl overflow-hidden border border-teal-500/25 glass-card relative group cursor-zoom-in" onclick="openDirectLightbox('/kampanya/thinktool-expert394.jpg')">
+          <div class="aspect-[21/9] md:aspect-[2.2/1] w-full relative">
+            <img src="/kampanya/thinktool-expert394.jpg" alt="ThinkTool Kampanya Banner" class="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent flex items-end p-6">
+              <div>
+                <span class="bg-teal-500/20 text-teal-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-teal-500/30 mb-2 inline-block">Teknoloji Paketi</span>
+                <h3 class="font-display text-lg sm:text-xl font-bold text-white">ThinkTool Profesyonel Serisi Kampanyası</h3>
+              </div>
+            </div>
+            <!-- Zoom indicator -->
+            <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+              <span class="bg-black/70 backdrop-blur-md text-white text-xs font-bold px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
+                🔍 Görseli Büyüt (Tam Ekran)
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Details Slide-over / Modal Overlay -->
+  <div id="product-detail-modal" class="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="glass-card w-full md:max-w-2xl h-full shadow-2xl flex flex-col translate-x-full transition-transform duration-300 ease-out border-l border-white/10" id="modal-panel">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-6 border-b border-white/5 bg-slate-950/40">
+        <div>
+          <span id="modal-category" class="bg-amber-500/20 text-amber-400 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-amber-500/30">Kategori</span>
+          <h3 id="modal-title" class="font-display text-2xl font-black text-white mt-3 leading-tight">Cihaz İsmi</h3>
+        </div>
+        <button onclick="closeProductModal()" class="h-11 w-11 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition active:scale-95 shrink-0">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-8 overflow-y-auto space-y-8 flex-1 custom-scrollbar">
+        <!-- Interactive Product Image Card -->
+        <div class="relative overflow-hidden rounded-2xl bg-slate-950/80 border border-white/5 flex items-center justify-center p-6 aspect-video cursor-zoom-in group" onclick="openLightbox()">
+          <div id="modal-image-container" class="w-full h-full flex items-center justify-center">
+            <!-- Loaded dynamically -->
+          </div>
+          <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+            <span class="bg-black/60 backdrop-blur-md text-white text-xs font-bold px-4 py-2 rounded-full border border-white/10 flex items-center gap-2 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+              🔍 Görseli Büyüt (Tam Ekran)
+            </span>
+          </div>
+        </div>
+        
+        <!-- Technical details fields -->
+        <div class="grid grid-cols-2 gap-6 bg-slate-950/30 rounded-2xl p-5 border border-white/5">
+          <div>
+            <p class="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider mb-1">Cihaz Kodu</p>
+            <p id="modal-code" class="text-sm font-mono font-bold text-white">SKU-XXXX</p>
+          </div>
+          <div>
+            <p class="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider mb-1">Marka / Üretici</p>
+            <p id="modal-brand" class="text-sm font-bold text-white">Autel</p>
+          </div>
+        </div>
+        
+        <!-- Long Description -->
+        <div>
+          <h4 class="text-xs font-black text-slate-400 mb-4 border-l-2 border-amber-500 pl-3 uppercase tracking-wider">Cihaz Genel Bakış & Özellikleri</h4>
+          <div id="modal-description" class="text-slate-300 text-xs sm:text-sm leading-relaxed space-y-4 whitespace-pre-line">
+            <!-- Loaded dynamically -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="p-6 border-t border-white/5 bg-slate-950/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <span class="text-slate-400 text-xs text-center sm:text-left">Bu cihazın fiyat bilgisi ve uyumluluk sorgusu için doğrudan Altan Bey ile sohbete başlayın.</span>
+        <a id="modal-wa-btn" href="#" target="_blank" class="w-full sm:w-auto rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm px-6 py-3.5 transition active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/20 shrink-0">
+          <span>💬 WhatsApp İle Görüş</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox Overlay for Image Zoom (Used by both Product Details & Campaigns) -->
+  <div id="image-lightbox" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 flex items-center justify-center p-4 cursor-zoom-out" onclick="closeLightbox()">
+    <button class="absolute top-6 right-6 h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition active:scale-95">
+      <svg class="w-6.5 h-6.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    <img id="lightbox-image" src="" alt="Büyütülmüş Görsel" class="max-w-full max-h-[92vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 scale-95">
+  </div>
+
+  <!-- Contact & Quick Form Section -->
+  <section id="iletisim" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-white/5">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <span class="text-xs font-black uppercase text-blue-400 tracking-widest">İLETİŞİM KANALLARI</span>
+        <h2 class="font-display text-3xl md:text-4xl font-extrabold text-white mt-3 mb-6">Detaylı Bilgi & İletişim</h2>
+        <p class="text-slate-400 leading-relaxed mb-8">
+          Satış öncesi uyumluluk tespiti, binek veya ağır vasıta lisans paketleri, orijinal kurulum ve satış sonrası güncelleme destekleri için 7/24 yanınızdayız. WhatsApp veya telefon üzerinden anında teknik ekibimize ulaşabilirsiniz.
+        </p>
+        
+        <div class="space-y-4">
+          <div class="flex items-center gap-4">
+            <span class="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">📞</span>
+            <div>
+              <p class="text-xs text-slate-500 font-bold uppercase">Telefon & WhatsApp</p>
+              <a href="tel:+905518540622" class="text-sm font-bold hover:text-blue-400 transition-colors">+90 551 854 06 22</a>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="h-10 w-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">📍</span>
+            <div>
+              <p class="text-xs text-slate-500 font-bold uppercase">Adres / Ofislerimiz</p>
+              <p class="text-sm font-bold text-slate-300">İstanbul, Türkiye & Batum, Gürcistan</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- WhatsApp Form Card -->
+      <div class="glass-card rounded-2xl p-6 sm:p-8 border border-white/5">
+        <h3 class="font-display text-lg font-bold text-white mb-4">Hızlı Teklif Formu</h3>
+        <p class="text-slate-400 text-xs sm:text-sm mb-6">Aşağıdaki bilgileri girerek tek tıkla doğrudan WhatsApp üzerinden teknik temsilcimiz Altan Bey ile sohbete başlayabilirsiniz.</p>
+        
+        <form onsubmit="sendWhatsAppMessage(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-black text-slate-400 mb-1.5 uppercase">Adınız Soyadınız</label>
+            <input type="text" id="contact-name" required placeholder="Örn: Özgür Özdemir" class="w-full h-12 rounded-xl bg-slate-950/50 border border-white/10 px-4 text-sm font-semibold outline-none focus:border-blue-500 transition text-white">
+          </div>
+          <div>
+            <label class="block text-xs font-black text-slate-400 mb-1.5 uppercase">İlgilendiğiniz Cihaz / Marka</label>
+            <select id="contact-product" class="w-full h-12 rounded-xl bg-slate-950/50 border border-white/10 px-4 text-sm font-semibold outline-none focus:border-blue-500 transition text-slate-300">
+              <option value="Autel Cihazları">Autel Arıza Teşhis Cihazları</option>
+              <option value="Launch Cihazları">Launch Arıza Teşhis Cihazları</option>
+              <option value="ThinkTool Cihazları">ThinkTool Arıza Teşhis Cihazları</option>
+              <option value="Zenith Cihazları">Zenith Arıza Teşhis Cihazları</option>
+              <option value="Araç Grupları Yetkili Servis Cihazları">Araç Grupları Yetkili Servis Cihazları</option>
+              <option value="Genel Bilgi">Genel Bilgi Almak İstiyorum</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition active:scale-[0.98] shadow-lg shadow-emerald-950/20">
+            💬 WhatsApp ile Mesaj Gönder
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-auto bg-slate-950/80 border-t border-white/5 py-8 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>&copy; 2026 OBDTR. Tüm Hakları Saklıdır.</p>
+    </div>
+  </footer>
+
+  <!-- Custom Scrollbar Style -->
+  <style>
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #090d16;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #2e384d;
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #3b82f6;
+    }
+  </style>
+
+  <!-- JavaScript Database & Handlers -->
+  <script>
+    // Complete product catalog
+    const productsData = [
+      {
+        id: 'autel-ultra-s2-ev-special',
+        name: 'Autel Ultra S2 EV Kit & VCMI 2',
+        code: 'AUTEL-ULTRA-S2-EV',
+        brand: 'autel',
+        category: 'Elektrikli Araç Teşhis Platformu',
+        image: '/kampanya/autel-ultra-s2.jpg',
+        description: 'Autel MaxiSys Ultra S2 EV Kit, yeni nesil elektrikli (EV), hibrit ve geleneksel (binek/hafif ticari) araçlar için geliştirilmiş dünyanın en kapsamlı arıza tespit ve ölçüm platformudur. 13.7 inç yansıma önleyici dev dokunmatik ekranı, 12 GB RAM / 512 GB dev depolama alanı ve sekiz çekirdekli işlemcisiyle eşsiz bir performans sunar.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• EV Kit (Elektrikli Araç Paketi): Yüksek voltajlı batarya paketi analizi, AC/DC şarj sistemi kontrolleri, izolasyon testleri, termal yönetim sistemi kalibrasyonu ve özel bağlantı kabloları.\n• 5\'i 1 Arada VCMI 2 Modülü: Osiloskop, multimetre, sinyal jeneratörü, CAN-Bus test cihazı ve yüksek hızlı VCI arabirimi tek bir ünitede birleşti.\n• Topology 3.0: Renk kodlu akıllı ağ haritası ile tüm araç haberleşme modüllerini tek bir ekranda görerek hızlı arıza tespiti.\n• Max Sesli Asistan: Eller serbest sesli komut sistemi ile teşhis sürecini yönetebilme.\n• ECU Programlama & Kodlama: Yetkili servis seviyesinde J2534 Pass-Thru, D-PDU ve DoIP protokol desteği ile ECU yazılım güncellemeleri ve adaptasyonlar.\n• Yapay Zekâ Destekli Akıllı Teşhis: TSB (Teknik Servis Bültenleri), arıza kodu analizi ve adım adım onarım yardım kılavuzu.'
+      },
+      {
+        id: '44444444-4444-4444-4444-444444444444',
+        name: 'Autel MS919 Gelişmiş Teşhis ve Ölçüm Platformu',
+        code: 'SKU-25633',
+        brand: 'autel',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/autel-ms919.jpg',
+        description: 'Autel MaxiSys MS919, profesyonel servisler, oto ekspertiz merkezleri, filo bakım işletmeleri ve ileri seviye arıza tespit ihtiyaçları için geliştirilmiş üst segment bir teşhis ve ölçüm platformudur. Klasik OBD arıza okuma cihazlarının ötesine geçen MS919; gelişmiş sistem tarama, canlı veri analizi, aktif testler, servis fonksiyonları, ECU kodlama/programlama desteği ve entegre ölçüm kabiliyetleriyle atölyelerde kapsamlı bir teşhis altyapısı sunar.\n\n9.7 inç yüksek çözünürlüklü dokunmatik ekranı, güçlü sekiz çekirdekli işlemcisi ve 128 GB dahili hafızası ile hızlı, kararlı ve profesyonel kullanım için tasarlanan MS919; Autel’in MaxiFlash VCMI ünitesiyle birlikte gelir. Bu VCMI ünitesi yalnızca araçla kablosuz iletişim kuran bir arayüz değildir; aynı zamanda 4 kanallı osiloskop, multimetre, sinyal jeneratörü ve CAN BUS test cihazı olarak da görev yapar. Bu sayede arıza tespit süreci yalnızca hata kodu okumakla sınırlı kalmaz; sensör, aktüatör, haberleşme hattı ve elektriksel sinyal analizleri de aynı platform üzerinden yapılabilir.\n\nProfesyonel Servisler İçin Üst Düzey Teşhis Yeteneği:\n• Araçtaki elektronik kontrol ünitelerine kapsamlı erişim sağlayarak motor, şanzıman, ABS, SRS, ESP, klima, gövde kontrol modülü, direksiyon, fren, yakıt sistemi, ADAS bağlantılı sistemler ve desteklenen diğer modüller üzerinde detaylı teşhis imkânı sunar.\n• Cihaz; arıza kodlarını okuma ve silme, canlı veri görüntüleme, donmuş kare verisi inceleme, aktif testler yapma, adaptasyon ve kalibrasyon işlemlerini destekler.\n\nMaxiFlash VCMI: 5’i 1 Arada Profesyonel Ölçüm ve İletişim Ünitesi:\n• VCMI; DoIP, D-PDU, CAN FD ve Mega CAN gibi güncel araç iletişim protokollerini destekler. Bu özellik, özellikle yeni nesil araçlarda daha hızlı ve daha kapsamlı teşhis yapılmasına yardımcı olur.'
+      },
+      {
+        id: '22222222-2222-2222-2222-222222222222',
+        name: 'AUTEL MS 909 S2',
+        code: 'SKU-75310',
+        brand: 'autel',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/autel-ms909-s2.jpg',
+        description: 'Autel MS909 S2 Arıza Tespit Cihazı, modern araçlarda hızlı, doğru ve profesyonel teşhis yapmak isteyen servisler için geliştirilmiş üst segment bir diagnostik çözümdür.\n\nYeni nesil donanımı, güçlü işlem kapasitesi ve gelişmiş yazılım altyapısı sayesinde klasik arıza tespit cihazlarının ötesine geçer. MS909 S2, hem hız hem doğruluk isteyen profesyoneller için tasarlanmış gerçek bir servis yardımcısıdır.\n\nGÜÇLÜ DONANIM ALTYAPISI:\n• 9.7” geniş ve yüksek çözünürlüklü dokunmatik ekran\n• Android 13 işletim sistemi ile modern ve hızlı kullanım\n• 256 GB dahili depolama alanı\n• Wi-Fi 6 ile ultra hızlı internet bağlantısı ve güncelleme\n• Bluetooth ile kablosuz iletişim\n\nPROFESYONEL TEŞHİS ÖZELLİKLERİ:\n• OE (yetkili servis) seviyesinde arıza tespiti\n• 3D Topoloji haritası ile sistemler arası bağlantı analizi\n• Hata kodu okuma ve silme\n• Canlı veri akışı (Live Data) ve grafiksel analiz\n• ECU programlama (J2534 Pass-Thru desteği)\n• Adaptasyon, enjektör kodlama, yaa sıfırlama, EPB, SAS kalibrasyonu ve 36+ servis fonksiyonu.'
+      },
+      {
+        id: '33333333-3333-3333-3333-333333333333',
+        name: 'Autel MS908 S3 Arıza Tespit Cihazı',
+        code: 'SKU-68521',
+        brand: 'autel',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/autel-ms908-s3.jpg',
+        description: 'Autel MS908 S3 Arıza Tespit Cihazı, modern araçlarda hızlı, doğru ve profesyonel teşhis yapmak isteyen servisler için geliştirilmiş güçlü ve çok yönlü bir diagnostik platformdur.\n\nGeniş ekranı, yüksek performanslı donanımı ve gelişmiş yazılım altyapısı sayesinde hem günlük servis işlemlerinde hem de ileri seviye arıza analizlerinde maksimum verim sağlar. MS908 S3, arızayı hızlı bulmak, doğru müdahale etmek ve servis kalitesini artırmak isteyen profesyoneller için ideal bir çözümdür.\n\nGÜÇLÜ DONANIM ALTYAPISI:\n• 10.1” geniş ve yüksek çözünürlüklü dokunmatik ekran\n• 4 GB RAM ile akıcı ve stabil kullanım\n• 128 GB dahili depolama alanı\n• Yüksek performanslı işlemci ile hızlı tarama ve analiz\n• Wi-Fi ve Bluetooth ile kablosuz bağlantı\n\nPROFESYONEL TEŞHİS VE KODLAMA:\n• OE (yetkili servis) seviyesinde arıza tespiti\n• Hata kodu okuma ve silme\n• Canlı veri akışı (Live Data) ve grafiksel analiz\n• Aktif test (Active Test) işlemleri\n• ECU kodlama (Coding)\n• ECU programlama (J2534 Pass-Thru desteği)\n• Adaptasyon ve kalibrasyon işlemleri\n• CAN FD ve DoIP desteği sayesinde yeni nesil araçlarla hızlı ve stabil bağlantı.'
+      },
+      {
+        id: 'autel-mx900-special',
+        name: 'Autel MX900 Profesyonel Servis ve Teşhis Cihazı',
+        code: 'AUTEL-MX900',
+        brand: 'autel',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/autel-mx900.jpg',
+        description: 'Autel MaxiCheck MX900, profesyonel servisler ve teknisyenler için geliştirilmiş yeni nesil akıllı ve taşınabilir arıza tespit cihazıdır. 8 inç yüksek çözünürlüklü dokunmatik ekranı, Android 11 işletim sistemi ve güçlü işlemcisi ile hızlı ve kesintisiz bir diagnostik deneyimi sunar.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• Tüm Sistem Teşhisi: Motor, Şanzıman, ABS, SRS ve diğer tüm elektronik kontrol ünitelerinde derinlemesine arıza okuma ve silme.\n• 40+ Servis Fonksiyonu: Yağ sıfırlama, EPB, SAS, DPF rejenerasyonu, BMS eşleştirme, Enjektör kodlama ve daha fazlası.\n• Çift Yönlü Kontrol (Aktif Testler): Bileşenlerin (fanlar, pompalar, valfler) çalışmasını doğrudan tabletten test edebilme yeteneği.\n• Pre & Post Scan Raporlama: İşlem öncesi ve sonrası detaylı raporlama ile kurumsal ve şeffaf müşteri ilişkileri.\n• Geniş Araç Kapsamı: DoIP ve CAN-FD protokollerini yerleşik olarak destekler, modern araç gruplarında ek dönüştürücü gerektirmez.\n• Atölye ve saha koşullarına uygun, darbelere dayanıklı koruyucu çanta tasarımı.'
+      },
+      {
+        id: '11111111-1111-1111-1111-111111111111',
+        name: 'AUTeL DS900',
+        code: 'SKU-84103',
+        brand: 'autel',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/autel-ds900.jpg',
+        description: 'AUTEL DS900 Arıza Tespit Cihazı, profesyonel servisler, oto elektrikçiler ve ileri seviye diagnostik işlemler yapmak isteyen kullanıcılar için geliştirilmiş güçlü, hızlı ve güvenilir bir arıza tespit çözümüdür.\n\nKompakt yapısına rağmen sunduğu gelişmiş özelliklerle DS900, günlük servis işlemlerinden detaylı sistem analizlerine kadar geniş bir kullanım alanı sağlar. Araçlardaki arızaları hızlıca tespit etmek, doğru müdahale yapmak ve servis kalitesini yükseltmek isteyenler için ideal bir cihazdır.\n\nTEKNİK DONANIM ÖZELLİKLERİ:\n• 8.0” dokunmatik ekran\n• Android 11 işletim sistemi\n• 1.8 GHz dört çekirdekli işlemci\n• 4 GB RAM / 64 GB dahili depolama\n• Hızlı ve kullanıcı dostu arayüz\n• Tüm sistemlerde arıza tespiti (motor, şanzıman, ABS, SRS, klima vb.)\n• Hata kodu okuma/silme, canlı veri takibi, aktif test işlemleri\n• DoIP ve CAN FD desteği ile modern araç protokolleriyle uyumlu çalışma.'
+      },
+      {
+        id: '8047a167-77ef-465d-a2d7-4ec5da4670a5',
+        name: 'Autel MX808S Arıza Tespit Cihazı',
+        code: 'AUTEL-MX808S',
+        brand: 'autel',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/autel-mx808s.png',
+        description: 'Autel MX808S Arıza Tespit Cihazı, günlük servis işlemlerini hızlandırmak, arızaları doğru ve net şekilde tespit etmek isteyen ustalar ve servisler için geliştirilmiş pratik, güçlü ve ekonomik bir diagnostik çözümdür.\n\nKompakt yapısı, hızlı arayüzü ve geniş servis fonksiyonları sayesinde MX808S; hem rutin bakım işlemlerinde hem de detaylı sistem kontrollerinde yüksek verim sağlar. “Hızlı bağlan, hızlı teşhis et, doğru çöz” mantığıyla çalışan bu cihaz, servisinizde zaman kaybını minimuma indirir.\n\nTEKNİK DONANIM & ÖZELLİKLER:\n• 7.0” dokunmatik ekran (net ve hızlı kullanım)\n• Yağ sıfırlama, EPB, SAS, DPF, BMS ve diğer 30+ servis sıfırlama işlevi\n• Aktif testler ve tüm sistem teşhisleri\n• Android 11 işletim sistemi\n• Autel MX808S, karmaşık cihazlara ihtiyaç duymadan hızlı ve doğru teşhis yapmak isteyenler için ideal bir çözümdür.'
+      },
+      {
+        id: 'launch-crp919-special',
+        name: 'Launch CRP 919 Kablosuz Profesyonel Servis Cihazı',
+        code: 'LAUNCH-CRP919',
+        brand: 'launch',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/launch-crp919.jpg',
+        description: 'Launch CRP 919, oto servisler, teknisyenler ve profesyonel ustalar için özel olarak tasarlanmış yüksek performanslı, kablosuz bir arıza tespit cihazıdır. Android işletim sistemi, güçlü donanımı ve kablosuz Bluetooth VCI bağlantısı sayesinde araç başında özgürce diagnostik işlemler yapabilmenizi sağlar.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• Kablosuz Bluetooth Bağlantısı: Araç kablosuna bağlı kalmadan, servis içinde rahat kullanım sunan yüksek hızlı VCI modülü.\n• 31+ Servis Sıfırlama Fonksiyonu: Yağ bakımı sıfırlama, EPB (elektronik el freni), SAS (direksiyon açısı), DPF rejenerasyonu, akü eşleştirme, ABS hava alma ve boğaz kelebeği adaptasyonu.\n• Enjektör Kodlama: Parça değişimi sonrası enjektörlerin motor kontrol ünitesine (ECU) hızlı ve doğru şekilde tanıtılması.\n• Çift Yönlü Kontrol (Aktif Test): Aktüatörleri, röleleri ve fanları doğrudan tablet üzerinden tetikleyerek arızanın kaynağını saniyeler içinde tespit etme.\n• Pre & Post Scan Raporlama: Müşterilerinize sunabileceğiniz, işlem öncesi ve sonrasını gösteren kurumsal arıza raporları.\n• Geniş Araç Kapsamı: Asya, Avrupa ve Amerika pazarlarındaki yüzlerce otomobil markası ve modeliyle tam uyumluluk.'
+      },
+      {
+        id: 'thinktool-lite2-special',
+        name: 'ThinkTool Lite 2 Profesyonel Teşhis Cihazı',
+        code: 'THINKTOOL-LITE-2',
+        brand: 'thinktool',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/thinktool-lite2.jpg',
+        description: 'ThinkTool Lite 2 Kompakt Profesyonel Teşhis Çözümü\n\nThinkTool Lite 2, profesyonel servisler, teknisyenler ve günlük atölye kullanımları için tasarlanmış kompakt, dayanıklı ve son derece yetenekli bir arıza tespit cihazıdır. Taşınabilir yapısı ve modern bağlantı protokolleri desteğiyle araç başında en büyük yardımcınız olmaya adaydır.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• 34+ Bakım ve Sıfırlama Fonksiyonu: Yağ sıfırlama, EPB, SAS, DPF rejenerasyonu, enjektör kodlama, boğaz kelebeği adaptasyonu ve daha fazlası.\n• Çift Yönlü Kontrol (Aktif Test): Aktüatörleri, valfleri ve röleleri doğrudan tablet üzerinden test edebilme yeteneği.\n• DoIP ve CAN FD Desteği: Yeni nesil araç iletişim protokolleriyle tam uyum, modern araçlarda ek dönüştürücü gerektirmeden hızlı bağlantı.\n• Gelişmiş Kodlama: Modüllerin adaptasyonu ve kodlama işlemleri.\n• Tam Sistem Teşhisi: Motor, şanzıman, ABS, airbag (SRS), klima ve gövde kontrol gibi tüm elektronik kontrol ünitelerinde derinlemesine arıza okuma ve silme.'
+      },
+      {
+        id: 'thinktool-expert391-special',
+        name: 'ThinkTool Expert 391 Gelişmiş Teşhis Cihazı',
+        code: 'THINKTOOL-EXPERT-391',
+        brand: 'thinktool',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/thinktool-expert391.jpg',
+        description: 'ThinkTool Expert 391 Profesyonel Programlama ve Teşhis Çözümü\n\nThinkTool Expert 391, otomotiv servislerinde profesyonel seviyede teşhis, online kodlama ve programlama işlemleri gerçekleştirmek üzere tasarlanmış 10.1 inç geniş ekranlı akıllı teşhis platformudur. TCOS işletim sistemiyle hızlı, kararlı ve akıcı bir kullanıcı deneyimi sunar.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• Geniş Araç Kapsamı: 120+ binek araç, 70+ elektrikli araç (EV) ve 150+ ağır vasıta modelinde derinlemesine teşhis yeteneği.\n• J2534 Pass-Thru ve Modern Protokoller: CAN FD, DoIP ve J2534 desteğiyle yetkili servis seviyesinde işlem yapabilme yeteneği.\n• Online Programlama ve Kodlama: Desteklenen markalarda ECU modül programlama, kalibrasyon ve online parametre yükleme işlemleri.\n• 41 Bakım ve Servis Fonksiyonu: Servis sıfırlamaları, fren kaliper açma, direksiyon açısı sıfırlama, DPF, akü eşleştirme ve daha fazlası.\n• Çift Yönlü Kontrol: Canlı veri analizi, grafiksel izleme ve aktif bileşen testleri.\n• Profesyonel Raporlama: Detaylı teşhis raporları oluşturma, kaydetme ve kablosuz paylaşım imkanı.'
+      },
+      {
+        id: 'thinktool-expert394-special',
+        name: 'ThinkTool Expert 394 AI Destekli Teşhis Platformu',
+        code: 'THINKTOOL-EXPERT-394',
+        brand: 'thinktool',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/thinktool-expert394.jpg',
+        description: 'ThinkTool Expert 394, yapay zekâ destekli özellikleri ve 12 inçlik dev dokunmatik ekranı ile otomotiv teşhisinde yeni nesil standartları belirleyen amiral gemisi bir cihazdır. TCOS tabanlı hızlı arayüzü ve üstün donanım kalitesiyle en karmaşık problemleri saniyeler içinde analiz eder.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• 12 İnç AI Destekli Teşhis Ekranı: Yüksek çözünürlüklü ve yapay zekâ destekli grafik arayüzü sayesinde daha anlaşılır topoloji haritaları ve veri analizleri.\n• J2534 ve RP1210 Desteği: Çoklu protokol desteği sayesinde binek, hafif ticari ve ağır vasıta araç gruplarında endüstri standartlarında tam uyumluluk.\n• CAN 2.0, CAN FD ve DoIP Desteği: Yeni nesil araç ağ mimarileriyle doğrudan, ek adaptörsüz süper hızlı haberleşme altyapısı.\n• Kodlama ve Online Programlama: Yetkili servis kalitesinde online ECU kodlama, konfigürasyon ve yazılım güncelleme işlemleri.\n• Tam Sistem Teşhisi ve Çift Yönlü Kontrol: Gelişmiş aktif testler, sensör veri simülasyonları ve tam modül taraması.'
+      },
+      {
+        id: 'thinktool-master2-special',
+        name: 'ThinkTool Master 2 Profesyonel Teşhis Cihazı',
+        code: 'THINKTOOL-MASTER-2',
+        brand: 'thinktool',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/thinktool-master2.jpg',
+        description: 'ThinkTool Master 2 Profesyonel Teşhis ve Programlama Çözümü\n\nThinkTool Master 2, modern atölyeler için geliştirilmiş, binek ve ağır vasıta (12V / 24V) araçlarda OE seviyesinde arıza tespiti ve online programlama yapabilen yüksek performanslı akıllı bir diagnostik cihazdır. 10 inç dokunmatik ekranı, 4 GB RAM ve 64 GB dahili depolama alanı ile zorlu servis koşullarında akıcı bir kullanım sunar.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• OE Seviyesinde Teşhis ve Topoloji Haritası: Araçtaki tüm kontrol ünitelerini tek bir renk kodlu şema üzerinde görerek karmaşık haberleşme ve modül arızalarını anında bulma.\n• J2534 Online Programlama: Desteklenen araç gruplarında çevrimiçi yazılım güncelleme, yeni beyin tanıtma ve kodlama.\n• 12V ve 24V Geniş Kapsam: Binek araçların yanı sıra hafif ticari ve ağır vasıta araçlarında da doğrudan kullanılabilme yeteneği.\n• 41 Bakım ve Servis Fonksiyonu: Günlük servis işlemlerinin tamamını kapsayan enjektör kodlama, akü eşleştirme, DPF rejenerasyonu vb. geniş kütüphane.\n• Çift Yönlü Aktif Test: Sistem bileşenlerini tablet üzerinden doğrudan çalıştırıp test etme.'
+      },
+      {
+        id: 'zenith-z5-special',
+        name: 'Zenith Z5 Profesyonel Arıza Tespit Cihazı',
+        code: 'ZENITH-Z5',
+        brand: 'zenith',
+        category: 'Arıza Tespit Cihazı',
+        image: '/kampanya/zenith-z5.jpg',
+        description: 'Zenith Z5, binek, hafif ticari ve 24V ağır vasıta araç gruplarında OE seviyesinde arıza tespiti ve diagnostik işlemler gerçekleştirmek için geliştirilmiş yeni nesil kompakt ve güçlü bir teşhis cihazıdır. Android 9 işletim sistemi, 8.0 inç yüksek çözünürlüklü dokunmatik ekranı ve 2.0 GHz sekiz çekirdekli hızlı işlemcisiyle atölyeler için mobil ve profesyonel bir çalışma ortamı sunar.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• 24V Ağır Vasıta Desteği: Binek ve hafif ticari araçların yanı sıra 24V kamyon, otobüs ve iş makinelerinde de doğrudan teşhis yeteneği.\n• J2534 Pass-Thru Protokolü: OEM yazılımlarıyla tam uyumluluk, yetkili servis seviyesinde beyin programlama ve adaptasyon yeteneği.\n• Çift Yönlü Aktif Test & Servis İşlemleri: Enjektör kodlama, boğaz kelebeği adaptasyonu, DPF rejenerasyonu, SAS kalibrasyonu ve EPB servis modları dahil 40+ sıfırlama işlevi.\n• Pre & Post Tarama Raporu: İşlem öncesi ve sonrası diagnostik durum raporları hazırlama, e-posta veya kablosuz olarak paylaşma.\n• Kompakt ve Ultra Dayanıklı Gövde: Sadece 680 gram ağırlığında, atölye ve saha kullanım koşullarına dayanıklı, darbe emici endüstriyel gövde tasarımı.'
+      },
+      {
+        id: 'opel-md2-special',
+        name: 'Opel Grubu MD2 Yetkili Servis Cihazı',
+        code: 'OBDTR-OPEL-MD2',
+        brand: 'opel',
+        category: 'Yetkili Servis Cihazı',
+        image: '/kampanya/opel-md2.jpg',
+        description: 'Opel Grubu MD2 Yetkili Servis Arıza Tespit Cihazı\n\nOpel Grubu MD2, Opel ve bağlı GM grubu araçlarda yetkili servis seviyesinde arıza tespiti, kodlama ve adaptasyon işlemleri yapabilmek için geliştirilmiş profesyonel bir diagnostik kittir. Orijinal yazılım uyumluluğu, yüksek hızlı veri aktarım protokolleri ve kararlı haberleşme altyapısı sayesinde servisinize yetkili servis standartlarında hizmet kabiliyeti kazandırır.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• Opel Grubu araçlarda motor, şanzıman, şasi, gövde, konfor modülleri ve tüm elektriksel donanımlarda derinlemesine hata okuma/silme.\n• En güncel Opel teşhis yazılımlarıyla tam uyumlu, online kodlama ve beyin programlama altyapısı.\n• Değişen modüllerin sisteme tanıtılması, yazılım güncellemeleri ve parametre yapılandırma.\n• OBDTR güvencesiyle kurulum desteği, teknik eğitim yardımı ve ürün garantisi.'
+      },
+      {
+        id: 'toyota-otc-special',
+        name: 'Toyota Grubu OTC Set Yetkili Servis Cihazı',
+        code: 'OBDTR-TOYOTA-OTC',
+        brand: 'toyota',
+        category: 'Yetkili Servis Cihazı',
+        image: '/kampanya/toyota-otc.jpg',
+        description: 'Toyota Grubu OTC Set Yetkili Servis Arıza Tespit Cihazı\n\nToyota Grubu OTC Set, Toyota ve Lexus marka araçlarda fabrika ve yetkili servis seviyesinde teşhis, adaptasyon, kalibrasyon ve online işlemler gerçekleştirebilen profesyonel bir diagnostik platformudur. Orijinal arayüz modülü ve bilgisayar yazılımı entegrasyonu ile Asya grubu araç uzmanları için vazgeçilmez bir settir.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• Toyota ve Lexus araçların hibrit, elektrikli ve binek/ticari tüm modellerinde OE seviyesinde arıza kodu okuma, silme ve canlı veri analizi.\n• Toyota Techstream yazılımıyla tam entegre çalışarak enjektör kodlama, akü sıfırlama, ABS hava alma ve anahtar tanımlama gibi kritik işlemleri hatasız yapar.\n• Orijinal araç haberleşme modülü (VIM), OBD kablosu ve bilgisayar bağlantı kablolarından oluşan eksiksiz profesyonel paket.\n• Yeni çıkan marka ve model güncellemelerini destekleyen altyapı, uzaktan kurulum ve teknik kullanım desteği.'
+      },
+      {
+        id: 'fiat-vlinker-special',
+        name: 'Fiat Grubu vLinker Set Yetkili Servis Cihazı',
+        code: 'OBDTR-FIAT-VLINKER',
+        brand: 'fiat',
+        category: 'Yetkili Servis Cihazı',
+        image: '/kampanya/fiat-vlinker.jpg',
+        description: 'Fiat Grubu vLinker Set Yetkili Servis Arıza Tespit Cihazı\n\nFiat Grubu vLinker Set, Fiat, Alfa Romeo, Lancia ve Jeep grubu araçlarda derinlemesine diagnostik, gövde bilgisayarı (BCM) kodlama, proxy hizalama ve servis sıfırlama işlemlerini gerçekleştiren yeni nesil profesyonel bir settir. Özel vLinker MS donanımı sayesinde CAN-bus hatlarındaki tüm modüllere eksiksiz erişim sağlar.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• Yeni takılan modülleri araca tanıtmak, kadran güncellemek ve donanım ekleme/çıkarma sonrası proxy eşleştirmesini hatasız tamamlamak için en güvenilir çözümdür.\n• Direksiyon kalibrasyonu, DPF rejenerasyonu, servis sıfırlama, airbag kontrolleri ve canlı grafiksel veri analizi.\n• vLinker MS donanımı ile Fiat grubunun kullandığı tüm MS-CAN ve HS-CAN ağ protokolleriyle tam hızda kayıpsız haberleşme.\n• OBDTR uzman ekibi tarafından uzaktan kurulum, lisans desteği ve donanım garantisi.'
+      },
+      {
+        id: 'mercedes-c6-special',
+        name: 'Mercedes Grubu C6 Set Yetkili Servis Cihazı',
+        code: 'OBDTR-MERCEDES-C6',
+        brand: 'mercedes',
+        category: 'Yetkili Servis Cihazı',
+        image: '/kampanya/mercedes-c6.jpg',
+        description: 'Mercedes Grubu C6 Set Yetkili Servis Arıza Tespit Cihazı\n\nMercedes Grubu C6 Set, Mercedes-Benz, Smart, Maybach ve Fuso marka binek, hafif ticari ve ağır vasıta araçlarda yetkili servis seviyesinde arıza tespiti, online SCN kodlama, adaptasyon ve kalibrasyon yapabilen en gelişmiş tanı ve teşhis cihazıdır. DoIP haberleşme protokolü desteğiyle yeni nesil araçlarda süper hızlı veri aktarımı sağlar.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• Mercedes Xentry yazılımıyla tam uyumlu kablosuz C6 VCI arayüzü sayesinde en karmaşık kodlama ve programlama işlemlerini saniyeler içinde gerçekleştirir.\n• Yetkili servis seviyesinde beyin programlama, SCN kodlama, şanzıman adaptasyonu, direksiyon kutusu kodlama ve ADAS kalibrasyonu.\n• Standart OBD kablosunun yanı sıra eski nesil araçlar için özel bağlantı uçları ve yüksek kaliteli arabirim kabloları.\n• OBDTR teknik ekibi tarafından tamamen kurulup kullanıma hazır halde teslim edilen, güncel sürüm yazılım desteğine sahip paket.'
+      },
+      {
+        id: 'vag-5054-special',
+        name: 'VAG Grubu 5054 VAS Set Yetkili Servis Cihazı',
+        code: 'OBDTR-VAG-5054',
+        brand: 'volkswagen',
+        category: 'Yetkili Servis Cihazı',
+        image: '/kampanya/vag-5054.jpg',
+        description: 'VAG Grubu 5054 VAS Set Yetkili Servis Arıza Tespit Cihazı\n\nVAG Grubu 5054 VAS Set, Volkswagen, Audi, Seat, Skoda, Bentley ve Lamborghini marka araçlarda fabrika seviyesinde teşhis, beyin kodlama, parametre yükleme ve kılavuzlu arıza tespiti yapabilmek için tasarlanmış profesyonel bir diagnostik arayüz setidir. Atölyenizde Alman grubu araçlarda yetkili servis kalitesinde çalışabilmenizi sağlayan en kararlı donanımdır.\n\nÖNE ÇIKAN ÖZELLİKLER:\n• ODIS yazılımı entegrasyonu sayesinde arızanın kaynağını adım adım test adımları ve şemalarla bulma (Guided Fault Finding).\n• ECU programlama, şanzıman adaptasyonu, direksiyon açısı sıfırlama, yeni parça tanıtma ve gizli özellik açma/kapama.\n• Araç ile bilgisayar arasında hızlı ve güvenli bağlantı sağlayan entegre kablosuz modül ve de dayanıklı kablolar.\n• OBDTR güvencesiyle güncel ODIS sürüm kurulumları, veri tabanı güncellemeleri ve teknik kullanım desteği.'
+      }
+    ];
+
+    // Filter Brand logic (without using classList changes to avoid Tailwind CDN Observer hangs)
+    function filterBrand(brand) {
+      // Toggle Active class in tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active-tab');
+      });
+      const activeTabBtn = document.getElementById('tab-' + brand);
+      if (activeTabBtn) activeTabBtn.classList.add('active-tab');
+
+      // Filter product cards directly using style.display
+      const cards = document.querySelectorAll('.product-card');
+      cards.forEach(card => {
+        const cardBrand = card.getAttribute('data-brand');
+        
+        let matches = false;
+        if (brand === 'all') {
+          matches = true;
+        } else if (brand === 'araba-gruplari') {
+          matches = (cardBrand === 'opel' || cardBrand === 'toyota' || cardBrand === 'fiat' || cardBrand === 'mercedes' || cardBrand === 'volkswagen' || cardBrand === 'araba-gruplari');
+        } else {
+          matches = (cardBrand === brand);
+        }
+
+        if (matches) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Scroll to section and auto filter
+    function filterBrandAndScroll(brand) {
+      filterBrand(brand);
+      
+      const targetSection = document.getElementById('cihazlar');
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Modal Details functions
+    function openProductModal(productId) {
+      const product = productsData.find(p => p.id === productId);
+      if (!product) return;
+
+      document.getElementById('modal-title').innerText = product.name;
+      document.getElementById('modal-category').innerText = product.category || 'Cihaz';
+      document.getElementById('modal-code').innerText = product.code || 'Bilinmiyor';
+      document.getElementById('modal-brand').innerText = product.brand.toUpperCase() || 'OBDTR';
+      
+      // Update image
+      const imgContainer = document.getElementById('modal-image-container');
+      imgContainer.innerHTML = `<img id="modal-img-el" src="${product.image}" alt="${product.name}" class="max-h-full object-contain">`;
+      
+      // Update description
+      document.getElementById('modal-description').innerText = product.description;
+      
+      // WhatsApp link setup
+      const waMessage = `Merhaba Altan Bey, OBDTR.com üzerindeki "${product.name}" (Ürün Kodu: ${product.code}) cihazı hakkında bilgi ve güncel fiyat teklifi almak istiyorum. Yardımcı olabilir misiniz?`;
+      document.getElementById('modal-wa-btn').href = "https://wa.me/905518540622?text=" + encodeURIComponent(waMessage);
+
+      // Open Modal animation
+      const modal = document.getElementById('product-detail-modal');
+      const panel = document.getElementById('modal-panel');
+      
+      modal.classList.remove('pointer-events-none', 'opacity-0');
+      setTimeout(() => {
+        panel.classList.remove('translate-x-full');
+        panel.classList.add('translate-x-0');
+      }, 50);
+    }
+
+    function closeProductModal() {
+      const modal = document.getElementById('product-detail-modal');
+      const panel = document.getElementById('modal-panel');
+      
+      panel.classList.remove('translate-x-0');
+      panel.classList.add('translate-x-full');
+      
+      setTimeout(() => {
+        modal.classList.add('pointer-events-none', 'opacity-0');
+      }, 300);
+    }
+
+    // Modal click-out backdrop handler
+    document.getElementById('product-detail-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeProductModal();
+      }
+    });
+
+    // Esc close handler
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeProductModal();
+        closeLightbox();
+      }
+    });
+
+    // Lightbox for modal image zoom
+    function openLightbox() {
+      const imgEl = document.getElementById('modal-img-el');
+      if (!imgEl) return;
+      openDirectLightbox(imgEl.src, imgEl.alt);
+    }
+
+    // Direct Lightbox (Campaigns and Products image click)
+    function openDirectLightbox(src, alt = "Görsel") {
+      const lightbox = document.getElementById('image-lightbox');
+      const lightboxImg = document.getElementById('lightbox-image');
+      
+      lightboxImg.src = src;
+      lightboxImg.alt = alt;
+      
+      lightbox.classList.remove('pointer-events-none', 'opacity-0');
+      lightboxImg.classList.remove('scale-95');
+      lightboxImg.classList.add('scale-100');
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById('image-lightbox');
+      const lightboxImg = document.getElementById('lightbox-image');
+      
+      lightbox.classList.add('pointer-events-none', 'opacity-0');
+      lightboxImg.classList.remove('scale-100');
+      lightboxImg.classList.add('scale-95');
+    }
+
+    // Contact Form handler
+    function sendWhatsAppMessage(event) {
+      event.preventDefault();
+      const name = document.getElementById('contact-name').value.trim();
+      const product = document.getElementById('contact-product').value;
+      const message = `Merhaba Altan Bey, ben ${name}. OBDTR.com vitrininizdeki "${product}" ile ilgileniyorum. Detaylı bilgi alabilir miyim?`;
+      window.open(`https://wa.me/905518540622?text=${encodeURIComponent(message)}`, '_blank');
+    }
+  </script>
+
+</body>
+</html>
