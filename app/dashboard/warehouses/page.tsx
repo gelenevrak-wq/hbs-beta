@@ -2899,19 +2899,36 @@ ${sizeStr}
                       <span className="text-[9px] font-black text-slate-550 uppercase tracking-wider block">🏢 Reyon Şematik Görünümü</span>
                       <div className="rounded-2xl border border-slate-150 p-2.5 overflow-x-auto bg-slate-50/50">
                         <div className="flex flex-col gap-2 min-w-[280px]">
+                          {/* Column Headers (Slot 1, Slot 2, ...) */}
+                          <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5 mb-1">
+                            <span className="w-8 text-[9px] font-black text-slate-700 text-right shrink-0">Konum</span>
+                            <div className="flex gap-2.5">
+                              {Array.from({ length: c.depth }, (_, dIdx) => {
+                                const slot = dIdx + 1;
+                                const sideWidthClass = c.isDoubleRow ? "w-[130px]" : "w-[94px]";
+                                return (
+                                  <div key={slot} className={`${sideWidthClass} shrink-0 text-center text-[10px] font-black text-slate-800`}>
+                                    SLOT {slot}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+
                           {Array.from({ length: c.tiers }, (_, tIdx) => {
                             const level = c.tiers - tIdx; // Top levels first
                             return (
                               <div key={level} className="flex items-center gap-2">
-                                <span className="w-8 text-[8px] font-black text-slate-550 text-right shrink-0">Kat {level}</span>
-                                <div className="flex-1 flex gap-2">
+                                <span className="w-8 text-[9px] font-black text-slate-700 text-right shrink-0">Kat {level}</span>
+                                <div className="flex gap-2.5">
                                   {Array.from({ length: c.depth }, (_, dIdx) => {
                                     const slot = dIdx + 1;
                                     const baseCode = `${c.zone}-${slot < 10 ? `0${slot}` : `${slot}`}-${level < 10 ? `0${level}` : `${level}`}`;
 
                                     const sides = c.isDoubleRow ? ["S1", "S2"] : [""];
+                                    const sideWidthClass = c.isDoubleRow ? "w-14" : "w-20";
                                     return (
-                                      <div key={baseCode} className="flex-1 flex gap-1 bg-white border border-slate-200 p-1 rounded-xl shadow-inner">
+                                      <div key={baseCode} className="shrink-0 flex gap-1.5 bg-white border border-slate-200 p-1.5 rounded-2xl shadow-inner">
                                         {sides.map((side) => {
                                           const sideSuffix = side ? `-${side}` : "";
                                           const sideCode = `${baseCode}${sideSuffix}`;
@@ -2919,14 +2936,14 @@ ${sizeStr}
                                           // Sub-bins divisions count
                                           const binsCount = c.binsConfig?.[sideCode] || 1;
                                           return (
-                                            <div key={sideCode} className="flex-1 flex flex-col gap-0.5 min-h-[36px]">
+                                            <div key={sideCode} className={`${sideWidthClass} flex flex-col gap-1 shrink-0`}>
                                               {/* Row label if double row */}
                                               {c.isDoubleRow && (
-                                                <span className="text-[7px] text-slate-550 font-extrabold text-center block leading-none mb-0.5">{side}</span>
+                                                <span className="text-[8px] text-slate-700 font-extrabold text-center block leading-none mb-0.5">{side}</span>
                                               )}
 
                                               {/* Bins render */}
-                                              <div className="flex-1 flex gap-0.5">
+                                              <div className="flex gap-1 h-12">
                                                 {Array.from({ length: binsCount }).map((_, bIdx) => {
                                                   const binCode = binsCount > 1 ? `${sideCode}-B${bIdx + 1}` : sideCode;
                                                   const hasProduct = products.some(
@@ -2940,16 +2957,16 @@ ${sizeStr}
                                                       key={binCode}
                                                       onClick={() => setSelectedWhiteboardShelfCode(binCode)}
                                                       title={`${binCode} (${hasProduct ? "Dolu" : "Boş"}) - Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın`}
-                                                      className={`flex-1 min-h-[26px] rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
+                                                      className={`flex-1 h-12 rounded-xl border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
                                                         hasProduct
                                                           ? "bg-indigo-50 border-indigo-300 text-indigo-700 hover:bg-indigo-100"
                                                           : "bg-emerald-50 border-emerald-300 border-dashed text-emerald-700 hover:bg-emerald-100/50"
                                                       }`}
                                                     >
-                                                      <span className="text-[8px] font-mono font-black">
+                                                      <span className="text-[10px] font-mono font-bold leading-none">
                                                         {binsCount > 1 ? `B${bIdx + 1}` : `${slot}-${level}`}
                                                       </span>
-                                                      {hasProduct && <span className="text-[6px] font-black leading-none block mt-0.5">📦</span>}
+                                                      {hasProduct && <span className="text-[8px] font-black leading-none block mt-0.5">📦</span>}
                                                     </div>
                                                   );
                                                 })}
