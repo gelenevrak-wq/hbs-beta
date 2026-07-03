@@ -1096,6 +1096,16 @@ export default function ProductsPage() {
       return;
     }
 
+    // 1. Update UI state immediately
+    const updatedProducts = products.filter((p) => p.id !== id);
+    setProducts(updatedProducts);
+    setMessage(`"${productName}" başarıyla silindi.`);
+    if (editingProductId === id) {
+      setEditingProductId(null);
+      resetForm();
+    }
+
+    // 2. Perform async DB delete in the background
     const isSupabaseConfigured = 
       process.env.NEXT_PUBLIC_SUPABASE_URL && 
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
@@ -1103,27 +1113,21 @@ export default function ProductsPage() {
     if (isSupabaseConfigured) {
       try {
         if (id.length === 36) {
-          await supabase
+          const { error } = await supabase
             .from("offerable_items")
             .delete()
             .eq("id", id);
+          if (error) console.error("Supabase delete error:", error);
         } else {
-          await supabase
+          const { error } = await supabase
             .from("offerable_items")
             .delete()
             .eq("code", productSku);
+          if (error) console.error("Supabase delete error:", error);
         }
       } catch (err) {
         console.error("Supabase delete error:", err);
       }
-    }
-
-    const updatedProducts = products.filter((p) => p.id !== id);
-    setProducts(updatedProducts);
-    setMessage(`"${productName}" başarıyla silindi.`);
-    if (editingProductId === id) {
-      setEditingProductId(null);
-      resetForm();
     }
   }
 
@@ -1157,31 +1161,8 @@ export default function ProductsPage() {
     }
 
     const productsToDelete = products.filter((p) => selectedProductIds.includes(p.id));
-    
-    const isSupabaseConfigured = 
-      process.env.NEXT_PUBLIC_SUPABASE_URL && 
-      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
-    if (isSupabaseConfigured) {
-      try {
-        for (const p of productsToDelete) {
-          if (p.id.length === 36) {
-            await supabase
-              .from("offerable_items")
-              .delete()
-              .eq("id", p.id);
-          } else {
-            await supabase
-              .from("offerable_items")
-              .delete()
-              .eq("code", p.sku);
-          }
-        }
-      } catch (err) {
-        console.error("Supabase bulk delete error:", err);
-      }
-    }
-
+    // 1. Update UI state immediately so the user sees them disappear instantly!
     const remainingProducts = products.filter((p) => !selectedProductIds.includes(p.id));
     setProducts(remainingProducts);
     setSelectedProductIds([]);
@@ -1189,6 +1170,37 @@ export default function ProductsPage() {
       ? `Successfully deleted ${count} products.` 
       : `${count} adet ürün başarıyla silindi.`
     );
+
+    // 2. Perform async batch DB delete
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
+      try {
+        const uuidIds = productsToDelete.filter(p => p.id.length === 36).map(p => p.id);
+        const nonUuidSkus = productsToDelete.filter(p => p.id.length !== 36 && p.sku).map(p => p.sku);
+
+        // Execute batch deletes via single requests rather than sequential loops
+        if (uuidIds.length > 0) {
+          const { error } = await supabase
+            .from("offerable_items")
+            .delete()
+            .in("id", uuidIds);
+          if (error) console.error("Supabase bulk delete UUIDs error:", error);
+        }
+
+        if (nonUuidSkus.length > 0) {
+          const { error } = await supabase
+            .from("offerable_items")
+            .delete()
+            .in("code", nonUuidSkus);
+          if (error) console.error("Supabase bulk delete SKUs error:", error);
+        }
+      } catch (err) {
+        console.error("Supabase bulk delete error:", err);
+      }
+    }
   };
 
   async function duplicateProduct(p: ProductRecord) {
