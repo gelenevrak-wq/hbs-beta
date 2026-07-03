@@ -227,6 +227,13 @@ export default function ProductsPage() {
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Search Filter Options
+  const [filterVisibility, setFilterVisibility] = useState<"all" | "visible" | "hidden">("all");
+  const [filterMinPrice, setFilterMinPrice] = useState("");
+  const [filterMaxPrice, setFilterMaxPrice] = useState("");
+  const [filterMinQty, setFilterMinQty] = useState("");
+  const [filterMaxQty, setFilterMaxQty] = useState("");
+
   // Gallery and Media Integration
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
 
@@ -568,8 +575,8 @@ export default function ProductsPage() {
   const filteredProducts = useMemo(() => {
     const q = search.trim().toLowerCase();
     return products.filter((product) => {
-      return (
-        !q ||
+      // 1. Text Search Query
+      const matchesText = !q ||
         product.name.toLowerCase().includes(q) ||
         product.category.toLowerCase().includes(q) ||
         product.brand.toLowerCase().includes(q) ||
@@ -577,14 +584,37 @@ export default function ProductsPage() {
         product.barcode.toLowerCase().includes(q) ||
         product.qrCode.toLowerCase().includes(q) ||
         product.sku.toLowerCase().includes(q) ||
-        product.oemCode.toLowerCase().includes(q)
-      );
+        product.oemCode.toLowerCase().includes(q);
+
+      // 2. Showcase Visibility Filter
+      let matchesVisibility = true;
+      if (filterVisibility === "visible") {
+        matchesVisibility = product.visibility === "visible";
+      } else if (filterVisibility === "hidden") {
+        matchesVisibility = product.visibility === "hidden";
+      }
+
+      // 3. Price Filter
+      const priceVal = parseFloat(product.salePrice) || 0;
+      const minPriceVal = parseFloat(filterMinPrice);
+      const maxPriceVal = parseFloat(filterMaxPrice);
+      const matchesMinPrice = isNaN(minPriceVal) || priceVal >= minPriceVal;
+      const matchesMaxPrice = isNaN(maxPriceVal) || priceVal <= maxPriceVal;
+
+      // 4. Quantity Filter
+      const qtyVal = parseFloat(product.quantity) || 0;
+      const minQtyVal = parseFloat(filterMinQty);
+      const maxQtyVal = parseFloat(filterMaxQty);
+      const matchesMinQty = isNaN(minQtyVal) || qtyVal >= minQtyVal;
+      const matchesMaxQty = isNaN(maxQtyVal) || qtyVal <= maxQtyVal;
+
+      return matchesText && matchesVisibility && matchesMinPrice && matchesMaxPrice && matchesMinQty && matchesMaxQty;
     });
-  }, [products, search]);
+  }, [products, search, filterVisibility, filterMinPrice, filterMaxPrice, filterMinQty, filterMaxQty]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search]);
+  }, [search, filterVisibility, filterMinPrice, filterMaxPrice, filterMinQty, filterMaxQty]);
 
   const itemsPerPage = 15;
 
@@ -2250,12 +2280,74 @@ export default function ProductsPage() {
                 )}
               </div>
 
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Kod, marka veya isimle filtrele..."
-                className="mt-3 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-blue-500 focus:bg-white"
-              />
+              <div className="mt-3 space-y-2">
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Kod, marka veya isimle filtrele..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs outline-none focus:border-blue-500 focus:bg-white font-semibold"
+                />
+                
+                <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-3 bg-slate-50 border border-slate-200/60 p-3 rounded-2xl">
+                  {/* Showcase Visibility */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-slate-500">Vitrin Durumu</span>
+                    <select
+                      value={filterVisibility}
+                      onChange={(e) => setFilterVisibility(e.target.value as any)}
+                      className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-slate-700"
+                    >
+                      <option value="all">Tümü (Vitrin & Gizli)</option>
+                      <option value="visible">👁️ Sadece Vitrinde Görünür</option>
+                      <option value="hidden">🙈 Sadece Vitrinde Gizli</option>
+                    </select>
+                  </div>
+
+                  {/* Price Range */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-slate-500">Satış Fiyatı Aralığı</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={filterMinPrice}
+                        onChange={(e) => setFilterMinPrice(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
+                      />
+                      <span className="text-slate-400 font-bold">-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={filterMaxPrice}
+                        onChange={(e) => setFilterMaxPrice(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Stock Qty Range */}
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-slate-500">Stok Miktarı Aralığı</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={filterMinQty}
+                        onChange={(e) => setFilterMinQty(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
+                      />
+                      <span className="text-slate-400 font-bold">-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={filterMaxQty}
+                        onChange={(e) => setFilterMaxQty(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div className="mt-4 space-y-3 max-h-[600px] overflow-y-auto pr-1">
                 {paginatedProducts.map((p) => (
