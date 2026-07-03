@@ -225,6 +225,7 @@ export default function ProductsPage() {
   const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Gallery and Media Integration
   const [galleryUrls, setGalleryUrls] = useState<string[]>([]);
@@ -580,6 +581,17 @@ export default function ProductsPage() {
       );
     });
   }, [products, search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search]);
+
+  const itemsPerPage = 15;
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredProducts, currentPage]);
 
   function handleTerminalScan(code: string) {
     const cleanCode = code.trim().toLowerCase();
@@ -2219,7 +2231,7 @@ export default function ProductsPage() {
                     <label className="flex items-center gap-1.5 text-xs font-black text-slate-700 cursor-pointer select-none bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:bg-slate-100">
                       <input
                         type="checkbox"
-                        checked={filteredProducts.map(p => p.id).every(id => selectedProductIds.includes(id))}
+                        checked={filteredProducts.length > 0 && filteredProducts.every(p => selectedProductIds.includes(p.id))}
                         onChange={toggleSelectAllProducts}
                         className="h-3.5 w-3.5 rounded border-slate-350 text-blue-650 cursor-pointer"
                       />
@@ -2246,7 +2258,7 @@ export default function ProductsPage() {
               />
 
               <div className="mt-4 space-y-3 max-h-[600px] overflow-y-auto pr-1">
-                {filteredProducts.map((p) => (
+                {paginatedProducts.map((p) => (
                   <article key={p.id} className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-xs space-y-2 relative group hover:border-slate-250 transition">
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex items-center gap-2 min-w-0">
@@ -2352,6 +2364,34 @@ export default function ProductsPage() {
                   <p className="text-slate-400 italic text-center py-4">Filtreye uygun ürün bulunamadı.</p>
                 )}
               </div>
+
+              {/* Pagination Controls */}
+              {filteredProducts.length > itemsPerPage && (
+                <div className="mt-4 flex items-center justify-between border-t border-slate-200/60 pt-3 text-xs">
+                  <button
+                    type="button"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    {language === "en" ? "← Previous" : "← Önceki"}
+                  </button>
+                  <span className="font-extrabold text-slate-600">
+                    {language === "en" 
+                      ? `Page ${currentPage} of ${Math.ceil(filteredProducts.length / itemsPerPage)}`
+                      : `${Math.ceil(filteredProducts.length / itemsPerPage)} Sayfa arasından ${currentPage}. Sayfa`
+                    }
+                  </span>
+                  <button
+                    type="button"
+                    disabled={currentPage >= Math.ceil(filteredProducts.length / itemsPerPage)}
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredProducts.length / itemsPerPage)))}
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  >
+                    {language === "en" ? "Next →" : "Sonraki →"}
+                  </button>
+                </div>
+              )}
             </div>
           </aside>
         </section>
