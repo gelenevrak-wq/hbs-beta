@@ -4,6 +4,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useRef } from "react";
 import CompactLanguageSwitcher, { LanguageCode, isLanguageCode } from "@/components/language/CompactLanguageSwitcher";
 
+type CorridorConfig = {
+  zone: string;
+  depth: number;
+  tiers: number;
+};
+
 type Warehouse = {
   id: string;
   name: string;
@@ -501,6 +507,11 @@ export default function WarehousesRevampPage() {
   // Layout Shaper States
   const [shaperZones, setShaperZones] = useState("A, B, C");
   const [shaperShelfDepth, setShaperShelfDepth] = useState(4); // 4 shelves per zone (01, 02, 03, 04)
+  const [corridors, setCorridors] = useState<CorridorConfig[]>([
+    { zone: "A", depth: 4, tiers: 3 },
+    { zone: "B", depth: 4, tiers: 3 },
+    { zone: "C", depth: 4, tiers: 3 }
+  ]);
 
   // Product Placement States
   const [placeProductId, setPlaceProductId] = useState("");
@@ -575,6 +586,35 @@ export default function WarehousesRevampPage() {
     loadDatabase();
   }, []);
 
+  const parseShelvesToConfig = (shelves: string[]): CorridorConfig[] => {
+    if (!shelves || shelves.length === 0) {
+      return [
+        { zone: "A", depth: 4, tiers: 3 },
+        { zone: "B", depth: 4, tiers: 3 },
+        { zone: "C", depth: 4, tiers: 3 }
+      ];
+    }
+    const map: { [key: string]: { slots: Set<number>, levels: Set<number> } } = {};
+    shelves.forEach(sh => {
+      const parts = sh.split("-");
+      if (parts.length >= 2) {
+        const zone = parts[0];
+        const slot = parseInt(parts[1]) || 1;
+        const level = parts[2] ? (parseInt(parts[2]) || 1) : 1;
+        if (!map[zone]) {
+          map[zone] = { slots: new Set<number>(), levels: new Set<number>() };
+        }
+        map[zone].slots.add(slot);
+        map[zone].levels.add(level);
+      }
+    });
+    return Object.keys(map).sort().map(zone => {
+      const depth = map[zone].slots.size > 0 ? Math.max(...Array.from(map[zone].slots)) : 1;
+      const tiers = map[zone].levels.size > 0 ? Math.max(...Array.from(map[zone].levels)) : 1;
+      return { zone, depth, tiers };
+    });
+  };
+
   const loadDatabase = () => {
     try {
       // A) Load Products Catalog
@@ -606,6 +646,7 @@ export default function WarehousesRevampPage() {
           // Set layout shaper defaults from active warehouse
           const activeWh = myStore.warehouses[0];
           setShaperZones(activeWh.zones ? activeWh.zones.join(", ") : "A, B, C");
+          setCorridors(parseShelvesToConfig(activeWh.shelves || []));
         } else {
           // Open setup wizard if no warehouses exist
           setShowWizard(true);
@@ -725,24 +766,29 @@ export default function WarehousesRevampPage() {
     if (!activeWh) return;
 
     try {
-      const parsedZones = shaperZones
-        .split(",")
-        .map((z) => z.trim().toUpperCase())
-        .filter((z) => z !== "");
-      
-      if (parsedZones.length === 0) {
-        showError("Lütfen en az bir adet bölge harfi girin.");
-        return;
-      }
-
-      // Generate shelves list based on depth slider
       const generatedShelves: string[] = [];
-      parsedZones.forEach((zone) => {
-        for (let i = 1; i <= shaperShelfDepth; i++) {
-          const num = i < 10 ? `0${i}` : `${i}`;
-          generatedShelves.push(`${zone}-${num}`);
+      const parsedZones: string[] = [];
+
+      corridors.forEach((corr) => {
+        const zone = corr.zone.trim().toUpperCase();
+        if (zone) {
+          if (!parsedZones.includes(zone)) {
+            parsedZones.push(zone);
+          }
+          for (let d = 1; d <= corr.depth; d++) {
+            const slotStr = d < 10 ? `0${d}` : `${d}`;
+            for (let t = 1; t <= corr.tiers; t++) {
+              const tierStr = t < 10 ? `0${t}` : `${t}`;
+              generatedShelves.push(`${zone}-${slotStr}-${tierStr}`);
+            }
+          }
         }
       });
+
+      if (parsedZones.length === 0) {
+        showError("Lütfen en az bir adet bölge tanımlayın.");
+        return;
+      }
 
       const updatedWarehouses = warehouses.map((w) =>
         w.id === activeWarehouseId
@@ -1132,6 +1178,7 @@ export default function WarehousesRevampPage() {
                   onClick={() => {
                     setActiveWarehouseId(w.id);
                     setShaperZones(w.zones ? w.zones.join(", ") : "A, B, C");
+                    setCorridors(parseShelvesToConfig(w.shelves || []));
                   }}
                   className={`rounded-2xl border p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-98 ${
                     isActive
@@ -1177,45 +1224,180 @@ export default function WarehousesRevampPage() {
                   <p className="text-xs text-slate-550">{t.layoutShaperDesc}</p>
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="grid gap-1">
-                    <span className="text-xs font-bold text-slate-650">{t.zonesCorridors}</span>
+                <div className="space-y-4">
+                  {/* Quick Add Corridor */}
+                  <div className="flex gap-2">
                     <input
                       type="text"
-                      value={shaperZones}
-                      onChange={(e) => setShaperZones(e.target.value)}
-                      placeholder={t.zonesExample}
-                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:border-blue-500"
+                      id="new-corridor-input"
+                      placeholder="Yeni Reyon Kodu (Örn: D, E, F)"
+                      maxLength={3}
+                      className="flex-1 rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold uppercase focus:outline-none focus:border-blue-500"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const val = (e.target as HTMLInputElement).value.trim().toUpperCase();
+                          if (val && !corridors.some(c => c.zone === val)) {
+                            setCorridors([...corridors, { zone: val, depth: 4, tiers: 3 }]);
+                            (e.target as HTMLInputElement).value = "";
+                          }
+                        }
+                      }}
                     />
-                    <p className="text-[9px] text-slate-400">{t.zonesHelp}</p>
-                  </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const input = document.getElementById("new-corridor-input") as HTMLInputElement;
+                        const val = input?.value.trim().toUpperCase();
+                        if (val && !corridors.some(c => c.zone === val)) {
+                          setCorridors([...corridors, { zone: val, depth: 4, tiers: 3 }]);
+                          input.value = "";
+                        } else if (!val) {
+                          showError("Lütfen bir reyon kodu girin.");
+                        } else {
+                          showError("Bu reyon zaten mevcut.");
+                        }
+                      }}
+                      className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-4 py-2 transition shadow-sm active:scale-95"
+                    >
+                      + Reyon Ekle
+                    </button>
+                  </div>
 
-                  <label className="grid gap-1">
-                    <span className="text-xs font-bold text-slate-655 flex justify-between">
-                      <span>{t.verticalDepth}</span>
-                      <span className="text-blue-650 font-black">{shaperShelfDepth} {t.shelvesUnit}</span>
-                    </span>
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        value={shaperShelfDepth}
-                        onChange={(e) => setShaperShelfDepth(Number(e.target.value))}
-                        className="flex-1 accent-blue-600 cursor-pointer h-2 bg-slate-100 rounded-lg appearance-none"
-                      />
-                      <span className="text-xs font-black bg-slate-100 px-2.5 py-1 rounded-lg">{shaperShelfDepth}</span>
-                    </div>
-                    <p className="text-[9px] text-slate-400">{t.verticalDepthHelp}</p>
-                  </label>
+                  {/* Corridors Editor List */}
+                  <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+                    {corridors.map((c, idx) => (
+                      <div key={c.zone} className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 space-y-3.5 shadow-sm relative group hover:border-slate-300 transition">
+                        <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-black text-slate-800">📍 Reyon {c.zone}</span>
+                            <span className="text-[10px] bg-slate-200 text-slate-700 font-extrabold px-2 py-0.5 rounded-full">
+                              {c.depth * c.tiers} Toplam Raf
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setCorridors(corridors.filter(item => item.zone !== c.zone))}
+                            className="text-xs text-rose-600 hover:text-rose-700 font-bold"
+                          >
+                            Kaldır ✕
+                          </button>
+                        </div>
+
+                        {/* Dimensions Editor Controls */}
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="space-y-1.5">
+                            <span className="text-[11px] font-bold text-slate-500 block">↔ Reyon Derinliği (Slot / Genişlik)</span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCorridors(corridors.map((item, i) => i === idx ? { ...item, depth: Math.max(1, item.depth - 1) } : item));
+                                }}
+                                className="h-7 w-7 rounded bg-white border border-slate-200 text-slate-800 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center text-xs active:scale-90"
+                              >
+                                -
+                              </button>
+                              <span className="flex-1 text-center font-black text-xs bg-white border border-slate-200 py-1 rounded-md shadow-sm">
+                                {c.depth} Slot
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCorridors(corridors.map((item, i) => i === idx ? { ...item, depth: Math.min(20, item.depth + 1) } : item));
+                                }}
+                                className="h-7 w-7 rounded bg-white border border-slate-200 text-slate-800 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center text-xs active:scale-90"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="space-y-1.5">
+                            <span className="text-[11px] font-bold text-slate-500 block">↕ Raf Kat Sayısı (Yükseklik)</span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCorridors(corridors.map((item, i) => i === idx ? { ...item, tiers: Math.max(1, item.tiers - 1) } : item));
+                                }}
+                                className="h-7 w-7 rounded bg-white border border-slate-200 text-slate-800 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center text-xs active:scale-90"
+                              >
+                                -
+                              </button>
+                              <span className="flex-1 text-center font-black text-xs bg-white border border-slate-200 py-1 rounded-md shadow-sm">
+                                {c.tiers} Kat
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCorridors(corridors.map((item, i) => i === idx ? { ...item, tiers: Math.min(10, item.tiers + 1) } : item));
+                                }}
+                                className="h-7 w-7 rounded bg-white border border-slate-200 text-slate-800 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center text-xs active:scale-90"
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Interactive Visual Grid Preview */}
+                        <div className="space-y-1 pt-1">
+                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">🏢 Reyon Önizleme Haritası</span>
+                          <div className="rounded-xl border border-slate-200/60 bg-white p-2.5 overflow-x-auto">
+                            <div className="flex flex-col gap-1.5 min-w-[280px]">
+                              {Array.from({ length: c.tiers }, (_, tIdx) => {
+                                const level = c.tiers - tIdx; // Render highest level at the top
+                                return (
+                                  <div key={level} className="flex items-center gap-1.5">
+                                    <span className="w-8 text-[9px] font-black text-slate-400 text-right shrink-0">Kat {level}</span>
+                                    <div className="flex-1 flex gap-1.5">
+                                      {Array.from({ length: c.depth }, (_, dIdx) => {
+                                        const slot = dIdx + 1;
+                                        const code = `${c.zone}-${slot < 10 ? `0${slot}` : `${slot}`}-${level < 10 ? `0${level}` : `${level}`}`;
+                                        const hasProduct = products.some(
+                                          (p) =>
+                                            p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+                                            p.shelf === code
+                                        );
+                                        return (
+                                          <div
+                                            key={code}
+                                            onClick={() => {
+                                              setScannedShelfCode(code);
+                                              setScannedProduct(null);
+                                              showSuccess(language === "en" ? `Selected shelf: ${code}` : `Seçilen raf konumu: ${code}`);
+                                            }}
+                                            title={`${code} (${hasProduct ? "Dolu / Ürün Var" : "Boş Raf"}) - İncelemek için tıklayın`}
+                                            className={`flex-1 h-9 rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
+                                              hasProduct
+                                                ? "bg-indigo-50 border-indigo-300 text-indigo-700 hover:bg-indigo-100"
+                                                : "bg-slate-50 border-slate-200 border-dashed text-slate-500 hover:bg-slate-100"
+                                            }`}
+                                          >
+                                            <span className="text-[8px] font-mono font-bold block">{slot < 10 ? `0${slot}` : slot}-{level < 10 ? `0${level}` : level}</span>
+                                            {hasProduct && <span className="text-[7px] font-black mt-0.5">📦 Dolu</span>}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleSaveLayout}
-                  className="w-full rounded-xl bg-slate-900 py-2.5 text-xs font-black text-white hover:bg-slate-800 transition"
+                  className="w-full rounded-xl bg-slate-900 py-3 text-xs font-black text-white hover:bg-slate-800 transition active:scale-98 shadow-sm flex items-center justify-center gap-1.5"
                 >
-                  {t.generateLayoutBtn}
+                  <span>⚡</span> {t.generateLayoutBtn}
                 </button>
               </div>
 
