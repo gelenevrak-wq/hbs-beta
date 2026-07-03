@@ -489,15 +489,15 @@ export default function StoreUsersPage() {
         {/* License Usage Indicators */}
         <section className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-xl">
-            <div className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">{t.activeUsersCount}</div>
+            <div className="text-[11px] font-bold uppercase text-slate-550 tracking-wider">{t.activeUsersCount}</div>
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-3xl font-black text-white">{usersList.length}</span>
-              <span className="text-sm text-slate-400 font-bold">/ {maxUsers}</span>
+              <span className="text-sm text-slate-550 font-bold">/ {maxUsers}</span>
             </div>
           </div>
           
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-xl">
-            <div className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">{t.maxUsersLimit}</div>
+            <div className="text-[11px] font-bold uppercase text-slate-550 tracking-wider">{t.maxUsersLimit}</div>
             <div className="mt-2 text-2xl font-black text-blue-300">
               {maxUsers === 99999 ? (language === "tr" ? "Sınırsız Paket" : "Unlimited Pack") : `${maxUsers} Kullanıcı`}
             </div>
@@ -615,20 +615,20 @@ export default function StoreUsersPage() {
                   className="grid gap-4 rounded-2xl border border-white/10 bg-slate-950/60 p-4 items-center sm:grid-cols-[1.2fr_1fr_1.5fr_auto]"
                 >
                   <div>
-                    <span className="text-[9px] uppercase tracking-widest text-slate-500 font-bold block">{t.colName}</span>
+                    <span className="text-[9px] uppercase tracking-widest text-slate-700 font-bold block">{t.colName}</span>
                     <span className="mt-1 font-black text-sm block text-slate-200">{user.name}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">{user.username}</span>
+                    <span className="text-[10px] text-slate-550 block mt-0.5">{user.username}</span>
                   </div>
 
                   <div>
-                    <span className="text-[9px] uppercase tracking-widest text-slate-500 font-bold block mb-1">{t.colRole}</span>
+                    <span className="text-[9px] uppercase tracking-widest text-slate-700 font-bold block mb-1">{t.colRole}</span>
                     <span className={`inline-block rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase ${getRoleBadgeColor(user.role)}`}>
                       {getTranslatedRole(user.role)}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-[9px] uppercase tracking-widest text-slate-500 font-bold block">{t.colAccess}</span>
+                    <span className="text-[9px] uppercase tracking-widest text-slate-700 font-bold block">{t.colAccess}</span>
                     <span className="mt-1 text-xs text-slate-300 block font-semibold leading-normal">{getTranslatedAccess(user.role)}</span>
                   </div>
 

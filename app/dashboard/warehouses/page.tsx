@@ -1747,7 +1747,7 @@ ${sizeStr}
               <div className="text-center space-y-1">
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">{t.wizardTitleSmall}</span>
                 <h2 className="text-xl font-black text-slate-900">{t.wizardTitle}</h2>
-                <p className="text-xs text-slate-550">{t.wizardDesc}</p>
+                <p className="text-xs text-slate-600">{t.wizardDesc}</p>
               </div>
 
               {/* Number of warehouses input */}
@@ -1822,7 +1822,7 @@ ${sizeStr}
 
         {/* WAREHOUSE SELECTOR (Tabs as large cards) */}
         <section className="space-y-2">
-          <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">{t.activeWarehousesLabel}</span>
+          <span className="text-[10px] font-black uppercase tracking-wider text-slate-700">{t.activeWarehousesLabel}</span>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {warehouses.map((w) => {
               const isActive = w.id === activeWarehouseId;
@@ -1846,15 +1846,15 @@ ${sizeStr}
                       <h3 className="font-black text-slate-900 text-sm flex items-center gap-1">
                         🏪 {w.name}
                       </h3>
-                      <p className="text-[10px] text-slate-550 font-bold mt-0.5">{w.city} · {w.purpose}</p>
+                      <p className="text-[10px] text-slate-600 font-bold mt-0.5">{w.city} · {w.purpose}</p>
                     </div>
                     <span className={`rounded-full px-2 py-0.5 text-[8px] font-black uppercase ${
-                      isActive ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"
+                      isActive ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"
                     }`}>
                       {isActive ? t.badgeSelected : t.badgePassive}
                     </span>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-550 font-black">
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-600 font-black">
                     <span>📦 {itemsCount} {t.definedProducts}</span>
                     <span className="font-mono text-blue-600">{w.shelves?.length || 0} {t.shelfPositions}</span>
                   </div>
@@ -1930,7 +1930,7 @@ ${sizeStr}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-3xl border border-slate-200 shadow-sm mb-4">
             <div>
               <h3 className="text-sm font-black text-slate-800">Depo Tasarım Seçenekleri</h3>
-              <p className="text-[10px] text-slate-500 font-semibold">Tasarım stüdyosu veya basit liste görünümü arasında geçiş yapın.</p>
+              <p className="text-[10px] text-slate-700 font-semibold">Tasarım stüdyosu veya basit liste görünümü arasında geçiş yapın.</p>
             </div>
             <div className="flex gap-2">
               <button
@@ -1939,7 +1939,7 @@ ${sizeStr}
                 className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
                   !isWhiteboardMode
                     ? "bg-slate-900 text-white shadow-sm animate-scaleUp"
-                    : "bg-slate-100 text-slate-655 hover:text-slate-800"
+                    : "bg-slate-100 text-slate-700 hover:text-slate-800"
                 }`}
               >
                 🗂️ Basit Liste Görünümü
@@ -1950,7 +1950,7 @@ ${sizeStr}
                 className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
                   isWhiteboardMode
                     ? "bg-blue-600 text-white shadow-sm animate-scaleUp"
-                    : "bg-slate-100 text-slate-655 hover:text-slate-800"
+                    : "bg-slate-100 text-slate-700 hover:text-slate-800"
                 }`}
               >
                 🎨 Depo Tasarım Beyaz Tahtası (Studio)
@@ -1971,7 +1971,7 @@ ${sizeStr}
                 <div>
                   <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">{t.layoutShaperTitle}</span>
                   <h2 className="text-base font-black text-slate-900 mt-1">"{activeWh.name}" {t.layoutShaperHeader}</h2>
-                  <p className="text-xs text-slate-550">{t.layoutShaperDesc}</p>
+                  <p className="text-xs text-slate-600">{t.layoutShaperDesc}</p>
                 </div>
 
                 <div className="space-y-4">
@@ -2037,7 +2037,7 @@ ${sizeStr}
                         {/* Dimensions Editor Controls */}
                         <div className="grid gap-3 sm:grid-cols-2">
                           <div className="space-y-1.5">
-                            <span className="text-[11px] font-bold text-slate-500 block">↔ Reyon Derinliği (Slot / Genişlik)</span>
+                            <span className="text-[11px] font-bold text-slate-700 block">↔ Reyon Derinliği (Slot / Genişlik)</span>
                             <div className="flex items-center gap-1">
                               <button
                                 type="button"
@@ -2064,7 +2064,7 @@ ${sizeStr}
                           </div>
 
                           <div className="space-y-1.5">
-                            <span className="text-[11px] font-bold text-slate-500 block">↕ Raf Kat Sayısı (Yükseklik)</span>
+                            <span className="text-[11px] font-bold text-slate-700 block">↕ Raf Kat Sayısı (Yükseklik)</span>
                             <div className="flex items-center gap-1">
                               <button
                                 type="button"
@@ -2093,14 +2093,14 @@ ${sizeStr}
 
                         {/* Interactive Visual Grid Preview */}
                         <div className="space-y-1 pt-1">
-                          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider block">🏢 Reyon Önizleme Haritası</span>
+                          <span className="text-[10px] font-black text-slate-550 uppercase tracking-wider block">🏢 Reyon Önizleme Haritası</span>
                           <div className="rounded-xl border border-slate-200/60 bg-white p-2.5 overflow-x-auto">
                             <div className="flex flex-col gap-1.5 min-w-[280px]">
                               {Array.from({ length: c.tiers }, (_, tIdx) => {
                                 const level = c.tiers - tIdx; // Render highest level at the top
                                 return (
                                   <div key={level} className="flex items-center gap-1.5">
-                                    <span className="w-8 text-[9px] font-black text-slate-400 text-right shrink-0">Kat {level}</span>
+                                    <span className="w-8 text-[9px] font-black text-slate-550 text-right shrink-0">Kat {level}</span>
                                     <div className="flex-1 flex gap-1.5">
                                       {Array.from({ length: c.depth }, (_, dIdx) => {
                                         const slot = dIdx + 1;
@@ -2122,7 +2122,7 @@ ${sizeStr}
                                             className={`flex-1 h-9 rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
                                               hasProduct
                                                 ? "bg-indigo-50 border-indigo-300 text-indigo-700 hover:bg-indigo-100"
-                                                : "bg-slate-50 border-slate-200 border-dashed text-slate-500 hover:bg-slate-100"
+                                                : "bg-slate-50 border-slate-200 border-dashed text-slate-700 hover:bg-slate-100"
                                             }`}
                                           >
                                             <span className="text-[8px] font-mono font-bold block">{slot < 10 ? `0${slot}` : slot}-{level < 10 ? `0${level}` : level}</span>
@@ -2156,7 +2156,7 @@ ${sizeStr}
                 <div>
                   <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">{t.lockLocationTitle}</span>
                   <h2 className="text-base font-black text-slate-900 mt-1">{t.lockLocationHeader}</h2>
-                  <p className="text-xs text-slate-550">{t.lockLocationDesc}</p>
+                  <p className="text-xs text-slate-600">{t.lockLocationDesc}</p>
                 </div>
 
                 <div className="space-y-3">
@@ -2226,7 +2226,7 @@ ${sizeStr}
                       {/* Weight & Volume overrides */}
                       <div className="grid gap-2 grid-cols-2 p-3 bg-blue-50/40 border border-blue-100 rounded-2xl">
                         <label className="grid gap-1">
-                          <span className="text-[10px] font-black text-slate-500">Birim Ağırlık (kg)</span>
+                          <span className="text-[10px] font-black text-slate-700">Birim Ağırlık (kg)</span>
                           <input
                             type="number"
                             step="0.1"
@@ -2242,7 +2242,7 @@ ${sizeStr}
                           />
                         </label>
                         <label className="grid gap-1">
-                          <span className="text-[10px] font-black text-slate-500">Birim Hacim (m³)</span>
+                          <span className="text-[10px] font-black text-slate-700">Birim Hacim (m³)</span>
                           <input
                             type="number"
                             step="0.001"
@@ -2353,7 +2353,7 @@ ${sizeStr}
                     {/* Shelf Capacities Editor */}
                     <div className="grid grid-cols-2 gap-3 p-3 bg-white/70 border border-blue-150 rounded-xl text-xs font-semibold">
                       <label className="grid gap-1">
-                        <span className="text-[10px] text-slate-500 font-black">Maksimum Yük (kg)</span>
+                        <span className="text-[10px] text-slate-700 font-black">Maksimum Yük (kg)</span>
                         <input
                           type="number"
                           min="1"
@@ -2372,7 +2372,7 @@ ${sizeStr}
                         />
                       </label>
                       <label className="grid gap-1">
-                        <span className="text-[10px] text-slate-500 font-black">Maksimum Hacim (m³)</span>
+                        <span className="text-[10px] text-slate-700 font-black">Maksimum Hacim (m³)</span>
                         <input
                           type="number"
                           step="0.1"
@@ -2395,14 +2395,14 @@ ${sizeStr}
 
                     {/* Shelf Products list */}
                     <div className="space-y-2">
-                      <h4 className="text-[11px] font-bold text-slate-550 uppercase tracking-wider">{t.currentProducts}</h4>
+                      <h4 className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">{t.currentProducts}</h4>
                       {shelfProducts.length > 0 ? (
                         shelfProducts.map((p) => (
                           <div key={p.id} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm space-y-2">
                             <div className="flex justify-between items-start">
                               <div>
                                 <h5 className="font-bold text-slate-850 text-xs">{p.name}</h5>
-                                <p className="text-[9px] text-slate-400 font-mono mt-0.5">SKU: {p.sku || "—"} | OEM: {p.oemCode || "—"}</p>
+                                <p className="text-[9px] text-slate-550 font-mono mt-0.5">SKU: {p.sku || "—"} | OEM: {p.oemCode || "—"}</p>
                               </div>
                               <span className="text-xs font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
                                 {p.quantity} Adet
@@ -2413,7 +2413,7 @@ ${sizeStr}
                               <div>💰 {language === "en" ? "Purchase" : "Alış"}: <strong className="text-rose-700 font-mono">{p.purchasePrice || "0"} EUR</strong></div>
                               <div>💵 {language === "en" ? "Sale" : "Satış"}: <strong className="text-emerald-700 font-mono">{p.salePrice || "0"} EUR</strong></div>
                               <div className="col-span-2">🏷️ {language === "en" ? "Category/Brand" : "Kategori/Marka"}: <span className="text-slate-900 font-bold">{p.category} · {p.brand} ({p.model})</span></div>
-                              <div className="col-span-2 text-slate-550 leading-normal italic">{language === "en" ? "Description" : "Açıklama"}: {p.description || "—"}</div>
+                              <div className="col-span-2 text-slate-600 leading-normal italic">{language === "en" ? "Description" : "Açıklama"}: {p.description || "—"}</div>
                             </div>
 
                             <div className="flex justify-end pt-1">
@@ -2428,7 +2428,7 @@ ${sizeStr}
                           </div>
                         ))
                       ) : (
-                        <p className="text-xs text-slate-400 italic p-3 text-center bg-white rounded-xl border border-slate-200">
+                        <p className="text-xs text-slate-550 italic p-3 text-center bg-white rounded-xl border border-slate-200">
                           {t.noProductsOnShelf}
                         </p>
                       )}
@@ -2436,25 +2436,25 @@ ${sizeStr}
 
                     {/* Shelf Movements log */}
                     <div className="space-y-2 border-t border-blue-200/50 pt-3">
-                      <h4 className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{t.movementsHistory}</h4>
+                      <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">{t.movementsHistory}</h4>
                       <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1">
                         {shelfMovements.length > 0 ? (
                           shelfMovements.map((m) => (
                             <div key={m.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1 flex justify-between">
                               <div>
                                 <strong className="text-slate-800">{m.productName}</strong>
-                                <span className="text-slate-400"> ({m.note})</span>
+                                <span className="text-slate-550"> ({m.note})</span>
                               </div>
                               <div className="text-right font-mono shrink-0 ml-2">
                                 <span className={m.movementType === "stock_in" ? "text-emerald-700 font-bold" : "text-rose-600 font-bold"}>
                                   {m.movementType === "stock_in" ? "+" : ""}{m.quantity} Adet
                                 </span>
-                                <span className="text-slate-400"> | {m.createdAt}</span>
+                                <span className="text-slate-550"> | {m.createdAt}</span>
                               </div>
                             </div>
                           ))
                         ) : (
-                          <p className="text-[10px] text-slate-400 italic text-center py-2">
+                          <p className="text-[10px] text-slate-550 italic text-center py-2">
                             {t.noMovements}
                           </p>
                         )}
@@ -2491,7 +2491,7 @@ ${sizeStr}
                         <div>🏪 {language === "en" ? "Warehouse" : "Depo"}: <span className="text-slate-900 font-bold">{scannedProduct.warehouse || "—"}</span></div>
                         <div>📍 {language === "en" ? "Shelf" : "Raf"}: <span className="text-blue-600 font-bold font-mono">{scannedProduct.shelf || "—"}</span></div>
                         <div className="col-span-2">{language === "en" ? "Stock" : "Mevcut Stok"}: <strong className="text-slate-900">{scannedProduct.quantity || "0"} Adet</strong></div>
-                        <div className="col-span-2 text-slate-500 leading-normal italic">{language === "en" ? "Description" : "Açıklama"}: {scannedProduct.description || "—"}</div>
+                        <div className="col-span-2 text-slate-700 leading-normal italic">{language === "en" ? "Description" : "Açıklama"}: {scannedProduct.description || "—"}</div>
                       </div>
 
                       <div className="flex justify-end gap-2 pt-1">
@@ -2507,27 +2507,27 @@ ${sizeStr}
 
                     {/* Product Movements log */}
                     <div className="space-y-2 border-t border-emerald-200/50 pt-3">
-                      <h4 className="text-[11px] font-bold text-slate-550 uppercase tracking-wider">
+                      <h4 className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">
                         {language === "en" ? "Product Stock Movements" : "Ürün Stok Hareketleri"}
                       </h4>
                       <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1">
                         {movements.filter(m => m.productCode && m.productCode.toUpperCase() === (scannedProduct.sku || scannedProduct.barcode || "").toUpperCase()).length > 0 ? (
                           movements.filter(m => m.productCode && m.productCode.toUpperCase() === (scannedProduct.sku || scannedProduct.barcode || "").toUpperCase()).map((m) => (
-                            <div key={m.id} className="text-[10px] leading-relaxed text-slate-655 border-b border-slate-100 pb-1 flex justify-between">
+                            <div key={m.id} className="text-[10px] leading-relaxed text-slate-700 border-b border-slate-100 pb-1 flex justify-between">
                               <div>
                                 <strong className="text-slate-800">{m.warehouse} - Raf: {m.shelf || "—"}</strong>
-                                <span className="text-slate-400"> ({m.note})</span>
+                                <span className="text-slate-550"> ({m.note})</span>
                               </div>
                               <div className="text-right font-mono shrink-0 ml-2">
                                 <span className={m.movementType === "stock_in" ? "text-emerald-700 font-bold" : "text-rose-600 font-bold"}>
                                   {m.movementType === "stock_in" ? "+" : ""}{m.quantity} Adet
                                 </span>
-                                <span className="text-slate-400"> | {m.createdAt}</span>
+                                <span className="text-slate-550"> | {m.createdAt}</span>
                               </div>
                             </div>
                           ))
                         ) : (
-                          <p className="text-[10px] text-slate-400 italic text-center py-2">
+                          <p className="text-[10px] text-slate-550 italic text-center py-2">
                             {language === "en" ? "No movement history for this product." : "Bu ürüne ait geçmiş stok hareketi yok."}
                           </p>
                         )}
@@ -2542,7 +2542,7 @@ ${sizeStr}
                 <div>
                   <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">{t.printCenterTitle}</span>
                   <h2 className="text-base font-black text-slate-900 mt-1">{t.matrixHeader}</h2>
-                  <p className="text-xs text-slate-550">{t.matrixDesc}</p>
+                  <p className="text-xs text-slate-600">{t.matrixDesc}</p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -2574,7 +2574,7 @@ ${sizeStr}
                           }`}
                         >
                           <div className="font-mono text-xs font-black text-slate-800">{sh}</div>
-                          <div className="text-[9px] font-bold text-slate-400 mt-1">
+                          <div className="text-[9px] font-bold text-slate-550 mt-1">
                             {containsProduct ? t.badgeFull : t.badgeEmpty}
                           </div>
                           
@@ -2598,7 +2598,7 @@ ${sizeStr}
                       );
                     })
                   ) : (
-                    <div className="col-span-3 text-center py-6 text-xs text-slate-400 italic">
+                    <div className="col-span-3 text-center py-6 text-xs text-slate-550 italic">
                       {t.noShelvesDefined}
                     </div>
                   )}
@@ -2611,7 +2611,7 @@ ${sizeStr}
                     <div className="overflow-x-auto max-h-56">
                       <table className="w-full text-left text-[11px] border-collapse">
                         <thead>
-                          <tr className="border-b border-slate-200 bg-slate-50 text-[9px] font-black text-slate-500 uppercase">
+                          <tr className="border-b border-slate-200 bg-slate-50 text-[9px] font-black text-slate-700 uppercase">
                             <th className="p-2">{t.colProductSku}</th>
                             <th className="p-2 text-center">{t.colShelf}</th>
                             <th className="p-2 text-center">{t.colQty}</th>
@@ -2624,7 +2624,7 @@ ${sizeStr}
                             <tr key={p.id} className="hover:bg-slate-50/50">
                               <td className="p-2">
                                 <span className="font-bold text-slate-900 truncate block max-w-xs">{p.name}</span>
-                                <span className="text-[9px] text-slate-400 font-mono">{p.sku}</span>
+                                <span className="text-[9px] text-slate-550 font-mono">{p.sku}</span>
                               </td>
                               <td className="p-2 text-center font-mono font-bold text-blue-600">{p.shelf}</td>
                               <td className="p-2 text-center font-black text-slate-900">{p.quantity}</td>
@@ -2660,7 +2660,7 @@ ${sizeStr}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-2">
               <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">TASARIM STÜDYOSU</span>
               <h2 className="text-base font-black text-slate-900">İnteraktif Depo Yerleşim Planı & Beyaz Tahta</h2>
-              <p className="text-xs text-slate-550">
+              <p className="text-xs text-slate-600">
                 Reyonları sürükleyin, yan yana hizalayın, özel reyon adları verin. Herhangi bir raf hücresini tıklatarak bölmelere ayırabilir ve limitlerini güncelleyebilirsiniz.
               </p>
             </div>
@@ -2674,7 +2674,7 @@ ${sizeStr}
             {/* Studio Navigation & Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-100 p-3 rounded-2xl">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">📍 Reyonlar Arası Gez:</span>
+                <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider">📍 Reyonlar Arası Gez:</span>
                 <button
                   type="button"
                   onClick={() => setSelectedWhiteboardCorridorZone("")}
@@ -2768,7 +2768,7 @@ ${sizeStr}
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Reyon {c.zone}</span>
-                          <span className="text-[10px] font-bold text-slate-400 font-mono">Kod: {c.zone}</span>
+                          <span className="text-[10px] font-bold text-slate-550 font-mono">Kod: {c.zone}</span>
                         </div>
                         <input
                           type="text"
@@ -2800,7 +2800,7 @@ ${sizeStr}
                     <div className="grid gap-2 grid-cols-3 text-xs bg-slate-50 p-2.5 rounded-2xl border border-slate-150">
                       {/* Depth / Slots */}
                       <div className="space-y-1">
-                        <span className="text-[9px] font-black text-slate-500 block">↔ GENİŞLİK (SLOT)</span>
+                        <span className="text-[9px] font-black text-slate-700 block">↔ GENİŞLİK (SLOT)</span>
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
@@ -2836,7 +2836,7 @@ ${sizeStr}
 
                       {/* Tiers / Heights */}
                       <div className="space-y-1">
-                        <span className="text-[9px] font-black text-slate-500 block">↕ YÜKSEKLİK (KAT)</span>
+                        <span className="text-[9px] font-black text-slate-700 block">↕ YÜKSEKLİK (KAT)</span>
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
@@ -2872,7 +2872,7 @@ ${sizeStr}
 
                       {/* Double row toggle */}
                       <div className="space-y-1">
-                        <span className="text-[9px] font-black text-slate-500 block">↔ ARKA ARKAYA SATIR</span>
+                        <span className="text-[9px] font-black text-slate-700 block">↔ ARKA ARKAYA SATIR</span>
                         <button
                           type="button"
                           disabled={!isAuthorized}
@@ -2886,7 +2886,7 @@ ${sizeStr}
                           className={`w-full rounded-xl py-1 px-2 font-black text-[9px] border transition disabled:opacity-50 ${
                             c.isDoubleRow
                               ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                              : "bg-white border-slate-200 text-slate-655 hover:bg-slate-100"
+                              : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100"
                           }`}
                         >
                           {c.isDoubleRow ? "Çift Sıra (Back)" : "Tek Sıra"}
@@ -2896,14 +2896,14 @@ ${sizeStr}
 
                     {/* Interactive Grid representing shelves layout */}
                     <div className="space-y-1 pt-1">
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">🏢 Reyon Şematik Görünümü</span>
+                      <span className="text-[9px] font-black text-slate-550 uppercase tracking-wider block">🏢 Reyon Şematik Görünümü</span>
                       <div className="rounded-2xl border border-slate-150 p-2.5 overflow-x-auto bg-slate-50/50">
                         <div className="flex flex-col gap-2 min-w-[280px]">
                           {Array.from({ length: c.tiers }, (_, tIdx) => {
                             const level = c.tiers - tIdx; // Top levels first
                             return (
                               <div key={level} className="flex items-center gap-2">
-                                <span className="w-8 text-[8px] font-black text-slate-400 text-right shrink-0">Kat {level}</span>
+                                <span className="w-8 text-[8px] font-black text-slate-550 text-right shrink-0">Kat {level}</span>
                                 <div className="flex-1 flex gap-2">
                                   {Array.from({ length: c.depth }, (_, dIdx) => {
                                     const slot = dIdx + 1;
@@ -2922,7 +2922,7 @@ ${sizeStr}
                                             <div key={sideCode} className="flex-1 flex flex-col gap-0.5 min-h-[36px]">
                                               {/* Row label if double row */}
                                               {c.isDoubleRow && (
-                                                <span className="text-[7px] text-slate-400 font-extrabold text-center block leading-none mb-0.5">{side}</span>
+                                                <span className="text-[7px] text-slate-550 font-extrabold text-center block leading-none mb-0.5">{side}</span>
                                               )}
 
                                               {/* Bins render */}
@@ -3013,7 +3013,7 @@ ${sizeStr}
               <button
                 type="button"
                 onClick={() => setSelectedWhiteboardShelfCode(null)}
-                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold"
+                className="absolute top-4 right-4 text-slate-550 hover:text-slate-600 font-bold"
               >
                 ✕ Close
               </button>
@@ -3021,7 +3021,7 @@ ${sizeStr}
               <div>
                 <span className="text-[9px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">RAF AYARLARI</span>
                 <h3 className="text-base font-black text-slate-900 mt-1">Konum: {selectedWhiteboardShelfCode}</h3>
-                <p className="text-xs text-slate-550">Hücrenin taşıma limitlerini ve alt bölme/bölüm (bin) durumunu ayarlayın.</p>
+                <p className="text-xs text-slate-600">Hücrenin taşıma limitlerini ve alt bölme/bölüm (bin) durumunu ayarlayın.</p>
               </div>
 
               {/* Capacity settings */}
@@ -3110,7 +3110,7 @@ ${sizeStr}
                         className={`rounded-xl py-2 px-1 text-xs font-black border transition disabled:opacity-50 ${
                           currentBinsCount === count
                             ? "bg-slate-900 border-slate-900 text-white shadow-sm"
-                            : "bg-slate-50 border-slate-200 text-slate-655 hover:bg-slate-100"
+                            : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                         }`}
                       >
                         {count} Bölme
@@ -3134,7 +3134,7 @@ ${sizeStr}
                         </div>
                       ))
                   ) : (
-                    <p className="text-[10px] text-slate-400 italic text-center py-4">Bu hücre şu an boş.</p>
+                    <p className="text-[10px] text-slate-550 italic text-center py-4">Bu hücre şu an boş.</p>
                   )}
                 </div>
               </div>
@@ -3158,7 +3158,7 @@ ${sizeStr}
               <div>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">TRANSFER İSTASYONU</span>
                 <h2 className="text-base font-black text-slate-900 mt-1">Depolar Arası Stok Sevk Et</h2>
-                <p className="text-xs text-slate-550">Stokları başka depolara ve raflara güvenli bir şekilde aktarın.</p>
+                <p className="text-xs text-slate-600">Stokları başka depolara ve raflara güvenli bir şekilde aktarın.</p>
               </div>
 
               <form onSubmit={handleInitiateTransfer} className="space-y-4">
@@ -3217,7 +3217,7 @@ ${sizeStr}
                       value={transferDestShelf}
                       onChange={(e) => setTransferDestShelf(e.target.value)}
                       disabled={!transferDestWhId}
-                      className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-mono font-bold focus:outline-none focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
+                      className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-mono font-bold focus:outline-none focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-550"
                     >
                       <option value="">Raf Konumu Seçin...</option>
                       {warehouses.find(w => w.id === transferDestWhId)?.shelves?.map((sh) => (
@@ -3267,7 +3267,7 @@ ${sizeStr}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
               <div>
                 <h3 className="text-base font-black text-slate-900">Transfer Hareketleri ve İş Emirleri</h3>
-                <p className="text-xs text-slate-550">Depolar arası sevk aşamasındaki ürünlerin takip listesi.</p>
+                <p className="text-xs text-slate-600">Depolar arası sevk aşamasındaki ürünlerin takip listesi.</p>
               </div>
 
               <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
@@ -3290,7 +3290,7 @@ ${sizeStr}
                         <div>🏪 Çıkış: <strong className="text-slate-800">{t.sourceWh} ({t.sourceShelf})</strong></div>
                         <div>🏪 Hedef: <strong className="text-slate-800">{t.destWh} ({t.destShelf})</strong></div>
                         <div>📦 Adet: <strong className="text-blue-600 font-mono">{t.quantity} Adet</strong></div>
-                        <div>📅 Tarih: <span className="text-slate-500 font-mono">{t.createdAt}</span></div>
+                        <div>📅 Tarih: <span className="text-slate-700 font-mono">{t.createdAt}</span></div>
                         <div className="col-span-2 italic text-slate-450 mt-1">Not: {t.note}</div>
                       </div>
 
@@ -3315,7 +3315,7 @@ ${sizeStr}
                     </article>
                   ))
                 ) : (
-                  <p className="text-xs text-slate-400 italic py-8 text-center bg-slate-50/50 rounded-2xl border border-slate-200">
+                  <p className="text-xs text-slate-550 italic py-8 text-center bg-slate-50/50 rounded-2xl border border-slate-200">
                     Aktif depolar arası transfer veya iş emri bulunmuyor.
                   </p>
                 )}
@@ -3332,7 +3332,7 @@ ${sizeStr}
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm max-w-2xl mx-auto space-y-4 text-center">
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">STOK DENETİMİ</span>
                 <h2 className="text-lg font-black text-slate-900">Kör Envanter Sayım Oturumu</h2>
-                <p className="text-xs text-slate-550 max-w-md mx-auto">
+                <p className="text-xs text-slate-600 max-w-md mx-auto">
                   Sistemdeki stok adetlerini gizleyerek personelin fiziki envanteri körleme saymasını sağlayın. Sayım bittiğinde otomatik fark raporu çıkarılır.
                 </p>
 
@@ -3341,7 +3341,7 @@ ${sizeStr}
                   <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-200">
                     {activeWh.shelves && activeWh.shelves.length > 0 ? (
                       activeWh.shelves.map((sh) => (
-                        <label key={sh} className="flex items-center gap-2 text-xs font-bold text-slate-655 p-1 hover:bg-white rounded cursor-pointer transition">
+                        <label key={sh} className="flex items-center gap-2 text-xs font-bold text-slate-700 p-1 hover:bg-white rounded cursor-pointer transition">
                           <input
                             type="checkbox"
                             defaultChecked
@@ -3352,7 +3352,7 @@ ${sizeStr}
                         </label>
                       ))
                     ) : (
-                      <p className="text-xs text-slate-400 col-span-3 italic text-center py-4">Depoda tanımlanmış raf yok.</p>
+                      <p className="text-xs text-slate-550 col-span-3 italic text-center py-4">Depoda tanımlanmış raf yok.</p>
                     )}
                   </div>
                 </div>
@@ -3387,7 +3387,7 @@ ${sizeStr}
                     <button
                       type="button"
                       onClick={() => setIsAuditActive(false)}
-                      className="text-xs text-slate-400 hover:text-slate-600 font-bold"
+                      className="text-xs text-slate-550 hover:text-slate-600 font-bold"
                     >
                       Oturumu Kapat ✕
                     </button>
@@ -3475,12 +3475,12 @@ ${sizeStr}
                               <span className="text-blue-600 font-mono font-bold ml-1">({l.shelf})</span>
                             </div>
                             <div className="font-mono text-right shrink-0 ml-2 font-black text-slate-900">
-                              {l.quantity} Adet | <span className="text-slate-400 font-normal">{l.time}</span>
+                              {l.quantity} Adet | <span className="text-slate-550 font-normal">{l.time}</span>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <p className="text-[10px] text-slate-400 italic text-center py-6">Kör sayıma başlamak için barkod okutun.</p>
+                        <p className="text-[10px] text-slate-550 italic text-center py-6">Kör sayıma başlamak için barkod okutun.</p>
                       )}
                     </div>
                   </div>
@@ -3491,14 +3491,14 @@ ${sizeStr}
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="text-base font-black text-slate-900">Canlı Mutabakat & Fark Raporu</h3>
-                      <p className="text-xs text-slate-550">Sistemdeki stok seviyeleri ile fiziki sayımlar arasındaki sapmalar.</p>
+                      <p className="text-xs text-slate-600">Sistemdeki stok seviyeleri ile fiziki sayımlar arasındaki sapmalar.</p>
                     </div>
                   </div>
 
                   <div className="overflow-x-auto max-h-[380px] border border-slate-200 rounded-xl">
                     <table className="w-full text-left text-[11px] border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-200 bg-slate-50 text-[9px] font-black text-slate-500 uppercase">
+                        <tr className="border-b border-slate-200 bg-slate-50 text-[9px] font-black text-slate-700 uppercase">
                           <th className="p-2.5">Raf</th>
                           <th className="p-2.5">Ürün</th>
                           <th className="p-2.5 text-center">Sistem</th>
@@ -3524,12 +3524,12 @@ ${sizeStr}
                                 <td className="p-2.5 font-mono text-blue-600 font-bold">{p.shelf}</td>
                                 <td className="p-2.5">
                                   <span className="font-bold text-slate-900 truncate block max-w-xs">{p.name}</span>
-                                  <span className="text-[9px] text-slate-400 font-mono">{p.sku}</span>
+                                  <span className="text-[9px] text-slate-550 font-mono">{p.sku}</span>
                                 </td>
                                 <td className="p-2.5 text-center font-mono">{systemQty}</td>
                                 <td className="p-2.5 text-center font-mono font-black text-slate-800">{counted}</td>
                                 <td className={`p-2.5 text-center font-mono font-black ${
-                                  diff === 0 ? 'text-slate-500' : diff > 0 ? 'text-emerald-600' : 'text-rose-600'
+                                  diff === 0 ? 'text-slate-700' : diff > 0 ? 'text-emerald-600' : 'text-rose-600'
                                 }`}>
                                   {diff > 0 ? `+${diff}` : diff}
                                 </td>
@@ -3579,7 +3579,7 @@ ${sizeStr}
               <div>
                 <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">ZPL ETİKET LABORATUVARI</span>
                 <h2 className="text-base font-black text-slate-900 mt-1">Zebra Termal Barkod Şablonu</h2>
-                <p className="text-xs text-slate-550">Endüstriyel Zebra etiket yazıcıları için anında ZPL II kodu üretin.</p>
+                <p className="text-xs text-slate-600">Endüstriyel Zebra etiket yazıcıları için anında ZPL II kodu üretin.</p>
               </div>
 
               <div className="space-y-4">
@@ -3676,7 +3676,7 @@ ${sizeStr}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
               <div>
                 <h3 className="text-base font-black text-slate-900">Termal Etiket Simülasyonu</h3>
-                <p className="text-xs text-slate-550">Yazıcının termal kafasından çıkacak fiziksel etiketin görsel simülasyonu.</p>
+                <p className="text-xs text-slate-600">Yazıcının termal kafasından çıkacak fiziksel etiketin görsel simülasyonu.</p>
               </div>
 
               {/* Simulated Sticker Box */}
@@ -3696,7 +3696,7 @@ ${sizeStr}
                       {zplProductId ? (
                         zplProductId.startsWith("shelf_") ? (
                           <div className="text-center space-y-1">
-                            <span className="text-[9px] font-black uppercase text-slate-500">RAF YERLEŞİM BARKODU</span>
+                            <span className="text-[9px] font-black uppercase text-slate-700">RAF YERLEŞİM BARKODU</span>
                             <div className="text-4xl font-black tracking-wider text-slate-900 font-mono mt-1">
                               {zplProductId.replace("shelf_", "")}
                             </div>
@@ -3716,7 +3716,7 @@ ${sizeStr}
                           </div>
                         )
                       ) : (
-                        <div className="text-center text-xs text-slate-400 italic">Özelleştirilmiş Ham Kod</div>
+                        <div className="text-center text-xs text-slate-550 italic">Özelleştirilmiş Ham Kod</div>
                       )}
                     </div>
 
@@ -3745,7 +3745,7 @@ ${sizeStr}
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center text-xs text-slate-400 italic">
+                  <div className="text-center text-xs text-slate-550 italic">
                     Etiket görsel simülasyonunu görmek için sol taraftan bir hedef şablon seçin veya ZPL kodu girin.
                   </div>
                 )}
@@ -3831,7 +3831,7 @@ ${sizeStr}
                 </span>
                 <h3 className="text-sm font-black">{t.liveShelfScan}</h3>
               </div>
-              <button type="button" onClick={stopCamera} className="text-slate-400 hover:text-white transition font-black">
+              <button type="button" onClick={stopCamera} className="text-slate-550 hover:text-white transition font-black">
                 {t.printClose}
               </button>
             </div>
