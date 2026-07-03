@@ -6,8 +6,11 @@ import CompactLanguageSwitcher, { LanguageCode, isLanguageCode } from "@/compone
 
 type CorridorConfig = {
   zone: string;
-  depth: number;
-  tiers: number;
+  name?: string; // Custom descriptive name
+  depth: number; // Slot count
+  tiers: number; // Level count
+  isDoubleRow?: boolean; // Back-to-back depth row indicator
+  binsConfig?: { [shelfCode: string]: number }; // Compartment subdivision bins count per shelf (e.g., 2, 4 bins)
 };
 
 type ShelfCapacity = {
@@ -570,6 +573,11 @@ export default function WarehousesRevampPage() {
   const [pickingAddProductId, setPickingAddProductId] = useState("");
   const [pickingAddQty, setPickingAddQty] = useState(1);
 
+  // Warehouse Whiteboard Studio States
+  const [isWhiteboardMode, setIsWhiteboardMode] = useState(false);
+  const [selectedWhiteboardCorridorZone, setSelectedWhiteboardCorridorZone] = useState("");
+  const [selectedWhiteboardShelfCode, setSelectedWhiteboardShelfCode] = useState<string | null>(null);
+
   // Scanner & Live Inspector states
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [scanMessage, setScanMessage] = useState("");
@@ -848,11 +856,32 @@ export default function WarehousesRevampPage() {
             const slotStr = d < 10 ? `0${d}` : `${d}`;
             for (let t = 1; t <= corr.tiers; t++) {
               const tierStr = t < 10 ? `0${t}` : `${t}`;
-              const code = `${zone}-${slotStr}-${tierStr}`;
-              generatedShelves.push(code);
-              if (!updatedCapacities[code]) {
-                updatedCapacities[code] = { maxWeight: 100, maxVolume: 1.0 };
-              }
+              const baseCode = `${zone}-${slotStr}-${tierStr}`;
+
+              const sides = corr.isDoubleRow ? ["S1", "S2"] : [""];
+              sides.forEach((side) => {
+                const sideSuffix = side ? `-${side}` : "";
+                const sideCode = `${baseCode}${sideSuffix}`;
+
+                const binsCount = corr.binsConfig?.[sideCode] || 1;
+                if (binsCount > 1) {
+                  for (let b = 1; b <= binsCount; b++) {
+                    const binCode = `${sideCode}-B${b}`;
+                    generatedShelves.push(binCode);
+                    if (!updatedCapacities[binCode]) {
+                      updatedCapacities[binCode] = {
+                        maxWeight: Math.round(100 / binsCount),
+                        maxVolume: Number((1.0 / binsCount).toFixed(3)),
+                      };
+                    }
+                  }
+                } else {
+                  generatedShelves.push(sideCode);
+                  if (!updatedCapacities[sideCode]) {
+                    updatedCapacities[sideCode] = { maxWeight: 100, maxVolume: 1.0 };
+                  }
+                }
+              });
             }
           }
         }
@@ -1887,8 +1916,42 @@ ${sizeStr}
           </nav>
         )}
 
-        {/* MAIN Revamped Workspace */}
+        {/* Whiteboard Toggle Toolbar */}
         {activeWh && activeWorkspaceTab === 'placement' && (
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-3xl border border-slate-200 shadow-sm mb-4">
+            <div>
+              <h3 className="text-sm font-black text-slate-800">Depo Tasarım Seçenekleri</h3>
+              <p className="text-[10px] text-slate-500 font-semibold">Tasarım stüdyosu veya basit liste görünümü arasında geçiş yapın.</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setIsWhiteboardMode(false)}
+                className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
+                  !isWhiteboardMode
+                    ? "bg-slate-900 text-white shadow-sm animate-scaleUp"
+                    : "bg-slate-100 text-slate-655 hover:text-slate-800"
+                }`}
+              >
+                🗂️ Basit Liste Görünümü
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsWhiteboardMode(true)}
+                className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
+                  isWhiteboardMode
+                    ? "bg-blue-600 text-white shadow-sm animate-scaleUp"
+                    : "bg-slate-100 text-slate-655 hover:text-slate-800"
+                }`}
+              >
+                🎨 Depo Tasarım Beyaz Tahtası (Studio)
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* MAIN Revamped Workspace */}
+        {activeWh && activeWorkspaceTab === 'placement' && !isWhiteboardMode && (
           <section className="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
             
             {/* Left Column: Layout Shaper and Placement Board */}
@@ -2579,6 +2642,428 @@ ${sizeStr}
             </div>
 
           </section>
+        )}
+
+        {/* INTERACTIVE WHITEBOARD DESIGN STUDIO */}
+        {activeWh && activeWorkspaceTab === 'placement' && isWhiteboardMode && (
+          <section className="space-y-4 animate-fadeIn">
+            {/* Whiteboard Header info */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-2">
+              <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">TASARIM STÜDYOSU</span>
+              <h2 className="text-base font-black text-slate-900">İnteraktif Depo Yerleşim Planı & Beyaz Tahta</h2>
+              <p className="text-xs text-slate-550">
+                Reyonları sürükleyin, yan yana hizalayın, özel reyon adları verin. Herhangi bir raf hücresini tıklatarak bölmelere ayırabilir ve limitlerini güncelleyebilirsiniz.
+              </p>
+            </div>
+
+            {/* Studio Navigation & Toolbar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-100 p-3 rounded-2xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">📍 Reyonlar Arası Gez:</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedWhiteboardCorridorZone("")}
+                  className={`rounded-xl px-3 py-1.5 text-xs font-black transition ${
+                    selectedWhiteboardCorridorZone === ""
+                      ? "bg-slate-900 text-white shadow-sm"
+                      : "bg-white text-slate-600 hover:text-slate-800"
+                  }`}
+                >
+                  Tüm Depo Görünümü
+                </button>
+                {corridors.map(c => (
+                  <button
+                    key={c.zone}
+                    type="button"
+                    onClick={() => setSelectedWhiteboardCorridorZone(c.zone)}
+                    className={`rounded-xl px-3 py-1.5 text-xs font-black transition ${
+                      selectedWhiteboardCorridorZone === c.zone
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "bg-white text-slate-600 hover:text-slate-800"
+                    }`}
+                  >
+                    Reyon {c.zone} ({c.name || "İsimsiz"})
+                  </button>
+                ))}
+              </div>
+
+              {/* Add New Corridor */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Yeni Reyon (Örn: D)"
+                  maxLength={3}
+                  id="wb-new-corridor-input"
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold uppercase focus:outline-none w-28"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const val = (e.target as HTMLInputElement).value.trim().toUpperCase();
+                      if (val && !corridors.some(c => c.zone === val)) {
+                        setCorridors([...corridors, { zone: val, depth: 4, tiers: 3, isDoubleRow: false }]);
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById("wb-new-corridor-input") as HTMLInputElement;
+                    const val = el?.value.trim().toUpperCase();
+                    if (val && !corridors.some(c => c.zone === val)) {
+                      setCorridors([...corridors, { zone: val, depth: 4, tiers: 3, isDoubleRow: false }]);
+                      el.value = "";
+                    }
+                  }}
+                  className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs px-3 py-1.5 transition active:scale-95"
+                >
+                  Reyon Ekle +
+                </button>
+              </div>
+            </div>
+
+            {/* Whiteboard Canvas */}
+            <div
+              style={{
+                backgroundImage: "radial-gradient(#cbd5e1 1.5px, transparent 1.5px)",
+                backgroundSize: "20px 20px"
+              }}
+              className="bg-slate-50 border-2 border-slate-200 border-dashed rounded-3xl p-6 min-h-[500px] flex flex-wrap gap-6 items-start justify-center shadow-inner relative overflow-x-auto"
+            >
+              {corridors
+                .filter(c => selectedWhiteboardCorridorZone === "" || c.zone === selectedWhiteboardCorridorZone)
+                .map((c, corrIdx) => (
+                  <div
+                    key={c.zone}
+                    className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl shadow-sm p-4 space-y-4 shrink-0 transition hover:shadow-md"
+                  >
+                    {/* Corridor Title / Header Panel */}
+                    <div className="flex justify-between items-start border-b border-slate-100 pb-2.5">
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Reyon {c.zone}</span>
+                          <span className="text-[10px] font-bold text-slate-400 font-mono">Kod: {c.zone}</span>
+                        </div>
+                        <input
+                          type="text"
+                          value={c.name || ""}
+                          onChange={(e) => {
+                            setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, name: e.target.value } : item));
+                          }}
+                          placeholder="Özel reyon adı (Örn: Yedek Parça)"
+                          className="w-full text-xs font-bold text-slate-700 outline-none border-b border-dashed border-slate-200 hover:border-slate-350 focus:border-blue-500 py-0.5 font-semibold"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setCorridors(corridors.filter(item => item.zone !== c.zone))}
+                        className="text-xs text-rose-600 hover:text-rose-700 font-black pl-2"
+                      >
+                        ✕ Kaldır
+                      </button>
+                    </div>
+
+                    {/* Dimensions & Rows Controls */}
+                    <div className="grid gap-2 grid-cols-3 text-xs bg-slate-50 p-2.5 rounded-2xl border border-slate-150">
+                      {/* Depth / Slots */}
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-black text-slate-500 block">↔ GENİŞLİK (SLOT)</span>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, depth: Math.max(1, item.depth - 1) } : item));
+                            }}
+                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90"
+                          >
+                            -
+                          </button>
+                          <span className="flex-1 text-center font-black text-[10px]">{c.depth} Slot</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, depth: Math.min(20, item.depth + 1) } : item));
+                            }}
+                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Tiers / Heights */}
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-black text-slate-500 block">↕ YÜKSEKLİK (KAT)</span>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, tiers: Math.max(1, item.tiers - 1) } : item));
+                            }}
+                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90"
+                          >
+                            -
+                          </button>
+                          <span className="flex-1 text-center font-black text-[10px]">{c.tiers} Kat</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, tiers: Math.min(10, item.tiers + 1) } : item));
+                            }}
+                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Double row toggle */}
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-black text-slate-500 block">↔ ARKA ARKAYA SATIR</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, isDoubleRow: !item.isDoubleRow } : item));
+                          }}
+                          className={`w-full rounded-xl py-1 px-2 font-black text-[9px] border transition ${
+                            c.isDoubleRow
+                              ? "bg-blue-600 border-blue-600 text-white shadow-sm"
+                              : "bg-white border-slate-200 text-slate-655 hover:bg-slate-100"
+                          }`}
+                        >
+                          {c.isDoubleRow ? "Çift Sıra (Back)" : "Tek Sıra"}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Interactive Grid representing shelves layout */}
+                    <div className="space-y-1 pt-1">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-wider block">🏢 Reyon Şematik Görünümü</span>
+                      <div className="rounded-2xl border border-slate-150 p-2.5 overflow-x-auto bg-slate-50/50">
+                        <div className="flex flex-col gap-2 min-w-[280px]">
+                          {Array.from({ length: c.tiers }, (_, tIdx) => {
+                            const level = c.tiers - tIdx; // Top levels first
+                            return (
+                              <div key={level} className="flex items-center gap-2">
+                                <span className="w-8 text-[8px] font-black text-slate-400 text-right shrink-0">Kat {level}</span>
+                                <div className="flex-1 flex gap-2">
+                                  {Array.from({ length: c.depth }, (_, dIdx) => {
+                                    const slot = dIdx + 1;
+                                    const baseCode = `${c.zone}-${slot < 10 ? `0${slot}` : `${slot}`}-${level < 10 ? `0${level}` : `${level}`}`;
+
+                                    const sides = c.isDoubleRow ? ["S1", "S2"] : [""];
+                                    return (
+                                      <div key={baseCode} className="flex-1 flex gap-1 bg-white border border-slate-200 p-1 rounded-xl shadow-inner">
+                                        {sides.map((side) => {
+                                          const sideSuffix = side ? `-${side}` : "";
+                                          const sideCode = `${baseCode}${sideSuffix}`;
+
+                                          // Sub-bins divisions count
+                                          const binsCount = c.binsConfig?.[sideCode] || 1;
+                                          return (
+                                            <div key={sideCode} className="flex-1 flex flex-col gap-0.5 min-h-[36px]">
+                                              {/* Row label if double row */}
+                                              {c.isDoubleRow && (
+                                                <span className="text-[7px] text-slate-400 font-extrabold text-center block leading-none mb-0.5">{side}</span>
+                                              )}
+
+                                              {/* Bins render */}
+                                              <div className="flex-1 flex gap-0.5">
+                                                {Array.from({ length: binsCount }).map((_, bIdx) => {
+                                                  const binCode = binsCount > 1 ? `${sideCode}-B${bIdx + 1}` : sideCode;
+                                                  const hasProduct = products.some(
+                                                    (p) =>
+                                                      p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+                                                      p.shelf.toLowerCase() === binCode.toLowerCase()
+                                                  );
+
+                                                  return (
+                                                    <div
+                                                      key={binCode}
+                                                      onClick={() => setSelectedWhiteboardShelfCode(binCode)}
+                                                      title={`${binCode} (${hasProduct ? "Dolu" : "Boş"}) - Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın`}
+                                                      className={`flex-1 min-h-[26px] rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
+                                                        hasProduct
+                                                          ? "bg-indigo-50 border-indigo-300 text-indigo-700 hover:bg-indigo-100"
+                                                          : "bg-emerald-50 border-emerald-300 border-dashed text-emerald-700 hover:bg-emerald-100/50"
+                                                      }`}
+                                                    >
+                                                      <span className="text-[8px] font-mono font-black">
+                                                        {binsCount > 1 ? `B${bIdx + 1}` : `${slot}-${level}`}
+                                                      </span>
+                                                      {hasProduct && <span className="text-[6px] font-black leading-none block mt-0.5">📦</span>}
+                                                    </div>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            {/* Bottom Controls */}
+            <div className="flex justify-end gap-3 bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  setCorridors(parseShelvesToConfig(activeWh.shelves || []));
+                  showSuccess("Tüm değişiklikler sıfırlandı.");
+                }}
+                className="rounded-xl border border-slate-200 px-5 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Vazgeç / Sıfırla
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveLayout}
+                className="rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-6 py-3 transition shadow-sm active:scale-95"
+              >
+                ⚡ Depo Şablonunu Kaydet ve Uygula
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* SHELF BINS & COMPARTMENTS CONFIGURATOR POPUP */}
+        {activeWh && selectedWhiteboardShelfCode && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
+            <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 m-4 relative animate-scaleUp">
+              <button
+                type="button"
+                onClick={() => setSelectedWhiteboardShelfCode(null)}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 font-bold"
+              >
+                ✕ Close
+              </button>
+
+              <div>
+                <span className="text-[9px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">RAF AYARLARI</span>
+                <h3 className="text-base font-black text-slate-900 mt-1">Konum: {selectedWhiteboardShelfCode}</h3>
+                <p className="text-xs text-slate-550">Hücrenin taşıma limitlerini ve alt bölme/bölüm (bin) durumunu ayarlayın.</p>
+              </div>
+
+              {/* Capacity settings */}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="grid gap-1">
+                  <span className="text-xs font-bold text-slate-700">Maks Ağırlık Limiti (kg)</span>
+                  <input
+                    type="number"
+                    value={shelfCapacities[selectedWhiteboardShelfCode]?.maxWeight ?? 100}
+                    onChange={(e) => {
+                      setShelfCapacities({
+                        ...shelfCapacities,
+                        [selectedWhiteboardShelfCode]: {
+                          maxWeight: Number(e.target.value) || 100,
+                          maxVolume: shelfCapacities[selectedWhiteboardShelfCode]?.maxVolume ?? 1.0
+                        }
+                      });
+                    }}
+                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500"
+                  />
+                </label>
+
+                <label className="grid gap-1">
+                  <span className="text-xs font-bold text-slate-700">Maks Hacim Limiti ($m^3$)</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={shelfCapacities[selectedWhiteboardShelfCode]?.maxVolume ?? 1.0}
+                    onChange={(e) => {
+                      setShelfCapacities({
+                        ...shelfCapacities,
+                        [selectedWhiteboardShelfCode]: {
+                          maxWeight: shelfCapacities[selectedWhiteboardShelfCode]?.maxWeight ?? 100,
+                          maxVolume: Number(e.target.value) || 1.0
+                        }
+                      });
+                    }}
+                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500"
+                  />
+                </label>
+              </div>
+
+              {/* Compartments subdivisions count */}
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-slate-700 block">Rafı Hücrelere Böl (Subdivisions)</span>
+                <div className="grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((count) => {
+                    // Extract zone prefix and code to find corridor config
+                    const parts = selectedWhiteboardShelfCode.split("-");
+                    const zone = parts[0];
+                    const slot = parts[1];
+                    const level = parts[2];
+                    const side = parts[3] ? parts[3].split("-")[0] : "";
+                    const baseSideCode = `${zone}-${slot}-${level}${side ? `-${side}` : ""}`;
+                    
+                    const corr = corridors.find(c => c.zone === zone);
+                    const currentBinsCount = corr?.binsConfig?.[baseSideCode] || 1;
+
+                    return (
+                      <button
+                        key={count}
+                        type="button"
+                        onClick={() => {
+                          if (corr) {
+                            const updatedBinsConfig = { ...(corr.binsConfig || {}) };
+                            updatedBinsConfig[baseSideCode] = count;
+                            setCorridors(corridors.map(item => item.zone === zone ? { ...item, binsConfig: updatedBinsConfig } : item));
+                            showSuccess(`${baseSideCode} hücresi ${count} bölmeli olarak ayarlandı.`);
+                          }
+                        }}
+                        className={`rounded-xl py-2 px-1 text-xs font-black border transition ${
+                          currentBinsCount === count
+                            ? "bg-slate-900 border-slate-900 text-white shadow-sm"
+                            : "bg-slate-50 border-slate-200 text-slate-655 hover:bg-slate-100"
+                        }`}
+                      >
+                        {count} Bölme
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Products in this shelf */}
+              <div className="border-t border-slate-100 pt-3 space-y-1.5">
+                <span className="text-xs font-bold text-slate-700 block">Hücredeki Mevcut Ürünler</span>
+                <div className="max-h-36 overflow-y-auto space-y-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200 pr-1">
+                  {products.filter(p => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && p.shelf.toLowerCase() === selectedWhiteboardShelfCode.toLowerCase()).length > 0 ? (
+                    products
+                      .filter(p => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && p.shelf.toLowerCase() === selectedWhiteboardShelfCode.toLowerCase())
+                      .map(p => (
+                        <div key={p.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1 flex justify-between">
+                          <strong className="text-slate-800">{p.name}</strong>
+                          <span className="font-mono font-bold text-blue-600 shrink-0 ml-2">{p.quantity} Adet</span>
+                        </div>
+                      ))
+                  ) : (
+                    <p className="text-[10px] text-slate-400 italic text-center py-4">Bu hücre şu an boş.</p>
+                  )}
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedWhiteboardShelfCode(null)}
+                className="w-full rounded-xl bg-blue-600 py-2.5 text-xs font-black text-white hover:bg-blue-500 transition active:scale-95 shadow-sm"
+              >
+                Uygula ve Kapat
+              </button>
+            </div>
+          </div>
         )}
 
         {/* TRANSFER STATION TAB */}
