@@ -1102,10 +1102,17 @@ export default function ProductsPage() {
 
     if (isSupabaseConfigured) {
       try {
-        await supabase
-          .from("offerable_items")
-          .delete()
-          .or(`code.eq.${productSku},name.eq.${productName}`);
+        if (id.length === 36) {
+          await supabase
+            .from("offerable_items")
+            .delete()
+            .eq("id", id);
+        } else {
+          await supabase
+            .from("offerable_items")
+            .delete()
+            .eq("code", productSku);
+        }
       } catch (err) {
         console.error("Supabase delete error:", err);
       }
@@ -1158,10 +1165,17 @@ export default function ProductsPage() {
     if (isSupabaseConfigured) {
       try {
         for (const p of productsToDelete) {
-          await supabase
-            .from("offerable_items")
-            .delete()
-            .or(`code.eq.${p.sku},name.eq.${p.name}`);
+          if (p.id.length === 36) {
+            await supabase
+              .from("offerable_items")
+              .delete()
+              .eq("id", p.id);
+          } else {
+            await supabase
+              .from("offerable_items")
+              .delete()
+              .eq("code", p.sku);
+          }
         }
       } catch (err) {
         console.error("Supabase bulk delete error:", err);
