@@ -10,6 +10,11 @@ type CorridorConfig = {
   tiers: number;
 };
 
+type ShelfCapacity = {
+  maxWeight: number; // in kg
+  maxVolume: number; // in m^3
+};
+
 type Warehouse = {
   id: string;
   name: string;
@@ -38,6 +43,8 @@ type ProductRecord = {
   warehouse: string;
   shelf: string;
   variants?: any[];
+  weight?: string;
+  volume?: string;
 };
 
 type StockMovement = {
@@ -50,6 +57,21 @@ type StockMovement = {
   shelf: string;
   note: string;
   createdAt: string;
+};
+
+type StockTransfer = {
+  id: string;
+  sourceWh: string;
+  destWh: string;
+  productId: string;
+  productName: string;
+  sku: string;
+  quantity: number;
+  sourceShelf: string;
+  destShelf: string;
+  status: 'draft' | 'in_transit' | 'completed';
+  createdAt: string;
+  note: string;
 };
 
 const translations = {
@@ -494,6 +516,7 @@ export default function WarehousesRevampPage() {
   // Active / Selected UI states
   const [activeWarehouseId, setActiveWarehouseId] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<'placement' | 'transfer' | 'audit' | 'zpl' | 'picking'>('placement');
 
   // Feedback Alerts
   const [successMsg, setSuccessMsg] = useState("");
@@ -512,12 +535,40 @@ export default function WarehousesRevampPage() {
     { zone: "B", depth: 4, tiers: 3 },
     { zone: "C", depth: 4, tiers: 3 }
   ]);
+  const [shelfCapacities, setShelfCapacities] = useState<{ [shelfCode: string]: ShelfCapacity }>({});
+  const [stockTransfers, setStockTransfers] = useState<StockTransfer[]>([]);
 
   // Product Placement States
   const [placeProductId, setPlaceProductId] = useState("");
   const [placeShelf, setPlaceShelf] = useState("");
   const [placeQty, setPlaceQty] = useState(1);
   const [placeNote, setPlaceNote] = useState("Raf Konum Yerleşimi");
+
+  // Transfer Form States
+  const [transferProductId, setTransferProductId] = useState("");
+  const [transferDestWhId, setTransferDestWhId] = useState("");
+  const [transferDestShelf, setTransferDestShelf] = useState("");
+  const [transferQty, setTransferQty] = useState(1);
+  const [transferNote, setTransferNote] = useState("Depolar Arası Sevkiyat");
+
+  // Audit (Stok Sayım) States
+  const [isAuditActive, setIsAuditActive] = useState(false);
+  const [auditShelfSelections, setAuditShelfSelections] = useState<string[]>([]);
+  const [auditCurrentShelf, setAuditCurrentShelf] = useState("");
+  const [auditCounts, setAuditCounts] = useState<{ [shelfAndSku: string]: number }>({});
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
+  // ZPL Barkod Laboratuvarı States
+  const [zplText, setZplText] = useState("");
+  const [zplLabelSize, setZplLabelSize] = useState<"2x1" | "3x2">("3x2");
+  const [zplProductId, setZplProductId] = useState("");
+
+  // Picking (Sipariş Toplama) States
+  const [pickingItems, setPickingItems] = useState<{ productId: string, sku: string, name: string, quantityNeeded: number }[]>([]);
+  const [pickingRouteSteps, setPickingRouteSteps] = useState<{ shelf: string, sku: string, name: string, quantityToPick: number, picked: boolean }[]>([]);
+  const [isPickingSessionActive, setIsPickingSessionActive] = useState(false);
+  const [pickingAddProductId, setPickingAddProductId] = useState("");
+  const [pickingAddQty, setPickingAddQty] = useState(1);
 
   // Scanner & Live Inspector states
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -586,6 +637,11 @@ export default function WarehousesRevampPage() {
     loadDatabase();
   }, []);
 
+  const saveShelfCapacities = (updated: { [shelfCode: string]: ShelfCapacity }) => {
+    window.localStorage.setItem("hbs-shelf-capacities", JSON.stringify(updated));
+    setShelfCapacities(updated);
+  };
+
   const parseShelvesToConfig = (shelves: string[]): CorridorConfig[] => {
     if (!shelves || shelves.length === 0) {
       return [
@@ -627,6 +683,18 @@ export default function WarehousesRevampPage() {
       const movStr = window.localStorage.getItem("hbs-store-stock-movements");
       if (movStr) {
         setMovements(JSON.parse(movStr));
+      }
+
+      // C) Load Shelf Capacities
+      const capStr = window.localStorage.getItem("hbs-shelf-capacities");
+      if (capStr) {
+        setShelfCapacities(JSON.parse(capStr));
+      }
+
+      // D) Load Stock Transfers
+      const transStr = window.localStorage.getItem("hbs-stock-transfers");
+      if (transStr) {
+        setStockTransfers(JSON.parse(transStr));
       }
 
       // C) Load Warehouses
@@ -768,6 +836,7 @@ export default function WarehousesRevampPage() {
     try {
       const generatedShelves: string[] = [];
       const parsedZones: string[] = [];
+      const updatedCapacities = { ...shelfCapacities };
 
       corridors.forEach((corr) => {
         const zone = corr.zone.trim().toUpperCase();
@@ -779,11 +848,18 @@ export default function WarehousesRevampPage() {
             const slotStr = d < 10 ? `0${d}` : `${d}`;
             for (let t = 1; t <= corr.tiers; t++) {
               const tierStr = t < 10 ? `0${t}` : `${t}`;
-              generatedShelves.push(`${zone}-${slotStr}-${tierStr}`);
+              const code = `${zone}-${slotStr}-${tierStr}`;
+              generatedShelves.push(code);
+              if (!updatedCapacities[code]) {
+                updatedCapacities[code] = { maxWeight: 100, maxVolume: 1.0 };
+              }
             }
           }
         }
       });
+
+      window.localStorage.setItem("hbs-shelf-capacities", JSON.stringify(updatedCapacities));
+      setShelfCapacities(updatedCapacities);
 
       if (parsedZones.length === 0) {
         showError("Lütfen en az bir adet bölge tanımlayın.");
@@ -836,6 +912,45 @@ export default function WarehousesRevampPage() {
       const targetProd = products.find((p) => p.id === placeProductId);
       if (!targetProd) return;
 
+      // Calculate current occupied weight & volume on placeShelf
+      const currentProductsOnShelf = products.filter(
+        (p) =>
+          p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+          p.shelf.toLowerCase() === placeShelf.toLowerCase() &&
+          p.id !== placeProductId
+      );
+
+      let occupiedWeight = 0;
+      let occupiedVolume = 0;
+
+      currentProductsOnShelf.forEach((p) => {
+        const prodQty = parseFloat(p.quantity) || 0;
+        const prodWeight = parseFloat(p.weight || "1.0") || 1.0;
+        const prodVolume = parseFloat(p.volume || "0.01") || 0.01;
+        occupiedWeight += prodQty * prodWeight;
+        occupiedVolume += prodQty * prodVolume;
+      });
+
+      const newProdWeight = parseFloat(targetProd.weight || "1.0") || 1.0;
+      const newProdVolume = parseFloat(targetProd.volume || "0.01") || 0.01;
+      const newPlacementWeight = qty * newProdWeight;
+      const newPlacementVolume = qty * newProdVolume;
+
+      const totalWeightAfter = occupiedWeight + newPlacementWeight;
+      const totalVolumeAfter = occupiedVolume + newPlacementVolume;
+
+      const shelfCap = shelfCapacities[placeShelf] || { maxWeight: 100, maxVolume: 1.0 };
+
+      if (totalWeightAfter > shelfCap.maxWeight) {
+        showError(`Kapasite Aşımı! Raf Ağırlık Limiti: ${shelfCap.maxWeight} kg. Yerleştirilmek istenen toplam yük: ${totalWeightAfter.toFixed(1)} kg.`);
+        return;
+      }
+
+      if (totalVolumeAfter > shelfCap.maxVolume) {
+        showError(`Kapasite Aşımı! Raf Hacim Limiti: ${shelfCap.maxVolume} m³. Yerleştirilmek istenen toplam hacim: ${totalVolumeAfter.toFixed(3)} m³.`);
+        return;
+      }
+
       // Update quantity and warehouse/shelf on product
       const updatedProducts = products.map((p) => {
         if (p.id === placeProductId) {
@@ -877,6 +992,508 @@ export default function WarehousesRevampPage() {
     } catch (e: any) {
       showError(`Yerleşim sırasında hata: ${e.message || e}`);
     }
+  };
+
+  const saveStockTransfers = (updated: StockTransfer[]) => {
+    window.localStorage.setItem("hbs-stock-transfers", JSON.stringify(updated));
+    setStockTransfers(updated);
+  };
+
+  const handleInitiateTransfer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!transferProductId) {
+      showError("Lütfen transfer edilecek ürünü seçin.");
+      return;
+    }
+    if (!transferDestWhId) {
+      showError("Lütfen hedef depoyu seçin.");
+      return;
+    }
+    if (!transferDestShelf) {
+      showError("Lütfen hedef raf konumunu seçin.");
+      return;
+    }
+
+    const qty = Number(transferQty);
+    if (!qty || qty <= 0) {
+      showError("Miktar sıfırdan büyük olmalıdır.");
+      return;
+    }
+
+    const prod = products.find(p => p.id === transferProductId);
+    if (!prod) return;
+
+    const sourceQty = Number(prod.quantity) || 0;
+    if (qty > sourceQty) {
+      showError(`Yetersiz stok! Raftaki mevcut stok: ${sourceQty} adet.`);
+      return;
+    }
+
+    const destWh = warehouses.find(w => w.id === transferDestWhId);
+    if (!destWh) return;
+
+    // Check shelf capacities on the destination shelf
+    const destShelfCap = shelfCapacities[transferDestShelf] || { maxWeight: 100, maxVolume: 1.0 };
+    const currentProductsOnDestShelf = products.filter(
+      (p) =>
+        p.warehouse.toLowerCase() === destWh.name.toLowerCase() &&
+        p.shelf.toLowerCase() === transferDestShelf.toLowerCase()
+    );
+
+    let occupiedWeight = 0;
+    let occupiedVolume = 0;
+    currentProductsOnDestShelf.forEach((p) => {
+      const pQty = parseFloat(p.quantity) || 0;
+      const pW = parseFloat(p.weight || "1.0") || 1.0;
+      const pV = parseFloat(p.volume || "0.01") || 0.01;
+      occupiedWeight += pQty * pW;
+      occupiedVolume += pQty * pV;
+    });
+
+    const newProdWeight = parseFloat(prod.weight || "1.0") || 1.0;
+    const newProdVolume = parseFloat(prod.volume || "0.01") || 0.01;
+    const incomingWeight = qty * newProdWeight;
+    const incomingVolume = qty * newProdVolume;
+
+    if (occupiedWeight + incomingWeight > destShelfCap.maxWeight) {
+      showError(`Kapasite Aşımı! Hedef raf ağırlık limiti (${destShelfCap.maxWeight} kg) aşılıyor.`);
+      return;
+    }
+    if (occupiedVolume + incomingVolume > destShelfCap.maxVolume) {
+      showError(`Kapasite Aşımı! Hedef raf hacim limiti (${destShelfCap.maxVolume} m³) aşılıyor.`);
+      return;
+    }
+
+    // Deduct immediately from source product (in-transit state)
+    const updatedProducts = products.map(p => {
+      if (p.id === transferProductId) {
+        return {
+          ...p,
+          quantity: (sourceQty - qty).toString()
+        };
+      }
+      return p;
+    });
+
+    // Create the transfer record
+    const newTransfer: StockTransfer = {
+      id: `trans-${Date.now()}`,
+      sourceWh: prod.warehouse,
+      destWh: destWh.name,
+      productId: prod.id,
+      productName: prod.name,
+      sku: prod.sku || prod.barcode,
+      quantity: qty,
+      sourceShelf: prod.shelf,
+      destShelf: transferDestShelf,
+      status: 'in_transit',
+      createdAt: new Date().toLocaleString("tr-TR"),
+      note: transferNote || "Depolar Arası Sevkiyat"
+    };
+
+    // Save
+    const updatedTransfers = [newTransfer, ...stockTransfers];
+    saveStockTransfers(updatedTransfers);
+
+    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+
+    // Create stock movement for source deduction
+    const deductMovement: StockMovement = {
+      id: `mov-${Date.now()}-out`,
+      productName: prod.name,
+      productCode: prod.sku || prod.barcode,
+      movementType: "stock_out",
+      quantity: qty,
+      warehouse: prod.warehouse,
+      shelf: prod.shelf,
+      note: `Transfer Çıkışı -> ${destWh.name} (${transferDestShelf})`,
+      createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)"
+    };
+    const updatedMovements = [deductMovement, ...movements];
+    window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(updatedMovements));
+    setMovements(updatedMovements);
+
+    // Reset fields
+    setTransferProductId("");
+    setTransferDestWhId("");
+    setTransferDestShelf("");
+    setTransferQty(1);
+    setTransferNote("Depolar Arası Sevkiyat");
+
+    showSuccess(`Transfer işlemi başlatıldı! Ürünler "${destWh.name}" yolunda.`);
+  };
+
+  const handleConfirmTransfer = (transferId: string) => {
+    const trans = stockTransfers.find(t => t.id === transferId);
+    if (!trans) return;
+
+    let productExistsInTarget = false;
+    const updatedProducts = products.map(p => {
+      if (
+        p.sku === trans.sku &&
+        p.warehouse.toLowerCase() === trans.destWh.toLowerCase() &&
+        p.shelf.toLowerCase() === trans.destShelf.toLowerCase()
+      ) {
+        productExistsInTarget = true;
+        return {
+          ...p,
+          quantity: (Number(p.quantity) + trans.quantity).toString()
+        };
+      }
+      return p;
+    });
+
+    if (!productExistsInTarget) {
+      const original = products.find(p => p.id === trans.productId);
+      const newProductRecord: ProductRecord = {
+        id: `prod-${Date.now()}`,
+        name: trans.productName,
+        category: original?.category || "Genel",
+        brand: original?.brand || "Belirtilmemiş",
+        model: original?.model || "",
+        description: original?.description || "",
+        salePrice: original?.salePrice || "0.00",
+        purchasePrice: original?.purchasePrice || "0.00",
+        barcode: original?.barcode || "",
+        sku: trans.sku,
+        oemCode: original?.oemCode || "",
+        quantity: trans.quantity.toString(),
+        warehouse: trans.destWh,
+        shelf: trans.destShelf,
+        weight: original?.weight,
+        volume: original?.volume
+      };
+      updatedProducts.push(newProductRecord);
+    }
+
+    const updatedTransfers = stockTransfers.map(t => {
+      if (t.id === transferId) {
+        return { ...t, status: 'completed' as const };
+      }
+      return t;
+    });
+
+    saveStockTransfers(updatedTransfers);
+    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+
+    const addMovement: StockMovement = {
+      id: `mov-${Date.now()}-in`,
+      productName: trans.productName,
+      productCode: trans.sku,
+      movementType: "stock_in",
+      quantity: trans.quantity,
+      warehouse: trans.destWh,
+      shelf: trans.destShelf,
+      note: `Transfer Girişi <- ${trans.sourceWh} (${trans.sourceShelf})`,
+      createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)"
+    };
+    const updatedMovements = [addMovement, ...movements];
+    window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(updatedMovements));
+    setMovements(updatedMovements);
+
+    showSuccess(`Sevkiyat başarıyla teslim alındı ve [${trans.destWh} - ${trans.destShelf}] konumuna eklendi.`);
+  };
+
+  const handleCancelTransfer = (transferId: string) => {
+    const trans = stockTransfers.find(t => t.id === transferId);
+    if (!trans || trans.status !== 'in_transit') return;
+
+    // Refund stock to original
+    const updatedProducts = products.map(p => {
+      if (p.id === trans.productId) {
+        return {
+          ...p,
+          quantity: (Number(p.quantity) + trans.quantity).toString()
+        };
+      }
+      return p;
+    });
+
+    const updatedTransfers = stockTransfers.filter(t => t.id !== transferId);
+
+    saveStockTransfers(updatedTransfers);
+    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+
+    // Create stock movement for refund
+    const refundMovement: StockMovement = {
+      id: `mov-${Date.now()}-refund`,
+      productName: trans.productName,
+      productCode: trans.sku,
+      movementType: "stock_in",
+      quantity: trans.quantity,
+      warehouse: trans.sourceWh,
+      shelf: trans.sourceShelf,
+      note: `İptal Edilen Transfer İadesi`,
+      createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)"
+    };
+    const updatedMovements = [refundMovement, ...movements];
+    window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(updatedMovements));
+    setMovements(updatedMovements);
+
+  };
+
+  // ZPL Generator
+  const generateZPL = (type: "product" | "shelf", data: any) => {
+    if (type === "product") {
+      const p = data as ProductRecord;
+      const sizeStr = zplLabelSize === "3x2" ? "^PW600\n^LL400" : "^PW400\n^LL200";
+      const zpl = `^XA
+${sizeStr}
+^LH30,30
+^FO20,20^A0N,36,36^FD${p.name.substring(0, 24)}^FS
+^FO20,65^A0N,24,24^FDSKU: ${p.sku || p.barcode}^FS
+^FO20,95^A0N,24,24^FDFiyat: ${p.salePrice || "0.00"} EUR^FS
+^FO20,125^A0N,24,24^FDDepo/Raf: ${p.warehouse} / ${p.shelf}^FS
+^FO20,170^BY2,2.0,70^BCN,N,N,Y,N^FD${p.barcode || p.sku}^FS
+^XZ`;
+      setZplText(zpl);
+    } else {
+      const sh = data as string;
+      const sizeStr = zplLabelSize === "3x2" ? "^PW600\n^LL400" : "^PW400\n^LL200";
+      const zpl = `^XA
+${sizeStr}
+^LH30,30
+^FO100,30^A0N,40,40^FDRAF ETIKETI^FS
+^FO100,90^A0N,90,90^FD${sh}^FS
+^FO100,210^BY3,3.0,100^BCN,N,N,Y,N^FD${sh}^FS
+^XZ`;
+      setZplText(zpl);
+    }
+  };
+
+  // Audit Handlers
+  const handleStartAudit = (shelves: string[]) => {
+    if (shelves.length === 0) {
+      showError("Lütfen sayılacak en az bir raf seçin.");
+      return;
+    }
+    setIsAuditActive(true);
+    setAuditShelfSelections(shelves);
+    setAuditCurrentShelf(shelves[0]);
+    setAuditCounts({});
+    setAuditLogs([]);
+    showSuccess("Kör sayım denetim oturumu başarıyla başlatıldı. Sistem adetleri gizlendi.");
+  };
+
+  const handleRecordAuditCount = (sku: string, qty: number) => {
+    if (!auditCurrentShelf) {
+      showError("Lütfen sayım yapılan rafı seçin.");
+      return;
+    }
+    if (!sku.trim()) {
+      showError("Lütfen ürün SKU veya barkodunu okutun.");
+      return;
+    }
+    if (qty < 0) {
+      showError("Sayılan miktar sıfırdan küçük olamaz.");
+      return;
+    }
+
+    const prod = products.find(p => p.sku === sku || p.barcode === sku);
+    if (!prod) {
+      showError("Okutulan ürün envanter kataloğunda bulunamadı.");
+      return;
+    }
+
+    const key = `${auditCurrentShelf}_${prod.sku}`;
+    const newCounts = {
+      ...auditCounts,
+      [key]: (auditCounts[key] || 0) + qty
+    };
+    setAuditCounts(newCounts);
+
+    const logMsg = {
+      id: Date.now(),
+      shelf: auditCurrentShelf,
+      productName: prod.name,
+      sku: prod.sku,
+      quantity: qty,
+      time: new Date().toLocaleTimeString("tr-TR")
+    };
+    setAuditLogs([logMsg, ...auditLogs]);
+    showSuccess(`[${auditCurrentShelf}] konumunda ${qty} adet "${prod.name}" kaydedildi.`);
+  };
+
+  const handleApplyAuditAdjustments = () => {
+    if (!activeWh) return;
+    let updatedProducts = [...products];
+    const newMovements = [...movements];
+
+    const auditedProducts = products.filter(
+      p =>
+        p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+        auditShelfSelections.some(sh => sh.toLowerCase() === p.shelf.toLowerCase())
+    );
+
+    let correctionsCount = 0;
+
+    auditedProducts.forEach(p => {
+      const key = `${p.shelf}_${p.sku}`;
+      const counted = auditCounts[key] ?? 0;
+      const systemQty = Number(p.quantity) || 0;
+
+      if (counted !== systemQty) {
+        correctionsCount++;
+        updatedProducts = updatedProducts.map(item => {
+          if (item.id === p.id) {
+            return { ...item, quantity: counted.toString() };
+          }
+          return item;
+        });
+
+        const diff = counted - systemQty;
+        const movementType = diff > 0 ? "stock_in" : "stock_out";
+        const adjMovement: StockMovement = {
+          id: `mov-audit-${Date.now()}-${p.id}`,
+          productName: p.name,
+          productCode: p.sku || p.barcode,
+          movementType: movementType,
+          quantity: Math.abs(diff),
+          warehouse: p.warehouse,
+          shelf: p.shelf,
+          note: `Sayım Düzeltmesi (Sistem: ${systemQty} -> Sayılan: ${counted})`,
+          createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)"
+        };
+        newMovements.push(adjMovement);
+      }
+    });
+
+    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+    window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(newMovements));
+    setMovements(newMovements);
+
+    setIsAuditActive(false);
+    setAuditCounts({});
+    setAuditLogs([]);
+    showSuccess(`Sayım oturumu onaylandı. Toplam ${correctionsCount} adet üründe stok seviyesi düzeltildi.`);
+  };
+
+  // Picking (Sipariş Toplama) Handlers
+  const handleGeneratePickingRoute = () => {
+    if (pickingItems.length === 0) {
+      showError("Lütfen toplanacak en az bir ürün ekleyin.");
+      return;
+    }
+    if (!activeWh) return;
+
+    const steps: { shelf: string, sku: string, name: string, quantityToPick: number, picked: boolean }[] = [];
+
+    for (const item of pickingItems) {
+      let needed = item.quantityNeeded;
+
+      const availableStocks = products
+        .filter(
+          p =>
+            p.sku === item.sku &&
+            p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+            Number(p.quantity) > 0
+        )
+        .sort((a, b) => {
+          const timeA = parseInt(a.id.split("-")[1]) || 0;
+          const timeB = parseInt(b.id.split("-")[1]) || 0;
+          return timeA - timeB; // FIFO (Oldest first)
+        });
+
+      const totalAvailable = availableStocks.reduce((sum, p) => sum + (Number(p.quantity) || 0), 0);
+      if (totalAvailable < needed) {
+        showError(`Yetersiz Stok! "${item.name}" için gereken: ${needed}, mevcut toplam stok: ${totalAvailable}`);
+        return;
+      }
+
+      for (const stock of availableStocks) {
+        if (needed <= 0) break;
+        const qtyOnShelf = Number(stock.quantity) || 0;
+        const pickQty = Math.min(qtyOnShelf, needed);
+        needed -= pickQty;
+
+        steps.push({
+          shelf: stock.shelf,
+          sku: stock.sku,
+          name: stock.name,
+          quantityToPick: pickQty,
+          picked: false
+        });
+      }
+    }
+
+    // Sort walking path by zone letter, slot number, and level number
+    steps.sort((a, b) => {
+      const partsA = a.shelf.split("-");
+      const partsB = b.shelf.split("-");
+
+      const zoneA = partsA[0] || "";
+      const zoneB = partsB[0] || "";
+      if (zoneA !== zoneB) {
+        return zoneA.localeCompare(zoneB);
+      }
+
+      const slotA = parseInt(partsA[1]) || 0;
+      const slotB = parseInt(partsB[1]) || 0;
+      if (slotA !== slotB) {
+        return slotA - slotB;
+      }
+
+      const levelA = parseInt(partsA[2]) || 0;
+      const levelB = parseInt(partsB[2]) || 0;
+      return levelA - levelB;
+    });
+
+    setPickingRouteSteps(steps);
+    setIsPickingSessionActive(true);
+    showSuccess("Optimum toplama rotası başarıyla hesaplandı. Toplayıcı yönlendiriliyor.");
+  };
+
+  const handleFinishPicking = () => {
+    if (!activeWh) return;
+
+    let updatedProducts = [...products];
+    const newMovements = [...movements];
+
+    pickingRouteSteps.forEach(step => {
+      if (step.picked) {
+        updatedProducts = updatedProducts.map(p => {
+          if (
+            p.sku === step.sku &&
+            p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+            p.shelf.toLowerCase() === step.shelf.toLowerCase()
+          ) {
+            const currentQty = Number(p.quantity) || 0;
+            return {
+              ...p,
+              quantity: Math.max(0, currentQty - step.quantityToPick).toString()
+            };
+          }
+          return p;
+        });
+
+        const pickMovement: StockMovement = {
+          id: `mov-pick-${Date.now()}-${step.sku}-${step.shelf}`,
+          productName: step.name,
+          productCode: step.sku,
+          movementType: "stock_out",
+          quantity: step.quantityToPick,
+          warehouse: activeWh.name,
+          shelf: step.shelf,
+          note: `Sipariş Toplama (Akıllı Rota)`,
+          createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)"
+        };
+        newMovements.push(pickMovement);
+      }
+    });
+
+    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    setProducts(updatedProducts);
+    window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(newMovements));
+    setMovements(newMovements);
+
+    setIsPickingSessionActive(false);
+    setPickingRouteSteps([]);
+    setPickingItems([]);
+    showSuccess("Toplama iş emri başarıyla tamamlandı. Stoklar güncellendi.");
   };
 
   // Camera Scanner using ZXing library
@@ -1209,8 +1826,69 @@ export default function WarehousesRevampPage() {
           </div>
         </section>
 
-        {/* MAIN Revamped Workspace */}
+        {/* Workspace Operations Tabs */}
         {activeWh && (
+          <nav className="flex gap-2 p-1.5 bg-slate-100 rounded-2xl w-fit max-w-full overflow-x-auto shadow-inner">
+            <button
+              type="button"
+              onClick={() => setActiveWorkspaceTab('placement')}
+              className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
+                activeWorkspaceTab === 'placement'
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-slate-600 hover:text-slate-800"
+              }`}
+            >
+              📐 Yerleşim & Raf Şekillendirici
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveWorkspaceTab('transfer')}
+              className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
+                activeWorkspaceTab === 'transfer'
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-slate-600 hover:text-slate-800"
+              }`}
+            >
+              🔄 Depolar Arası Transfer
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveWorkspaceTab('audit')}
+              className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
+                activeWorkspaceTab === 'audit'
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-slate-600 hover:text-slate-800"
+              }`}
+            >
+              📋 Kör Stok Sayımı
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveWorkspaceTab('zpl')}
+              className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
+                activeWorkspaceTab === 'zpl'
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-slate-600 hover:text-slate-800"
+              }`}
+            >
+              🏷️ ZPL Barkod Laboratuvarı
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveWorkspaceTab('picking')}
+              className={`rounded-xl px-4 py-2 text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 ${
+                activeWorkspaceTab === 'picking'
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-slate-600 hover:text-slate-800"
+              }`}
+            >
+              ⚡ Akıllı Sipariş Toplama
+            </button>
+          </nav>
+        )}
+
+        {/* MAIN Revamped Workspace */}
+        {activeWh && activeWorkspaceTab === 'placement' && (
           <section className="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
             
             {/* Left Column: Layout Shaper and Placement Board */}
@@ -1457,18 +2135,56 @@ export default function WarehousesRevampPage() {
 
                   {/* Show price warnings / preview for sanity check */}
                   {placeProductId && (
-                    <div className="p-3 bg-slate-50 border border-slate-150 rounded-2xl flex justify-between items-center text-xs font-semibold">
-                      <div>
-                        💰 {t.purchaseCost}:{" "}
-                        <span className="text-rose-700 font-bold">
-                          {products.find((p) => p.id === placeProductId)?.purchasePrice || "0.00"} EUR
-                        </span>
+                    <div className="space-y-2">
+                      <div className="p-3 bg-slate-50 border border-slate-150 rounded-2xl flex justify-between items-center text-xs font-semibold">
+                        <div>
+                          💰 {t.purchaseCost}:{" "}
+                          <span className="text-rose-700 font-bold">
+                            {products.find((p) => p.id === placeProductId)?.purchasePrice || "0.00"} EUR
+                          </span>
+                        </div>
+                        <div>
+                          💵 {t.salePrice}:{" "}
+                          <span className="text-emerald-700 font-bold">
+                            {products.find((p) => p.id === placeProductId)?.salePrice || "0.00"} EUR
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        💵 {t.salePrice}:{" "}
-                        <span className="text-emerald-700 font-bold">
-                          {products.find((p) => p.id === placeProductId)?.salePrice || "0.00"} EUR
-                        </span>
+
+                      {/* Weight & Volume overrides */}
+                      <div className="grid gap-2 grid-cols-2 p-3 bg-blue-50/40 border border-blue-100 rounded-2xl">
+                        <label className="grid gap-1">
+                          <span className="text-[10px] font-black text-slate-500">Birim Ağırlık (kg)</span>
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="0.1"
+                            value={products.find(p => p.id === placeProductId)?.weight || "1.0"}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const updated = products.map(p => p.id === placeProductId ? { ...p, weight: val } : p);
+                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                              setProducts(updated);
+                            }}
+                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none"
+                          />
+                        </label>
+                        <label className="grid gap-1">
+                          <span className="text-[10px] font-black text-slate-500">Birim Hacim (m³)</span>
+                          <input
+                            type="number"
+                            step="0.001"
+                            min="0.001"
+                            value={products.find(p => p.id === placeProductId)?.volume || "0.01"}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              const updated = products.map(p => p.id === placeProductId ? { ...p, volume: val } : p);
+                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                              setProducts(updated);
+                            }}
+                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none"
+                          />
+                        </label>
                       </div>
                     </div>
                   )}
@@ -1560,6 +2276,49 @@ export default function WarehousesRevampPage() {
                           {t.closeBtn}
                         </button>
                       </div>
+                    </div>
+
+                    {/* Shelf Capacities Editor */}
+                    <div className="grid grid-cols-2 gap-3 p-3 bg-white/70 border border-blue-150 rounded-xl text-xs font-semibold">
+                      <label className="grid gap-1">
+                        <span className="text-[10px] text-slate-500 font-black">Maksimum Yük (kg)</span>
+                        <input
+                          type="number"
+                          min="1"
+                          value={shelfCapacities[scannedShelfCode]?.maxWeight ?? 100}
+                          onChange={(e) => {
+                            const updated = {
+                              ...shelfCapacities,
+                              [scannedShelfCode]: {
+                                maxWeight: Number(e.target.value) || 100,
+                                maxVolume: shelfCapacities[scannedShelfCode]?.maxVolume ?? 1.0,
+                              }
+                            };
+                            saveShelfCapacities(updated);
+                          }}
+                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-bold outline-none"
+                        />
+                      </label>
+                      <label className="grid gap-1">
+                        <span className="text-[10px] text-slate-500 font-black">Maksimum Hacim (m³)</span>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0.1"
+                          value={shelfCapacities[scannedShelfCode]?.maxVolume ?? 1.0}
+                          onChange={(e) => {
+                            const updated = {
+                              ...shelfCapacities,
+                              [scannedShelfCode]: {
+                                maxWeight: shelfCapacities[scannedShelfCode]?.maxWeight ?? 100,
+                                maxVolume: Number(e.target.value) || 1.0,
+                              }
+                            };
+                            saveShelfCapacities(updated);
+                          }}
+                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-bold outline-none"
+                        />
+                      </label>
                     </div>
 
                     {/* Shelf Products list */}
@@ -1819,6 +2578,610 @@ export default function WarehousesRevampPage() {
 
             </div>
 
+          </section>
+        )}
+
+        {/* TRANSFER STATION TAB */}
+        {activeWh && activeWorkspaceTab === 'transfer' && (
+          <section className="grid gap-4 lg:grid-cols-[1fr_1.2fr] animate-fadeIn">
+            {/* Left: Transfer Form */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <div>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">TRANSFER İSTASYONU</span>
+                <h2 className="text-base font-black text-slate-900 mt-1">Depolar Arası Stok Sevk Et</h2>
+                <p className="text-xs text-slate-550">Stokları başka depolara ve raflara güvenli bir şekilde aktarın.</p>
+              </div>
+
+              <form onSubmit={handleInitiateTransfer} className="space-y-4">
+                <label className="grid gap-1">
+                  <span className="text-xs font-bold text-slate-700">Sevk Edilecek Ürün</span>
+                  <select
+                    value={transferProductId}
+                    onChange={(e) => {
+                      setTransferProductId(e.target.value);
+                      const prod = products.find(p => p.id === e.target.value);
+                      if (prod) {
+                        setTransferQty(1);
+                      }
+                    }}
+                    className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="">Ürün Seçin...</option>
+                    {activeWhInventory.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} ({p.sku}) - Raftaki Mevcut: {p.quantity} Adet (Konum: {p.shelf})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                {transferProductId && (
+                  <div className="p-3 bg-slate-50 border border-slate-150 rounded-2xl text-xs space-y-1 font-semibold text-slate-700">
+                    <div>📍 Kaynak Raf Konumu: <span className="font-mono text-blue-600 font-bold">{products.find(p => p.id === transferProductId)?.shelf}</span></div>
+                    <div>📦 Mevcut Stok Adedi: <span className="text-slate-900 font-bold">{products.find(p => p.id === transferProductId)?.quantity} Adet</span></div>
+                  </div>
+                )}
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="grid gap-1">
+                    <span className="text-xs font-bold text-slate-700">Hedef Depo</span>
+                    <select
+                      value={transferDestWhId}
+                      onChange={(e) => {
+                        setTransferDestWhId(e.target.value);
+                        setTransferDestShelf("");
+                      }}
+                      className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-blue-500"
+                    >
+                      <option value="">Hedef Seçin...</option>
+                      {warehouses.filter(w => w.id !== activeWarehouseId).map((w) => (
+                        <option key={w.id} value={w.id}>
+                          🏪 {w.name} ({w.city})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="grid gap-1">
+                    <span className="text-xs font-bold text-slate-700">Hedef Raf Konumu</span>
+                    <select
+                      value={transferDestShelf}
+                      onChange={(e) => setTransferDestShelf(e.target.value)}
+                      disabled={!transferDestWhId}
+                      className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-mono font-bold focus:outline-none focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
+                    >
+                      <option value="">Raf Konumu Seçin...</option>
+                      {warehouses.find(w => w.id === transferDestWhId)?.shelves?.map((sh) => (
+                        <option key={sh} value={sh}>
+                          Raf: {sh}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="grid gap-1">
+                    <span className="text-xs font-bold text-slate-700">Sevk Edilecek Adet</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max={transferProductId ? Number(products.find(p => p.id === transferProductId)?.quantity || 1) : 9999}
+                      value={transferQty}
+                      onChange={(e) => setTransferQty(Number(e.target.value))}
+                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500"
+                    />
+                  </label>
+
+                  <label className="grid gap-1">
+                    <span className="text-xs font-bold text-slate-700">Sevk Notu</span>
+                    <input
+                      type="text"
+                      value={transferNote}
+                      onChange={(e) => setTransferNote(e.target.value)}
+                      placeholder="Örn: B reyonuna kaydırma"
+                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500"
+                    />
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-blue-600 py-3 text-xs font-black text-white hover:bg-blue-500 transition active:scale-95 shadow-sm"
+                >
+                  ⚡ Transfer Sevkiyatını Başlat
+                </button>
+              </form>
+            </div>
+
+            {/* Right: Active/Pending Transfers */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <div>
+                <h3 className="text-base font-black text-slate-900">Transfer Hareketleri ve İş Emirleri</h3>
+                <p className="text-xs text-slate-550">Depolar arası sevk aşamasındaki ürünlerin takip listesi.</p>
+              </div>
+
+              <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+                {stockTransfers.length > 0 ? (
+                  stockTransfers.map((t) => (
+                    <article key={t.id} className="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3 transition hover:border-slate-300 shadow-sm">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-bold text-slate-850 text-xs">{t.productName}</h4>
+                          <span className="text-[9px] font-mono text-slate-450 block mt-0.5">SKU: {t.sku} | ID: {t.id}</span>
+                        </div>
+                        <span className={`rounded-full px-2.5 py-0.5 text-[8px] font-black uppercase ${
+                          t.status === 'in_transit' ? 'bg-orange-100 text-orange-700' : 'bg-emerald-100 text-emerald-800'
+                        }`}>
+                          {t.status === 'in_transit' ? '✈ Yolda (Beklemede)' : '✓ Teslim Alındı'}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold text-slate-600 bg-white border border-slate-100 p-2 rounded-xl">
+                        <div>🏪 Çıkış: <strong className="text-slate-800">{t.sourceWh} ({t.sourceShelf})</strong></div>
+                        <div>🏪 Hedef: <strong className="text-slate-800">{t.destWh} ({t.destShelf})</strong></div>
+                        <div>📦 Adet: <strong className="text-blue-600 font-mono">{t.quantity} Adet</strong></div>
+                        <div>📅 Tarih: <span className="text-slate-500 font-mono">{t.createdAt}</span></div>
+                        <div className="col-span-2 italic text-slate-450 mt-1">Not: {t.note}</div>
+                      </div>
+
+                      {t.status === 'in_transit' && (
+                        <div className="flex justify-end gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => handleCancelTransfer(t.id)}
+                            className="rounded-lg bg-rose-50 border border-rose-200 px-3 py-1.5 text-[10px] font-black text-rose-700 hover:bg-rose-100 transition active:scale-95"
+                          >
+                            İptal Et & İade Et
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleConfirmTransfer(t.id)}
+                            className="rounded-lg bg-emerald-600 px-3 py-1.5 text-[10px] font-black text-white hover:bg-emerald-500 transition active:scale-95 shadow-sm"
+                          >
+                            ⚡ Sevkiyatı Teslim Al ve Onayla
+                          </button>
+                        </div>
+                      )}
+                    </article>
+                  ))
+                ) : (
+                  <p className="text-xs text-slate-400 italic py-8 text-center bg-slate-50/50 rounded-2xl border border-slate-200">
+                    Aktif depolar arası transfer veya iş emri bulunmuyor.
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* AUDIT (Sayım) TAB */}
+        {activeWh && activeWorkspaceTab === 'audit' && (
+          <section className="space-y-4 animate-fadeIn">
+            {!isAuditActive ? (
+              // Start Session Panel
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm max-w-2xl mx-auto space-y-4 text-center">
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">STOK DENETİMİ</span>
+                <h2 className="text-lg font-black text-slate-900">Kör Envanter Sayım Oturumu</h2>
+                <p className="text-xs text-slate-550 max-w-md mx-auto">
+                  Sistemdeki stok adetlerini gizleyerek personelin fiziki envanteri körleme saymasını sağlayın. Sayım bittiğinde otomatik fark raporu çıkarılır.
+                </p>
+
+                <div className="border-t border-slate-100 pt-4 text-left space-y-3">
+                  <span className="text-xs font-bold text-slate-700 block">Sayıma Dahil Edilecek Reyonlar / Raflar</span>
+                  <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-200">
+                    {activeWh.shelves && activeWh.shelves.length > 0 ? (
+                      activeWh.shelves.map((sh) => (
+                        <label key={sh} className="flex items-center gap-2 text-xs font-bold text-slate-655 p-1 hover:bg-white rounded cursor-pointer transition">
+                          <input
+                            type="checkbox"
+                            defaultChecked
+                            id={`audit-sh-${sh}`}
+                            className="accent-blue-600 rounded"
+                          />
+                          <span>{sh}</span>
+                        </label>
+                      ))
+                    ) : (
+                      <p className="text-xs text-slate-400 col-span-3 italic text-center py-4">Depoda tanımlanmış raf yok.</p>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const checked: string[] = [];
+                    activeWh.shelves?.forEach((sh) => {
+                      const el = document.getElementById(`audit-sh-${sh}`) as HTMLInputElement;
+                      if (el && el.checked) {
+                        checked.push(sh);
+                      }
+                    });
+                    handleStartAudit(checked);
+                  }}
+                  className="rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-6 py-3 transition shadow-sm active:scale-95"
+                >
+                  ⚡ Kör Sayım Oturumunu Başlat (Kilitli Mod)
+                </button>
+              </div>
+            ) : (
+              // Active Session Panel
+              <div className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
+                {/* Left: Input station */}
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+                  <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                    <div>
+                      <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider bg-amber-50 px-2 py-0.5 rounded-full">SAYIM AKTİF</span>
+                      <h3 className="text-base font-black text-slate-900 mt-1">Barkod / Konum Okutma İstasyonu</h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsAuditActive(false)}
+                      className="text-xs text-slate-400 hover:text-slate-600 font-bold"
+                    >
+                      Oturumu Kapat ✕
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="grid gap-1">
+                      <span className="text-xs font-bold text-slate-700">Sayım Yapılan Raf Konumu</span>
+                      <select
+                        value={auditCurrentShelf}
+                        onChange={(e) => setAuditCurrentShelf(e.target.value)}
+                        className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-mono font-bold focus:outline-none focus:border-blue-500 bg-slate-50"
+                      >
+                        {auditShelfSelections.map((sh) => (
+                          <option key={sh} value={sh}>
+                            Raf: {sh}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+
+                    <div className="grid gap-3 sm:grid-cols-[1fr_100px]">
+                      <label className="grid gap-1">
+                        <span className="text-xs font-bold text-slate-700">Ürün SKU / Barkod Okutun</span>
+                        <input
+                          type="text"
+                          id="audit-barcode-input"
+                          placeholder="Barkod Okutun veya SKU Yazın"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const barcodeInput = document.getElementById("audit-barcode-input") as HTMLInputElement;
+                              const qtyInput = document.getElementById("audit-qty-input") as HTMLInputElement;
+                              if (barcodeInput.value.trim()) {
+                                handleRecordAuditCount(barcodeInput.value.trim().toUpperCase(), Number(qtyInput.value) || 1);
+                                barcodeInput.value = "";
+                                barcodeInput.focus();
+                              }
+                            }
+                          }}
+                          className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500"
+                        />
+                      </label>
+
+                      <label className="grid gap-1">
+                        <span className="text-xs font-bold text-slate-700">Miktar</span>
+                        <input
+                          type="number"
+                          id="audit-qty-input"
+                          defaultValue={1}
+                          min={1}
+                          className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold text-center focus:outline-none focus:border-blue-500"
+                        />
+                      </label>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const barcodeInput = document.getElementById("audit-barcode-input") as HTMLInputElement;
+                        const qtyInput = document.getElementById("audit-qty-input") as HTMLInputElement;
+                        if (barcodeInput.value.trim()) {
+                          handleRecordAuditCount(barcodeInput.value.trim().toUpperCase(), Number(qtyInput.value) || 1);
+                          barcodeInput.value = "";
+                          barcodeInput.focus();
+                        } else {
+                          showError("Lütfen bir ürün barkodu girin.");
+                        }
+                      }}
+                      className="w-full rounded-xl bg-slate-900 py-3 text-xs font-black text-white hover:bg-slate-800 transition active:scale-95"
+                    >
+                      Sayımı Kaydet (Hücreyi Onayla)
+                    </button>
+                  </div>
+
+                  {/* Audit logs timeline */}
+                  <div className="border-t border-slate-100 pt-4 space-y-2">
+                    <span className="text-xs font-bold text-slate-700 block">Sayım Akışı (Son Okutulanlar)</span>
+                    <div className="max-h-56 overflow-y-auto space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200 pr-1">
+                      {auditLogs.length > 0 ? (
+                        auditLogs.map((l) => (
+                          <div key={l.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1 flex justify-between">
+                            <div>
+                              <strong className="text-slate-800">{l.productName}</strong>
+                              <span className="text-blue-600 font-mono font-bold ml-1">({l.shelf})</span>
+                            </div>
+                            <div className="font-mono text-right shrink-0 ml-2 font-black text-slate-900">
+                              {l.quantity} Adet | <span className="text-slate-400 font-normal">{l.time}</span>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-[10px] text-slate-400 italic text-center py-6">Kör sayıma başlamak için barkod okutun.</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Live Discrepancies report */}
+                <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-base font-black text-slate-900">Canlı Mutabakat & Fark Raporu</h3>
+                      <p className="text-xs text-slate-550">Sistemdeki stok seviyeleri ile fiziki sayımlar arasındaki sapmalar.</p>
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto max-h-[380px] border border-slate-200 rounded-xl">
+                    <table className="w-full text-left text-[11px] border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-200 bg-slate-50 text-[9px] font-black text-slate-500 uppercase">
+                          <th className="p-2.5">Raf</th>
+                          <th className="p-2.5">Ürün</th>
+                          <th className="p-2.5 text-center">Sistem</th>
+                          <th className="p-2.5 text-center">Sayılan</th>
+                          <th className="p-2.5 text-center">Fark</th>
+                          <th className="p-2.5 text-right">Durum</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
+                        {products
+                          .filter(
+                            p =>
+                              p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+                              auditShelfSelections.some(sh => sh.toLowerCase() === p.shelf.toLowerCase())
+                          )
+                          .map((p) => {
+                            const key = `${p.shelf}_${p.sku}`;
+                            const counted = auditCounts[key] ?? 0;
+                            const systemQty = Number(p.quantity) || 0;
+                            const diff = counted - systemQty;
+                            return (
+                              <tr key={p.id} className="hover:bg-slate-50/50">
+                                <td className="p-2.5 font-mono text-blue-600 font-bold">{p.shelf}</td>
+                                <td className="p-2.5">
+                                  <span className="font-bold text-slate-900 truncate block max-w-xs">{p.name}</span>
+                                  <span className="text-[9px] text-slate-400 font-mono">{p.sku}</span>
+                                </td>
+                                <td className="p-2.5 text-center font-mono">{systemQty}</td>
+                                <td className="p-2.5 text-center font-mono font-black text-slate-800">{counted}</td>
+                                <td className={`p-2.5 text-center font-mono font-black ${
+                                  diff === 0 ? 'text-slate-500' : diff > 0 ? 'text-emerald-600' : 'text-rose-600'
+                                }`}>
+                                  {diff > 0 ? `+${diff}` : diff}
+                                </td>
+                                <td className="p-2.5 text-right font-black uppercase text-[8px]">
+                                  {diff === 0 ? (
+                                    <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">MUTABIK</span>
+                                  ) : diff > 0 ? (
+                                    <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded">FAZLA STOK</span>
+                                  ) : (
+                                    <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded">EKSİK STOK</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex gap-3 justify-end border-t border-slate-100 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setIsAuditActive(false)}
+                      className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+                    >
+                      Kaydetmeden Kapat
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleApplyAuditAdjustments}
+                      className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-black text-white hover:bg-blue-500 transition active:scale-95 shadow-sm"
+                    >
+                      ⚡ Sayımı Onayla & Stokları Düzelt
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ZPL BARKOD LAB TAB */}
+        {activeWh && activeWorkspaceTab === 'zpl' && (
+          <section className="grid gap-4 lg:grid-cols-[1fr_1.1fr] animate-fadeIn">
+            {/* Left: ZPL Generator Form */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <div>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">ZPL ETİKET LABORATUVARI</span>
+                <h2 className="text-base font-black text-slate-900 mt-1">Zebra Termal Barkod Şablonu</h2>
+                <p className="text-xs text-slate-550">Endüstriyel Zebra etiket yazıcıları için anında ZPL II kodu üretin.</p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="grid gap-1">
+                    <span className="text-xs font-bold text-slate-700">Etiket Boyutu</span>
+                    <select
+                      value={zplLabelSize}
+                      onChange={(e) => setZplLabelSize(e.target.value as "2x1" | "3x2")}
+                      className="w-full rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500"
+                    >
+                      <option value="3x2">3" x 2" (Büyük Raf/Ürün Etiketi)</option>
+                      <option value="2x1">2" x 1" (Küçük Parça Etiketi)</option>
+                    </select>
+                  </label>
+
+                  <label className="grid gap-1">
+                    <span className="text-xs font-bold text-slate-700">Şablon Hedefi</span>
+                    <select
+                      value={zplProductId}
+                      onChange={(e) => {
+                        setZplProductId(e.target.value);
+                        if (e.target.value.startsWith("shelf_")) {
+                          generateZPL("shelf", e.target.value.replace("shelf_", ""));
+                        } else if (e.target.value) {
+                          const p = products.find(prod => prod.id === e.target.value);
+                          if (p) generateZPL("product", p);
+                        } else {
+                          setZplText("");
+                        }
+                      }}
+                      className="w-full rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500"
+                    >
+                      <option value="">Hedef Seçin...</option>
+                      <optgroup label="Ürünler">
+                        {activeWhInventory.map(p => (
+                          <option key={p.id} value={p.id}>📦 {p.name} ({p.sku})</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Depo Rafları">
+                        {activeWh.shelves?.map(sh => (
+                          <option key={sh} value={`shelf_${sh}`}>📍 Raf Konumu: {sh}</option>
+                        ))}
+                      </optgroup>
+                    </select>
+                  </label>
+                </div>
+
+                <label className="grid gap-1">
+                  <span className="text-xs font-bold text-slate-700">ZPL II Ham Kod Çıktısı (Yazıcıya Gönderilecek Kod)</span>
+                  <textarea
+                    rows={8}
+                    value={zplText}
+                    onChange={(e) => setZplText(e.target.value)}
+                    className="w-full rounded-xl border border-slate-250 p-3 text-xs font-mono font-bold focus:outline-none focus:border-blue-500 bg-slate-50"
+                    placeholder="^XA\n^FO50,50^A0N,30,30^FDBarkod Yazıcı^FS\n^XZ"
+                  />
+                </label>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!zplText.trim()) {
+                        showError("Lütfen önce bir ZPL kodu oluşturun veya yazın.");
+                        return;
+                      }
+                      navigator.clipboard.writeText(zplText);
+                      showSuccess("ZPL kodu panoya kopyalandı! Termal yazıcı gönderme yazılımlarına doğrudan yapıştırabilirsiniz.");
+                    }}
+                    className="flex-1 rounded-xl bg-slate-900 py-3 text-xs font-black text-white hover:bg-slate-800 transition text-center shadow-sm"
+                  >
+                    Kodu Panoya Kopyala 📋
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!zplText.trim()) {
+                        showError("Lütfen önce bir ZPL kodu oluşturun.");
+                        return;
+                      }
+                      // Simulate direct network socket printing
+                      showSuccess("Termal Yazıcıya Gönderildi (Simüle edildi: RAW Port 9100).");
+                    }}
+                    className="flex-1 rounded-xl bg-blue-600 py-3 text-xs font-black text-white hover:bg-blue-500 transition text-center shadow-sm active:scale-95"
+                  >
+                    Yazıcıya Gönder 🖨️
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Thermal Sticker Preview Simulator */}
+            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
+              <div>
+                <h3 className="text-base font-black text-slate-900">Termal Etiket Simülasyonu</h3>
+                <p className="text-xs text-slate-550">Yazıcının termal kafasından çıkacak fiziksel etiketin görsel simülasyonu.</p>
+              </div>
+
+              {/* Simulated Sticker Box */}
+              <div className="flex-1 flex items-center justify-center p-6 bg-slate-100 rounded-3xl min-h-[300px]">
+                {zplText ? (
+                  <div className={`bg-white border-2 border-slate-800 border-dashed rounded-xl shadow-md p-6 flex flex-col justify-between text-black relative font-mono select-none ${
+                    zplLabelSize === "3x2" ? "w-[360px] h-[240px]" : "w-[280px] h-[160px]"
+                  }`}>
+                    {/* Header */}
+                    <div className="flex justify-between items-start border-b-2 border-black pb-1.5">
+                      <span className="text-[10px] font-black tracking-widest">{storeName.toUpperCase()}</span>
+                      <span className="text-[7px] font-bold bg-black text-white px-1.5 py-0.5 rounded">TERMAL KAFA</span>
+                    </div>
+
+                    {/* Content parser simulation */}
+                    <div className="space-y-1.5 py-2">
+                      {zplProductId ? (
+                        zplProductId.startsWith("shelf_") ? (
+                          <div className="text-center space-y-1">
+                            <span className="text-[9px] font-black uppercase text-slate-500">RAF YERLEŞİM BARKODU</span>
+                            <div className="text-4xl font-black tracking-wider text-slate-900 font-mono mt-1">
+                              {zplProductId.replace("shelf_", "")}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-1 text-xs">
+                            <h4 className="font-black text-sm uppercase truncate text-slate-900">
+                              {products.find(p => p.id === zplProductId)?.name}
+                            </h4>
+                            <div className="flex justify-between font-bold text-[10px] text-slate-600">
+                              <span>SKU: {products.find(p => p.id === zplProductId)?.sku}</span>
+                              <span>RAF: {products.find(p => p.id === zplProductId)?.shelf}</span>
+                            </div>
+                            <div className="text-xs font-black text-slate-800">
+                              Fiyat: {products.find(p => p.id === zplProductId)?.salePrice} EUR
+                            </div>
+                          </div>
+                        )
+                      ) : (
+                        <div className="text-center text-xs text-slate-400 italic">Özelleştirilmiş Ham Kod</div>
+                      )}
+                    </div>
+
+                    {/* Barcode line graphics */}
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="flex items-end justify-center w-full h-11">
+                        {Array.from({ length: 30 }).map((_, idx) => (
+                          <div
+                            key={idx}
+                            style={{
+                              width: idx % 3 === 0 ? "3px" : idx % 5 === 0 ? "4px" : "1px",
+                              height: "40px",
+                              backgroundColor: "#000",
+                              marginRight: "2px"
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[9px] font-mono tracking-widest text-slate-850">
+                        {zplProductId ? (
+                          zplProductId.startsWith("shelf_")
+                            ? zplProductId.replace("shelf_", "")
+                            : (products.find(p => p.id === zplProductId)?.barcode || products.find(p => p.id === zplProductId)?.sku)
+                        ) : "SIMULATED-BARCODE"}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-xs text-slate-400 italic">
+                    Etiket görsel simülasyonunu görmek için sol taraftan bir hedef şablon seçin veya ZPL kodu girin.
+                  </div>
+                )}
+              </div>
+            </div>
           </section>
         )}
 
