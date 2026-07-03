@@ -508,6 +508,7 @@ export default function WarehousesRevampPage() {
 
   // Authentication & Store slugs
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const isAuthorized = currentUser?.role === "owner" || currentUser?.role === "manager";
   const [storeSlug, setStoreSlug] = useState("obdtr");
   const [storeName, setStoreName] = useState("OBDTR Diagnostics");
 
@@ -774,6 +775,10 @@ export default function WarehousesRevampPage() {
 
   const handleSaveWizard = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAuthorized) {
+      showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler yeni depolar oluşturabilir.");
+      return;
+    }
     if (wizardNames.some((n) => !n.trim())) {
       showError("Lütfen tüm depolar için isim tanımlayın.");
       return;
@@ -840,6 +845,10 @@ export default function WarehousesRevampPage() {
   // Layout Shaper logic
   const handleSaveLayout = () => {
     if (!activeWh) return;
+    if (!isAuthorized) {
+      showError("Yetersiz Yetki! Sadece Mağaza Sahibi (Owner) ve Yöneticiler (Manager) depo raf yerleşimlerini değiştirebilir.");
+      return;
+    }
 
     try {
       const generatedShelves: string[] = [];
@@ -2656,6 +2665,12 @@ ${sizeStr}
               </p>
             </div>
 
+            {!isAuthorized && (
+              <div className="rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 text-xs font-black flex items-center gap-2">
+                <span>⚠️ Salt Okunur Mod:</span> Depo yerleşim planını, reyonları, raf sayılarını ve limitlerini değiştirme yetkiniz bulunmamaktadır. Bu değişiklikleri yalnızca Mağaza Sahibi (Owner) ve Mağaza Yöneticisi (Manager) yapabilir.
+              </div>
+            )}
+
             {/* Studio Navigation & Toolbar */}
             <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-100 p-3 rounded-2xl">
               <div className="flex flex-wrap items-center gap-2">
@@ -2694,10 +2709,15 @@ ${sizeStr}
                   placeholder="Yeni Reyon (Örn: D)"
                   maxLength={3}
                   id="wb-new-corridor-input"
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold uppercase focus:outline-none w-28"
+                  disabled={!isAuthorized}
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold uppercase focus:outline-none w-28 disabled:opacity-50 disabled:bg-slate-50"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
+                      if (!isAuthorized) {
+                        showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo yerleşim düzenini değiştirebilir.");
+                        return;
+                      }
                       const val = (e.target as HTMLInputElement).value.trim().toUpperCase();
                       if (val && !corridors.some(c => c.zone === val)) {
                         setCorridors([...corridors, { zone: val, depth: 4, tiers: 3, isDoubleRow: false }]);
@@ -2708,7 +2728,12 @@ ${sizeStr}
                 />
                 <button
                   type="button"
+                  disabled={!isAuthorized}
                   onClick={() => {
+                    if (!isAuthorized) {
+                      showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo yerleşim düzenini değiştirebilir.");
+                      return;
+                    }
                     const el = document.getElementById("wb-new-corridor-input") as HTMLInputElement;
                     const val = el?.value.trim().toUpperCase();
                     if (val && !corridors.some(c => c.zone === val)) {
@@ -2716,7 +2741,7 @@ ${sizeStr}
                       el.value = "";
                     }
                   }}
-                  className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs px-3 py-1.5 transition active:scale-95"
+                  className="rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs px-3 py-1.5 transition active:scale-95 disabled:opacity-50"
                 >
                   Reyon Ekle +
                 </button>
@@ -2748,20 +2773,27 @@ ${sizeStr}
                         <input
                           type="text"
                           value={c.name || ""}
+                          disabled={!isAuthorized}
                           onChange={(e) => {
+                            if (!isAuthorized) {
+                              showError("Yetersiz Yetki! Reyon isimlerini değiştiremezsiniz.");
+                              return;
+                            }
                             setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, name: e.target.value } : item));
                           }}
                           placeholder="Özel reyon adı (Örn: Yedek Parça)"
-                          className="w-full text-xs font-bold text-slate-700 outline-none border-b border-dashed border-slate-200 hover:border-slate-350 focus:border-blue-500 py-0.5 font-semibold"
+                          className="w-full text-xs font-bold text-slate-700 outline-none border-b border-dashed border-slate-200 hover:border-slate-350 focus:border-blue-500 py-0.5 font-semibold disabled:opacity-75 disabled:bg-transparent"
                         />
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setCorridors(corridors.filter(item => item.zone !== c.zone))}
-                        className="text-xs text-rose-600 hover:text-rose-700 font-black pl-2"
-                      >
-                        ✕ Kaldır
-                      </button>
+                      {isAuthorized && (
+                        <button
+                          type="button"
+                          onClick={() => setCorridors(corridors.filter(item => item.zone !== c.zone))}
+                          className="text-xs text-rose-600 hover:text-rose-700 font-black pl-2 cursor-pointer active:scale-95"
+                        >
+                          ✕ Kaldır
+                        </button>
+                      )}
                     </div>
 
                     {/* Dimensions & Rows Controls */}
@@ -2772,20 +2804,30 @@ ${sizeStr}
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
+                            disabled={!isAuthorized}
                             onClick={() => {
+                              if (!isAuthorized) {
+                                showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo yerleşimini değiştirebilir.");
+                                return;
+                              }
                               setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, depth: Math.max(1, item.depth - 1) } : item));
                             }}
-                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90"
+                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90 disabled:opacity-50"
                           >
                             -
                           </button>
                           <span className="flex-1 text-center font-black text-[10px]">{c.depth} Slot</span>
                           <button
                             type="button"
+                            disabled={!isAuthorized}
                             onClick={() => {
+                              if (!isAuthorized) {
+                                showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo yerleşimini değiştirebilir.");
+                                return;
+                              }
                               setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, depth: Math.min(20, item.depth + 1) } : item));
                             }}
-                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90"
+                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90 disabled:opacity-50"
                           >
                             +
                           </button>
@@ -2798,20 +2840,30 @@ ${sizeStr}
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
+                            disabled={!isAuthorized}
                             onClick={() => {
+                              if (!isAuthorized) {
+                                showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo yerleşimini değiştirebilir.");
+                                return;
+                              }
                               setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, tiers: Math.max(1, item.tiers - 1) } : item));
                             }}
-                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90"
+                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90 disabled:opacity-50"
                           >
                             -
                           </button>
                           <span className="flex-1 text-center font-black text-[10px]">{c.tiers} Kat</span>
                           <button
                             type="button"
+                            disabled={!isAuthorized}
                             onClick={() => {
+                              if (!isAuthorized) {
+                                showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo yerleşimini değiştirebilir.");
+                                return;
+                              }
                               setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, tiers: Math.min(10, item.tiers + 1) } : item));
                             }}
-                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90"
+                            className="h-6 w-6 rounded bg-white border border-slate-200 font-bold hover:bg-slate-100 shadow-sm flex items-center justify-center active:scale-90 disabled:opacity-50"
                           >
                             +
                           </button>
@@ -2823,10 +2875,15 @@ ${sizeStr}
                         <span className="text-[9px] font-black text-slate-500 block">↔ ARKA ARKAYA SATIR</span>
                         <button
                           type="button"
+                          disabled={!isAuthorized}
                           onClick={() => {
+                            if (!isAuthorized) {
+                              showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo yerleşimini değiştirebilir.");
+                              return;
+                            }
                             setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, isDoubleRow: !item.isDoubleRow } : item));
                           }}
-                          className={`w-full rounded-xl py-1 px-2 font-black text-[9px] border transition ${
+                          className={`w-full rounded-xl py-1 px-2 font-black text-[9px] border transition disabled:opacity-50 ${
                             c.isDoubleRow
                               ? "bg-blue-600 border-blue-600 text-white shadow-sm"
                               : "bg-white border-slate-200 text-slate-655 hover:bg-slate-100"
@@ -2918,18 +2975,30 @@ ${sizeStr}
             <div className="flex justify-end gap-3 bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
               <button
                 type="button"
+                disabled={!isAuthorized}
                 onClick={() => {
+                  if (!isAuthorized) {
+                    showError("Yetersiz Yetki! Sıfırlama yapamazsınız.");
+                    return;
+                  }
                   setCorridors(parseShelvesToConfig(activeWh.shelves || []));
                   showSuccess("Tüm değişiklikler sıfırlandı.");
                 }}
-                className="rounded-xl border border-slate-200 px-5 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+                className="rounded-xl border border-slate-200 px-5 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50"
               >
                 Vazgeç / Sıfırla
               </button>
               <button
                 type="button"
-                onClick={handleSaveLayout}
-                className="rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-6 py-3 transition shadow-sm active:scale-95"
+                disabled={!isAuthorized}
+                onClick={() => {
+                  if (!isAuthorized) {
+                    showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf yerleşimlerini değiştirebilir.");
+                    return;
+                  }
+                  handleSaveLayout();
+                }}
+                className="rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-6 py-3 transition shadow-sm active:scale-95 disabled:opacity-50"
               >
                 ⚡ Depo Şablonunu Kaydet ve Uygula
               </button>
@@ -2962,7 +3031,12 @@ ${sizeStr}
                   <input
                     type="number"
                     value={shelfCapacities[selectedWhiteboardShelfCode]?.maxWeight ?? 100}
+                    disabled={!isAuthorized}
                     onChange={(e) => {
+                      if (!isAuthorized) {
+                        showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf limitlerini değiştirebilir.");
+                        return;
+                      }
                       setShelfCapacities({
                         ...shelfCapacities,
                         [selectedWhiteboardShelfCode]: {
@@ -2971,7 +3045,7 @@ ${sizeStr}
                         }
                       });
                     }}
-                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500"
+                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 disabled:opacity-50"
                   />
                 </label>
 
@@ -2981,7 +3055,12 @@ ${sizeStr}
                     type="number"
                     step="0.01"
                     value={shelfCapacities[selectedWhiteboardShelfCode]?.maxVolume ?? 1.0}
+                    disabled={!isAuthorized}
                     onChange={(e) => {
+                      if (!isAuthorized) {
+                        showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf limitlerini değiştirebilir.");
+                        return;
+                      }
                       setShelfCapacities({
                         ...shelfCapacities,
                         [selectedWhiteboardShelfCode]: {
@@ -2990,7 +3069,7 @@ ${sizeStr}
                         }
                       });
                     }}
-                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500"
+                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 disabled:opacity-50"
                   />
                 </label>
               </div>
@@ -3015,7 +3094,12 @@ ${sizeStr}
                       <button
                         key={count}
                         type="button"
+                        disabled={!isAuthorized}
                         onClick={() => {
+                          if (!isAuthorized) {
+                            showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf bölmelerini değiştirebilir.");
+                            return;
+                          }
                           if (corr) {
                             const updatedBinsConfig = { ...(corr.binsConfig || {}) };
                             updatedBinsConfig[baseSideCode] = count;
@@ -3023,7 +3107,7 @@ ${sizeStr}
                             showSuccess(`${baseSideCode} hücresi ${count} bölmeli olarak ayarlandı.`);
                           }
                         }}
-                        className={`rounded-xl py-2 px-1 text-xs font-black border transition ${
+                        className={`rounded-xl py-2 px-1 text-xs font-black border transition disabled:opacity-50 ${
                           currentBinsCount === count
                             ? "bg-slate-900 border-slate-900 text-white shadow-sm"
                             : "bg-slate-50 border-slate-200 text-slate-655 hover:bg-slate-100"
