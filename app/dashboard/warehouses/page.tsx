@@ -692,6 +692,7 @@ export default function WarehousesRevampPage() {
       if (prodStr) {
         try {
           parsedProducts = JSON.parse(prodStr);
+          parsedProducts = parsedProducts.filter((p: any) => p.brand !== "DELETED" && p.category !== "DELETED");
         } catch (e) {}
       }
 
