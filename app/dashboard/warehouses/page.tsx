@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useMemo, useState, useRef } from "react";
 import CompactLanguageSwitcher, { LanguageCode, isLanguageCode } from "@/components/language/CompactLanguageSwitcher";
 
@@ -764,6 +765,65 @@ export default function WarehousesRevampPage() {
       }
     } catch (e) {
       console.error("DB Load error", e);
+    }
+  };
+
+    const handleDeleteProductFromShelf = async (productId: string, productName: string) => {
+    const answer = window.prompt(
+      `"${productName}" için yapmak istediğiniz işlemi seçin:\n\n` +
+      `1 - Raftan Kaldır (Sadece raf adresi silinir, ürün envanterde kalır)\n` +
+      `2 - Tamamen Sil (Ürün tamamen silinir)\n\n` +
+      `Lütfen seçiminizi yazın (1 veya 2):`
+    );
+
+    if (answer === "1") {
+      // Remove from shelf
+      const updated = products.map(p => p.id === productId ? { ...p, shelf: "" } : p);
+      setProducts(updated);
+      window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+      alert(`"${productName}" raf konumu temizlendi.`);
+
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+      if (isSupabaseConfigured) {
+        try {
+          await supabase
+            .from("offerable_items")
+            .update({ shelf: "" })
+            .eq("id", productId);
+        } catch (e) {
+          console.error("Supabase remove shelf error", e);
+        }
+      }
+    } else if (answer === "2") {
+      // Delete completely
+      const updatedProducts = products.filter((p) => p.id !== productId);
+      setProducts(updatedProducts);
+      window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+      alert(`"${productName}" envanterden silindi.`);
+
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+      if (isSupabaseConfigured) {
+        try {
+          const { error, count } = await supabase
+            .from("offerable_items")
+            .delete({ count: "exact" })
+            .eq("id", productId);
+          if (error || count === 0) {
+            await supabase
+              .from("offerable_items")
+              .update({ brand: "DELETED", category: "DELETED", is_visible_in_storefront: false })
+              .eq("id", productId);
+          }
+        } catch (err) {
+          console.error("Supabase delete error:", err);
+        }
+      }
     }
   };
 
@@ -3175,9 +3235,22 @@ ${sizeStr}
                     products
                       .filter(p => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && p.shelf.toLowerCase() === selectedWhiteboardShelfCode.toLowerCase())
                       .map(p => (
-                        <div key={p.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1 flex justify-between">
-                          <strong className="text-slate-800">{p.name}</strong>
-                          <span className="font-mono font-bold text-blue-600 shrink-0 ml-2">{p.quantity} Adet</span>
+                        <div key={p.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1.5 flex items-center justify-between gap-2">
+                          <div className="flex flex-col min-w-0">
+                            <strong className="text-slate-900 font-bold truncate">{p.name}</strong>
+                            <span className="text-[9px] text-slate-500 font-mono">{p.sku}</span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="font-mono font-black text-blue-650 bg-blue-50 px-2 py-0.5 rounded text-[9px]">{p.quantity} Adet</span>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteProductFromShelf(p.id, p.name)}
+                              className="text-[10px] font-black text-rose-600 hover:text-rose-700 transition cursor-pointer p-1"
+                              title="Ürünü Yönet / Sil"
+                            >
+                              🗑️
+                            </button>
+                          </div>
                         </div>
                       ))
                   ) : (
