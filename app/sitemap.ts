@@ -84,7 +84,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Fetch dynamic products from offerable_items table
     const { data: products, error: productsError } = await supabase
       .from("offerable_items")
-      .select("id, created_at")
+      .select("id, created_at, brand, category")
       .eq("is_visible_in_storefront", true);
 
     // Fetch dynamic companies (stores) from companies table
@@ -96,6 +96,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     if (products && !productsError) {
       products.forEach((product) => {
+        if (product.brand === "DELETED" || product.category === "DELETED") return;
         if (product.id) {
           dynamicRoutes.push({
             url: `${baseUrl}/product/${product.id}`,

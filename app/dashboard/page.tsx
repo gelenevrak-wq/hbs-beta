@@ -507,7 +507,9 @@ export default function DashboardPage() {
               if (itemsData.length > 0) {
                 setIsProductsDone(true);
                 
-                const mappedProducts = itemsData.map((item: any) => ({
+                const mappedProducts = itemsData
+                  .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
+                  .map((item: any) => ({
                   id: item.id,
                   itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
                   name: item.name,

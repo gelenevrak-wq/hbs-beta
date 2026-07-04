@@ -585,7 +585,9 @@ export default function HomePage() {
       )
         .then(({ data: items, error }) => {
           if (items && !error) {
-            const mappedProducts: Product[] = items.map((item) => ({
+            const mappedProducts: Product[] = items
+              .filter((item) => item.brand !== "DELETED" && item.category !== "DELETED")
+              .map((item) => ({
               slug: item.id,
               name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
               category: { tr: item.category || "Genel", en: item.category || "General", de: item.category || "Allgemein", ru: item.category || "Общий", ka: item.category || "საერთო" },

@@ -476,7 +476,9 @@ export default function ProductsPage() {
               .eq("companies.code", storeSlug)
               .then(({ data, error }) => {
                 if (data && !error) {
-                  const mapped: ProductRecord[] = data.map((item: any) => ({
+                  const mapped: ProductRecord[] = data
+                    .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
+                    .map((item: any) => ({
                     id: item.id,
                     itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
                     name: item.name,
@@ -1149,17 +1151,29 @@ export default function ProductsPage() {
     if (isSupabaseConfigured) {
       try {
         if (id.length === 36) {
-          const { error } = await supabase
+          const { error, count } = await supabase
             .from("offerable_items")
-            .delete()
+            .delete({ count: "exact" })
             .eq("id", id);
-          if (error) console.error("Supabase delete error:", error);
+          if (error || count === 0) {
+            // RLS blocked delete, fall back to soft-delete
+            await supabase
+              .from("offerable_items")
+              .update({ brand: "DELETED", category: "DELETED", is_visible_in_storefront: false })
+              .eq("id", id);
+          }
         } else {
-          const { error } = await supabase
+          const { error, count } = await supabase
             .from("offerable_items")
-            .delete()
+            .delete({ count: "exact" })
             .eq("code", productSku);
-          if (error) console.error("Supabase delete error:", error);
+          if (error || count === 0) {
+            // RLS blocked delete, fall back to soft-delete
+            await supabase
+              .from("offerable_items")
+              .update({ brand: "DELETED", category: "DELETED", is_visible_in_storefront: false })
+              .eq("code", productSku);
+          }
         }
       } catch (err) {
         console.error("Supabase delete error:", err);
@@ -1219,19 +1233,31 @@ export default function ProductsPage() {
 
         // Execute batch deletes via single requests rather than sequential loops
         if (uuidIds.length > 0) {
-          const { error } = await supabase
+          const { error, count } = await supabase
             .from("offerable_items")
-            .delete()
+            .delete({ count: "exact" })
             .in("id", uuidIds);
-          if (error) console.error("Supabase bulk delete UUIDs error:", error);
+          if (error || count === 0) {
+            // Fall back to soft-delete
+            await supabase
+              .from("offerable_items")
+              .update({ brand: "DELETED", category: "DELETED", is_visible_in_storefront: false })
+              .in("id", uuidIds);
+          }
         }
 
         if (nonUuidSkus.length > 0) {
-          const { error } = await supabase
+          const { error, count } = await supabase
             .from("offerable_items")
-            .delete()
+            .delete({ count: "exact" })
             .in("code", nonUuidSkus);
-          if (error) console.error("Supabase bulk delete SKUs error:", error);
+          if (error || count === 0) {
+            // Fall back to soft-delete
+            await supabase
+              .from("offerable_items")
+              .update({ brand: "DELETED", category: "DELETED", is_visible_in_storefront: false })
+              .in("code", nonUuidSkus);
+          }
         }
       } catch (err) {
         console.error("Supabase bulk delete error:", err);

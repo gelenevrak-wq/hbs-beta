@@ -1101,7 +1101,9 @@ export default function StorePage() {
               setStorePhone(data[0].companies.phone || undefined);
               setStoreWhatsapp(data[0].companies.whatsapp || undefined);
             }
-            const mapped: ProductRecord[] = data.map((item: any) => ({
+            const mapped: ProductRecord[] = data
+              .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
+              .map((item: any) => ({
               id: item.id,
               itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
               name: item.name,

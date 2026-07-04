@@ -469,7 +469,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       Promise.resolve(query)
         .then(({ data, error }) => {
           console.log("HBS_DEBUG: Supabase query resolved:", { data, error });
-          if (data && data.length > 0 && !error) {
+          if (data && data.length > 0 && !error && data[0].brand !== "DELETED" && data[0].category !== "DELETED") {
             const item = data[0];
             const mapped: ProductData = {
               slug: item.id,
@@ -513,7 +513,9 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
             )
               .then(({ data: similarData, error: similarErr }) => {
                 if (similarData && !similarErr) {
-                  const mappedSimilar: ProductData[] = similarData.map((sim: any) => ({
+                  const mappedSimilar: ProductData[] = similarData
+                    .filter((sim: any) => sim.brand !== "DELETED" && sim.category !== "DELETED")
+                    .map((sim: any) => ({
                     slug: sim.id,
                     name: { tr: sim.name, en: sim.name, de: sim.name, ru: sim.name, ka: sim.name },
                     brand: sim.brand || "Genel",
