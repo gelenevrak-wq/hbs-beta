@@ -1597,7 +1597,7 @@ export default function ProductsPage() {
                 Toplu Ürün Aktarımı (Excel / CSV)
                 <AICopilotTooltip fieldKey="batchImport" position="right" />
               </h2>
-              <p className="text-xs text-slate-700 max-w-2xl leading-relaxed">
+              <p className="text-xs text-slate-900 font-extrabold max-w-2xl leading-relaxed">
                 Mağazanıza yüzlerce ürünü ve bunlara ait varyantları (örneğin OBDTR Autel cihazları veya tekstil bedenleri) tek bir hamlede ekleyin. Hazırladığımız şablonu indirin, doldurup geri yükleyin!
               </p>
             </div>
@@ -1606,7 +1606,7 @@ export default function ProductsPage() {
               <button
                 type="button"
                 onClick={downloadCSVTemplate}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-700 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5 animate-pulse"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-900 font-extrabold hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5 animate-pulse"
               >
                 <span>📥</span> Şablon İndir (Excel / CSV)
               </button>
@@ -1623,7 +1623,7 @@ export default function ProductsPage() {
             </div>
           </div>
           
-          <div className="mt-3.5 border-t border-slate-100 pt-3 flex gap-2 text-[10px] text-slate-550 font-bold leading-relaxed">
+          <div className="mt-3.5 border-t border-slate-100 pt-3 flex gap-2 text-[10px] text-slate-700 font-bold font-bold leading-relaxed">
             <span className="text-blue-600 font-black">ℹ Varyant İpucu:</span>
             <span>Şablondaki en son "Varyantlar" sütununu kullanarak aynı ürüne ait birden fazla çeşidi (örneğin <code>Model|SKU|Barkod|AlışFiyatı|SatışFiyatı|Adet|Depo|Raf</code> formatında ve <code>;</code> ile ayırarak) tek satırda yükleyebilirsiniz.</span>
           </div>
@@ -1648,14 +1648,14 @@ export default function ProductsPage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-900 font-extrabold flex items-center gap-1.5">
                   Kayıt Türü
                   <AICopilotTooltip fieldKey="itemType" position="right" />
                 </span>
                 <select
                   value={itemType}
                   onChange={(e) => setItemType(e.target.value as ItemType)}
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 >
                   <option value="product">Fiziksel Ürün</option>
                   <option value="service">Hizmet satışı</option>
@@ -1665,11 +1665,11 @@ export default function ProductsPage() {
               </label>
 
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Görünürlük</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Görünürlük</span>
                 <select
                   value={visibility}
                   onChange={(e) => setVisibility(e.target.value as Visibility)}
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 >
                   <option value="visible">Vitrin ve Pazar Yerinde Açık</option>
                   <option value="hidden">Gizli</option>
@@ -1679,64 +1679,64 @@ export default function ProductsPage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Ürün / Hizmet Adı *</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Ürün / Hizmet Adı *</span>
                 <input
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Örn: NGK Buji Seti"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 />
               </label>
 
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Kategori / Sektör *</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Kategori / Sektör *</span>
                 <input
                   required
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="Örn: Oto yedek parçası"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 />
               </label>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Marka</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Marka</span>
                 <input
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
                   placeholder="Örn: Bosch"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 />
               </label>
 
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Uyumlu Model</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Uyumlu Model</span>
                 <input
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                   placeholder="Örn: A4 / Golf 7"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 />
               </label>
             </div>
 
             <label className="grid gap-1">
-              <span className="text-xs font-bold text-slate-700">Ürün Açıklaması</span>
+              <span className="text-xs font-bold text-slate-900 font-extrabold">Ürün Açıklaması</span>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Özellikler, uyumluluk bilgileri..."
                 rows={2}
-                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
               />
             </label>
 
             {/* Price policy selector as requested */}
             <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-2">
-              <span className="text-xs font-black text-slate-700 flex items-center gap-1.5">
+              <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1.5">
                 Fiyat & Teklif Politikası
                 <AICopilotTooltip fieldKey="pricingMode" position="right" />
               </span>
@@ -1744,26 +1744,26 @@ export default function ProductsPage() {
                 <button
                   type="button"
                   onClick={() => setPricingMode("fixed")}
-                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "fixed" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"}`}
+                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "fixed" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-900 font-extrabold border-slate-200 hover:bg-slate-50"}`}
                 >
                   Fiyat Göster
                 </button>
                 <button
                   type="button"
                   onClick={() => setPricingMode("quote")}
-                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "quote" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"}`}
+                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "quote" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-900 font-extrabold border-slate-200 hover:bg-slate-50"}`}
                 >
                   Teklif Alın
                 </button>
                 <button
                   type="button"
                   onClick={() => setPricingMode("bidding")}
-                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "bidding" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"}`}
+                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "bidding" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-900 font-extrabold border-slate-200 hover:bg-slate-50"}`}
                 >
                   Teklif Verin
                 </button>
               </div>
-              <p className="text-[10px] text-slate-700 italic leading-relaxed">
+              <p className="text-[10px] text-slate-900 font-extrabold italic leading-relaxed">
                 {pricingMode === "fixed" && "Müşteriler ürünü belirlediğiniz fiyattan sepete ekler."}
                 {pricingMode === "quote" && "Fiyat gizlenir. Müşteriler 'Fiyat Teklifi İste' butonu ile sizden teklif toplar."}
                 {pricingMode === "bidding" && "Müşteriler ürüne kendi iskonto ve adet bütçe hedeflerini teklif edebilir."}
@@ -1773,32 +1773,32 @@ export default function ProductsPage() {
             <div className="grid gap-3 sm:grid-cols-3">
               {pricingMode === "fixed" && (
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Satış Fiyatı</span>
+                  <span className="text-xs font-bold text-slate-900 font-extrabold">Satış Fiyatı</span>
                   <input
                     value={salePrice}
                     onChange={(e) => setSalePrice(e.target.value)}
                     placeholder="Fiyat"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                   />
                 </label>
               )}
 
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Maliyet Fiyatı</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Maliyet Fiyatı</span>
                 <input
                   value={purchasePrice}
                   onChange={(e) => setPurchasePrice(e.target.value)}
                   placeholder="Maliyet"
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 />
               </label>
 
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Para Birimi</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Para Birimi</span>
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none"
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 >
                   <option>GEL</option>
                   <option>TRY</option>
@@ -1811,7 +1811,7 @@ export default function ProductsPage() {
             {/* Media Gallery & Videos */}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Çoklu Fotoğraf Galerisi</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Çoklu Fotoğraf Galerisi</span>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3">
                   {galleryUrls.length > 0 ? (
                     <div className="grid grid-cols-4 gap-2">
@@ -1844,12 +1844,12 @@ export default function ProductsPage() {
                     </div>
                   ) : (
                     <div className="rounded-lg border border-dashed border-slate-200 py-6 text-center">
-                      <p className="text-xs text-slate-550 font-bold">Henüz ürün fotoğrafı eklenmedi.</p>
+                      <p className="text-xs text-slate-700 font-bold font-bold">Henüz ürün fotoğrafı eklenmedi.</p>
                     </div>
                   )}
 
                   <div className="grid grid-cols-2 gap-2">
-                    <label className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer shadow-sm">
+                    <label className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 font-extrabold hover:bg-slate-50 transition cursor-pointer shadow-sm">
                       📥 Fotoğraf Yükle
                       <input
                         type="file"
@@ -1877,7 +1877,7 @@ export default function ProductsPage() {
                     <button
                       type="button"
                       onClick={() => startCamera('photo', 'photo')}
-                      className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-sm"
+                      className="flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 font-extrabold hover:bg-slate-50 transition shadow-sm"
                     >
                       📷 Kamera ile Çek
                     </button>
@@ -1886,7 +1886,7 @@ export default function ProductsPage() {
               </div>
 
               <div className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Tanıtım Videosu</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Tanıtım Videosu</span>
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2 flex flex-col justify-between h-full">
                   <input
                     value={videoUrl}
@@ -1898,7 +1898,7 @@ export default function ProductsPage() {
                     <button
                       type="button"
                       onClick={() => startCamera('video', 'video')}
-                      className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-sm"
+                      className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-900 font-extrabold hover:bg-slate-50 transition shadow-sm"
                     >
                       🎥 Kamera ile Video Çek
                     </button>
@@ -1919,7 +1919,7 @@ export default function ProductsPage() {
             {/* Barcodes & SKU */}
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-900 font-extrabold flex items-center gap-1.5">
                   Barkod
                   <AICopilotTooltip fieldKey="barcode" position="right" />
                 </span>
@@ -1928,7 +1928,7 @@ export default function ProductsPage() {
                     value={barcode}
                     onChange={(e) => setBarcode(e.target.value)}
                     placeholder="Barkod numarası"
-                    className="flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white"
+                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                   />
                   <button
                     type="button"
@@ -1955,13 +1955,13 @@ export default function ProductsPage() {
               </div>
 
               <div className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">Karekod (QR Code)</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">Karekod (QR Code)</span>
                 <div className="flex gap-1.5">
                   <input
                     value={qrCode}
                     onChange={(e) => setQrCode(e.target.value)}
                     placeholder="QR Verisi veya URL"
-                    className="flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white"
+                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                   />
                   <button
                     type="button"
@@ -1988,13 +1988,13 @@ export default function ProductsPage() {
               </div>
 
               <div className="grid gap-1">
-                <span className="text-xs font-bold text-slate-700">SKU Stok Kodu</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">SKU Stok Kodu</span>
                 <div className="flex gap-1.5">
                   <input
                     value={sku}
                     onChange={(e) => setSku(e.target.value)}
                     placeholder="Örn: SKU-1002"
-                    className="flex-1 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white"
+                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                   />
                   <button
                     type="button"
@@ -2014,24 +2014,24 @@ export default function ProductsPage() {
 
             {/* Stock tracking, entry dates, exit dates as requested */}
             <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-3">
-              <span className="text-xs font-black text-slate-700 flex items-center gap-1.5">
+              <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1.5">
                 Depo Konumlandırma & Giriş Çıkış
                 <AICopilotTooltip fieldKey="warehouse" position="right" />
               </span>
 
               <div className="grid gap-3 sm:grid-cols-3">
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Stok Adedi</span>
+                  <span className="text-xs font-bold text-slate-900 font-extrabold">Stok Adedi</span>
                   <input
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     placeholder="Adet"
-                    className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                   />
                 </label>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Depo Adı</span>
+                  <span className="text-xs font-bold text-slate-900 font-extrabold">Depo Adı</span>
                   {availableWarehouses.length > 0 ? (
                     <select
                       value={warehouse}
@@ -2045,7 +2045,7 @@ export default function ProductsPage() {
                           setShelf("");
                         }
                       }}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                     >
                       {availableWarehouses.map((wh) => (
                         <option key={wh.name} value={wh.name}>{wh.name}</option>
@@ -2056,18 +2056,18 @@ export default function ProductsPage() {
                       value={warehouse}
                       onChange={(e) => setWarehouse(e.target.value)}
                       placeholder="Örn: Ana Depo"
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                     />
                   )}
                 </label>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Raf / Bölge</span>
+                  <span className="text-xs font-bold text-slate-900 font-extrabold">Raf / Bölge</span>
                   {availableWarehouses.length > 0 ? (
                     <select
                       value={shelf}
                       onChange={(e) => setShelf(e.target.value)}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                     >
                       {(availableWarehouses.find(wh => wh.name === warehouse)?.shelves || []).map((sh: string) => (
                         <option key={sh} value={sh}>{sh}</option>
@@ -2082,7 +2082,7 @@ export default function ProductsPage() {
                       value={shelf}
                       onChange={(e) => setShelf(e.target.value)}
                       placeholder="Örn: A-01-R02"
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                     />
                   )}
                 </label>
@@ -2090,28 +2090,28 @@ export default function ProductsPage() {
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Depoya Giriş Tarihi</span>
+                  <span className="text-xs font-bold text-slate-900 font-extrabold">Depoya Giriş Tarihi</span>
                   <input
                     type="date"
                     value={entryDate}
                     onChange={(e) => setEntryDate(e.target.value)}
-                    className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                   />
                 </label>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Depodan Çıkış Tarihi</span>
+                  <span className="text-xs font-bold text-slate-900 font-extrabold">Depodan Çıkış Tarihi</span>
                   <input
                     type="date"
                     value={exitDate}
                     onChange={(e) => setExitDate(e.target.value)}
-                    className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                   />
                 </label>
               </div>
 
               <div className="border-t border-slate-200/60 pt-3 space-y-3">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-900 font-extrabold cursor-pointer select-none">
                   <input
                     type="checkbox"
                     checked={trackExpirationDate}
@@ -2123,12 +2123,12 @@ export default function ProductsPage() {
 
                 {trackExpirationDate && (
                   <label className="grid gap-1 animate-fadeIn">
-                    <span className="text-xs font-bold text-slate-700">Son Kullanım Tarihi</span>
+                    <span className="text-xs font-bold text-slate-900 font-extrabold">Son Kullanım Tarihi</span>
                     <input
                       type="date"
                       value={expirationDate}
                       onChange={(e) => setExpirationDate(e.target.value)}
-                      className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none"
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                     />
                   </label>
                 )}
@@ -2139,11 +2139,11 @@ export default function ProductsPage() {
             <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <h3 className="text-xs font-black text-slate-900 font-extrabold uppercase tracking-wider flex items-center gap-1.5">
                     📦 Ürün Varyantları (İsteğe Bağlı)
                     <AICopilotTooltip fieldKey="variants" position="right" />
                   </h3>
-                  <p className="text-[10px] text-slate-700 leading-normal mt-0.5">
+                  <p className="text-[10px] text-slate-900 font-extrabold leading-normal mt-0.5">
                     Modeller (örn: Autel Ultra/Elite), aksesuarlar veya beden/renk ekleyin.
                   </p>
                 </div>
@@ -2158,7 +2158,7 @@ export default function ProductsPage() {
 
               {variants.length === 0 ? (
                 <div className="rounded-lg border border-dashed border-slate-200 p-4 text-center">
-                  <p className="text-[11px] text-slate-550 font-bold italic">
+                  <p className="text-[11px] text-slate-700 font-bold font-bold italic">
                     Henüz varyant eklenmedi. (Tek modelli ürünler için bu alanı boş bırakabilirsiniz)
                   </p>
                 </div>
@@ -2184,72 +2184,72 @@ export default function ProductsPage() {
 
                       <div className="grid gap-2 sm:grid-cols-3">
                         <label className="grid gap-0.5">
-                          <span className="text-[9px] font-bold text-slate-700">Varyant Adı *</span>
+                          <span className="text-[9px] font-bold text-slate-900 font-extrabold">Varyant Adı *</span>
                           <input
                             required
                             value={v.name}
                             onChange={(e) => updateVariantField(v.id, "name", e.target.value)}
                             placeholder="Örn: Autel Ultra"
-                            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                           />
                         </label>
 
                         <label className="grid gap-0.5">
-                          <span className="text-[9px] font-bold text-slate-700">SKU Stok Kodu</span>
+                          <span className="text-[9px] font-bold text-slate-900 font-extrabold">SKU Stok Kodu</span>
                           <input
                             value={v.sku}
                             onChange={(e) => updateVariantField(v.id, "sku", e.target.value)}
                             placeholder="SKU-VAR-001"
-                            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                           />
                         </label>
 
                         <label className="grid gap-0.5">
-                          <span className="text-[9px] font-bold text-slate-700">Barkod</span>
+                          <span className="text-[9px] font-bold text-slate-900 font-extrabold">Barkod</span>
                           <input
                             value={v.barcode}
                             onChange={(e) => updateVariantField(v.id, "barcode", e.target.value)}
                             placeholder="Barkod"
-                            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                           />
                         </label>
                       </div>
 
                       <div className="grid gap-2 sm:grid-cols-2">
                         <label className="grid gap-0.5">
-                          <span className="text-[9px] font-bold text-slate-700">Alış Fiyatı (Maliyet)</span>
+                          <span className="text-[9px] font-bold text-slate-900 font-extrabold">Alış Fiyatı (Maliyet)</span>
                           <input
                             value={v.purchasePrice}
                             onChange={(e) => updateVariantField(v.id, "purchasePrice", e.target.value)}
                             placeholder="Maliyet"
-                            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                           />
                         </label>
 
                         <label className="grid gap-0.5">
-                          <span className="text-[9px] font-bold text-slate-700">Satış Fiyatı</span>
+                          <span className="text-[9px] font-bold text-slate-900 font-extrabold">Satış Fiyatı</span>
                           <input
                             value={v.salePrice}
                             onChange={(e) => updateVariantField(v.id, "salePrice", e.target.value)}
                             placeholder="Fiyat"
-                            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                           />
                         </label>
                       </div>
 
                       <div className="grid gap-2 sm:grid-cols-3">
                         <label className="grid gap-0.5">
-                          <span className="text-[9px] font-bold text-slate-700">Stok Adedi</span>
+                          <span className="text-[9px] font-bold text-slate-900 font-extrabold">Stok Adedi</span>
                           <input
                             value={v.quantity}
                             onChange={(e) => updateVariantField(v.id, "quantity", e.target.value)}
                             placeholder="Adet"
-                            className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                           />
                         </label>
 
                         <label className="grid gap-0.5">
-                          <span className="text-[9px] font-bold text-slate-700">Depo Adı</span>
+                          <span className="text-[9px] font-bold text-slate-900 font-extrabold">Depo Adı</span>
                           {availableWarehouses.length > 0 ? (
                             <select
                               value={v.warehouse}
@@ -2263,7 +2263,7 @@ export default function ProductsPage() {
                                   updateVariantField(v.id, "shelf", "");
                                 }
                               }}
-                              className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none"
+                              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                             >
                               {availableWarehouses.map((wh) => (
                                 <option key={wh.name} value={wh.name}>
@@ -2276,18 +2276,18 @@ export default function ProductsPage() {
                               value={v.warehouse}
                               onChange={(e) => updateVariantField(v.id, "warehouse", e.target.value)}
                               placeholder="Ana Depo"
-                              className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                             />
                           )}
                         </label>
 
                         <label className="grid gap-0.5">
-                          <span className="text-[9px] font-bold text-slate-700">Raf / Bölge</span>
+                          <span className="text-[9px] font-bold text-slate-900 font-extrabold">Raf / Bölge</span>
                           {availableWarehouses.length > 0 ? (
                             <select
                               value={v.shelf}
                               onChange={(e) => updateVariantField(v.id, "shelf", e.target.value)}
-                              className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none"
+                              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                             >
                               {(
                                 availableWarehouses.find((wh) => wh.name === v.warehouse)?.shelves || []
@@ -2305,7 +2305,7 @@ export default function ProductsPage() {
                               value={v.shelf}
                               onChange={(e) => updateVariantField(v.id, "shelf", e.target.value)}
                               placeholder="Örn: A-01"
-                              className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:bg-white"
+                              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                             />
                           )}
                         </label>
@@ -2325,7 +2325,7 @@ export default function ProductsPage() {
                     resetForm();
                     setMessage("Düzenleme iptal edildi.");
                   }}
-                  className="w-1/3 rounded-xl border border-slate-200 bg-white py-3 text-sm font-black text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                  className="w-1/3 rounded-xl border border-slate-200 bg-white py-3 text-sm font-black text-slate-900 font-extrabold hover:bg-slate-50 transition cursor-pointer"
                 >
                   Vazgeç
                 </button>
@@ -2346,7 +2346,7 @@ export default function ProductsPage() {
                 <h2 className="text-lg font-black">{language === "en" ? "Available Products" : "Mevcut Ürünler"} ({filteredProducts.length})</h2>
                 {filteredProducts.length > 0 && (
                   <div className="flex items-center gap-2">
-                    <label className="flex items-center gap-1.5 text-xs font-black text-slate-700 cursor-pointer select-none bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:bg-slate-100">
+                    <label className="flex items-center gap-1.5 text-xs font-black text-slate-900 font-extrabold cursor-pointer select-none bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:bg-slate-100">
                       <input
                         type="checkbox"
                         checked={filteredProducts.length > 0 && filteredProducts.every(p => selectedProductIds.includes(p.id))}
@@ -2373,17 +2373,17 @@ export default function ProductsPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Kod, marka veya isimle filtrele..."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs outline-none focus:border-blue-500 focus:bg-white font-semibold"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-semibold"
                 />
                 
                 <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-3 bg-slate-50 border border-slate-200/60 p-3 rounded-2xl">
                   {/* Showcase Visibility */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-700">Vitrin Durumu</span>
+                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">Vitrin Durumu</span>
                     <select
                       value={filterVisibility}
                       onChange={(e) => setFilterVisibility(e.target.value as any)}
-                      className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-slate-700"
+                      className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-slate-900 font-extrabold"
                     >
                       <option value="all">Tümü (Vitrin & Gizli)</option>
                       <option value="visible">👁️ Sadece Vitrinde Görünür</option>
@@ -2393,7 +2393,7 @@ export default function ProductsPage() {
 
                   {/* Price Range */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-700">Satış Fiyatı Aralığı</span>
+                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">Satış Fiyatı Aralığı</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -2402,7 +2402,7 @@ export default function ProductsPage() {
                         onChange={(e) => setFilterMinPrice(e.target.value)}
                         className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
                       />
-                      <span className="text-slate-550 font-bold">-</span>
+                      <span className="text-slate-700 font-bold font-bold">-</span>
                       <input
                         type="number"
                         placeholder="Max"
@@ -2415,7 +2415,7 @@ export default function ProductsPage() {
 
                   {/* Stock Qty Range */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-700">Stok Miktarı Aralığı</span>
+                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">Stok Miktarı Aralığı</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -2424,7 +2424,7 @@ export default function ProductsPage() {
                         onChange={(e) => setFilterMinQty(e.target.value)}
                         className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
                       />
-                      <span className="text-slate-550 font-bold">-</span>
+                      <span className="text-slate-700 font-bold font-bold">-</span>
                       <input
                         type="number"
                         placeholder="Max"
@@ -2506,7 +2506,7 @@ export default function ProductsPage() {
                             setIsPrintModalOpen(true);
                             setActivePrintTab('card');
                           }}
-                          className="rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          className="rounded-lg bg-slate-50 border border-slate-200 text-slate-900 font-extrabold hover:bg-slate-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Etiket & Barkod Yazdır"
                         >
                           <span>🖨️ Yazdır</span>
@@ -2541,7 +2541,7 @@ export default function ProductsPage() {
                 ))}
 
                 {filteredProducts.length === 0 && (
-                  <p className="text-slate-550 italic text-center py-4">Filtreye uygun ürün bulunamadı.</p>
+                  <p className="text-slate-700 font-bold italic text-center py-4">Filtreye uygun ürün bulunamadı.</p>
                 )}
               </div>
 
@@ -2552,7 +2552,7 @@ export default function ProductsPage() {
                     type="button"
                     disabled={currentPage === 1}
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-900 font-extrabold hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {language === "en" ? "← Previous" : "← Önceki"}
                   </button>
@@ -2566,7 +2566,7 @@ export default function ProductsPage() {
                     type="button"
                     disabled={currentPage >= Math.ceil(filteredProducts.length / itemsPerPage)}
                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredProducts.length / itemsPerPage)))}
-                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-900 font-extrabold hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {language === "en" ? "Next →" : "Sonraki →"}
                   </button>
@@ -2588,7 +2588,7 @@ export default function ProductsPage() {
                 </div>
                 <button
                   onClick={() => setIsPrintModalOpen(false)}
-                  className="text-slate-550 hover:text-slate-600 transition font-black text-lg p-1"
+                  className="text-slate-700 font-bold hover:text-slate-600 transition font-black text-lg p-1"
                 >
                   ✕
                 </button>
@@ -2598,19 +2598,19 @@ export default function ProductsPage() {
               <div className="grid grid-cols-3 border-b border-slate-100 bg-slate-50/50">
                 <button
                   onClick={() => setActivePrintTab('card')}
-                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'card' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-700 hover:text-slate-700'}`}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'card' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-900 font-extrabold'}`}
                 >
                   📇 Tanıtım Kartı
                 </button>
                 <button
                   onClick={() => setActivePrintTab('barcode')}
-                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'barcode' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-700 hover:text-slate-700'}`}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'barcode' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-900 font-extrabold'}`}
                 >
                   🏷️ Ürün Barkodu (50x30mm)
                 </button>
                 <button
                   onClick={() => setActivePrintTab('shelf')}
-                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'shelf' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-700 hover:text-slate-700'}`}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'shelf' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-900 font-extrabold'}`}
                 >
                   📌 Raf Fiyat Etiketi
                 </button>
@@ -2632,7 +2632,7 @@ export default function ProductsPage() {
                       <div className="border-b border-slate-200 pb-2 flex justify-between items-start">
                         <div>
                           <h4 className="font-extrabold text-sm text-slate-900 uppercase tracking-wide">HBS TEKNİK KART</h4>
-                          <p className="text-[10px] text-slate-700 font-bold">{selectedPrintProduct.category}</p>
+                          <p className="text-[10px] text-slate-900 font-extrabold font-bold">{selectedPrintProduct.category}</p>
                         </div>
                         <span className="text-[10px] bg-slate-100 text-slate-800 font-black px-2 py-0.5 rounded">
                           {selectedPrintProduct.sku}
@@ -2652,10 +2652,10 @@ export default function ProductsPage() {
                       {/* Double Vector Render */}
                       <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200 items-center">
                         <div className="h-16 flex items-center justify-center border border-slate-100 rounded p-1 bg-white">
-                          {selectedPrintProduct.barcode ? generateCode39Svg(selectedPrintProduct.barcode) : <p className="text-[9px] text-slate-550 italic">Barkod yok</p>}
+                          {selectedPrintProduct.barcode ? generateCode39Svg(selectedPrintProduct.barcode) : <p className="text-[9px] text-slate-700 font-bold italic">Barkod yok</p>}
                         </div>
                         <div className="h-16 flex items-center justify-center border border-slate-100 rounded p-1 bg-white">
-                          {selectedPrintProduct.qrCode ? generateQrCodeSvg(selectedPrintProduct.qrCode) : <p className="text-[9px] text-slate-550 italic">QR yok</p>}
+                          {selectedPrintProduct.qrCode ? generateQrCodeSvg(selectedPrintProduct.qrCode) : <p className="text-[9px] text-slate-700 font-bold italic">QR yok</p>}
                         </div>
                       </div>
                     </div>
@@ -2667,7 +2667,7 @@ export default function ProductsPage() {
                         {selectedPrintProduct.name}
                       </div>
                       <div className="w-full flex-1 max-h-[85px] flex items-center justify-center py-1">
-                        {selectedPrintProduct.barcode ? generateCode39Svg(selectedPrintProduct.barcode) : <p className="text-xs text-slate-550 italic">Barkod Yok</p>}
+                        {selectedPrintProduct.barcode ? generateCode39Svg(selectedPrintProduct.barcode) : <p className="text-xs text-slate-700 font-bold italic">Barkod Yok</p>}
                       </div>
                       <div className="flex justify-between items-center w-full text-[9px] font-black text-slate-600 mt-1 border-t border-slate-100 pt-1">
                         <span>SKU: {selectedPrintProduct.sku}</span>
@@ -2682,15 +2682,15 @@ export default function ProductsPage() {
                         <div className="bg-slate-900 text-white font-black text-[13px] px-2.5 py-1 rounded">
                           {selectedPrintProduct.shelf || 'RAF-01'}
                         </div>
-                        <span className="text-[9px] font-black text-slate-700 uppercase tracking-widest">RAF ETİKETİ</span>
+                        <span className="text-[9px] font-black text-slate-900 font-extrabold uppercase tracking-widest">RAF ETİKETİ</span>
                       </div>
                       <div className="text-left">
                         <h4 className="text-xs font-black text-slate-900 truncate">{selectedPrintProduct.name}</h4>
-                        <p className="text-[8px] text-slate-550 font-bold uppercase">{selectedPrintProduct.warehouse} / {selectedPrintProduct.brand || 'HBS'}</p>
+                        <p className="text-[8px] text-slate-700 font-bold font-bold uppercase">{selectedPrintProduct.warehouse} / {selectedPrintProduct.brand || 'HBS'}</p>
                       </div>
                       <div className="flex justify-between items-center gap-2 pt-2 border-t border-slate-100">
                         <div className="text-left">
-                          <span className="text-[9px] text-slate-550 font-bold block">SATIŞ FİYATI</span>
+                          <span className="text-[9px] text-slate-700 font-bold font-bold block">SATIŞ FİYATI</span>
                           <span className="text-base font-black text-slate-900">
                             {selectedPrintProduct.salePrice ? `${selectedPrintProduct.salePrice} ${selectedPrintProduct.currency}` : 'TEKLİF ALIN'}
                           </span>
@@ -2706,13 +2706,13 @@ export default function ProductsPage() {
 
               {/* Footer controls */}
               <div className="px-5 py-4 border-t border-slate-100 bg-slate-50 flex justify-between items-center">
-                <p className="text-[10px] text-slate-700 leading-normal max-w-sm">
+                <p className="text-[10px] text-slate-900 font-extrabold leading-normal max-w-sm">
                   💡 Yazdır butonuna bastığınızda tarayıcının yazdırma arayüzü açılacak ve <b>@media print</b> kuralı sayesinde sadece yukarıdaki etiket yazdırılacaktır.
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setIsPrintModalOpen(false)}
-                    className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-700 hover:bg-slate-50 transition"
+                    className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-900 font-extrabold hover:bg-slate-50 transition"
                   >
                     Kapat
                   </button>
@@ -2773,7 +2773,7 @@ export default function ProductsPage() {
                 </div>
                 <button
                   onClick={stopCamera}
-                  className="text-slate-550 hover:text-white transition font-black"
+                  className="text-slate-700 font-bold hover:text-white transition font-black"
                 >
                   Kapat
                 </button>
@@ -2805,7 +2805,7 @@ export default function ProductsPage() {
               <div className="p-5 bg-slate-950/40 space-y-4">
                 {videoDevices.length > 1 && (
                   <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                    <span className="text-xs text-slate-550 font-bold">Kamera Seçimi:</span>
+                    <span className="text-xs text-slate-700 font-bold font-bold">Kamera Seçimi:</span>
                     <select
                       value={selectedDeviceId}
                       onChange={(e) => switchDevice(e.target.value)}
@@ -2881,7 +2881,7 @@ export default function ProductsPage() {
                   {cameraActiveMode === 'scan' && (
                     <button
                       onClick={stopCamera}
-                      className="rounded-xl border border-slate-800 text-slate-550 hover:text-white px-5 py-2 text-xs font-bold transition"
+                      className="rounded-xl border border-slate-800 text-slate-700 font-bold hover:text-white px-5 py-2 text-xs font-bold transition"
                     >
                       Kapat
                     </button>
@@ -2905,7 +2905,7 @@ export default function ProductsPage() {
               </div>
 
               {/* Honeywell / Zebra Brand Header */}
-              <div className="pt-8 pb-2 px-6 flex justify-between items-center bg-[#152342] border-b border-slate-800 text-[10px] font-black tracking-widest text-slate-550 select-none">
+              <div className="pt-8 pb-2 px-6 flex justify-between items-center bg-[#152342] border-b border-slate-800 text-[10px] font-black tracking-widest text-slate-700 font-bold select-none">
                 <span>⚡ HBS SCANNER-9000</span>
                 <span className="flex items-center gap-1 text-orange-400">
                   <span className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-ping" />
@@ -2923,7 +2923,7 @@ export default function ProductsPage() {
                       <h3 className="text-sm font-black text-slate-100 uppercase tracking-wider flex items-center gap-1.5">
                         <span>📱</span> Mobil Depo El Terminali
                       </h3>
-                      <p className="text-[9px] text-slate-550 font-bold uppercase tracking-widest">HBS Mobile OS v4.2</p>
+                      <p className="text-[9px] text-slate-700 font-bold font-bold uppercase tracking-widest">HBS Mobile OS v4.2</p>
                     </div>
                     <button
                       onClick={() => {
@@ -2932,7 +2932,7 @@ export default function ProductsPage() {
                         setTerminalScannedShelf(null);
                         setTerminalMessage("");
                       }}
-                      className="rounded-full bg-slate-800 hover:bg-slate-700 p-1.5 text-xs text-slate-550 hover:text-white transition"
+                      className="rounded-full bg-slate-800 hover:bg-slate-700 p-1.5 text-xs text-slate-700 font-bold hover:text-white transition"
                     >
                       ✕
                     </button>
@@ -2960,7 +2960,7 @@ export default function ProductsPage() {
 
                   {/* Unified Barcode / Shelf Scanner Input */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-550 block uppercase tracking-wider">
+                    <label className="text-[10px] font-black text-slate-700 font-bold block uppercase tracking-wider">
                       Barkod, SKU veya Raf Kodu Girişi
                     </label>
                     <div className="flex gap-1.5">
@@ -2993,7 +2993,7 @@ export default function ProductsPage() {
 
                   {/* Simulator Scan Trigger - Dropdown Select Product to "Scan" */}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-450 block uppercase tracking-wider">
+                    <label className="text-[10px] font-black text-slate-600 font-bold block uppercase tracking-wider">
                       Simüle Ürün Seçimi (Hızlı Test)
                     </label>
                     <select
@@ -3044,13 +3044,13 @@ export default function ProductsPage() {
                         <h4 className="text-xs font-black text-slate-100 mt-1.5 leading-snug">
                           {terminalScannedProduct.name}
                         </h4>
-                        <p className="text-[9px] text-slate-550 font-bold">Marka: {terminalScannedProduct.brand || "Belirtilmedi"} | Konum: {terminalScannedProduct.warehouse || "—"} - {terminalScannedProduct.shelf || "—"}</p>
+                        <p className="text-[9px] text-slate-700 font-bold font-bold">Marka: {terminalScannedProduct.brand || "Belirtilmedi"} | Konum: {terminalScannedProduct.warehouse || "—"} - {terminalScannedProduct.shelf || "—"}</p>
                       </div>
 
                       {/* Stock Adjuster Row */}
                       <div className="flex items-center justify-between gap-3 bg-[#0c1224] p-2.5 rounded-xl border border-slate-800">
                         <div>
-                          <span className="text-[8px] font-black text-slate-700 block uppercase tracking-wider">Depo Stoğu</span>
+                          <span className="text-[8px] font-black text-slate-900 font-extrabold block uppercase tracking-wider">Depo Stoğu</span>
                           <span className="text-sm font-black text-orange-400">{terminalScannedProduct.quantity || "0"} Adet</span>
                         </div>
                         <div className="flex items-center gap-1.5">
@@ -3105,7 +3105,7 @@ export default function ProductsPage() {
 
                       {/* Shelf Relocate Input */}
                       <div className="space-y-1">
-                        <label className="text-[8px] font-black text-slate-700 block uppercase tracking-wider">
+                        <label className="text-[8px] font-black text-slate-900 font-extrabold block uppercase tracking-wider">
                           Depo Raf Konumu / Adresi
                         </label>
                         <input
@@ -3168,7 +3168,7 @@ export default function ProductsPage() {
                             <div key={p.id} className="bg-[#0b1122] border border-slate-800/80 rounded-xl p-2 flex justify-between items-center text-xs">
                               <div className="truncate pr-2">
                                 <span className="font-bold text-slate-200 block truncate">{p.name}</span>
-                                <span className="text-[9px] text-slate-700 font-mono">SKU: {p.sku || "—"}</span>
+                                <span className="text-[9px] text-slate-900 font-extrabold font-mono">SKU: {p.sku || "—"}</span>
                               </div>
                               <div className="flex items-center gap-1.5 shrink-0">
                                 <span className="text-orange-400 font-black text-[11px] font-mono mr-1">{p.quantity || "0"} ad</span>
@@ -3200,14 +3200,14 @@ export default function ProductsPage() {
                             </div>
                           ))
                         ) : (
-                          <p className="text-[10px] text-slate-700 italic py-2 text-center">Bu rafa kayıtlı envanter yok.</p>
+                          <p className="text-[10px] text-slate-900 font-extrabold italic py-2 text-center">Bu rafa kayıtlı envanter yok.</p>
                         )}
                       </div>
                     </div>
                   ) : (
                     <div className="rounded-2xl border border-dashed border-slate-800 p-6 text-center space-y-1 select-none">
-                      <p className="text-xs font-bold text-slate-550 font-sans">Giriş Bekleniyor</p>
-                      <p className="text-[9px] text-slate-700 font-bold leading-normal">
+                      <p className="text-xs font-bold text-slate-700 font-bold font-sans">Giriş Bekleniyor</p>
+                      <p className="text-[9px] text-slate-900 font-extrabold font-bold leading-normal">
                         Barkod okuyucuyla okutun, üstteki kutudan seçin ya da manuel kod yazıp OKUT'a basın. (Örn: A-01, TT-MASTER-01)
                       </p>
                     </div>
@@ -3250,7 +3250,7 @@ export default function ProductsPage() {
                   >
                     <span>🎯</span> SAYIMI ONAYLA & KİLİTLE
                   </button>
-                  <span className="text-[8px] text-slate-700 text-center font-bold">
+                  <span className="text-[8px] text-slate-900 font-extrabold text-center font-bold">
                     HBS WAREHOUSE SYSTEM INDEPENDENT CONTROLLER
                   </span>
                 </div>
