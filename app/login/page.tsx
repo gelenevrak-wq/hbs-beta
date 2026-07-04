@@ -182,6 +182,26 @@ export default function LoginPage() {
         (item) => item.username === normalizedUsername && item.password === password.trim()
       );
 
+      // If user is a demo user, also check if their store is deactivated
+      if (user && user.role !== "superadmin") {
+        const storeCode = user.storeSlugs?.[0];
+        if (storeCode) {
+          try {
+            const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+            const matchingStore = localStores.find((s: any) => s.code === storeCode);
+            if (matchingStore && matchingStore.isActive === false) {
+              setError(language === "tr"
+                ? "Bağlı olduğunuz mağaza pasife alınmıştır. Lütfen platform sahibi ile iletişime geçin."
+                : "Your store has been deactivated. Please contact the platform administrator."
+              );
+              return;
+            }
+          } catch (e) {
+            console.error("Check active store error for demo user", e);
+          }
+        }
+      }
+
       let isLocalRegisteredStore = false;
       let localStoreUser: any = null;
 
@@ -195,6 +215,15 @@ export default function LoginPage() {
               store.password === password.trim()
           );
           if (foundStore) {
+            // Check active status
+            if (foundStore.isActive === false) {
+              setError(language === "tr" 
+                ? "Bağlı olduğunuz mağaza pasife alınmıştır. Lütfen platform sahibi ile iletişime geçin."
+                : "Your store has been deactivated. Please contact the platform administrator."
+              );
+              return;
+            }
+
             isLocalRegisteredStore = true;
             localStoreUser = {
               username: foundStore.email,
@@ -206,6 +235,43 @@ export default function LoginPage() {
           }
         } catch (e) {
           console.error("Local stores parse error", e);
+        }
+      }
+
+      // Check local registered store staff users (from hbs-store-users)
+      if (!user && !localStoreUser) {
+        try {
+          const localStaff = JSON.parse(window.localStorage.getItem("hbs-store-users") || "[]");
+          const foundStaff = localStaff.find(
+            (st: any) =>
+              st.username.toLowerCase() === inputVal.toLowerCase() &&
+              st.password === password.trim()
+          );
+          if (foundStaff) {
+            // Verify if the staff member's store is active
+            const storeCode = foundStaff.storeSlugs?.[0];
+            if (storeCode) {
+              const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+              const matchingStore = localStores.find((s: any) => s.code === storeCode);
+              if (matchingStore && matchingStore.isActive === false) {
+                setError(language === "tr"
+                  ? "Bağlı olduğunuz mağaza pasife alınmıştır. Lütfen platform sahibi ile iletişime geçin."
+                  : "Your store has been deactivated. Please contact the platform administrator."
+                );
+                return;
+              }
+            }
+
+            localStoreUser = {
+              username: foundStaff.username,
+              displayName: foundStaff.displayName,
+              role: foundStaff.role,
+              storeSlugs: foundStaff.storeSlugs,
+              redirectTo: "/dashboard"
+            };
+          }
+        } catch (e) {
+          console.error("Local staff parse error", e);
         }
       }
 

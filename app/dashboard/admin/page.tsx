@@ -15,6 +15,7 @@ type StoreOwner = {
   phone?: string;
   operatingModel?: string;
   warehouses?: any[];
+  isActive?: boolean;
 };
 
 type StoreStaff = {
@@ -222,6 +223,43 @@ export default function AdminPage() {
       setEditingUserObj(null);
     } catch (e: any) {
       showError(`Kayıt sırasında hata oluştu: ${e.message || e}`);
+    }
+  };
+
+  const handleToggleStoreActive = (storeCode: string) => {
+    try {
+      const updatedStores = stores.map((s) =>
+        s.code === storeCode ? { ...s, isActive: s.isActive === false ? true : false } : s
+      );
+      window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+      setStores(updatedStores);
+      const targetStore = updatedStores.find((s) => s.code === storeCode);
+      showSuccess(`Mağaza durumu güncellendi: ${targetStore?.isActive !== false ? "Aktif" : "Pasif"}`);
+    } catch (e: any) {
+      showError(`Mağaza durumu güncellenirken hata oluştu: ${e.message || e}`);
+    }
+  };
+
+  const handleDeleteStore = (storeCode: string) => {
+    if (!confirm(`Bu mağazayı (${storeCode}) ve tüm ilişkili verilerini platformdan tamamen silmek istediğinize emin misiniz?`)) return;
+
+    try {
+      // Remove the store
+      const updatedStores = stores.filter((s) => s.code !== storeCode);
+      window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+      setStores(updatedStores);
+
+      // Clean up staff associated with this store only
+      const updatedStaff = staff.map((st) => ({
+        ...st,
+        storeSlugs: st.storeSlugs.filter((slug) => slug !== storeCode)
+      })).filter((st) => st.storeSlugs.length > 0);
+      window.localStorage.setItem("hbs-store-users", JSON.stringify(updatedStaff));
+      setStaff(updatedStaff);
+
+      showSuccess(`Mağaza (${storeCode}) platformdan tamamen silindi.`);
+    } catch (e: any) {
+      showError(`Mağaza silinirken hata oluştu: ${e.message || e}`);
     }
   };
 
@@ -554,6 +592,7 @@ export default function AdminPage() {
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50 text-[10px] font-black uppercase tracking-wider text-slate-500">
                       <th className="p-4">Kod</th>
+                      <th className="p-4">Durum</th>
                       <th className="p-4">Firma Adı</th>
                       <th className="p-4">Temsilci</th>
                       <th className="p-4">E-posta</th>
@@ -567,25 +606,50 @@ export default function AdminPage() {
                     {filteredStores.map((s) => (
                       <tr key={s.code} className="hover:bg-slate-50/50">
                         <td className="p-4 font-mono font-bold text-blue-600">{s.code}</td>
+                        <td className="p-4">
+                          <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider ${
+                            s.isActive !== false
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-red-50 text-red-700 border border-red-200"
+                          }`}>
+                            {s.isActive !== false ? "Aktif" : "Pasif"}
+                          </span>
+                        </td>
                         <td className="p-4 font-bold text-slate-900">{s.name}</td>
                         <td className="p-4">{s.representative}</td>
                         <td className="p-4 font-mono text-slate-500">{s.email}</td>
                         <td className="p-4 font-mono font-bold text-slate-800 bg-amber-50/40">{s.password || "—"}</td>
                         <td className="p-4 max-w-xs truncate">{s.address || "—"}</td>
                         <td className="p-4 font-mono">{s.phone || "—"}</td>
-                        <td className="p-4 text-right">
+                        <td className="p-4 text-right space-x-1.5">
+                          <button
+                            onClick={() => handleToggleStoreActive(s.code)}
+                            className={`rounded-lg px-2.5 py-1.5 text-[11px] font-black border transition ${
+                              s.isActive !== false
+                                ? "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/50"
+                                : "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/50"
+                            }`}
+                          >
+                            {s.isActive !== false ? "Pasifleştir ⏸️" : "Aktifleştir ▶️"}
+                          </button>
                           <button
                             onClick={() => handleEditUser("store", s)}
-                            className="rounded-lg bg-blue-50 px-3 py-1.5 text-[11px] font-black text-blue-700 hover:bg-blue-100 transition"
+                            className="rounded-lg bg-blue-50 px-2.5 py-1.5 text-[11px] font-black text-blue-700 border border-blue-200 hover:bg-blue-100 transition"
                           >
                             Düzenle 📝
+                          </button>
+                          <button
+                            onClick={() => handleDeleteStore(s.code)}
+                            className="rounded-lg bg-red-50 px-2.5 py-1.5 text-[11px] font-black text-red-700 border border-red-200 hover:bg-red-100 transition"
+                          >
+                            Sil 🗑️
                           </button>
                         </td>
                       </tr>
                     ))}
                     {filteredStores.length === 0 && (
                       <tr>
-                        <td colSpan={8} className="p-8 text-center text-slate-400">Eşleşen mağaza sahibi bulunamadı.</td>
+                        <td colSpan={9} className="p-8 text-center text-slate-400">Eşleşen mağaza sahibi bulunamadı.</td>
                       </tr>
                     )}
                   </tbody>

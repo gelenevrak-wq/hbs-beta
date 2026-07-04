@@ -199,8 +199,23 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
   useEffect(() => {
     try {
       const user = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
-      if (user && user.role === "superadmin") {
-        setIsAdmin(true);
+      if (user) {
+        if (user.role === "superadmin") {
+          setIsAdmin(true);
+        } else {
+          const storeCode = user.storeSlugs?.[0];
+          if (storeCode) {
+            const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+            const matchingStore = localStores.find((s: any) => s.code === storeCode);
+            if (matchingStore && matchingStore.isActive === false) {
+              window.localStorage.removeItem("hbs-current-user");
+              window.localStorage.removeItem("hbs-demo-user");
+              alert("Bağlı olduğunuz mağaza pasife alınmıştır. Oturumunuz kapatılıyor.");
+              window.location.replace("/login");
+              return;
+            }
+          }
+        }
       }
       const savedLanguage = window.localStorage.getItem("hbs-language");
       if (savedLanguage) {
