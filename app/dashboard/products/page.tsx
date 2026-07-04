@@ -247,6 +247,25 @@ export default function ProductsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
 
+  // Esnaf-friendly states
+  const [sanayiMode, setSanayiMode] = useState(false);
+  const [lastDeletedProduct, setLastDeletedProduct] = useState<ProductRecord | null>(null);
+  const [showUndoBanner, setShowUndoBanner] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successModalTitle, setSuccessModalTitle] = useState("");
+  const [successModalDesc, setSuccessModalDesc] = useState("");
+  const [storeSlug, setStoreSlug] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const currentUserStr = window.localStorage.getItem("hbs-current-user");
+      if (currentUserStr) {
+        const currentUser = JSON.parse(currentUserStr);
+        setStoreSlug(currentUser.storeSlugs?.[0] || "");
+      }
+    }
+  }, []);
+
   // Form Fields
   const [itemType, setItemType] = useState<ItemType>("product");
   const [name, setName] = useState("");
@@ -295,6 +314,37 @@ export default function ProductsPage() {
   const [message, setMessage] = useState("");
   const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+
+  // Pre-fill edit from URL query parameter
+  useEffect(() => {
+    if (typeof window !== "undefined" && products.length > 0) {
+      const params = new URLSearchParams(window.location.search);
+      const editId = params.get("edit");
+      if (editId) {
+        const prod = products.find(p => p.id === editId);
+        if (prod) {
+          setEditingProductId(prod.id);
+          setName(prod.name);
+          setCategory(prod.category);
+          setBrand(prod.brand || "");
+          setModel(prod.model || "");
+          setDescription(prod.description || "");
+          setSalePrice(prod.salePrice || "");
+          setPurchasePrice(prod.purchasePrice || "");
+          setCurrency(prod.currency || "GEL");
+          setBarcode(prod.barcode || "");
+          setQrCode(prod.qrCode || "");
+          setWarehouse(prod.warehouse || "");
+          setShelf(prod.shelf || "");
+          setQuantity(prod.quantity || "");
+          setItemType(prod.itemType || "product");
+          setPricingMode(prod.pricingMode || "fixed");
+          setVideoUrl(prod.videoUrl || "");
+          setStockTracking(prod.stockTracking ?? true);
+        }
+      }
+    }
+  }, [products]);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -1247,15 +1297,59 @@ export default function ProductsPage() {
     setMessage(`"${p.name}" düzenleme için forma yüklendi. Değişiklikleri yaptıktan sonra sayfanın altındaki butona basarak kaydedebilirsiniz.`);
   }
 
+  const handleUndoDelete = async () => {
+    if (!lastDeletedProduct) return;
+    try {
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+      if (isSupabaseConfigured) {
+        const isUuid = lastDeletedProduct.id.length === 36;
+        if (isUuid) {
+          await supabase
+            .from("offerable_items")
+            .update({
+              brand: lastDeletedProduct.brand,
+              category: lastDeletedProduct.category,
+              is_visible_in_storefront: lastDeletedProduct.visibility === "visible",
+              is_visible_in_public_search: lastDeletedProduct.visibility === "visible"
+            })
+            .eq("id", lastDeletedProduct.id);
+        }
+      }
+      setProducts((prev) => [lastDeletedProduct, ...prev]);
+      setLastDeletedProduct(null);
+      setShowUndoBanner(false);
+      setSuccessModalTitle("Geri Alındı!");
+      setSuccessModalDesc("Silinen ürün başarıyla geri yüklendi.");
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   async function deleteProduct(id: string, productName: string, productSku: string) {
-    if (!window.confirm(`"${productName}" isimli ürünü silmek istediğinize emin misiniz?`)) {
-      return;
+    // Esnaf-friendly immediate delete & undo
+    const prodToDelete = products.find((p) => p.id === id);
+    if (prodToDelete) {
+      setLastDeletedProduct(prodToDelete);
+      setShowUndoBanner(true);
+      setTimeout(() => {
+        setLastDeletedProduct((curr) => {
+          if (curr && curr.id === id) {
+            return null;
+          }
+          return curr;
+        });
+        setShowUndoBanner(false);
+      }, 10000);
     }
 
     // 1. Update UI state immediately
     const updatedProducts = products.filter((p) => p.id !== id);
     setProducts(updatedProducts);
-    setMessage(`"${productName}" başarıyla silindi.`);
+    setMessage(`"${productName}" silindi. Geri almak için yukarıdaki butonu kullanabilirsiniz.`);
     if (editingProductId === id) {
       setEditingProductId(null);
       resetForm();
@@ -1614,9 +1708,9 @@ export default function ProductsPage() {
         setMessage("Kayıt başarıyla güncellendi! Veritabanı ve yerel hafıza senkronize edildi.");
         setEditingProductId(null);
         resetForm();
-        if (typeof window !== "undefined") {
-          window.alert("Değişiklikler başarıyla kaydedildi!");
-        }
+        setSuccessModalTitle("Değişiklikler Kaydedildi!");
+        setSuccessModalDesc(`"${name}" isimli ürün güncellemeleri kaydedildi.`);
+        setShowSuccessModal(true);
       } else {
         // CREATE MODE
         const newProduct: ProductRecord = {
@@ -1676,9 +1770,9 @@ export default function ProductsPage() {
         setProducts((currentProducts) => [newProduct, ...currentProducts]);
         setMessage("Kayıt başarıyla oluşturuldu! Veritabanı ve yerel hafıza güncellendi.");
         resetForm();
-        if (typeof window !== "undefined") {
-          window.alert("Kayıt başarıyla tamamlandı!");
-        }
+        setSuccessModalTitle("Ürün Kaydedildi!");
+        setSuccessModalDesc(`"${name}" isimli ürün envantere eklendi.`);
+        setShowSuccessModal(true);
       }
     } catch (e) {
       console.error("Error saving product:", e);
@@ -1691,11 +1785,78 @@ export default function ProductsPage() {
   if (!language) return <main className="min-h-screen bg-slate-950" />;
 
   return (
-    <main className="min-h-screen bg-[#f5f7fb] text-slate-900 px-3 py-3 sm:px-6 sm:py-6">
+    <main className={"min-h-screen bg-[#f5f7fb] text-slate-900 px-3 py-3 sm:px-6 sm:py-6 " + (sanayiMode ? "sanayi-mode-active" : "")}>
+      {sanayiMode && (
+        <style dangerouslySetInnerHTML={{ __html: `
+          .sanayi-mode-active .text-xs, .sanayi-mode-active span.text-xs { font-size: 0.95rem !important; font-weight: 800 !important; }
+          .sanayi-mode-active .text-sm, .sanayi-mode-active span.text-sm { font-size: 1.15rem !important; font-weight: 900 !important; }
+          .sanayi-mode-active input, .sanayi-mode-active select, .sanayi-mode-active textarea { font-size: 1.1rem !important; padding: 0.75rem 1rem !important; height: auto !important; }
+          .sanayi-mode-active label span { font-size: 1rem !important; font-weight: 900 !important; }
+          .sanayi-mode-active button { font-size: 1rem !important; padding: 0.75rem 1.25rem !important; }
+        `}} />
+      )}
+{showUndoBanner && lastDeletedProduct && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-white font-black px-6 py-3.5 rounded-2xl shadow-2xl flex items-center gap-4 animate-bounce border-2 border-white">
+          <span className="text-xs">⚠️ "{lastDeletedProduct.name}" silindi. Geri yüklemek ister misiniz?</span>
+          <div className="flex gap-2">
+            <button
+              onClick={handleUndoDelete}
+              className="bg-white text-slate-900 px-3 py-1 rounded-xl text-[11px] font-black cursor-pointer hover:bg-slate-100 transition active:scale-95"
+            >
+              🔄 Geri Al
+            </button>
+            <button
+              onClick={() => setShowUndoBanner(false)}
+              className="bg-amber-600 text-white px-2 py-1 rounded-xl text-[11px] font-black cursor-pointer hover:bg-amber-700 transition"
+            >
+              Kapat
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-2xl space-y-4 animate-scaleUp">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200 text-3xl">
+              ✓
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-lg font-black text-slate-950">{successModalTitle}</h3>
+              <p className="text-xs text-slate-600 leading-relaxed font-bold">{successModalDesc}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowSuccessModal(false)}
+              className="w-full rounded-xl bg-blue-600 py-2.5 text-xs font-black text-white hover:bg-blue-700 transition shadow-md active:scale-95"
+            >
+              Harika, Devam Et
+            </button>
+          </div>
+        </div>
+      )}
       <div className="mx-auto max-w-[1850px]">
         <header className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
           <Link href="/dashboard" className="text-base font-black sm:text-xl text-blue-600">HBS Ürün</Link>
           <div className="flex items-center gap-2">
+            {/* Sanayi Modu (Büyük Yazı) Toggle */}
+            <button
+              type="button"
+              onClick={() => setSanayiMode(!sanayiMode)}
+              className={"rounded-lg border px-3 py-2 text-xs font-black transition cursor-pointer select-none active:scale-95 " + (sanayiMode ? "bg-orange-600 border-orange-700 text-white shadow-md font-extrabold" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50")}
+            >
+              ⚙️ {sanayiMode ? "Sanayi Modu: AÇIK" : "Sanayi Modu (Büyük Yazı)"}
+            </button>
+            {storeSlug && (
+              <a
+                href={"https://wa.me/?text=D%C3%BCkkan%C4%B1m%C4%B1n%20katalo%C4%9Funu%20buradan%20inceleyebilirsiniz%3A%20" + encodeURIComponent(typeof window !== "undefined" ? window.location.origin + "/store/" + storeSlug : "")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-black text-white hover:bg-emerald-700 transition cursor-pointer select-none active:scale-95 flex items-center gap-1 shadow-sm font-extrabold"
+              >
+                💬 Vitrini Paylaş
+              </a>
+            )}
             <CompactLanguageSwitcher />
             <Link
               href="/dashboard"
@@ -1891,54 +2052,45 @@ export default function ProductsPage() {
               />
             </label>
 
-            {/* Price policy selector as requested */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50/30 p-4 space-y-2.5 shadow-sm">
+            {/* Esnaf-Dostu Fiyat & Teklif Ayarları */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/30 p-4 space-y-3 shadow-sm">
               <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1.5">
-                Fiyat & Teklif Politikası
+                Fiyat & Teklif Ayarları
                 <AICopilotTooltip fieldKey="pricingMode" position="right" />
               </span>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setPricingMode("fixed")}
-                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "fixed" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-900 font-extrabold border-slate-200 hover:bg-slate-50"}`}
-                >
-                  Fiyat Göster
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPricingMode("quote")}
-                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "quote" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-900 font-extrabold border-slate-200 hover:bg-slate-50"}`}
-                >
-                  Teklif Alın
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPricingMode("bidding")}
-                  className={`rounded-lg py-2 text-xs font-bold transition border ${pricingMode === "bidding" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-slate-900 font-extrabold border-slate-200 hover:bg-slate-50"}`}
-                >
-                  Teklif Verin
-                </button>
-              </div>
-              <p className="text-[10px] text-slate-900 font-extrabold italic leading-relaxed">
-                {pricingMode === "fixed" && "Müşteriler ürünü belirlediğiniz fiyattan sepete ekler."}
-                {pricingMode === "quote" && "Fiyat gizlenir. Müşteriler 'Fiyat Teklifi İste' butonu ile sizden teklif toplar."}
-                {pricingMode === "bidding" && "Müşteriler ürüne kendi iskonto ve adet bütçe hedeflerini teklif edebilir."}
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              {pricingMode === "fixed" && (
+              <div className="grid gap-3 sm:grid-cols-2">
                 <label className="grid gap-1">
                   <span className="text-xs font-bold text-slate-900 font-extrabold">Satış Fiyatı</span>
                   <input
                     value={salePrice}
-                    onChange={(e) => setSalePrice(e.target.value)}
-                    placeholder="Fiyat"
+                    onChange={(e) => {
+                      setSalePrice(e.target.value);
+                      if (e.target.value.trim() !== "") {
+                        setPricingMode("fixed");
+                      }
+                    }}
+                    placeholder="Örn: 1500 (Boş bırakırsanız Teklif Alın olur)"
                     className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                   />
                 </label>
-              )}
+                <div className="flex items-center gap-2 pt-4 sm:pt-6 select-none cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="hide-price-checkbox"
+                    checked={pricingMode === "quote"}
+                    onChange={(e) => {
+                      setPricingMode(e.target.checked ? "quote" : "fixed");
+                    }}
+                    className="h-4 w-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                  />
+                  <label htmlFor="hide-price-checkbox" className="text-xs font-black text-slate-800 cursor-pointer">
+                    Fiyatı Gizle (Ziyaretçiden Teklif İste)
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
 
               <label className="grid gap-1">
                 <span className="text-xs font-bold text-slate-900 font-extrabold">Maliyet Fiyatı</span>

@@ -1070,6 +1070,20 @@ export default function StorePage() {
 
   const [products, setProducts] = useState<ProductRecord[]>([]);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
+  const [isOwner, setIsOwner] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const currentUserStr = window.localStorage.getItem("hbs-current-user");
+      if (currentUserStr) {
+        const currentUser = JSON.parse(currentUserStr);
+        const userStoreSlugs = currentUser.storeSlugs || [];
+        if (userStoreSlugs.includes(params.storeSlug)) {
+          setIsOwner(true);
+        }
+      }
+    }
+  }, [params.storeSlug]);
 
   useEffect(() => {
     const isSupabaseConfigured = 
@@ -1382,7 +1396,15 @@ export default function StorePage() {
                   const finalDescription = translateProductField(p.description, "description", language);
 
                   return (
-                    <article key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 flex flex-col justify-between">
+                    <article key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 flex flex-col justify-between relative group">
+                      {isOwner && (
+                        <Link
+                          href={"/dashboard/products?edit=" + p.id}
+                          className="absolute top-6 left-6 z-10 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-[10px] px-2.5 py-1.5 flex items-center gap-1 shadow-md transition active:scale-95"
+                        >
+                          ✏️ Düzenle
+                        </Link>
+                      )}
                       <div className="space-y-3">
                         <Link href={`/product/${p.id}`} className="block aspect-[4/3] rounded-xl bg-slate-50 border border-slate-100 overflow-hidden hover:opacity-90 transition">
                           {p.imageUrl ? (
@@ -1414,9 +1436,7 @@ export default function StorePage() {
                             ) : (
                               <>
                                 <p>{getTxt("shelfAddressLabel")} <span className="text-blue-700 font-bold">{displayWarehouse} · {displayShelf || "-"}</span></p>
-                                {displayQuantity && (
-                                  <p>{getTxt("stockStatusLabel")} <span className="text-emerald-700 font-extrabold">{displayQuantity} {getTxt("pieces")}</span></p>
-                                )}
+                                <p>{getTxt("stockStatusLabel")} <span className="text-emerald-700 font-extrabold">{displayQuantity ? `${displayQuantity} ${getTxt("pieces")}` : "Stokta Var"}</span></p>
                               </>
                             )}
                           </div>
