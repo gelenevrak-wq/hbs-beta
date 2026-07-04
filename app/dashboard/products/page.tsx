@@ -1735,7 +1735,7 @@ export default function ProductsPage() {
             </label>
 
             {/* Price policy selector as requested */}
-            <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-2">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/30 p-4 space-y-2.5 shadow-sm">
               <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1.5">
                 Fiyat & Teklif Politikası
                 <AICopilotTooltip fieldKey="pricingMode" position="right" />
@@ -1812,7 +1812,7 @@ export default function ProductsPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="grid gap-1">
                 <span className="text-xs font-bold text-slate-900 font-extrabold">Çoklu Fotoğraf Galerisi</span>
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-3">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/30 p-4 space-y-3 shadow-sm">
                   {galleryUrls.length > 0 ? (
                     <div className="grid grid-cols-4 gap-2">
                       {galleryUrls.map((url, idx) => (
@@ -1887,7 +1887,7 @@ export default function ProductsPage() {
 
               <div className="grid gap-1">
                 <span className="text-xs font-bold text-slate-900 font-extrabold">Tanıtım Videosu</span>
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2 flex flex-col justify-between h-full">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/30 p-4 space-y-2.5 flex flex-col justify-between h-full shadow-sm">
                   <input
                     value={videoUrl}
                     onChange={(e) => setVideoUrl(e.target.value)}
@@ -2013,7 +2013,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Stock tracking, entry dates, exit dates as requested */}
-            <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 space-y-3">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/30 p-4 space-y-3 shadow-sm">
               <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1.5">
                 Depo Konumlandırma & Giriş Çıkış
                 <AICopilotTooltip fieldKey="warehouse" position="right" />
@@ -2136,7 +2136,7 @@ export default function ProductsPage() {
             </div>
 
             {/* Ürün Varyantları (İsteğe Bağlı) - B2B/B2C Modeli */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-4">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/30 p-4 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xs font-black text-slate-900 font-extrabold uppercase tracking-wider flex items-center gap-1.5">
@@ -2376,7 +2376,7 @@ export default function ProductsPage() {
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-semibold"
                 />
                 
-                <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-3 bg-slate-50 border border-slate-200/60 p-3 rounded-2xl">
+                <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 bg-slate-50/40 border border-slate-350 p-4 rounded-2xl shadow-sm">
                   {/* Showcase Visibility */}
                   <div className="flex flex-col gap-1">
                     <span className="text-[10px] font-bold text-slate-900 font-extrabold">Vitrin Durumu</span>
@@ -2439,7 +2439,7 @@ export default function ProductsPage() {
 
               <div className="mt-4 space-y-3 max-h-[600px] overflow-y-auto pr-1">
                 {paginatedProducts.map((p) => (
-                  <article key={p.id} className="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-xs space-y-2 relative group hover:border-slate-250 transition">
+                  <article key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 text-xs space-y-2.5 relative group hover:border-blue-500 hover:shadow-md transition duration-200 shadow-sm">
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex items-center gap-2 min-w-0">
                         <input
