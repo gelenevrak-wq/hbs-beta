@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
@@ -364,6 +365,24 @@ export default function HomePage() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [customerOffers, setCustomerOffers] = useState<any[]>([]);
   const [registeredStores, setRegisteredStores] = useState<any[]>([]);
+  const router = useRouter();
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const q = query.trim().toLowerCase();
+    if (!q) return;
+
+    const matchingStore = registeredStores.find((store: any) => 
+      (store.name || "").toLowerCase().trim() === q || 
+      (store.code || "").toLowerCase().trim() === q
+    ) || (q === "obdtr" ? { code: "obdtr" } : null) || (q === "özgür motor" || q === "ozgur motor" || q === "ozgurmotor" ? { code: "ozgur-motor" } : null);
+
+    if (matchingStore) {
+      router.push(`/store/${matchingStore.code}`);
+    } else {
+      router.push(`/customer?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   const [filteredSuggestions, setFilteredSuggestions] = useState<LocationSuggestion[]>([]);
 
@@ -772,7 +791,7 @@ export default function HomePage() {
 
 
         <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
-          <form className="flex w-full items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 shadow-inner transition focus-within:border-blue-400 focus-within:bg-white focus-within:shadow-md" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex w-full items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 shadow-inner transition focus-within:border-blue-400 focus-within:bg-white focus-within:shadow-md" onSubmit={handleSearchSubmit}>
             <span className="text-slate-400 text-xs sm:text-sm select-none mr-1.5">🔍</span>
             <input
               value={query}
@@ -799,7 +818,7 @@ export default function HomePage() {
               />
             </label>
 
-            <Link href={searchHref} className="rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-black text-white sm:px-4 sm:text-xs hover:bg-blue-700 active:scale-95 transition shadow-sm">{t.searchButton}</Link>
+            <button type="submit" className="rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-black text-white sm:px-4 sm:text-xs hover:bg-blue-700 active:scale-95 transition shadow-sm">{t.searchButton}</button>
           </form>
         </div>
 

@@ -323,7 +323,7 @@ export default function ProductsPage() {
   // Print Center States
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [selectedPrintProduct, setSelectedPrintProduct] = useState<ProductRecord | null>(null);
-  const [activePrintTab, setActivePrintTab] = useState<'card' | 'barcode' | 'shelf'>('card');
+  const [activePrintTab, setActivePrintTab] = useState<'card' | 'barcode' | 'shelf' | 'zpl'>('card');
 
   // Interactive Mobile QR/Barcode Warehousing Assistant States
   const [isTerminalOpen, setIsTerminalOpen] = useState(false);
@@ -2764,24 +2764,30 @@ export default function ProductsPage() {
               </div>
 
               {/* Tabs */}
-              <div className="grid grid-cols-3 border-b border-slate-100 bg-slate-50/50">
+              <div className="grid grid-cols-4 border-b border-slate-100 bg-slate-50/50">
                 <button
                   onClick={() => setActivePrintTab('card')}
-                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'card' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-900 font-extrabold'}`}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'card' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-950'}`}
                 >
                   📇 Tanıtım Kartı
                 </button>
                 <button
                   onClick={() => setActivePrintTab('barcode')}
-                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'barcode' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-900 font-extrabold'}`}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'barcode' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-950'}`}
                 >
-                  🏷️ Ürün Barkodu (50x30mm)
+                  🏷️ Barkod (50x30)
                 </button>
                 <button
                   onClick={() => setActivePrintTab('shelf')}
-                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'shelf' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-900 font-extrabold'}`}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'shelf' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-950'}`}
                 >
-                  📌 Raf Fiyat Etiketi
+                  📌 Raf Etiketi
+                </button>
+                <button
+                  onClick={() => setActivePrintTab('zpl')}
+                  className={`py-3 text-xs font-black text-center border-b-2 transition ${activePrintTab === 'zpl' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-900 font-extrabold hover:text-slate-950'}`}
+                >
+                  ⚡ ZPL (Termal)
                 </button>
               </div>
 
@@ -2793,6 +2799,7 @@ export default function ProductsPage() {
                   className={`bg-white text-black p-6 shadow-md border border-slate-200 mx-auto transition-all ${
                     activePrintTab === 'card' ? 'w-[400px] rounded-xl' :
                     activePrintTab === 'barcode' ? 'w-[320px] h-[192px] flex flex-col justify-between items-center p-4' :
+                    activePrintTab === 'zpl' ? 'w-[450px] rounded-xl p-5' :
                     'w-[350px] rounded-lg border-2 border-dashed border-slate-400'
                   }`}
                 >
@@ -2867,6 +2874,54 @@ export default function ProductsPage() {
                         <div className="h-12 w-12 border border-slate-200 rounded p-0.5 bg-white shrink-0">
                           {selectedPrintProduct.qrCode ? generateQrCodeSvg(selectedPrintProduct.qrCode) : generateQrCodeSvg(selectedPrintProduct.sku)}
                         </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {activePrintTab === 'zpl' && (
+                    <div className="space-y-4 text-left w-full">
+                      <div className="border-b border-slate-200 pb-2">
+                        <h4 className="font-extrabold text-sm text-slate-900 uppercase tracking-wide">RAW ZPL TERMAL KODU</h4>
+                        <p className="text-[10px] text-slate-700 font-bold">Zebra ve uyumlu termal etiket yazıcıları için direkt komutlar</p>
+                      </div>
+                      
+                      <div className="relative">
+                        <textarea
+                          readOnly
+                          value={`^XA
+^FO50,50^A0N,28,20^FDURUN: ${selectedPrintProduct.name.substring(0, 22).toUpperCase()}^FS
+^FO50,90^A0N,20,15^FDKONUM: ${selectedPrintProduct.warehouse.substring(0, 15).toUpperCase()} / ${selectedPrintProduct.shelf || 'RAFSIZ'}^FS
+^FO50,130^BY2
+^BCN,50,Y,N,N
+^FD${selectedPrintProduct.barcode || selectedPrintProduct.sku || '123456789'}^FS
+^XZ`}
+                          rows={7}
+                          className="w-full rounded-xl bg-slate-900 text-emerald-400 font-mono text-[11px] p-3 outline-none border border-slate-800 shadow-inner"
+                        />
+                      </div>
+
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const code = `^XA\n^FO50,50^A0N,28,20^FDURUN: ${selectedPrintProduct.name.substring(0, 22).toUpperCase()}^FS\n^FO50,90^A0N,20,15^FDKONUM: ${selectedPrintProduct.warehouse.substring(0, 15).toUpperCase()} / ${selectedPrintProduct.shelf || 'RAFSIZ'}^FS\n^FO50,130^BY2\n^BCN,50,Y,N,N\n^FD${selectedPrintProduct.barcode || selectedPrintProduct.sku || '123456789'}^FS\n^XZ`;
+                            navigator.clipboard.writeText(code);
+                            alert("ZPL kodu panoya kopyalandı!");
+                          }}
+                          className="rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition px-3 py-1.5 text-xs font-black cursor-pointer"
+                        >
+                          📋 ZPL Kodunu Kopyala
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            playBeep();
+                            alert("Etiket başarıyla RAW Port 9100 üzerinden barkod yazıcıya gönderildi! (Simüle Edildi)");
+                          }}
+                          className="rounded-lg bg-slate-900 border border-slate-800 text-white hover:bg-slate-850 transition px-3 py-1.5 text-xs font-black cursor-pointer"
+                        >
+                          ⚡ Simüle Et (RAW Yazdır)
+                        </button>
                       </div>
                     </div>
                   )}

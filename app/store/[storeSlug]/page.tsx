@@ -1158,6 +1158,28 @@ export default function StorePage() {
     }
   }, [params.storeSlug]);
 
+  const filteredCatalogProducts = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return products.filter((p) => {
+      if (p.visibility === "hidden") return false;
+      if (!q) return true;
+
+      const categoryTranslated = translateProductField(p.category, "category", language ?? "tr");
+      const nameTranslated = translateProductField(p.name, "name", language ?? "tr");
+      const descTranslated = translateProductField(p.description, "description", language ?? "tr");
+
+      return (
+        nameTranslated.toLowerCase().includes(q) ||
+        categoryTranslated.toLowerCase().includes(q) ||
+        (p.brand || "").toLowerCase().includes(q) ||
+        (p.model || "").toLowerCase().includes(q) ||
+        (p.sku || "").toLowerCase().includes(q) ||
+        (p.barcode || "").toLowerCase().includes(q) ||
+        descTranslated.toLowerCase().includes(q)
+      );
+    });
+  }, [products, search, language]);
+
   function saveCustomerOffer(productName: string, type: "quote" | "bid", offerVal = "") {
     try {
       const currentUserStr = window.localStorage.getItem("hbs-current-user");
@@ -1259,6 +1281,39 @@ export default function StorePage() {
         {/* -------------------- 1. PRODUCTS & SPARE PARTS STOREFRONT -------------------- */}
         {storeType === "products" && (
           <section className="space-y-4 animate-fadeIn">
+            {/* STICKY STORE HEADER & CATALOG SEARCH */}
+            <div className="sticky top-2 z-40 bg-white/95 border border-slate-200 shadow-md rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 backdrop-blur">
+              <div className="flex items-center gap-2">
+                <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  🏢 {storeInfo?.name || "OBDTR Diagnostics"}
+                </span>
+                {isVirtualDelivery && (
+                  <span className="rounded-full bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 uppercase tracking-wider shadow-sm shrink-0">
+                    {getTxt("virtualStorefront")}
+                  </span>
+                )}
+              </div>
+              <div className="relative w-full md:w-80 shrink-0">
+                <span className="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Mağazada ürün ara..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-8 py-2 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition text-slate-800 shadow-inner"
+                />
+                {search && (
+                  <button
+                    type="button"
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 text-xs font-black p-0.5"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            </div>
+
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3 relative overflow-hidden">
               {isVirtualDelivery && (
                 <div className="absolute right-0 top-0 bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-bl-2xl uppercase tracking-wider shadow-md">
@@ -1292,7 +1347,7 @@ export default function StorePage() {
               {contactButtons}
             </div>
 
-            {products.filter(p => p.visibility !== "hidden").length === 0 ? (
+            {filteredCatalogProducts.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center max-w-lg mx-auto shadow-sm my-6">
                 <div className="text-4xl">🛍️</div>
                 <h3 className="font-black text-slate-800 mt-3 text-sm uppercase tracking-wider">{getTxt("catalogEmpty")}</h3>
@@ -1305,7 +1360,7 @@ export default function StorePage() {
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {products.filter(p => p.visibility !== "hidden").map((p) => {
+                {filteredCatalogProducts.map((p) => {
                   const hasVariants = p.variants && p.variants.length > 0;
                   const selectedVarId = selectedVariants[p.id];
                   const activeVariant = hasVariants ? p.variants?.find(v => v.id === selectedVarId) || p.variants?.[0] : null;
