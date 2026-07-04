@@ -1458,16 +1458,22 @@ export default function ProductsPage() {
           process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
         if (isSupabaseConfigured) {
-          supabase
-            .from("offerable_items")
-            .update({
-              is_visible_in_storefront: nextVisibility === "visible",
-              is_visible_in_public_search: nextVisibility === "visible",
-            })
-            .or(`code.eq.${p.sku},name.eq.${p.name}`)
-            .then(({ error }) => {
-              if (error) console.error("Supabase toggle error:", error);
+          const isUuid = id.length === 36;
+          const query = supabase.from("offerable_items").update({
+            is_visible_in_storefront: nextVisibility === "visible",
+            is_visible_in_public_search: nextVisibility === "visible",
+          });
+
+          if (isUuid) {
+            query.eq("id", id).then(({ error }) => {
+              if (error) console.error("Supabase toggle error by ID:", error);
             });
+          } else {
+            // Fallback for non-UUID temporary items
+            query.or(`code.eq.${p.sku},name.eq.${p.name}`).then(({ error }) => {
+              if (error) console.error("Supabase toggle error by fallback:", error);
+            });
+          }
         }
 
         return { ...p, visibility: nextVisibility };
