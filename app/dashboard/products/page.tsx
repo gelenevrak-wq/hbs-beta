@@ -245,6 +245,7 @@ function generateQrCodeSvg(text: string) {
 export default function ProductsPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
 
   // Form Fields
   const [itemType, setItemType] = useState<ItemType>("product");
@@ -277,6 +278,19 @@ export default function ProductsPage() {
 
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [products, setProducts] = useState<ProductRecord[]>(INITIAL_PRODUCTS);
+
+  const uniqueCategories = useMemo(() => {
+    const cats = products
+      .map(p => p.category?.trim())
+      .filter(Boolean);
+    return Array.from(new Set(cats));
+  }, [products]);
+
+  const filteredCategorySuggestions = useMemo(() => {
+    const val = category.trim().toLowerCase();
+    if (!val) return uniqueCategories;
+    return uniqueCategories.filter(cat => cat.toLowerCase().includes(val));
+  }, [category, uniqueCategories]);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
@@ -1592,6 +1606,9 @@ export default function ProductsPage() {
         setMessage("Kayıt başarıyla güncellendi! Veritabanı ve yerel hafıza senkronize edildi.");
         setEditingProductId(null);
         resetForm();
+        if (typeof window !== "undefined") {
+          window.alert("Değişiklikler başarıyla kaydedildi!");
+        }
       } else {
         // CREATE MODE
         const newProduct: ProductRecord = {
@@ -1650,6 +1667,9 @@ export default function ProductsPage() {
         setProducts((currentProducts) => [newProduct, ...currentProducts]);
         setMessage("Kayıt başarıyla oluşturuldu! Veritabanı ve yerel hafıza güncellendi.");
         resetForm();
+        if (typeof window !== "undefined") {
+          window.alert("Kayıt başarıyla tamamlandı!");
+        }
       }
     } catch (e) {
       console.error("Error saving product:", e);
@@ -1794,15 +1814,38 @@ export default function ProductsPage() {
                 />
               </label>
 
-              <label className="grid gap-1">
+              <label className="grid gap-1 relative">
                 <span className="text-xs font-bold text-slate-900 font-extrabold">Kategori / Sektör *</span>
                 <input
                   required
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(e) => {
+                    setCategory(e.target.value);
+                    setShowCategorySuggestions(true);
+                  }}
+                  onFocus={() => setShowCategorySuggestions(true)}
+                  onBlur={() => {
+                    setTimeout(() => setShowCategorySuggestions(false), 200);
+                  }}
                   placeholder="Örn: Oto yedek parçası"
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 />
+                {showCategorySuggestions && filteredCategorySuggestions.length > 0 && (
+                  <ul className="absolute left-0 right-0 top-[100%] mt-1 max-h-48 overflow-y-auto rounded-xl border border-slate-250 bg-white py-1 shadow-lg z-50">
+                    {filteredCategorySuggestions.map((cat, idx) => (
+                      <li
+                        key={idx}
+                        onMouseDown={() => {
+                          setCategory(cat);
+                          setShowCategorySuggestions(false);
+                        }}
+                        className="px-3 py-2 text-xs text-slate-950 font-bold hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition"
+                      >
+                        {cat}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </label>
             </div>
 
@@ -2439,7 +2482,7 @@ export default function ProductsPage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className={`flex-1 rounded-xl py-3 text-sm font-black text-white transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${editingProductId ? "bg-blue-600 hover:bg-blue-700" : "bg-slate-900 hover:bg-slate-800"}`}
+                className="flex-1 rounded-xl py-3 text-sm font-black text-white transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700"
               >
                 {isSaving ? "Kaydediliyor..." : (editingProductId ? "Değişiklikleri Kaydet" : "Kaydı Tamamla")}
               </button>
