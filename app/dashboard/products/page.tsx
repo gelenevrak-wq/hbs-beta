@@ -528,15 +528,51 @@ export default function ProductsPage() {
 
     function loadLocalFallback() {
       const savedProducts = window.localStorage.getItem("hbs-store-products");
+      let parsedProducts: ProductRecord[] = [];
       if (savedProducts) {
         try {
-          const parsedProducts = JSON.parse(savedProducts) as ProductRecord[];
-          if (Array.isArray(parsedProducts)) {
-            setProducts(parsedProducts);
+          parsedProducts = JSON.parse(savedProducts) as ProductRecord[];
+        } catch (e) {}
+      }
+
+      try {
+        const currentUserStr = window.localStorage.getItem("hbs-current-user");
+        if (currentUserStr) {
+          const currentUser = JSON.parse(currentUserStr);
+          const storeSlug = currentUser.storeSlugs?.[0];
+          if (storeSlug === "ozgur-motor") {
+            const ozgurCount = parsedProducts.filter((p: any) => 
+              p.id.startsWith("prod-toyota-") || 
+              p.id.startsWith("prod-mercedes-") || 
+              p.id.startsWith("prod-bmw-")
+            ).length;
+
+            if (ozgurCount < 400) {
+              const { generateOzgurMotorProducts } = require("@/lib/demoData");
+              const ozgurProducts = generateOzgurMotorProducts();
+              const filtered = parsedProducts.filter((p: any) => 
+                !p.id.startsWith("prod-toyota-") && 
+                !p.id.startsWith("prod-mercedes-") && 
+                !p.id.startsWith("prod-bmw-") && 
+                !p.id.startsWith("prod-opel-") && 
+                !p.id.startsWith("prod-ford-") && 
+                !p.id.startsWith("prod-subaru-") && 
+                !p.id.startsWith("prod-honda-") && 
+                !p.id.startsWith("prod-hyundai-")
+              );
+              parsedProducts = [...filtered, ...ozgurProducts];
+              window.localStorage.setItem("hbs-store-products", JSON.stringify(parsedProducts));
+            }
           }
-        } catch {
-          setProducts(INITIAL_PRODUCTS);
         }
+      } catch (e) {
+        console.error("Local load check error", e);
+      }
+
+      if (Array.isArray(parsedProducts) && parsedProducts.length > 0) {
+        setProducts(parsedProducts);
+      } else {
+        setProducts(INITIAL_PRODUCTS);
       }
       setProductsLoaded(true);
     }

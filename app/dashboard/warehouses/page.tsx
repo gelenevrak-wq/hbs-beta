@@ -682,11 +682,45 @@ export default function WarehousesRevampPage() {
 
   const loadDatabase = () => {
     try {
+      const userStr = window.localStorage.getItem("hbs-current-user");
+      const activeUser = userStr ? JSON.parse(userStr) : null;
+      const slug = activeUser?.storeSlugs?.[0] || "obdtr";
+
       // A) Load Products Catalog
       const prodStr = window.localStorage.getItem("hbs-store-products");
+      let parsedProducts: ProductRecord[] = [];
       if (prodStr) {
-        setProducts(JSON.parse(prodStr));
+        try {
+          parsedProducts = JSON.parse(prodStr);
+        } catch (e) {}
       }
+
+      if (slug === "ozgur-motor") {
+        const ozgurCount = parsedProducts.filter((p: any) => 
+          p.id.startsWith("prod-toyota-") || 
+          p.id.startsWith("prod-mercedes-") || 
+          p.id.startsWith("prod-bmw-")
+        ).length;
+
+        if (ozgurCount < 400) {
+          const { generateOzgurMotorProducts } = require("@/lib/demoData");
+          const ozgurProducts = generateOzgurMotorProducts();
+          const filtered = parsedProducts.filter((p: any) => 
+            !p.id.startsWith("prod-toyota-") && 
+            !p.id.startsWith("prod-mercedes-") && 
+            !p.id.startsWith("prod-bmw-") && 
+            !p.id.startsWith("prod-opel-") && 
+            !p.id.startsWith("prod-ford-") && 
+            !p.id.startsWith("prod-subaru-") && 
+            !p.id.startsWith("prod-honda-") && 
+            !p.id.startsWith("prod-hyundai-")
+          );
+          parsedProducts = [...filtered, ...ozgurProducts];
+          window.localStorage.setItem("hbs-store-products", JSON.stringify(parsedProducts));
+        }
+      }
+
+      setProducts(parsedProducts);
 
       // B) Load Stock Movements
       const movStr = window.localStorage.getItem("hbs-store-stock-movements");
@@ -706,11 +740,6 @@ export default function WarehousesRevampPage() {
         setStockTransfers(JSON.parse(transStr));
       }
 
-      // C) Load Warehouses
-      const userStr = window.localStorage.getItem("hbs-current-user");
-      const activeUser = userStr ? JSON.parse(userStr) : null;
-      const slug = activeUser?.storeSlugs?.[0] || "obdtr";
-      
       const storesStr = window.localStorage.getItem("hbs-registered-stores");
       const registeredStores = storesStr ? JSON.parse(storesStr) : [];
       let myStore = registeredStores.find((s: any) => s.code === slug);
