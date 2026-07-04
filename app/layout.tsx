@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import VisitorTracker from "@/components/VisitorTracker";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import DemoDataInitializer from "@/components/DemoDataInitializer";
 
 export const metadata: Metadata = {
   title: "HBS | Hybrid Business System",
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <VisitorTracker />
         <PWAInstallPrompt />
+        <DemoDataInitializer />
         {children}
       </body>
     </html>

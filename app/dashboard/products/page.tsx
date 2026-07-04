@@ -469,7 +469,7 @@ export default function ProductsPage() {
         if (currentUserStr) {
           const currentUser = JSON.parse(currentUserStr);
           const storeSlug = currentUser.storeSlugs?.[0];
-          if (storeSlug) {
+          if (storeSlug && storeSlug === "obdtr") {
             supabase
               .from("offerable_items")
               .select("*, companies!inner(code)")

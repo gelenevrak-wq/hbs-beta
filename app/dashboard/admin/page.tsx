@@ -404,8 +404,13 @@ export default function AdminPage() {
       window.localStorage.removeItem("hbs-registered-stores");
       window.localStorage.removeItem("hbs-store-users");
       window.localStorage.removeItem("hbs-customers-list");
+      window.localStorage.removeItem("hbs-store-products");
+      window.localStorage.removeItem("hbs-ozgur-motor-initialized");
       loadAllData();
       showSuccess("Platform verileri varsayılan demo değerlerine sıfırlandı!");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (e: any) {
       showError(`Sıfırlama hatası: ${e.message || e}`);
     }
