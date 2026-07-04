@@ -244,6 +244,7 @@ function generateQrCodeSvg(text: string) {
 
 export default function ProductsPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Form Fields
   const [itemType, setItemType] = useState<ItemType>("product");
@@ -1467,79 +1468,81 @@ export default function ProductsPage() {
   }
 
   async function saveProduct() {
+    if (isSaving) return;
     if (!name.trim() || !category.trim()) {
       setMessage("Ürün/hizmet adı ve kategori zorunludur.");
       return;
     }
+    setIsSaving(true);
 
     const isSupabaseConfigured = 
       process.env.NEXT_PUBLIC_SUPABASE_URL && 
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
     let targetCompanyId = "a123bc45-6789-abcd-ef01-234567890123"; // Default for OBDTR
-    if (isSupabaseConfigured) {
-      try {
-        const currentUserStr = window.localStorage.getItem("hbs-current-user");
-        if (currentUserStr) {
-          const currentUser = JSON.parse(currentUserStr);
-          const storeSlug = currentUser.storeSlugs?.[0];
-          if (storeSlug) {
-            const { data: compData } = await supabase
-              .from("companies")
-              .select("id")
-              .eq("code", storeSlug)
-              .single();
-            if (compData && compData.id) {
-              targetCompanyId = compData.id;
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Error looking up company ID for product save:", err);
-      }
-    }
-
-    if (editingProductId) {
-      // EDIT MODE
-      const updatedProducts = products.map((p) => {
-        if (p.id === editingProductId) {
-          return {
-            ...p,
-            itemType,
-            name,
-            category,
-            brand,
-            model,
-            description,
-            salePrice: pricingMode === "fixed" ? salePrice : "",
-            purchasePrice,
-            currency,
-            barcode,
-            qrCode,
-            sku,
-            oemCode,
-            manufacturerCode,
-            stockTracking,
-            quantity: stockTracking ? quantity : "",
-            warehouse,
-            shelf,
-            entryDate,
-            exitDate,
-            trackExpirationDate,
-            expirationDate: trackExpirationDate ? expirationDate : "",
-            pricingMode,
-            visibility,
-            imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
-            videoUrl,
-            variants: variants.length > 0 ? variants : undefined,
-            galleryUrls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"]
-          };
-        }
-        return p;
-      });
-
+    try {
       if (isSupabaseConfigured) {
         try {
+          const currentUserStr = window.localStorage.getItem("hbs-current-user");
+          if (currentUserStr) {
+            const currentUser = JSON.parse(currentUserStr);
+            const storeSlug = currentUser.storeSlugs?.[0];
+            if (storeSlug) {
+              const { data: compData } = await supabase
+                .from("companies")
+                .select("id")
+                .eq("code", storeSlug)
+                .single();
+              if (compData && compData.id) {
+                targetCompanyId = compData.id;
+              }
+            }
+          }
+        } catch (err) {
+          console.error("Error looking up company ID for product save:", err);
+        }
+      }
+
+      if (editingProductId) {
+        // EDIT MODE
+        const updatedProducts = products.map((p) => {
+          if (p.id === editingProductId) {
+            return {
+              ...p,
+              itemType,
+              name,
+              category,
+              brand,
+              model,
+              description,
+              salePrice: pricingMode === "fixed" ? salePrice : "",
+              purchasePrice,
+              currency,
+              barcode,
+              qrCode,
+              sku,
+              oemCode,
+              manufacturerCode,
+              stockTracking,
+              quantity: stockTracking ? quantity : "",
+              warehouse,
+              shelf,
+              entryDate,
+              exitDate,
+              trackExpirationDate,
+              expirationDate: trackExpirationDate ? expirationDate : "",
+              pricingMode,
+              visibility,
+              imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
+              videoUrl,
+              variants: variants.length > 0 ? variants : undefined,
+              galleryUrls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"]
+            };
+          }
+          return p;
+        });
+
+        if (isSupabaseConfigured) {
           const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(editingProductId);
           if (isUuid) {
             await supabase
@@ -1583,51 +1586,47 @@ export default function ProductsPage() {
               company_id: targetCompanyId
             });
           }
-        } catch (err) {
-          console.error("Supabase update error:", err);
         }
-      }
 
-      setProducts(updatedProducts);
-      setMessage("Kayıt başarıyla güncellendi! Veritabanı ve yerel hafıza senkronize edildi.");
-      setEditingProductId(null);
-      resetForm();
-    } else {
-      // CREATE MODE
-      const newProduct: ProductRecord = {
-        id: `product-${Date.now()}`,
-        itemType,
-        name,
-        category,
-        brand,
-        model,
-        description,
-        salePrice: pricingMode === "fixed" ? salePrice : "",
-        purchasePrice,
-        currency,
-        barcode,
-        qrCode,
-        sku,
-        oemCode,
-        manufacturerCode,
-        stockTracking,
-        quantity: stockTracking ? quantity : "",
-        warehouse,
-        shelf,
-        entryDate,
-        exitDate,
-        trackExpirationDate,
-        expirationDate: trackExpirationDate ? expirationDate : "",
-        pricingMode,
-        visibility,
-        imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
-        videoUrl,
-        variants: variants.length > 0 ? variants : undefined,
-        galleryUrls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"]
-      };
+        setProducts(updatedProducts);
+        setMessage("Kayıt başarıyla güncellendi! Veritabanı ve yerel hafıza senkronize edildi.");
+        setEditingProductId(null);
+        resetForm();
+      } else {
+        // CREATE MODE
+        const newProduct: ProductRecord = {
+          id: `product-${Date.now()}`,
+          itemType,
+          name,
+          category,
+          brand,
+          model,
+          description,
+          salePrice: pricingMode === "fixed" ? salePrice : "",
+          purchasePrice,
+          currency,
+          barcode,
+          qrCode,
+          sku,
+          oemCode,
+          manufacturerCode,
+          stockTracking,
+          quantity: stockTracking ? quantity : "",
+          warehouse,
+          shelf,
+          entryDate,
+          exitDate,
+          trackExpirationDate,
+          expirationDate: trackExpirationDate ? expirationDate : "",
+          pricingMode,
+          visibility,
+          imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
+          videoUrl,
+          variants: variants.length > 0 ? variants : undefined,
+          galleryUrls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"]
+        };
 
-      if (isSupabaseConfigured) {
-        try {
+        if (isSupabaseConfigured) {
           await supabase.from("offerable_items").insert({
             name,
             type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
@@ -1646,14 +1645,17 @@ export default function ProductsPage() {
             is_visible_in_public_search: visibility === "visible",
             company_id: targetCompanyId
           });
-        } catch (err) {
-          console.error("Supabase saving error:", err);
         }
-      }
 
-      setProducts((currentProducts) => [newProduct, ...currentProducts]);
-      setMessage("Kayıt başarıyla oluşturuldu! Veritabanı ve yerel hafıza güncellendi.");
-      resetForm();
+        setProducts((currentProducts) => [newProduct, ...currentProducts]);
+        setMessage("Kayıt başarıyla oluşturuldu! Veritabanı ve yerel hafıza güncellendi.");
+        resetForm();
+      }
+    } catch (e) {
+      console.error("Error saving product:", e);
+      setMessage("Ürün kaydedilirken veritabanı veya yerel sunucu hatası oluştu.");
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -2436,9 +2438,10 @@ export default function ProductsPage() {
               )}
               <button
                 type="submit"
-                className={`flex-1 rounded-xl py-3 text-sm font-black text-white transition cursor-pointer ${editingProductId ? "bg-blue-600 hover:bg-blue-700" : "bg-slate-900 hover:bg-slate-800"}`}
+                disabled={isSaving}
+                className={`flex-1 rounded-xl py-3 text-sm font-black text-white transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${editingProductId ? "bg-blue-600 hover:bg-blue-700" : "bg-slate-900 hover:bg-slate-800"}`}
               >
-                {editingProductId ? "Değişiklikleri Kaydet" : "Kaydı Tamamla"}
+                {isSaving ? "Kaydediliyor..." : (editingProductId ? "Değişiklikleri Kaydet" : "Kaydı Tamamla")}
               </button>
             </div>
           </form>
