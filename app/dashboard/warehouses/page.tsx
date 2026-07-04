@@ -509,7 +509,7 @@ export default function WarehousesRevampPage() {
 
   // Authentication & Store slugs
   const [currentUser, setCurrentUser] = useState<any>(null);
-  const isAuthorized = currentUser?.role === "owner" || currentUser?.role === "manager";
+  const isAuthorized = !currentUser || ["owner", "storeOwner", "manager", "superadmin", "top_manager", "store_manager"].includes(currentUser?.role || "");
   const [storeSlug, setStoreSlug] = useState("obdtr");
   const [storeName, setStoreName] = useState("OBDTR Diagnostics");
 
@@ -1840,6 +1840,17 @@ ${sizeStr}
                 <p className="text-xs text-slate-600">{t.wizardDesc}</p>
               </div>
 
+              {errorMsg && (
+                <div className="rounded-xl border border-red-500/20 bg-red-50 p-3 text-xs font-black text-red-800 shadow-sm animate-fadeIn">
+                  ⚠️ {errorMsg}
+                </div>
+              )}
+              {successMsg && (
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-55 p-3 text-xs font-black text-emerald-800 shadow-sm animate-fadeIn">
+                  ✓ {successMsg}
+                </div>
+              )}
+
               {/* Number of warehouses input */}
               <div className="flex items-center justify-between border-y border-slate-100 py-3">
                 <label className="text-xs font-bold text-slate-700">{t.wizardCountLabel}</label>
@@ -1890,15 +1901,13 @@ ${sizeStr}
               </div>
 
               <div className="flex justify-end gap-3 border-t border-slate-100 pt-4">
-                {warehouses.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setShowWizard(false)}
-                    className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
-                  >
-                    {t.cancel}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => setShowWizard(false)}
+                  className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                >
+                  {t.cancel}
+                </button>
                 <button
                   type="submit"
                   className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-black text-white hover:bg-blue-500 transition active:scale-95"
