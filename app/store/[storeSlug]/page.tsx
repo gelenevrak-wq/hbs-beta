@@ -1109,7 +1109,7 @@ export default function StorePage() {
               name: item.name,
               category: item.category || "Genel",
               brand: item.brand || "",
-              model: "",
+              model: (item.oem_codes && item.oem_codes.length > 0) ? item.oem_codes.join(", ") : "",
               description: item.description || "",
               salePrice: item.sale_price ? String(item.sale_price) : "",
               purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
