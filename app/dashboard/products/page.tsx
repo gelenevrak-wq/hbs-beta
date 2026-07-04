@@ -2455,13 +2455,23 @@ export default function ProductsPage() {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-1 text-slate-600">
-                      <p><b>Kategori:</b> {p.category}</p>
-                      <p><b>Stok SKU:</b> {p.sku || "-"}</p>
-                      <p><b>Barkod:</b> {p.barcode || "-"}</p>
-                      <p><b>Fiyat:</b> {p.pricingMode === "fixed" ? `${p.salePrice} ${p.currency}` : "Gizli"}</p>
-                      <p><b>Konum:</b> {p.warehouse} · {p.shelf}</p>
-                      <p><b>Giriş:</b> {p.entryDate || "-"}</p>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-1 text-slate-600">
+                        <p><b>Kategori:</b> {p.category}</p>
+                        <p><b>Stok SKU:</b> {p.sku || "-"}</p>
+                        <p><b>Barkod:</b> {p.barcode || "-"}</p>
+                        <p><b>Fiyat:</b> {p.pricingMode === "fixed" ? `${p.salePrice} ${p.currency}` : "Gizli"}</p>
+                        <p><b>Konum:</b> {p.warehouse} · {p.shelf}</p>
+                        <p><b>Giriş:</b> {p.entryDate || "-"}</p>
+                      </div>
+
+                      <div className="w-16 h-16 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
+                        {p.imageUrl ? (
+                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-xl text-slate-400">📦</span>
+                        )}
+                      </div>
                     </div>
 
                     {p.videoUrl && (
