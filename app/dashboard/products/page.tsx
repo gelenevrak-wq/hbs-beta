@@ -8,6 +8,62 @@ import CompactLanguageSwitcher, {
 import { supabase } from "@/lib/supabaseClient";
 import AICopilotTooltip from "@/components/common/AICopilotTooltip";
 
+
+// Helper to compress base64 images to prevent localStorage/Supabase payload overflow
+function compressBase64Image(base64Str: string, maxWidth = 800, maxHeight = 800, quality = 0.7): Promise<string> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined" || !base64Str.startsWith("data:image")) {
+      resolve(base64Str);
+      return;
+    }
+    const img = new Image();
+    img.src = base64Str;
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+
+      if (width > height) {
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressedBase64 = canvas.toDataURL("image/jpeg", quality);
+        resolve(compressedBase64);
+      } else {
+        resolve(base64Str);
+      }
+    };
+    img.onerror = () => {
+      resolve(base64Str);
+    };
+  });
+}
+
+// Safe wrapper for localStorage writes to catch QuotaExceededError
+function safeSetLocalStorage(key: string, value: string) {
+  try {
+    if (typeof window !== "undefined") {
+      safeSetLocalStorage(key, value);
+    }
+  } catch (e) {
+    console.error("Local storage write failed (likely quota exceeded):", e);
+  }
+}
+
 type ItemType = "product" | "service" | "rental" | "appointment";
 type Visibility = "visible" | "hidden";
 type PricingMode = "fixed" | "quote" | "bidding";
@@ -393,15 +449,37 @@ export default function ProductsPage() {
 
   const capturePhoto = () => {
     if (!videoRef.current) return;
+    
+    // Scale down and compress camera photos to prevent quota/payload errors
+    let width = videoRef.current.videoWidth || 640;
+    let height = videoRef.current.videoHeight || 480;
+    const maxWidth = 800;
+    const maxHeight = 800;
+    
+    if (width > height) {
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+    } else {
+      if (height > maxHeight) {
+        width = Math.round((width * maxHeight) / height);
+        height = maxHeight;
+      }
+    }
+
     const canvas = document.createElement('canvas');
-    canvas.width = videoRef.current.videoWidth || 640;
-    canvas.height = videoRef.current.videoHeight || 480;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg');
-      setGalleryUrls(prev => [...prev, dataUrl]);
-      setImageUrl(dataUrl);
+      ctx.drawImage(videoRef.current, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // 0.7 quality compression
+      setGalleryUrls(prev => {
+        const next = [...prev, dataUrl];
+        if (next.length === 1) setImageUrl(dataUrl);
+        return next;
+      });
       playBeep();
       stopCamera();
     }
@@ -529,7 +607,32 @@ export default function ProductsPage() {
     }
 
     function loadLocalFallback() {
-      const savedProducts = window.localStorage.getItem("hbs-store-products");
+      let savedProducts = window.localStorage.getItem("hbs-store-products");
+      
+      // Auto-recovery: If local cache is bloated (>1.5MB) due to raw phone photos, clean it!
+      if (savedProducts && savedProducts.length > 1.5 * 1024 * 1024) {
+        console.warn("Local storage cache is too large, purging large images to prevent quota errors...");
+        try {
+          const parsed = JSON.parse(savedProducts);
+          const cleaned = parsed.map((p: any) => {
+            if (p.imageUrl && p.imageUrl.startsWith("data:image")) {
+              p.imageUrl = "/product-images/diagnostic-scanner.svg";
+            }
+            if (p.galleryUrls) {
+              p.galleryUrls = p.galleryUrls.map((url: string) => 
+                url.startsWith("data:image") ? "/product-images/diagnostic-scanner.svg" : url
+              );
+            }
+            return p;
+          });
+          safeSetLocalStorage("hbs-store-products", JSON.stringify(cleaned));
+          savedProducts = JSON.stringify(cleaned);
+        } catch (e) {
+          try { window.localStorage.removeItem("hbs-store-products"); } catch(ex){}
+          savedProducts = null;
+        }
+      }
+
       let parsedProducts: ProductRecord[] = [];
       if (savedProducts) {
         try {
@@ -563,7 +666,7 @@ export default function ProductsPage() {
                 !p.id.startsWith("prod-hyundai-")
               );
               parsedProducts = [...filtered, ...ozgurProducts];
-              window.localStorage.setItem("hbs-store-products", JSON.stringify(parsedProducts));
+              safeSetLocalStorage("hbs-store-products", JSON.stringify(parsedProducts));
             }
           }
         }
@@ -607,7 +710,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     if (!productsLoaded) return;
-    window.localStorage.setItem("hbs-store-products", JSON.stringify(products));
+    safeSetLocalStorage("hbs-store-products", JSON.stringify(products));
   }, [products, productsLoaded]);
 
   const filteredProducts = useMemo(() => {
@@ -1859,11 +1962,12 @@ export default function ProductsPage() {
                           const files = Array.from(e.target.files || []);
                           files.forEach(file => {
                             const reader = new FileReader();
-                            reader.onload = () => {
+                            reader.onload = async () => {
                               if (typeof reader.result === "string") {
+                                const compressed = await compressBase64Image(reader.result);
                                 setGalleryUrls(prev => {
-                                  const next = [...prev, reader.result as string];
-                                  if (next.length === 1) setImageUrl(next[0]);
+                                  const next = [...prev, compressed];
+                                  if (next.length === 1) setImageUrl(compressed);
                                   return next;
                                 });
                               }
@@ -3080,7 +3184,7 @@ export default function ProductsPage() {
                                 return p;
                               });
                               setProducts(updated);
-                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                              safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
                               setTerminalMessage("Stok miktarı -1 azaltıldı.");
                             }}
                             className="w-8 h-8 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 font-black border border-rose-600/30 flex items-center justify-center transition active:scale-95 text-sm"
@@ -3103,7 +3207,7 @@ export default function ProductsPage() {
                                 return p;
                               });
                               setProducts(updated);
-                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                              safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
                               setTerminalMessage("Stok miktarı +1 artırıldı.");
                             }}
                             className="w-8 h-8 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-black border border-emerald-600/30 flex items-center justify-center transition active:scale-95 text-sm"
@@ -3132,7 +3236,7 @@ export default function ProductsPage() {
                               return p;
                             });
                             setProducts(updated);
-                            window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                            safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
                           }}
                           placeholder="Raf Konumu örn: A-01, B-12"
                           className="w-full rounded-lg bg-[#0c1224] border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 outline-none focus:border-blue-500 font-mono"
@@ -3161,7 +3265,7 @@ export default function ProductsPage() {
                                 return p;
                               });
                               setProducts(updated);
-                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                              safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
                               setTerminalMessage(`✓ Raf ${terminalScannedShelf} boşaltıldı.`);
                             }
                           }}
@@ -3188,7 +3292,7 @@ export default function ProductsPage() {
                                     const nextQty = Math.max(0, parseInt(p.quantity || "0") - 1);
                                     const updated = products.map(prod => prod.id === p.id ? { ...prod, quantity: String(nextQty) } : prod);
                                     setProducts(updated);
-                                    window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                                    safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
                                   }}
                                   className="w-5 h-5 rounded bg-rose-600/20 text-rose-400 flex items-center justify-center font-bold"
                                 >
@@ -3200,7 +3304,7 @@ export default function ProductsPage() {
                                     const nextQty = parseInt(p.quantity || "0") + 1;
                                     const updated = products.map(prod => prod.id === p.id ? { ...prod, quantity: String(nextQty) } : prod);
                                     setProducts(updated);
-                                    window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                                    safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
                                   }}
                                   className="w-5 h-5 rounded bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold"
                                 >
