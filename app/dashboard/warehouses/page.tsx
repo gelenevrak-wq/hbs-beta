@@ -1104,24 +1104,7 @@ export default function WarehousesRevampPage() {
     }
   };
 
-  const handleProductDragStart = (e: React.DragEvent, productId: string, qty: number) => {
-    e.dataTransfer.setData("text/plain", JSON.stringify({ productId, qty }));
-    e.dataTransfer.effectAllowed = "move";
-  };
 
-  const handleProductDrop = (e: React.DragEvent, shelfCode: string) => {
-    e.preventDefault();
-    try {
-      const dataStr = e.dataTransfer.getData("text/plain");
-      if (!dataStr) return;
-      const { productId, qty } = JSON.parse(dataStr);
-      if (productId && shelfCode) {
-        executeDirectPlacement(productId, shelfCode, qty || 1);
-      }
-    } catch (err) {
-      console.error("Drop placement error:", err);
-    }
-  };
 
   const handlePointerDownDrag = (e: React.PointerEvent, id: string, name: string, qty: number) => {
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -4272,8 +4255,6 @@ ${sizeStr}
                           return (
                             <div 
                               key={up.id} 
-                              draggable="true"
-                              onDragStart={(e) => handleProductDragStart(e, up.id, parseInt(up.quantity) || 1)}
                               onPointerDown={(e) => handlePointerDownDrag(e, up.id, getLocalizedField(up.name, language || "tr"), parseInt(up.quantity) || 1)}
                               onPointerMove={handlePointerMoveDrag}
                               onPointerUp={handlePointerUpDrag}
@@ -4815,6 +4796,7 @@ ${sizeStr}
                                                   return (
                                                     <div
                                                       key={binCode}
+                                                      data-shelf-code={binCode}
                                                       onClick={() => {
                                                         if (placeProductId) {
                                                           handleShelfCardClick(binCode);
@@ -4822,8 +4804,6 @@ ${sizeStr}
                                                           setSelectedWhiteboardShelfCode(binCode);
                                                         }
                                                       }}
-                                                      onDragOver={(e) => e.preventDefault()}
-                                                      onDrop={(e) => handleProductDrop(e, binCode)}
                                                       title={`${binCode} (${hasProduct ? "Dolu" : "Boş"}) - Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın`}
                                                       className={`flex-1 h-9 rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
                                                         hasProduct
