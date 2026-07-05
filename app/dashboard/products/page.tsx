@@ -623,7 +623,7 @@ export default function ProductsPage() {
         if (currentUserStr) {
           const currentUser = JSON.parse(currentUserStr);
           const storeSlug = currentUser.storeSlugs?.[0];
-          if (storeSlug && storeSlug === "obdtr") {
+          if (storeSlug) {
             supabase
               .from("offerable_items")
               .select("*, companies!inner(code)")
@@ -683,7 +683,7 @@ export default function ProductsPage() {
     }
 
     function loadLocalFallback() {
-      let savedProducts = window.localStorage.getItem("hbs-store-products");
+      let savedProducts = window.localStorage.getItem(`hbs-store-products-${storeSlug}`);
       
       // Auto-recovery: If local cache is bloated (>1.5MB) due to raw phone photos, clean it!
       if (savedProducts && savedProducts.length > 1.5 * 1024 * 1024) {
@@ -701,10 +701,10 @@ export default function ProductsPage() {
             }
             return p;
           });
-          safeSetLocalStorage("hbs-store-products", JSON.stringify(cleaned));
+          safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(cleaned));
           savedProducts = JSON.stringify(cleaned);
         } catch (e) {
-          try { window.localStorage.removeItem("hbs-store-products"); } catch(ex){}
+          try { window.localStorage.removeItem(`hbs-store-products-${storeSlug}`); } catch(ex){}
           savedProducts = null;
         }
       }
@@ -742,7 +742,7 @@ export default function ProductsPage() {
                 !p.id.startsWith("prod-hyundai-")
               );
               parsedProducts = [...filtered, ...ozgurProducts];
-              safeSetLocalStorage("hbs-store-products", JSON.stringify(parsedProducts));
+              safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(parsedProducts));
             }
           }
         }
@@ -786,7 +786,7 @@ export default function ProductsPage() {
 
   useEffect(() => {
     if (!productsLoaded) return;
-    safeSetLocalStorage("hbs-store-products", JSON.stringify(products));
+    safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(products));
   }, [products, productsLoaded]);
 
   const filteredProducts = useMemo(() => {
@@ -3437,7 +3437,7 @@ export default function ProductsPage() {
                                 return p;
                               });
                               setProducts(updated);
-                              safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
+                              safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                               setTerminalMessage("Stok miktarı -1 azaltıldı.");
                             }}
                             className="w-8 h-8 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 font-black border border-rose-600/30 flex items-center justify-center transition active:scale-95 text-sm"
@@ -3460,7 +3460,7 @@ export default function ProductsPage() {
                                 return p;
                               });
                               setProducts(updated);
-                              safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
+                              safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                               setTerminalMessage("Stok miktarı +1 artırıldı.");
                             }}
                             className="w-8 h-8 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-black border border-emerald-600/30 flex items-center justify-center transition active:scale-95 text-sm"
@@ -3489,7 +3489,7 @@ export default function ProductsPage() {
                               return p;
                             });
                             setProducts(updated);
-                            safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
+                            safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                           }}
                           placeholder="Raf Konumu örn: A-01, B-12"
                           className="w-full rounded-lg bg-[#0c1224] border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 outline-none focus:border-blue-500 font-mono"
@@ -3518,7 +3518,7 @@ export default function ProductsPage() {
                                 return p;
                               });
                               setProducts(updated);
-                              safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
+                              safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                               setTerminalMessage(`✓ Raf ${terminalScannedShelf} boşaltıldı.`);
                             }
                           }}
@@ -3545,7 +3545,7 @@ export default function ProductsPage() {
                                     const nextQty = Math.max(0, parseInt(p.quantity || "0") - 1);
                                     const updated = products.map(prod => prod.id === p.id ? { ...prod, quantity: String(nextQty) } : prod);
                                     setProducts(updated);
-                                    safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
+                                    safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                                   }}
                                   className="w-5 h-5 rounded bg-rose-600/20 text-rose-400 flex items-center justify-center font-bold"
                                 >
@@ -3557,7 +3557,7 @@ export default function ProductsPage() {
                                     const nextQty = parseInt(p.quantity || "0") + 1;
                                     const updated = products.map(prod => prod.id === p.id ? { ...prod, quantity: String(nextQty) } : prod);
                                     setProducts(updated);
-                                    safeSetLocalStorage("hbs-store-products", JSON.stringify(updated));
+                                    safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                                   }}
                                   className="w-5 h-5 rounded bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold"
                                 >

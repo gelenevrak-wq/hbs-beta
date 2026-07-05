@@ -521,6 +521,7 @@ export default function WarehousesRevampPage() {
 
   // Active / Selected UI states
   const [activeWarehouseId, setActiveWarehouseId] = useState<string>("");
+  const [productSearch, setProductSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<'placement' | 'transfer' | 'audit' | 'zpl' | 'picking'>('placement');
 
@@ -689,42 +690,94 @@ export default function WarehousesRevampPage() {
       const activeUser = userStr ? JSON.parse(userStr) : null;
       const slug = activeUser?.storeSlugs?.[0] || "obdtr";
 
-      // A) Load Products Catalog
-      const prodStr = window.localStorage.getItem("hbs-store-products");
-      let parsedProducts: ProductRecord[] = [];
-      if (prodStr) {
-        try {
-          parsedProducts = JSON.parse(prodStr);
-          parsedProducts = parsedProducts.filter((p: any) => p.brand !== "DELETED" && p.category !== "DELETED");
-        } catch (e) {}
-      }
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
-      if (slug === "ozgur-motor") {
-        const ozgurCount = parsedProducts.filter((p: any) => 
-          p.id.startsWith("prod-toyota-") || 
-          p.id.startsWith("prod-mercedes-") || 
-          p.id.startsWith("prod-bmw-")
-        ).length;
-
-        if (ozgurCount < 400) {
-          const { generateOzgurMotorProducts } = require("@/lib/demoData");
-          const ozgurProducts = generateOzgurMotorProducts();
-          const filtered = parsedProducts.filter((p: any) => 
-            !p.id.startsWith("prod-toyota-") && 
-            !p.id.startsWith("prod-mercedes-") && 
-            !p.id.startsWith("prod-bmw-") && 
-            !p.id.startsWith("prod-opel-") && 
-            !p.id.startsWith("prod-ford-") && 
-            !p.id.startsWith("prod-subaru-") && 
-            !p.id.startsWith("prod-honda-") && 
-            !p.id.startsWith("prod-hyundai-")
-          );
-          parsedProducts = [...filtered, ...ozgurProducts];
-          window.localStorage.setItem("hbs-store-products", JSON.stringify(parsedProducts));
+      const loadLocalFallback = () => {
+        const prodStr = window.localStorage.getItem(`hbs-store-products-${slug}`);
+        let parsedProducts: ProductRecord[] = [];
+        if (prodStr) {
+          try {
+            parsedProducts = JSON.parse(prodStr);
+            parsedProducts = parsedProducts.filter((p: any) => p.brand !== "DELETED" && p.category !== "DELETED");
+          } catch (e) {}
         }
-      }
 
-      setProducts(parsedProducts);
+        if (slug === "ozgur-motor") {
+          const ozgurCount = parsedProducts.filter((p: any) => 
+            p.id.startsWith("prod-toyota-") || 
+            p.id.startsWith("prod-mercedes-") || 
+            p.id.startsWith("prod-bmw-")
+          ).length;
+
+          if (ozgurCount < 400) {
+            const { generateOzgurMotorProducts } = require("@/lib/demoData");
+            const ozgurProducts = generateOzgurMotorProducts();
+            const filtered = parsedProducts.filter((p: any) => 
+              !p.id.startsWith("prod-toyota-") && 
+              !p.id.startsWith("prod-mercedes-") && 
+              !p.id.startsWith("prod-bmw-") && 
+              !p.id.startsWith("prod-opel-") && 
+              !p.id.startsWith("prod-ford-") && 
+              !p.id.startsWith("prod-subaru-") && 
+              !p.id.startsWith("prod-honda-") && 
+              !p.id.startsWith("prod-hyundai-")
+            );
+            parsedProducts = [...filtered, ...ozgurProducts];
+            window.localStorage.setItem(`hbs-store-products-${slug}`, JSON.stringify(parsedProducts));
+          }
+        }
+        setProducts(parsedProducts);
+      };
+
+      if (isSupabaseConfigured && slug) {
+        supabase
+          .from("offerable_items")
+          .select("*, companies!inner(code)")
+          .eq("companies.code", slug)
+          .then(({ data, error }) => {
+            if (data && !error) {
+              const mapped: ProductRecord[] = data
+                .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
+                .map((item: any) => ({
+                  id: item.id,
+                  itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+                  name: item.name,
+                  category: item.category || "Genel",
+                  brand: item.brand || "",
+                  model: "",
+                  description: item.description || "",
+                  salePrice: item.sale_price ? String(item.sale_price) : "",
+                  purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+                  currency: item.currency || "GEL",
+                  barcode: item.barcode || "",
+                  qrCode: item.qr_code || "",
+                  sku: item.code || "",
+                  oemCode: "",
+                  manufacturerCode: "",
+                  stockTracking: true,
+                  quantity: item.quantity ? String(item.quantity) : "10",
+                  warehouse: item.warehouse || "Ana Depo",
+                  shelf: item.shelf || "",
+                  entryDate: "",
+                  exitDate: "",
+                  pricingMode: item.sale_price ? "fixed" : "quote",
+                  visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+                  imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                  videoUrl: item.video_urls?.[0] || "",
+                  variants: [],
+                  galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
+                }));
+              setProducts(mapped);
+              window.localStorage.setItem(`hbs-store-products-${slug}`, JSON.stringify(mapped));
+            } else {
+              loadLocalFallback();
+            }
+          });
+      } else {
+        loadLocalFallback();
+      }
 
       // B) Load Stock Movements
       const movStr = window.localStorage.getItem("hbs-store-stock-movements");
@@ -788,7 +841,7 @@ export default function WarehousesRevampPage() {
       // Remove from shelf
       const updated = products.map(p => p.id === productId ? { ...p, shelf: "" } : p);
       setProducts(updated);
-      window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+      window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
       alert(`"${productName}" raf konumu temizlendi.`);
 
       const isSupabaseConfigured = 
@@ -809,7 +862,7 @@ export default function WarehousesRevampPage() {
       // Delete completely
       const updatedProducts = products.filter((p) => p.id !== productId);
       setProducts(updatedProducts);
-      window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+      window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
       alert(`"${productName}" envanterden silindi.`);
 
       const isSupabaseConfigured = 
@@ -934,6 +987,7 @@ export default function WarehousesRevampPage() {
 
       setWarehouses(initialWarehouses);
       setActiveWarehouseId(initialWarehouses[0].id);
+      setCorridors(initialWarehouses[0].corridorConfigs || parseShelvesToConfig(initialWarehouses[0].shelves || []));
       setShowWizard(false);
       showSuccess(`Sihirbaz tamamlandı! ${initialWarehouses.length} adet depo başarıyla oluşturuldu.`);
     } catch (e: any) {
@@ -1109,7 +1163,7 @@ export default function WarehousesRevampPage() {
       });
 
       // Save products to localStorage
-      window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+      window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
       setProducts(updatedProducts);
 
       // Create stock movement
@@ -1239,7 +1293,7 @@ export default function WarehousesRevampPage() {
     const updatedTransfers = [newTransfer, ...stockTransfers];
     saveStockTransfers(updatedTransfers);
 
-    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
 
     // Create stock movement for source deduction
@@ -1319,7 +1373,7 @@ export default function WarehousesRevampPage() {
     });
 
     saveStockTransfers(updatedTransfers);
-    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
 
     const addMovement: StockMovement = {
@@ -1358,7 +1412,7 @@ export default function WarehousesRevampPage() {
     const updatedTransfers = stockTransfers.filter(t => t.id !== transferId);
 
     saveStockTransfers(updatedTransfers);
-    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
 
     // Create stock movement for refund
@@ -1505,7 +1559,7 @@ ${sizeStr}
       }
     });
 
-    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
     window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(newMovements));
     setMovements(newMovements);
@@ -1629,7 +1683,7 @@ ${sizeStr}
       }
     });
 
-    window.localStorage.setItem("hbs-store-products", JSON.stringify(updatedProducts));
+    window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setProducts(updatedProducts);
     window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(newMovements));
     setMovements(newMovements);
@@ -2283,17 +2337,34 @@ ${sizeStr}
                 <div className="space-y-3">
                   <label className="grid gap-1">
                     <span className="text-xs font-bold text-slate-700">{t.selectFromCatalog}</span>
+                    <input
+                      type="text"
+                      placeholder="🔍 Ürün adı veya kodu ile hızlı ara..."
+                      value={productSearch}
+                      onChange={(e) => setProductSearch(e.target.value)}
+                      className="w-full mb-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500 bg-slate-50"
+                    />
                     <select
                       value={placeProductId}
                       onChange={(e) => setPlaceProductId(e.target.value)}
                       className="w-full rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500"
                     >
                       <option value="">{t.selectProductOption}</option>
-                      {products.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} ({p.sku || p.barcode || "Kodu Yok"}) - Stok: {p.quantity || "0"} adet
-                        </option>
-                      ))}
+                      {products
+                        .filter(p => {
+                          const query = productSearch.trim().toLowerCase();
+                          if (!query) return true;
+                          return (
+                            p.name.toLowerCase().includes(query) ||
+                            (p.sku && p.sku.toLowerCase().includes(query)) ||
+                            (p.barcode && p.barcode.toLowerCase().includes(query))
+                          );
+                        })
+                        .map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} ({p.sku || p.barcode || "Kodu Yok"}) - Stok: {p.quantity || "0"} adet
+                          </option>
+                        ))}
                     </select>
                   </label>
 
@@ -2356,7 +2427,7 @@ ${sizeStr}
                             onChange={(e) => {
                               const val = e.target.value;
                               const updated = products.map(p => p.id === placeProductId ? { ...p, weight: val } : p);
-                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                              window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                               setProducts(updated);
                             }}
                             className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none"
@@ -2372,7 +2443,7 @@ ${sizeStr}
                             onChange={(e) => {
                               const val = e.target.value;
                               const updated = products.map(p => p.id === placeProductId ? { ...p, volume: val } : p);
-                              window.localStorage.setItem("hbs-store-products", JSON.stringify(updated));
+                              window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                               setProducts(updated);
                             }}
                             className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none"
