@@ -15,7 +15,9 @@ const texts = {
     title: "HBS kaydı",
     subtitle: "Hesap türünü seç ve devam et.",
     customerButton: "Ziyaretçi kaydı",
+    customerDesc: "Sadece e-posta ve telefon ile anında kayıt olun.",
     storeButton: "Mağaza kaydı",
+    storeDesc: "Firma detayları ve depo haritanızla SaaS panelinizi kurun.",
     customerTitle: "Ziyaretçi kaydı",
     storeTitle: "Mağaza kaydı",
     fullName: "Ad soyad",
@@ -46,7 +48,9 @@ const texts = {
     title: "HBS registration",
     subtitle: "Choose the account type and continue.",
     customerButton: "Visitor registration",
+    customerDesc: "Register instantly with only email and phone.",
     storeButton: "Store registration",
+    storeDesc: "Set up your SaaS dashboard with company details and warehouse map.",
     customerTitle: "Visitor registration",
     storeTitle: "Store registration",
     fullName: "Full name",
@@ -77,7 +81,9 @@ const texts = {
     title: "HBS-Registrierung",
     subtitle: "Kontotyp wählen und fortfahren.",
     customerButton: "Besucherregistrierung",
+    customerDesc: "Registrieren Sie sich sofort nur mit E-Mail und Telefon.",
     storeButton: "Shop-Registrierung",
+    storeDesc: "Richten Sie Ihr SaaS-Dashboard mit Unternehmensdaten und Lagerplan ein.",
     customerTitle: "Besucherregistrierung",
     storeTitle: "Shop-Registrierung",
     fullName: "Name",
@@ -108,7 +114,9 @@ const texts = {
     title: "Регистрация HBS",
     subtitle: "Выберите тип аккаунта и продолжайте.",
     customerButton: "Регистрация посетителя",
+    customerDesc: "Зарегистрируйтесь мгновенно, указав только электронную почту и телефон.",
     storeButton: "Регистрация магазина",
+    storeDesc: "Настройте свою SaaS-панель с данными компании и картой склада.",
     customerTitle: "Регистрация посетителя",
     storeTitle: "Регистрация магазина",
     fullName: "Имя и фамилия",
@@ -139,7 +147,9 @@ const texts = {
     title: "HBS რეგისტრაცია",
     subtitle: "აირჩიეთ ანგარიშის ტიპი და გააგრძელეთ.",
     customerButton: "მომხმარებლის რეგისტრაცია",
+    customerDesc: "დარეგისტრირდით მომენტალურად მხოლოდ ელფოსტით და ტელეფონით.",
     storeButton: "მაღაზიის რეგისტრაცია",
+    storeDesc: "დააყენეთ თქვენი SaaS მართვის პანელი კომპანიის დეტალებით და საწყობის რუკით.",
     customerTitle: "მომხმარებლის რეგისტრაცია",
     storeTitle: "მაღაზიის რეგისტრაცია",
     fullName: "სახელი და გვარი",
@@ -388,11 +398,11 @@ export default function RegisterPage() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <Link href="/customer-register" className="rounded-2xl border border-blue-200 bg-blue-50 p-5 text-left shadow-sm transition hover:border-blue-500 hover:bg-blue-100 block">
                   <div className="text-xl font-black text-blue-950">{t.customerButton}</div>
-                  <p className="text-xs text-slate-500 mt-1">Sadece e-posta ve telefon ile anında kayıt olun.</p>
+                  <p className="text-xs text-slate-500 mt-1">{t.customerDesc}</p>
                 </Link>
                 <Link href="/store-register" className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-left shadow-sm transition hover:border-emerald-500 hover:bg-emerald-100 block">
                   <div className="text-xl font-black text-emerald-950">{t.storeButton}</div>
-                  <p className="text-xs text-slate-500 mt-1">Firma detayları ve depo haritanızla SaaS panelinizi kurun.</p>
+                  <p className="text-xs text-slate-500 mt-1">{t.storeDesc}</p>
                 </Link>
               </div>
               <Link href="/login" className="inline-flex w-fit rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold hover:bg-slate-50">{t.login}</Link>
