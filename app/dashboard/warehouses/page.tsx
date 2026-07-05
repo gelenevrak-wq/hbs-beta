@@ -1073,6 +1073,10 @@ export default function WarehousesRevampPage() {
       // Reset selection
       setPlaceProductId("");
       setPlaceQty(1);
+
+      playSuccessClick();
+      setShowAiThumbsUp(true);
+      setTimeout(() => setShowAiThumbsUp(false), 1500);
       
       showSuccess(
         activeLang === "en" 
@@ -1097,6 +1101,25 @@ export default function WarehousesRevampPage() {
           formEl.classList.remove("ring-4", "ring-emerald-400/50");
         }, 1500);
       }
+    }
+  };
+
+  const handleProductDragStart = (e: React.DragEvent, productId: string, qty: number) => {
+    e.dataTransfer.setData("text/plain", JSON.stringify({ productId, qty }));
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleProductDrop = (e: React.DragEvent, shelfCode: string) => {
+    e.preventDefault();
+    try {
+      const dataStr = e.dataTransfer.getData("text/plain");
+      if (!dataStr) return;
+      const { productId, qty } = JSON.parse(dataStr);
+      if (productId && shelfCode) {
+        executeDirectPlacement(productId, shelfCode, qty || 1);
+      }
+    } catch (err) {
+      console.error("Drop placement error:", err);
     }
   };
 
@@ -1177,6 +1200,7 @@ export default function WarehousesRevampPage() {
   // Feedback Alerts
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [showAiThumbsUp, setShowAiThumbsUp] = useState(false);
 
   // Add Warehouse States
   const [isNewWarehouseModalOpen, setIsNewWarehouseModalOpen] = useState(false);
@@ -1733,6 +1757,25 @@ export default function WarehousesRevampPage() {
       gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
       oscillator.start();
       oscillator.stop(audioCtx.currentTime + 0.1);
+    } catch (e) {
+      console.warn("Audio Context blocked:", e);
+    }
+  };
+
+  const playSuccessClick = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.15);
+      gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.15);
     } catch (e) {
       console.warn("Audio Context blocked:", e);
     }
@@ -2318,6 +2361,11 @@ export default function WarehousesRevampPage() {
       setPlaceProductId("");
       setPlaceQty(1);
       setPlaceNote(activeLang === "en" ? "Shelf Placement" : activeLang === "de" ? "Regalplatzierung" : activeLang === "ru" ? "Размещение на полке" : activeLang === "ka" ? "თაროზე განთავსება" : "Raf Konum Yerleşimi");
+      
+      playSuccessClick();
+      setShowAiThumbsUp(true);
+      setTimeout(() => setShowAiThumbsUp(false), 1500);
+
       showSuccess(activeLang === "en" ? `"${getLocalizedField(targetProd.name, activeLang)}" successfully placed at [${activeWh.name} - ${placeShelf}].` : activeLang === "de" ? `"${getLocalizedField(targetProd.name, activeLang)}" erfolgreich am Standort [${activeWh.name} - ${placeShelf}] platziert.` : activeLang === "ru" ? `"${getLocalizedField(targetProd.name, activeLang)}" успешно размещен по адресу [${activeWh.name} - ${placeShelf}].` : activeLang === "ka" ? `"${getLocalizedField(targetProd.name, activeLang)}" წარმატებით განთავსდა ლოკაციაზე [${activeWh.name} - ${placeShelf}].` : `"${getLocalizedField(targetProd.name, "tr")}" başarıyla [${activeWh.name} - ${placeShelf}] konumuna yerleştirildi.`);
     } catch (e: any) {
       showError(activeLang === "en" ? `Error during placement: ${e.message || e}` : activeLang === "de" ? `Fehler bei der Regalplatzierung: ${e.message || e}` : activeLang === "ru" ? `Ошибка при размещении: ${e.message || e}` : activeLang === "ka" ? `შეცდომა განთავსებისას: ${e.message || e}` : `Yerleşim sırasında hata: ${e.message || e}`);
@@ -4190,7 +4238,9 @@ ${sizeStr}
                           return (
                             <div 
                               key={up.id} 
-                              className={`flex justify-between items-center border p-2 rounded-xl transition-all ${
+                              draggable="true"
+                              onDragStart={(e) => handleProductDragStart(e, up.id, parseInt(up.quantity) || 1)}
+                              className={`flex justify-between items-center border p-2 rounded-xl transition-all cursor-grab active:cursor-grabbing ${
                                 isSelected 
                                   ? "border-blue-500 bg-blue-50 ring-2 ring-blue-300 shadow-md animate-pulse" 
                                   : "bg-white border-amber-200/50 hover:border-blue-300 hover:bg-slate-50"
@@ -4198,9 +4248,13 @@ ${sizeStr}
                             >
                               <div className="flex flex-col">
                                 <span className="font-bold text-slate-800">📦 {getLocalizedField(up.name, language || "tr")} ({up.quantity} {t.qty || "Adet"})</span>
-                                {isSelected && (
+                                {isSelected ? (
                                   <span className="text-[9px] text-blue-650 font-black mt-0.5 animate-pulse">
                                     👈 Seçildi! Yerleştirmek için yukarıdaki tahtadan (canvas) bir rafa tıklayın.
+                                  </span>
+                                ) : (
+                                  <span className="text-[9px] text-slate-500 mt-0.5">
+                                    💡 Sürükleyip yukarıdaki haritada bir rafa bırakabilirsiniz.
                                   </span>
                                 )}
                               </div>
@@ -4717,14 +4771,22 @@ ${sizeStr}
                                                   const binCode = binsCount > 1 ? `${sideCode}-B${bIdx + 1}` : sideCode;
                                                   const hasProduct = products.some(
                                                     (p) =>
-                                                      p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-                                                      p.shelf.toLowerCase() === binCode.toLowerCase()
+                                                      safeLower(p.warehouse) === safeLower(activeWh.name) &&
+                                                      safeLower(p.shelf) === safeLower(binCode)
                                                   );
 
                                                   return (
                                                     <div
                                                       key={binCode}
-                                                      onClick={() => setSelectedWhiteboardShelfCode(binCode)}
+                                                      onClick={() => {
+                                                        if (placeProductId) {
+                                                          handleShelfCardClick(binCode);
+                                                        } else {
+                                                          setSelectedWhiteboardShelfCode(binCode);
+                                                        }
+                                                      }}
+                                                      onDragOver={(e) => e.preventDefault()}
+                                                      onDrop={(e) => handleProductDrop(e, binCode)}
                                                       title={`${binCode} (${hasProduct ? "Dolu" : "Boş"}) - Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın`}
                                                       className={`flex-1 h-9 rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
                                                         hasProduct
@@ -5923,6 +5985,23 @@ ${sizeStr}
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Thumbs Up Feedback Overlay */}
+      {showAiThumbsUp && (
+        <div className="fixed bottom-10 right-10 z-50 flex items-center gap-3 rounded-2xl border-2 border-emerald-300 bg-white/95 backdrop-blur p-4 shadow-2xl animate-bounce transition-all duration-300">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50 text-2xl">
+            🤖
+          </div>
+          <div>
+            <p className="text-xs font-black text-slate-800">
+              {language === "tr" ? "Harika! Yerleştirildi." : "Awesome! Placed."}
+            </p>
+            <p className="text-[10px] font-black text-emerald-600 flex items-center gap-1">
+              {language === "tr" ? "Stok Güncellendi" : "Stock Updated"} 👍
+            </p>
           </div>
         </div>
       )}
