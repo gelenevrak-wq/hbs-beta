@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useMemo, useState, useRef } from "react";
+import { getLocalizedField } from "@/lib/translations";
 import VoiceAssistant from "@/components/VoiceAssistant";
 import CompactLanguageSwitcher, { LanguageCode, isLanguageCode } from "@/components/language/CompactLanguageSwitcher";
 
@@ -85,6 +86,17 @@ type StockTransfer = {
 const translations = {
   tr: {
     header: "📦 HBS Akıllı Depo Yönetimi",
+    backToProducts: "← Ürün & Stok Yönetimi",
+    addNewWarehouse: "Yeni Depo Ekle",
+    addNewWarehouseDesc: "Sisteme yeni bir depo şubesi ekleyin",
+    newWhNameLabel: "Depo İsmi",
+    newWhCityLabel: "Deponun Bulunduğu Şehir",
+    newWhPurposeLabel: "Depo Kullanım Amacı (Açıklama)",
+    createWhBtn: "{t.createWhBtn || "⚡ Depoyu Oluştur"}",
+    unplacedProductsHeader: "Rafsız / Ortalıktaki Ürünler",
+    unplacedProductsDesc: "Bu depoda kayıtlı olan ama henüz raflara dizilmemiş ürünler.",
+    autoPlaceBtn: "⚡ Boş Raflara Otomatik Dağıt",
+    placeBtn: "Yerleştir",
     layoutShaperNav: "Yerleşim & Raf Şekillendirici",
     interWarehouseTransfer: "Depolar Arası Transfer",
     blindStockCount: "Kör Stok Sayımı",
@@ -111,7 +123,7 @@ const translations = {
     wizardDesc: "Buradan depolarınızın sayısını artırıp azaltabilir veya adlarını güncelleyebilirsiniz. Mevcut depolarınızın ayarları korunur.",
     wizardCountLabel: "Kaç Adet Deponuz Var?",
     wizardPlaceholder: "Depo {num} İsmi (Örn: Merkez Depo)",
-    cancel: "İptal",
+    cancel: "{t.cancel || "İptal"}",
     saveDepots: "Depoları Kaydet & Kur",
     setupZones: "Bölgeleri & Rafları Şekillendir",
     setupZonesDesc: "Seçili depoya bölgeleri (A, B, C...) girin ve her bölgedeki raf derinliğini seçin. Karekod barkodları otomatik üretilecektir.",
@@ -187,6 +199,17 @@ const translations = {
   },
   en: {
     header: "📦 HBS Smart Warehouse Management",
+    backToProducts: "← Product & Stock Management",
+    addNewWarehouse: "Add New Warehouse",
+    addNewWarehouseDesc: "Add a new warehouse branch to the system",
+    newWhNameLabel: "Warehouse Name",
+    newWhCityLabel: "Warehouse City",
+    newWhPurposeLabel: "Warehouse Purpose (Description)",
+    createWhBtn: "⚡ Create Warehouse",
+    unplacedProductsHeader: "Unplaced / Scattered Products",
+    unplacedProductsDesc: "Products registered in this warehouse but not assigned to shelves.",
+    autoPlaceBtn: "⚡ Auto Distribute to Empty Shelves",
+    placeBtn: "Place",
     layoutShaperNav: "Layout & Shelf Configurator",
     interWarehouseTransfer: "Inter-Warehouse Transfer",
     blindStockCount: "Blind Stock Count",
@@ -289,6 +312,17 @@ const translations = {
   },
   de: {
     header: "📦 HBS Intelligentes Lagerverwaltungs-System",
+    backToProducts: "← Produkt- & Lagerverwaltung",
+    addNewWarehouse: "Neues Lager hinzufügen",
+    addNewWarehouseDesc: "Fügen Sie dem System eine neue Filiale hinzu",
+    newWhNameLabel: "Lagername",
+    newWhCityLabel: "Lagerstadt",
+    newWhPurposeLabel: "Lagerzweck (Beschreibung)",
+    createWhBtn: "⚡ Lager erstellen",
+    unplacedProductsHeader: "Unplatzierte / Verstreute Produkte",
+    unplacedProductsDesc: "In diesem Lager registrierte, aber nicht den Regalen zugewiesene Produkte.",
+    autoPlaceBtn: "⚡ Automatisch in leere Regale verteilen",
+    placeBtn: "Platzieren",
     layoutShaperNav: "Layout & Regal-Konfigurator",
     interWarehouseTransfer: "Lagerübergreifender Transfer",
     blindStockCount: "Blinde Lagerzählung",
@@ -493,6 +527,17 @@ const translations = {
   },
   ka: {
     header: "📦 HBS საწყობის ჭკვიანი მართვა",
+    backToProducts: "← პროდუქტები და მარაგების მართვა",
+    addNewWarehouse: "ახალი საწყობის დამატება",
+    addNewWarehouseDesc: "სისტემაში ახალი საწყობის ფილიალის დამატება",
+    newWhNameLabel: "საწყობის სახელი",
+    newWhCityLabel: "საწყობის ქალაქი",
+    newWhPurposeLabel: "საწყობის დანიშნულება (აღწერა)",
+    createWhBtn: "⚡ საწყობის შექმნა",
+    unplacedProductsHeader: "განუთავსებელი პროდუქტები",
+    unplacedProductsDesc: "პროდუქტები, რომლებიც რეგისტრირებულია ამ საწყობში, მაგრამ არ არის მინიჭებული თაროებზე.",
+    autoPlaceBtn: "⚡ ცარიელ თაროებზე ავტომატური განაწილება",
+    placeBtn: "განთავსება",
     layoutShaperNav: "განლაგების და თაროების დამგეგმავი",
     interWarehouseTransfer: "შიდა გადაცემა საწყობებს შორის",
     blindStockCount: "ინვენტარიზაცია",
@@ -624,23 +669,31 @@ const translateWarehouseName = (name: string, lang: string) => {
 const translateWarehousePurpose = (purpose: string, lang: string) => {
   if (!purpose) return "";
   const lower = purpose.toLowerCase().trim();
-  if (lower.includes("satışa hazır ürün stoğu") || lower.includes("ready to sell") || lower.includes("satisa hazir")) {
+  if (lower.includes("satışa hazır") || lower.includes("verkaufsfertig") || lower.includes("ready to sell") || lower.includes("ready-to-sell") || lower.includes("satisa hazir")) {
     if (lang === "de") return "Verkaufsfertiger Produktbestand";
     if (lang === "en") return "Ready-to-sell product stock";
     if (lang === "ru") return "Готовый к продаже запас продукции";
     if (lang === "ka") return "გასაყიდად გამზადებული პროდუქციის მარაგი";
   }
-  if (lower.includes("iade, arızalı veya kontrol bekleyen") || lower.includes("returned, damaged") || lower.includes("iade, arizali")) {
+  if (lower.includes("iade") || lower.includes("retouren") || lower.includes("returned") || lower.includes("inspection-pending") || lower.includes("arızak")) {
     if (lang === "de") return "Retouren, defekte oder auf Prüfung wartende Produkte";
     if (lang === "en") return "Returned, damaged or inspection-pending items";
     if (lang === "ru") return "Возвращенные, поврежденные или ожидающие контроля товары";
     if (lang === "ka") return "დაბრუნებული, დაზიანებული ან შემოწმების მოლოდინში მყოფი საქონელი";
   }
-  if (lower.includes("müşterinin görebileceği örnek ürünler") || lower.includes("sample products") || lower.includes("musterinin gorebilecegi")) {
+  if (lower.includes("müşteri") || lower.includes("sample") || lower.includes("musteri") || lower.includes("kunden zur ansicht")) {
     if (lang === "de") return "Musterprodukte für Kunden zur Ansicht";
     if (lang === "en") return "Sample products visible to customers";
     if (lang === "ru") return "Образцы товаров, видимые клиентам";
     if (lang === "ka") return "მომხმარებლისთვის ხილვადი ნიმუშები";
+  }
+  if (lower.includes("yedek") || lower.includes("depolama") || lower.includes("reserve") || lower.includes("backup") || lower.includes("storage")) {
+    const match = purpose.match(/\d+/);
+    const num = match ? match[0] : "";
+    if (lang === "de") return `Reserve- / Lagerbereich ${num}`;
+    if (lang === "en") return `Backup / Storage Area ${num}`;
+    if (lang === "ru") return `Резервная / Складская зона ${num}`;
+    if (lang === "ka") return `სარეზერვო / შესანახი ფართი ${num}`;
   }
   return purpose;
 };
@@ -724,7 +777,7 @@ export default function WarehousesRevampPage() {
       return p;
     });
 
-    setProducts(updated);
+    saveProductsStateAndSync(updated);
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
     showSuccess("Stok seviyesi güncellendi.");
   };
@@ -832,6 +885,49 @@ export default function WarehousesRevampPage() {
   const [newWhName, setNewWhName] = useState("");
   const [newWhCity, setNewWhCity] = useState("Batumi");
   const [newWhPurpose, setNewWhPurpose] = useState("Satışa hazır ürün stoğu");
+
+  // Unified state and Supabase synchronizer function
+  const saveProductsStateAndSync = async (updatedList: ProductRecord[]) => {
+    // 1. Update React state immediately for snappy UX
+    setProducts(updatedList);
+
+    // 2. Save to local storage
+    if (storeSlug) {
+      window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedList));
+    }
+
+    // 3. Compare with previous products state and push dirty rows to database
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
+      for (const prod of updatedList) {
+        const oldProd = products.find(p => p.id === prod.id);
+        const hasChanged = !oldProd || 
+          oldProd.quantity !== prod.quantity || 
+          oldProd.warehouse !== prod.warehouse || 
+          oldProd.shelf !== prod.shelf;
+
+        if (hasChanged) {
+          try {
+            const { error } = await supabase
+              .from("offerable_items")
+              .update({
+                quantity: parseInt(prod.quantity) || 0,
+                warehouse: prod.warehouse || null,
+                shelf: prod.shelf || null
+              })
+              .eq("id", prod.id);
+
+            if (error) console.error("Database sync failed for product ID:", prod.id, error.message);
+          } catch (e) {
+            console.error("Supabase request failed:", e);
+          }
+        }
+      }
+    }
+  };
 
   // Setup Wizard States
   const [showWizard, setShowWizard] = useState(false);
@@ -1184,7 +1280,7 @@ export default function WarehousesRevampPage() {
     if (answer === "1") {
       // Remove from shelf
       const updated = products.map(p => p.id === productId ? { ...p, shelf: "" } : p);
-      setProducts(updated);
+      saveProductsStateAndSync(updated);
       window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
       alert(`"${productName}" raf konumu temizlendi.`);
 
@@ -1205,7 +1301,7 @@ export default function WarehousesRevampPage() {
     } else if (answer === "2") {
       // Delete completely
       const updatedProducts = products.filter((p) => p.id !== productId);
-      setProducts(updatedProducts);
+      saveProductsStateAndSync(updatedProducts);
       window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
       alert(`"${productName}" envanterden silindi.`);
 
@@ -1358,7 +1454,7 @@ export default function WarehousesRevampPage() {
       return p;
     });
 
-    setProducts(updatedProducts);
+    saveProductsStateAndSync(updatedProducts);
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     showSuccess(`Toplam ${shelfIndex} adet rafsız ürün boş raflara otomatik olarak dağıtıldı.`);
   };
@@ -1411,7 +1507,7 @@ export default function WarehousesRevampPage() {
       } else {
         const copy: ProductRecord = {
           ...targetProd,
-          id: `prod-copy-${Date.now()}`,
+          id: typeof window !== "undefined" && window.crypto?.randomUUID ? window.crypto.randomUUID() : `prod-copy-${Date.now()}`,
           quantity: String(qtyVal),
           warehouse: shelfTransferToWarehouse,
           shelf: shelfTransferToShelf
@@ -1420,7 +1516,7 @@ export default function WarehousesRevampPage() {
       }
     }
 
-    setProducts(updatedProducts);
+    saveProductsStateAndSync(updatedProducts);
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setIsShelfTransferOpen(false);
     showSuccess(`"${targetProd.name}" başarıyla sevk edildi.`);
@@ -1728,7 +1824,7 @@ export default function WarehousesRevampPage() {
 
       // Save products to localStorage
       window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
-      setProducts(updatedProducts);
+      saveProductsStateAndSync(updatedProducts);
 
       // Create stock movement
       const newMovement: StockMovement = {
@@ -1858,7 +1954,7 @@ export default function WarehousesRevampPage() {
     saveStockTransfers(updatedTransfers);
 
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
-    setProducts(updatedProducts);
+    saveProductsStateAndSync(updatedProducts);
 
     // Create stock movement for source deduction
     const deductMovement: StockMovement = {
@@ -1938,7 +2034,7 @@ export default function WarehousesRevampPage() {
 
     saveStockTransfers(updatedTransfers);
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
-    setProducts(updatedProducts);
+    saveProductsStateAndSync(updatedProducts);
 
     const addMovement: StockMovement = {
       id: `mov-${Date.now()}-in`,
@@ -1977,7 +2073,7 @@ export default function WarehousesRevampPage() {
 
     saveStockTransfers(updatedTransfers);
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
-    setProducts(updatedProducts);
+    saveProductsStateAndSync(updatedProducts);
 
     // Create stock movement for refund
     const refundMovement: StockMovement = {
@@ -2124,7 +2220,7 @@ ${sizeStr}
     });
 
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
-    setProducts(updatedProducts);
+    saveProductsStateAndSync(updatedProducts);
     window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(newMovements));
     setMovements(newMovements);
 
@@ -2456,7 +2552,7 @@ ${sizeStr}
               href="/dashboard/products" 
               className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-black text-indigo-750 hover:bg-indigo-100 transition"
             >
-              ← Ürün & Stok Yönetimi
+              {t.backToProducts || "← Ürün & Stok Yönetimi"}
             </Link>
             <Link href="/dashboard" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold hover:bg-slate-50 transition">
               {t.dashboard}
@@ -2574,7 +2670,7 @@ ${sizeStr}
             <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 p-6 shadow-2xl space-y-4 animate-scaleIn">
               <div className="flex items-center justify-between">
                 <span className="text-xl">🏪</span>
-                <h3 className="text-base font-black text-slate-900">Sisteme Yeni Depo Ekle</h3>
+                <h3 className="text-base font-black text-slate-900">{t.addNewWarehouse || "Yeni Depo Ekle"}</h3>
                 <button
                   onClick={() => setIsNewWarehouseModalOpen(false)}
                   className="text-slate-400 hover:text-slate-600 transition font-black text-lg p-1"
@@ -2585,7 +2681,7 @@ ${sizeStr}
 
               <form onSubmit={handleAddNewWarehouse} className="space-y-4">
                 <label className="grid gap-1">
-                  <span className="text-xs font-black text-slate-750">Depo İsmi</span>
+                  <span className="text-xs font-black text-slate-750">{t.newWhNameLabel || "Depo İsmi"}</span>
                   <input
                     type="text"
                     id="new-wh-name-input"
@@ -2599,7 +2695,7 @@ ${sizeStr}
                 </label>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-black text-slate-750">Deponun Bulunduğu Şehir</span>
+                  <span className="text-xs font-black text-slate-750">{t.newWhCityLabel || "Deponun Bulunduğu Şehir"}</span>
                   <input
                     type="text"
                     id="new-wh-city-input"
@@ -2613,7 +2709,7 @@ ${sizeStr}
                 </label>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-black text-slate-750">Depo Kullanım Amacı (Açıklama)</span>
+                  <span className="text-xs font-black text-slate-750">{t.newWhPurposeLabel || "Depo Kullanım Amacı (Açıklama)"}</span>
                   <input
                     type="text"
                     id="new-wh-purpose-input"
@@ -2822,8 +2918,8 @@ ${sizeStr}
                 className="rounded-2xl border border-dashed border-slate-350 bg-slate-50 hover:bg-slate-100/70 p-4 shadow-sm flex flex-col items-center justify-center text-center cursor-pointer transition min-h-[120px] text-slate-700 hover:border-blue-500 hover:shadow-md"
               >
                 <span className="text-2xl mb-1">➕</span>
-                <h4 className="text-xs font-black text-slate-800">Yeni Depo Ekle</h4>
-                <p className="text-[9px] text-slate-500 font-semibold mt-0.5">Sisteme yeni bir depo şubesi ekleyin</p>
+                <h4 className="text-xs font-black text-slate-800">{t.addNewWarehouse || "Yeni Depo Ekle"}</h4>
+                <p className="text-[9px] text-slate-500 font-semibold mt-0.5">{t.addNewWarehouseDesc || "Sisteme yeni bir depo şubesi ekleyin"}</p>
               </article>
             )}
           </div>
@@ -3251,7 +3347,7 @@ ${sizeStr}
                               const val = e.target.value;
                               const updated = products.map(p => p.id === placeProductId ? { ...p, weight: val } : p);
                               window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
-                              setProducts(updated);
+                              saveProductsStateAndSync(updated);
                             }}
                             className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none" id="id-page-rounded-lg-border-border-slate-200-bg-white-px-2-py-1-text-xs-font-bold-outline-none-234" aria-label="Rounded lg border border slate 200 bg white px 2 py 1 text xs font bold outline none" />
                         </label>
@@ -3602,8 +3698,8 @@ ${sizeStr}
                     <div className="rounded-2xl border border-amber-250 bg-amber-50/20 p-4 space-y-3">
                       <div className="flex items-center justify-between flex-wrap gap-2">
                         <div>
-                          <h3 className="text-xs font-black text-amber-900 uppercase tracking-wider flex items-center gap-1">📦 Rafsız / Ortalıktaki Ürünler ({unplacedProducts.length})</h3>
-                          <p className="text-[9px] text-amber-700 font-semibold leading-relaxed">Bu depoda kayıtlı olan ama henüz raflara dizilmemiş ürünler.</p>
+                          <h3 className="text-xs font-black text-amber-900 uppercase tracking-wider flex items-center gap-1">📦 {t.unplacedProductsHeader || "Rafsız / Ortalıktaki Ürünler"} ({unplacedProducts.length})</h3>
+                          <p className="text-[9px] text-amber-700 font-semibold leading-relaxed">{t.unplacedProductsDesc || "Bu depoda kayıtlı olan ama henüz raflara dizilmemiş ürünler."}</p>
                         </div>
                         {activeWh.shelves && activeWh.shelves.length > 0 && (
                           <button
@@ -3611,7 +3707,7 @@ ${sizeStr}
                             onClick={handleAutoPlaceProducts}
                             className="rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-[10px] h-8 px-3 transition active:scale-95 shadow flex items-center gap-1"
                           >
-                            ⚡ Boş Raflara Otomatik Dağıt
+                            {t.autoPlaceBtn || "⚡ Boş Raflara Otomatik Dağıt"}
                           </button>
                         )}
                       </div>
@@ -3619,7 +3715,7 @@ ${sizeStr}
                       <div className="grid gap-2 max-h-32 overflow-y-auto pr-1 text-xs">
                         {unplacedProducts.map(up => (
                           <div key={up.id} className="flex justify-between items-center bg-white border border-amber-200/50 p-2 rounded-xl">
-                            <span className="font-bold text-slate-800">📦 {up.name} ({up.quantity} Adet)</span>
+                            <span className="font-bold text-slate-800">📦 {getLocalizedField(up.name, language || "tr")} ({up.quantity} {t.qty || "Adet"})</span>
                             <button
                               type="button"
                               onClick={() => {
@@ -3636,7 +3732,7 @@ ${sizeStr}
                               }}
                               className="text-[9px] font-black text-blue-600 hover:text-blue-700 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100"
                             >
-                              Yerleştir 🔒
+                              {t.placeBtn || "Yerleştir"} 🔒
                             </button>
                           </div>
                         ))}
