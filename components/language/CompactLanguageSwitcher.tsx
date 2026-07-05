@@ -67,7 +67,7 @@ export default function CompactLanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-1 sm:gap-1.5 shrink-0" aria-label="Language Selector">
+    <div className="flex items-center gap-2 shrink-0 py-1" aria-label="Language Selector">
       {languages.map((item) => {
         const isSelected = item.code === language;
         const flagCode = item.code === "en" ? "gb" : item.code === "ka" ? "ge" : item.code;
@@ -81,17 +81,18 @@ export default function CompactLanguageSwitcher() {
               changeLanguage(item.code);
             }}
             title={item.title}
-            className={`flex items-center justify-center p-0.5 rounded-lg border transition duration-200 hover:scale-110 active:scale-95 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black tracking-wider transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm select-none ${
               isSelected
-                ? "border-blue-600 bg-blue-50 shadow-sm"
-                : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
+                ? "border-blue-300 bg-blue-50 text-blue-800 shadow-[0_2px_8px_rgba(59,130,246,0.15)] scale-102"
+                : "border-slate-200 bg-white/80 text-slate-600 hover:border-slate-350 hover:bg-slate-50/50 backdrop-blur-sm"
             }`}
           >
             <img
               src={`https://flagcdn.com/w40/${flagCode}.png`}
               alt={item.title}
-              className="h-4 w-6 rounded-sm object-cover sm:h-5 sm:w-8"
+              className="h-3 w-4.5 rounded-sm object-cover shadow-sm shrink-0"
             />
+            <span className="font-extrabold uppercase">{item.short}</span>
           </a>
         );
       })}

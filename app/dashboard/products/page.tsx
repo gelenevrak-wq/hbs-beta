@@ -303,6 +303,12 @@ export default function ProductsPage() {
 
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [products, setProducts] = useState<ProductRecord[]>(INITIAL_PRODUCTS);
+  const [selectedWarehouseFilter, setSelectedWarehouseFilter] = useState<string>("all");
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [transferProductId, setTransferProductId] = useState<string | null>(null);
+  const [transferToWarehouse, setTransferToWarehouse] = useState<string>("");
+  const [transferToShelf, setTransferToShelf] = useState<string>("");
+  const [transferQty, setTransferQty] = useState<string>("1");
 
   // Custom date picker refs and helpers
   const entryDateInputRef = useRef<HTMLInputElement>(null);
@@ -853,6 +859,9 @@ export default function ProductsPage() {
         product.sku.toLowerCase().includes(q) ||
         product.oemCode.toLowerCase().includes(q);
 
+      // Warehouse filtering
+      const matchesWarehouse = selectedWarehouseFilter === "all" || product.warehouse === selectedWarehouseFilter;
+
       // 2. Showcase Visibility Filter
       let matchesVisibility = true;
       if (filterVisibility === "visible") {
@@ -875,13 +884,13 @@ export default function ProductsPage() {
       const matchesMinQty = isNaN(minQtyVal) || qtyVal >= minQtyVal;
       const matchesMaxQty = isNaN(maxQtyVal) || qtyVal <= maxQtyVal;
 
-      return matchesText && matchesVisibility && matchesMinPrice && matchesMaxPrice && matchesMinQty && matchesMaxQty;
+      return matchesWarehouse && matchesText && matchesVisibility && matchesMinPrice && matchesMaxPrice && matchesMinQty && matchesMaxQty;
     });
-  }, [products, search, filterVisibility, filterMinPrice, filterMaxPrice, filterMinQty, filterMaxQty]);
+  }, [products, search, filterVisibility, filterMinPrice, filterMaxPrice, filterMinQty, filterMaxQty, selectedWarehouseFilter]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [search, filterVisibility, filterMinPrice, filterMaxPrice, filterMinQty, filterMaxQty]);
+  }, [search, filterVisibility, filterMinPrice, filterMaxPrice, filterMinQty, filterMaxQty, selectedWarehouseFilter]);
 
   const itemsPerPage = 15;
 
@@ -889,6 +898,70 @@ export default function ProductsPage() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredProducts, currentPage]);
+
+  const handleProductTransfer = () => {
+    if (!transferProductId) return;
+    const targetProd = products.find(p => p.id === transferProductId);
+    if (!targetProd) return;
+
+    const qtyToTransfer = parseInt(transferQty) || 0;
+    const currentQty = parseInt(targetProd.quantity) || 0;
+
+    if (qtyToTransfer <= 0) {
+      alert("Lütfen geçerli bir sevk miktarı girin.");
+      return;
+    }
+
+    if (qtyToTransfer > currentQty) {
+      alert(`Yetersiz stok! En fazla ${currentQty} adet transfer edebilirsiniz.`);
+      return;
+    }
+
+    let updatedProducts = [...products];
+
+    if (qtyToTransfer === currentQty) {
+      updatedProducts = products.map(p => 
+        p.id === transferProductId 
+          ? { ...p, warehouse: transferToWarehouse, shelf: transferToShelf } 
+          : p
+      );
+    } else {
+      // Deduct from source
+      updatedProducts = products.map(p => 
+        p.id === transferProductId 
+          ? { ...p, quantity: String(currentQty - qtyToTransfer) } 
+          : p
+      );
+      // Try to find same product in destination
+      const existingAtDest = products.find(p => 
+        p.name === targetProd.name && 
+        p.sku === targetProd.sku && 
+        p.warehouse === transferToWarehouse && 
+        p.shelf === transferToShelf
+      );
+
+      if (existingAtDest) {
+        updatedProducts = updatedProducts.map(p => 
+          p.id === existingAtDest.id 
+            ? { ...p, quantity: String((parseInt(p.quantity) || 0) + qtyToTransfer) } 
+            : p
+        );
+      } else {
+        const newProductCopy: ProductRecord = {
+          ...targetProd,
+          id: `prod-${Date.now()}`,
+          quantity: String(qtyToTransfer),
+          warehouse: transferToWarehouse,
+          shelf: transferToShelf
+        };
+        updatedProducts.push(newProductCopy);
+      }
+    }
+
+    setProducts(updatedProducts);
+    setIsTransferModalOpen(false);
+    setMessage(`"${targetProd.name}" başarıyla ${transferToWarehouse} (${transferToShelf || "Rafsız"}) konumuna sevk edildi.`);
+  };
 
   function handleTerminalScan(code: string) {
     const cleanCode = code.trim().toLowerCase();
@@ -1908,7 +1981,10 @@ export default function ProductsPage() {
       )}
       <div className="mx-auto max-w-[1850px]">
         <header className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-          <Link href="/dashboard" className="text-base font-black sm:text-xl text-blue-600">HBS Ürün</Link>
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <Link href="/dashboard" className="text-lg font-black sm:text-2xl text-blue-600">HBS Ürün</Link>
+            <span className="text-slate-400 font-extrabold text-xs hidden sm:inline">| Premium Ürün ve Depo Konumlandırma</span>
+          </div>
           <div className="flex items-center gap-2">
             {/* Sanayi Modu (Büyük Yazı) Toggle */}
             <button
@@ -1938,12 +2014,57 @@ export default function ProductsPage() {
           </div>
         </header>
 
-        <section className="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-[11px] font-black uppercase tracking-[0.18em] text-blue-700">Ürün & Hizmet Kataloğu</p>
-          <h1 className="mt-1 text-xl font-black sm:text-3xl">Premium Ürün Ekleme ve Depo Konumlandırma</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Fotoğraf, tanıtım videoları, barkod/QR kodları ve depo raf adreslerini içeren zengin ürün profilleri oluşturun. Teklif/fiyat politikalarınızı belirleyin.
-          </p>
+        {/* 🏪 Depo Durum Kartları ve Hızlı Filtreleme */}
+        <section className="mb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          <div
+            onClick={() => setSelectedWarehouseFilter("all")}
+            className={`p-4 rounded-2xl border cursor-pointer transition select-none flex flex-col justify-between h-24 ${
+              selectedWarehouseFilter === "all"
+                ? "border-blue-400 bg-blue-50/50 shadow-sm"
+                : "border-slate-200 bg-white hover:bg-slate-50"
+            }`}
+          >
+            <div>
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">GENEL ENVANTER</span>
+              <span className="text-sm font-black text-slate-800 mt-1 block">Tüm Depolar</span>
+            </div>
+            <span className="text-xs font-bold text-slate-500 font-semibold">{products.length} Çeşit Ürün</span>
+          </div>
+
+          {availableWarehouses.map((wh) => {
+            const whProducts = products.filter(p => p.warehouse === wh.name);
+            const totalQty = whProducts.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0);
+            const isSelected = selectedWarehouseFilter === wh.name;
+
+            return (
+              <div
+                key={wh.id}
+                onClick={() => setSelectedWarehouseFilter(wh.name)}
+                className={`p-4 rounded-2xl border cursor-pointer transition select-none flex flex-col justify-between h-24 ${
+                  isSelected
+                    ? "border-blue-400 bg-blue-50/50 shadow-sm"
+                    : "border-slate-200 bg-white hover:bg-slate-50"
+                }`}
+              >
+                <div>
+                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">DEPO HESABI</span>
+                  <span className="text-sm font-black text-slate-800 mt-0.5 block truncate">{wh.name}</span>
+                </div>
+                <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
+                  <span>{whProducts.length} Çeşit</span>
+                  <span>{totalQty} Adet Stok</span>
+                </div>
+              </div>
+            );
+          })}
+
+          <Link
+            href="/dashboard/warehouses"
+            className="p-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100/70 transition flex flex-col items-center justify-center text-center h-24 text-slate-700 cursor-pointer"
+          >
+            <span className="text-xl">🏪</span>
+            <span className="text-xs font-black mt-1">Depoları Yönet & Düzenle</span>
+          </Link>
         </section>
 
         {message && (
@@ -2996,6 +3117,20 @@ export default function ProductsPage() {
                         </button>
                         <button
                           type="button"
+                          onClick={() => {
+                            setTransferProductId(p.id);
+                            setTransferToWarehouse(p.warehouse || "");
+                            setTransferToShelf(p.shelf || "");
+                            setTransferQty("1");
+                            setIsTransferModalOpen(true);
+                          }}
+                          className="rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          title="Depolar Arası Stok Sevk/Transfer Et"
+                        >
+                          <span>🔄 Sevk Et</span>
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => startEditProduct(p)}
                           className="rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Ürünü Düzenle"
@@ -3058,6 +3193,98 @@ export default function ProductsPage() {
             </div>
           </aside>
         </section>
+
+        {/* 🔄 DEPOLAR ARASI TRANSFER MODALI */}
+        {isTransferModalOpen && transferProductId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 p-6 shadow-2xl space-y-4 animate-scaleIn">
+              <div className="flex items-center justify-between">
+                <span className="text-xl">🔄</span>
+                <h3 className="text-base font-black text-slate-900">Depolar Arası Stok Sevkiyatı</h3>
+                <button
+                  onClick={() => setIsTransferModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 transition font-black text-lg p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="bg-slate-50 border border-slate-200/60 p-3.5 rounded-2xl text-xs space-y-1">
+                <p className="font-bold text-slate-800">📦 {products.find(p => p.id === transferProductId)?.name}</p>
+                <p className="text-slate-500 font-semibold">Mevcut Depo: {products.find(p => p.id === transferProductId)?.warehouse} · {products.find(p => p.id === transferProductId)?.shelf || "Rafsız"}</p>
+                <p className="text-slate-500 font-semibold">Toplam Mevcut Stok: {products.find(p => p.id === transferProductId)?.quantity} Adet</p>
+              </div>
+
+              <div className="space-y-3">
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-700">Sevk Edilecek Hedef Depo</span>
+                  <select
+                    value={transferToWarehouse}
+                    onChange={(e) => {
+                      setTransferToWarehouse(e.target.value);
+                      const matchedWh = availableWarehouses.find(w => w.name === e.target.value);
+                      if (matchedWh && matchedWh.shelves && matchedWh.shelves.length > 0) {
+                        setTransferToShelf(matchedWh.shelves[0]);
+                      } else {
+                        setTransferToShelf("");
+                      }
+                    }}
+                    className="rounded-xl border border-slate-350 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
+                  >
+                    {availableWarehouses.map(w => (
+                      <option key={w.id} value={w.name}>{w.name}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-700">Sevk Edilecek Raf / Hücre</span>
+                  <select
+                    value={transferToShelf}
+                    onChange={(e) => setTransferToShelf(e.target.value)}
+                    className="rounded-xl border border-slate-355 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
+                  >
+                    <option value="">-- Rafsız (Ortalıkta Dursun) --</option>
+                    {availableWarehouses.find(w => w.name === transferToWarehouse)?.shelves?.map((sh: any) => (
+                      <option key={sh} value={sh}>{sh} Rafı</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-700">Sevk Edilecek Adet</span>
+                  <input
+                    type="number"
+                    id="transfer-qty-input"
+                    aria-label="Sevk miktarı"
+                    value={transferQty}
+                    onChange={(e) => setTransferQty(e.target.value)}
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
+                    min="1"
+                    max={products.find(p => p.id === transferProductId)?.quantity || "1"}
+                  />
+                </label>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleProductTransfer}
+                  className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 py-2.5 text-xs font-black text-white transition active:scale-95 shadow-md"
+                >
+                  ⚡ Sevkiyatı Tamamla (Stok Aktar)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsTransferModalOpen(false)}
+                  className="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-800 transition active:scale-95"
+                >
+                  Vazgeç
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* PRINT CENTER MODAL */}
         {isPrintModalOpen && selectedPrintProduct && (

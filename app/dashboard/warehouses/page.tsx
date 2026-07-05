@@ -807,6 +807,22 @@ export default function WarehousesRevampPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<'placement' | 'transfer' | 'audit' | 'zpl' | 'picking'>('placement');
 
+  // Shelf transfer and deletion states
+  const [isShelfTransferOpen, setIsShelfTransferOpen] = useState(false);
+  const [shelfTransferProductId, setShelfTransferProductId] = useState<string | null>(null);
+  const [shelfTransferFromShelf, setShelfTransferFromShelf] = useState<string>("");
+  const [shelfTransferToWarehouse, setShelfTransferToWarehouse] = useState<string>("");
+  const [shelfTransferToShelf, setShelfTransferToShelf] = useState<string>("");
+  const [shelfTransferQty, setShelfTransferQty] = useState<string>("1");
+
+  // Drag scroll whiteboard states
+  const whiteboardRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [scrollTop, setScrollTop] = useState(0);
+
   // Feedback Alerts
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -1239,6 +1255,171 @@ export default function WarehousesRevampPage() {
   };
 
   // Wizard Generation Flow
+  // Pointer drag-scroll handlers for whiteboard
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (!whiteboardRef.current) return;
+    if ((e.target as HTMLElement).closest('button, input, select, a')) return;
+    setIsDragging(true);
+    setStartX(e.pageX - whiteboardRef.current.offsetLeft);
+    setStartY(e.pageY - whiteboardRef.current.offsetTop);
+    setScrollLeft(whiteboardRef.current.scrollLeft);
+    setScrollTop(whiteboardRef.current.scrollTop);
+    whiteboardRef.current.style.cursor = "grabbing";
+    whiteboardRef.current.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging || !whiteboardRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - whiteboardRef.current.offsetLeft;
+    const y = e.pageY - whiteboardRef.current.offsetTop;
+    const walkX = (x - startX) * 1.5;
+    const walkY = (y - startY) * 1.5;
+    whiteboardRef.current.scrollLeft = scrollLeft - walkX;
+    whiteboardRef.current.scrollTop = scrollTop - walkY;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    if (whiteboardRef.current) {
+      whiteboardRef.current.style.cursor = "grab";
+      whiteboardRef.current.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  const handleDeleteWarehouse = (warehouseId: string, warehouseName: string) => {
+    const itemsCount = products.filter((p) => p.warehouse.toLowerCase() === warehouseName.toLowerCase()).length;
+    if (itemsCount > 0) {
+      alert(`Bu depoda hala ${itemsCount} adet envanter kaydı bulunuyor! Depoyu silmeden önce lütfen tüm ürünleri diğer depolara transfer edin.`);
+      return;
+    }
+
+    if (!window.confirm(`"${warehouseName}" deposunu tamamen silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`)) {
+      return;
+    }
+
+    const updatedWarehouses = warehouses.filter(w => w.id !== warehouseId);
+    setWarehouses(updatedWarehouses);
+    if (activeWarehouseId === warehouseId && updatedWarehouses.length > 0) {
+      setActiveWarehouseId(updatedWarehouses[0].id);
+    }
+
+    try {
+      const storesStr = window.localStorage.getItem("hbs-registered-stores");
+      if (storesStr) {
+        const registeredStores = JSON.parse(storesStr);
+        const updatedStores = registeredStores.map((s: any) => {
+          if (s.code === storeSlug) {
+            return { ...s, warehouses: updatedWarehouses };
+          }
+          return s;
+        });
+        window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+      }
+    } catch (e) {
+      console.error("Delete warehouse failed:", e);
+    }
+
+    showSuccess(`"${warehouseName}" deposu başarıyla silindi.`);
+  };
+
+  const handleAutoPlaceProducts = () => {
+    const activeWh = warehouses.find(w => w.id === activeWarehouseId);
+    if (!activeWh || !activeWh.shelves || activeWh.shelves.length === 0) {
+      showError("Otomatik yerleştirme için önce reyon/raf tanımlanmış olmalıdır.");
+      return;
+    }
+
+    const emptyShelves = activeWh.shelves.filter(sh => 
+      !products.some(p => 
+        p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && 
+        p.shelf.toLowerCase() === sh.toLowerCase()
+      )
+    );
+
+    if (emptyShelves.length === 0) {
+      showError("Otomatik dağıtılacak boş raf hücresi bulunamadı!");
+      return;
+    }
+
+    let shelfIndex = 0;
+    const updatedProducts = products.map(p => {
+      if (p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && (!p.shelf || p.shelf.trim() === "")) {
+        const targetShelf = emptyShelves[shelfIndex % emptyShelves.length];
+        shelfIndex++;
+        return { ...p, shelf: targetShelf };
+      }
+      return p;
+    });
+
+    setProducts(updatedProducts);
+    window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
+    showSuccess(`Toplam ${shelfIndex} adet rafsız ürün boş raflara otomatik olarak dağıtıldı.`);
+  };
+
+  const handleShelfTransfer = () => {
+    if (!shelfTransferProductId) return;
+    const targetProd = products.find(p => p.id === shelfTransferProductId);
+    if (!targetProd) return;
+
+    const qtyVal = parseInt(shelfTransferQty) || 0;
+    const currentQty = parseInt(targetProd.quantity) || 0;
+
+    if (qtyVal <= 0) {
+      alert("Geçerli bir miktar giriniz.");
+      return;
+    }
+
+    if (qtyVal > currentQty) {
+      alert(`Mevcut stok sınırını aştınız! (Maksimum: ${currentQty})`);
+      return;
+    }
+
+    let updatedProducts = [...products];
+
+    if (qtyVal === currentQty) {
+      updatedProducts = products.map(p => 
+        p.id === shelfTransferProductId 
+          ? { ...p, warehouse: shelfTransferToWarehouse, shelf: shelfTransferToShelf } 
+          : p
+      );
+    } else {
+      updatedProducts = products.map(p => 
+        p.id === shelfTransferProductId 
+          ? { ...p, quantity: String(currentQty - qtyVal) } 
+          : p
+      );
+      const existingAtDest = products.find(p => 
+        p.name === targetProd.name && 
+        p.sku === targetProd.sku && 
+        p.warehouse.toLowerCase() === shelfTransferToWarehouse.toLowerCase() && 
+        p.shelf.toLowerCase() === shelfTransferToShelf.toLowerCase()
+      );
+
+      if (existingAtDest) {
+        updatedProducts = updatedProducts.map(p => 
+          p.id === existingAtDest.id 
+            ? { ...p, quantity: String((parseInt(p.quantity) || 0) + qtyVal) } 
+            : p
+        );
+      } else {
+        const copy: ProductRecord = {
+          ...targetProd,
+          id: `prod-copy-${Date.now()}`,
+          quantity: String(qtyVal),
+          warehouse: shelfTransferToWarehouse,
+          shelf: shelfTransferToShelf
+        };
+        updatedProducts.push(copy);
+      }
+    }
+
+    setProducts(updatedProducts);
+    window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
+    setIsShelfTransferOpen(false);
+    showSuccess(`"${targetProd.name}" başarıyla sevk edildi.`);
+  };
+
   const handleWizardCountChange = (count: number) => {
     const val = Math.max(1, Math.min(10, count));
     setWizardCount(val);
@@ -2210,6 +2391,12 @@ ${sizeStr}
             <Link href="/dashboard/stock-movements" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold hover:bg-slate-50 transition">
               {t.stockMovements}
             </Link>
+            <Link 
+              href="/dashboard/products" 
+              className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-black text-indigo-750 hover:bg-indigo-100 transition"
+            >
+              ← Ürün & Stok Yönetimi
+            </Link>
             <Link href="/dashboard" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold hover:bg-slate-50 transition">
               {t.dashboard}
             </Link>
@@ -2225,6 +2412,98 @@ ${sizeStr}
         {errorMsg && (
           <div className="rounded-2xl border border-red-500/20 bg-red-50 p-4 text-xs font-black text-red-800 shadow-sm animate-fadeIn">
             ⚠️ {errorMsg}
+          </div>
+        )}
+
+        {/* 🔄 RAF / GÖZ DETAYINDAN SEVK VE TRANSFER ETME MODALI */}
+        {isShelfTransferOpen && shelfTransferProductId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 p-6 shadow-2xl space-y-4 animate-scaleIn">
+              <div className="flex items-center justify-between">
+                <span className="text-xl">🔄</span>
+                <h3 className="text-base font-black text-slate-900">Raftan Hızlı Sevk / Transfer</h3>
+                <button
+                  onClick={() => setIsShelfTransferOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 transition font-black text-lg p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="bg-slate-50 border border-slate-200/60 p-3.5 rounded-2xl text-xs space-y-1">
+                <p className="font-bold text-slate-800">📦 {products.find(p => p.id === shelfTransferProductId)?.name}</p>
+                <p className="text-slate-500 font-semibold">Kaynak Raf: {shelfTransferFromShelf}</p>
+                <p className="text-slate-500 font-semibold">Mevcut Miktar: {products.find(p => p.id === shelfTransferProductId)?.quantity} Adet</p>
+              </div>
+
+              <div className="space-y-3">
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-700">Sevk Edilecek Depo</span>
+                  <select
+                    value={shelfTransferToWarehouse}
+                    onChange={(e) => {
+                      setShelfTransferToWarehouse(e.target.value);
+                      const matched = warehouses.find(w => w.name === e.target.value);
+                      if (matched && matched.shelves && matched.shelves.length > 0) {
+                        setShelfTransferToShelf(matched.shelves[0]);
+                      } else {
+                        setShelfTransferToShelf("");
+                      }
+                    }}
+                    className="rounded-xl border border-slate-350 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
+                  >
+                    {warehouses.map(w => (
+                      <option key={w.id} value={w.name}>{w.name}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-700">Sevk Edilecek Raf / Hücre</span>
+                  <select
+                    value={shelfTransferToShelf}
+                    onChange={(e) => setShelfTransferToShelf(e.target.value)}
+                    className="rounded-xl border border-slate-355 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
+                  >
+                    <option value="">-- Rafsız (Ortalıkta Dursun) --</option>
+                    {warehouses.find(w => w.name === shelfTransferToWarehouse)?.shelves?.map((sh: any) => (
+                      <option key={sh} value={sh}>{sh} Rafı</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-700">Sevk Miktarı</span>
+                  <input
+                    type="number"
+                    id="shelf-transfer-qty-input"
+                    aria-label="Raf sevk miktarı"
+                    value={shelfTransferQty}
+                    onChange={(e) => setShelfTransferQty(e.target.value)}
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
+                    min="1"
+                    max={products.find(p => p.id === shelfTransferProductId)?.quantity || "1"}
+                  />
+                </label>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={handleShelfTransfer}
+                  className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 py-2.5 text-xs font-black text-white transition active:scale-95 shadow-md"
+                >
+                  ⚡ Sevk Et ve Güncelle
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsShelfTransferOpen(false)}
+                  className="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-800 transition active:scale-95"
+                >
+                  Vazgeç
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -2376,7 +2655,23 @@ ${sizeStr}
                   </div>
                   <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-600 font-black">
                     <span>📦 {itemsCount} {t.definedProducts}</span>
-                    <span className="font-mono text-blue-600">{w.shelves?.length || 0} {t.shelfPositions}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-blue-600">{w.shelves?.length || 0} {t.shelfPositions}</span>
+                      {isAuthorized && warehouses.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteWarehouse(w.id, w.name);
+                          }}
+                          className="text-rose-600 hover:text-rose-700 font-bold w-11 h-11 flex items-center justify-center rounded-xl hover:bg-rose-50 border border-transparent hover:border-rose-100 transition active:scale-90 shrink-0"
+                          title="Depoyu Tamamen Sil"
+                          aria-label={`${w.name} deposunu sil`}
+                        >
+                          🗑️
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </article>
               );
@@ -3130,8 +3425,76 @@ ${sizeStr}
                     className="w-full rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500 bg-slate-50 focus:bg-white" id="id-page-w-full-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-border-blue-500-bg-slate-50-focus-bg-white-301" aria-label="W full rounded xl border border slate 250 px 3 py 2 text xs font semibold focus outline none focus border blue 500 bg slate 50 focus bg white" />
                 </div>
 
-                {/* Shelves Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[30rem] overflow-y-auto pr-1">
+                {/* 📦 Rafsız / Ortalıktaki Ürünler Paneli */}
+                {(() => {
+                  const unplacedProducts = products.filter(p => 
+                    p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && 
+                    (!p.shelf || p.shelf.trim() === "")
+                  );
+                  if (unplacedProducts.length === 0) return null;
+
+                  return (
+                    <div className="rounded-2xl border border-amber-250 bg-amber-50/20 p-4 space-y-3">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div>
+                          <h3 className="text-xs font-black text-amber-900 uppercase tracking-wider flex items-center gap-1">📦 Rafsız / Ortalıktaki Ürünler ({unplacedProducts.length})</h3>
+                          <p className="text-[9px] text-amber-700 font-semibold leading-relaxed">Bu depoda kayıtlı olan ama henüz raflara dizilmemiş ürünler.</p>
+                        </div>
+                        {activeWh.shelves && activeWh.shelves.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleAutoPlaceProducts}
+                            className="rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-[10px] h-8 px-3 transition active:scale-95 shadow flex items-center gap-1"
+                          >
+                            ⚡ Boş Raflara Otomatik Dağıt
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid gap-2 max-h-32 overflow-y-auto pr-1 text-xs">
+                        {unplacedProducts.map(up => (
+                          <div key={up.id} className="flex justify-between items-center bg-white border border-amber-200/50 p-2 rounded-xl">
+                            <span className="font-bold text-slate-800">📦 {up.name} ({up.quantity} Adet)</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPlaceProductId(up.id);
+                                setPlaceQty(parseInt(up.quantity) || 1);
+                                const form = document.getElementById("product-placement-form");
+                                if (form) {
+                                  form.scrollIntoView({ behavior: "smooth" });
+                                  form.classList.add("ring-4", "ring-emerald-500", "shadow-[0_0_20px_rgba(16,185,129,0.5)]");
+                                  setTimeout(() => {
+                                    form.classList.remove("ring-4", "ring-emerald-500", "shadow-[0_0_20px_rgba(16,185,129,0.5)]");
+                                  }, 2000);
+                                }
+                              }}
+                              className="text-[9px] font-black text-blue-600 hover:text-blue-700 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100"
+                            >
+                              Yerleştir 🔒
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Sürüklenebilir Beyaz Tahta Canvas ve Raflar */}
+                <div 
+                  ref={whiteboardRef}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerLeave={handlePointerUp}
+                  style={{
+                    backgroundImage: "radial-gradient(#cbd5e1 1.5px, transparent 1.5px)",
+                    backgroundSize: "16px 16px",
+                    cursor: "grab"
+                  }}
+                  className="rounded-3xl border border-slate-200 bg-slate-50/50 p-6 max-h-[35rem] overflow-auto select-none active:cursor-grabbing"
+                >
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 min-w-[1000px]">
                   {activeWh.shelves && activeWh.shelves.length > 0 ? (
                     activeWh.shelves.map((sh) => {
                       const shelfProducts = products.filter(
@@ -3176,6 +3539,22 @@ ${sizeStr}
                                   <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-100">
                                     <span className="text-[10px] font-black text-slate-800">{t.qty || "Adet"}: <span className="font-mono text-blue-600">{sp.quantity}</span></span>
                                     <div className="flex gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setShelfTransferProductId(sp.id);
+                                          setShelfTransferFromShelf(sh);
+                                          setShelfTransferToWarehouse(activeWh.name);
+                                          setShelfTransferToShelf("");
+                                          setShelfTransferQty(sp.quantity);
+                                          setIsShelfTransferOpen(true);
+                                        }}
+                                        className="w-5 h-5 rounded-lg border border-indigo-200 bg-indigo-50 text-[10px] font-black text-indigo-700 hover:bg-indigo-100 flex items-center justify-center transition active:scale-90"
+                                        title="Rafı veya Depoyu Değiştir (Sevk Et)"
+                                      >
+                                        🔄
+                                      </button>
                                       <button
                                         type="button"
                                         onClick={(e) => {
@@ -3233,6 +3612,7 @@ ${sizeStr}
                       {t.noShelvesDefined}
                     </div>
                   )}
+                </div>
                 </div>
 
                 {/* Filtered Inventory list table inside warehouse */}
