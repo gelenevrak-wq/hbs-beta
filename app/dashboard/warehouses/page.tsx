@@ -827,6 +827,12 @@ export default function WarehousesRevampPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Add Warehouse States
+  const [isNewWarehouseModalOpen, setIsNewWarehouseModalOpen] = useState(false);
+  const [newWhName, setNewWhName] = useState("");
+  const [newWhCity, setNewWhCity] = useState("Batumi");
+  const [newWhPurpose, setNewWhPurpose] = useState("Satışa hazır ürün stoğu");
+
   // Setup Wizard States
   const [showWizard, setShowWizard] = useState(false);
   const [wizardCount, setWizardCount] = useState(3);
@@ -1418,6 +1424,61 @@ export default function WarehousesRevampPage() {
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setIsShelfTransferOpen(false);
     showSuccess(`"${targetProd.name}" başarıyla sevk edildi.`);
+  };
+
+  const handleAddNewWarehouse = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newWhName.trim()) {
+      alert("Lütfen geçerli bir depo ismi girin.");
+      return;
+    }
+
+    const id = `wh-${Date.now()}`;
+    const newWh: Warehouse = {
+      id,
+      name: newWhName.trim(),
+      city: newWhCity.trim(),
+      purpose: newWhPurpose.trim(),
+      customerVisible: false,
+      zones: ["A", "B", "C"],
+      shelves: [
+        "A-01", "A-02", "A-03",
+        "B-01", "B-02", "B-03",
+        "C-01", "C-02", "C-03"
+      ],
+      corridorConfigs: [
+        { zone: "A", depth: 3, tiers: 3 },
+        { zone: "B", depth: 3, tiers: 3 },
+        { zone: "C", depth: 3, tiers: 3 }
+      ],
+      capacity: 1000,
+      used: 0
+    };
+
+    const updatedWarehouses = [...warehouses, newWh];
+    setWarehouses(updatedWarehouses);
+    setActiveWarehouseId(id);
+    setShaperZones("A, B, C");
+    setCorridors(newWh.corridorConfigs);
+
+    // Save to registered stores
+    try {
+      const storesStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+      const registeredStores = JSON.parse(storesStr);
+      const updatedStores = registeredStores.map((s: any) => {
+        if (s.code === storeSlug) {
+          return { ...s, warehouses: updatedWarehouses };
+        }
+        return s;
+      });
+      window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+    } catch (e) {
+      console.error("Save new warehouse failed:", e);
+    }
+
+    setIsNewWarehouseModalOpen(false);
+    setNewWhName("");
+    showSuccess(`"${newWh.name}" deposu başarıyla oluşturuldu.`);
   };
 
   const handleWizardCountChange = (count: number) => {
@@ -2507,6 +2568,84 @@ ${sizeStr}
           </div>
         )}
 
+        {/* ➕ YENİ DEPO EKLEME MODALI */}
+        {isNewWarehouseModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 p-6 shadow-2xl space-y-4 animate-scaleIn">
+              <div className="flex items-center justify-between">
+                <span className="text-xl">🏪</span>
+                <h3 className="text-base font-black text-slate-900">Sisteme Yeni Depo Ekle</h3>
+                <button
+                  onClick={() => setIsNewWarehouseModalOpen(false)}
+                  className="text-slate-400 hover:text-slate-600 transition font-black text-lg p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleAddNewWarehouse} className="space-y-4">
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-750">Depo İsmi</span>
+                  <input
+                    type="text"
+                    id="new-wh-name-input"
+                    aria-label="Yeni depo ismi"
+                    required
+                    value={newWhName}
+                    onChange={(e) => setNewWhName(e.target.value)}
+                    placeholder="Örn: Trabzon Deposu, Yedek Parça Şubesi"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800 focus:border-blue-500"
+                  />
+                </label>
+
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-750">Deponun Bulunduğu Şehir</span>
+                  <input
+                    type="text"
+                    id="new-wh-city-input"
+                    aria-label="Depo şehri"
+                    required
+                    value={newWhCity}
+                    onChange={(e) => setNewWhCity(e.target.value)}
+                    placeholder="Örn: Trabzon, Batumi, Rize"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800 focus:border-blue-500"
+                  />
+                </label>
+
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-750">Depo Kullanım Amacı (Açıklama)</span>
+                  <input
+                    type="text"
+                    id="new-wh-purpose-input"
+                    aria-label="Depo kullanım amacı"
+                    required
+                    value={newWhPurpose}
+                    onChange={(e) => setNewWhPurpose(e.target.value)}
+                    placeholder="Örn: Batumi - Yedek / Depolama Sahası 5"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800 focus:border-blue-500"
+                  />
+                </label>
+
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="submit"
+                    className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 py-2.5 text-xs font-black text-white transition active:scale-95 shadow-md"
+                  >
+                    ⚡ Depoyu Oluştur
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsNewWarehouseModalOpen(false)}
+                    className="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-800 transition active:scale-95"
+                  >
+                    İptal
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* SETUP WIZARD (Wizard Mode overlay) */}
         {showWizard && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
@@ -2676,6 +2815,17 @@ ${sizeStr}
                 </article>
               );
             })}
+
+            {isAuthorized && (
+              <article
+                onClick={() => setIsNewWarehouseModalOpen(true)}
+                className="rounded-2xl border border-dashed border-slate-350 bg-slate-50 hover:bg-slate-100/70 p-4 shadow-sm flex flex-col items-center justify-center text-center cursor-pointer transition min-h-[120px] text-slate-700 hover:border-blue-500 hover:shadow-md"
+              >
+                <span className="text-2xl mb-1">➕</span>
+                <h4 className="text-xs font-black text-slate-800">Yeni Depo Ekle</h4>
+                <p className="text-[9px] text-slate-500 font-semibold mt-0.5">Sisteme yeni bir depo şubesi ekleyin</p>
+              </article>
+            )}
           </div>
         </section>
 
