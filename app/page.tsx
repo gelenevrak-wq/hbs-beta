@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
-import { translateProductField } from "@/lib/i18n/dynamicContent";
+import { translateProductField, parseLocalizedField } from "@/lib/i18n/dynamicContent";
 
 type Localized = Partial<Record<LanguageCode, string>> & { tr: string };
 
@@ -608,8 +608,8 @@ export default function HomePage() {
 
               return {
                 slug: item.id,
-                name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
-                category: { tr: item.category, en: item.category, de: item.category, ru: item.category, ka: item.category },
+                name: parseLocalizedField(item.name),
+                category: parseLocalizedField(item.category),
                 store: matchingStore.name,
                 storeSlug: matchingStore.code,
                 city: matchingStore.city,
@@ -658,8 +658,8 @@ export default function HomePage() {
               .filter((item) => item.brand !== "DELETED" && item.category !== "DELETED")
               .map((item) => ({
               slug: item.id,
-              name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
-              category: { tr: item.category || "Genel", en: item.category || "General", de: item.category || "Allgemein", ru: item.category || "Общий", ka: item.category || "საერთო" },
+              name: parseLocalizedField(item.name),
+              category: parseLocalizedField(item.category || "Genel"),
               store: item.companies?.name || "HBS Mağaza",
               storeSlug: item.companies?.code || "unknown",
               city: item.companies?.city || "İstanbul",

@@ -754,3 +754,20 @@ export const dynamicUi = {
     ka: "შენიşვნა",
   },
 } satisfies Record<string, LocalizedText>;
+
+export function parseLocalizedField(val: any): LocalizedText {
+  if (!val) return { tr: "" };
+  if (typeof val === "object") {
+    // If it's already an object, ensure it's not null
+    return val;
+  }
+  const trimmed = String(val).trim();
+  if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+    try {
+      return JSON.parse(trimmed);
+    } catch (e) {
+      // Fallback
+    }
+  }
+  return { tr: trimmed };
+}

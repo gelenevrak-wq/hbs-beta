@@ -4,7 +4,7 @@ import Link from "next/link";
 import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { LocalizedText, dynamicUi, pickLocalizedText, translateProductField } from "@/lib/i18n/dynamicContent";
+import { LocalizedText, dynamicUi, pickLocalizedText, translateProductField, parseLocalizedField } from "@/lib/i18n/dynamicContent";
 import { HbsLanguageCode } from "@/lib/i18n/translations";
 import { useHbsLanguage } from "@/lib/i18n/useHbsLanguage";
 import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
@@ -75,7 +75,19 @@ const pageTranslations: Record<string, Record<string, string>> = {
     rule: "Kural",
     virtualRuleDesc: "Merkez depodaki ürünler kargo ile gönderilir veya adreste kurulum & eğitim verilir.",
     internalWarehouse: "İç depo adresi",
-    physicalRuleDesc: "Depo ürünün nerede durduğunu, vitrin müşteriye nerede göründüğünü anlatır."
+    physicalRuleDesc: "Depo ürünün nerede durduğunu, vitrin müşteriye nerede göründüğünü anlatır.",
+    liveB2bNegotiation: "Canlı B2B Pazarlık Odası",
+    requestQuote: "Özel Teklif İste & Kilitle",
+    askRepresentative: "Temsilciye Soru Sor",
+    exchangeHedged: "🛡️ HBS Kur Korumalı Fiyat",
+    originalBasePrice: "Orijinal Taban Fiyat",
+    rawRate: "Ham Çevrim",
+    exchangeHedging: "Döviz Koruma Kalkanı",
+    rateLockedGuarantee: "* Sınır ötesi kur riskine karşı 24 saat boyunca HBS garantisiyle kilitlenmiştir.",
+    viewFullScreen: "Tam Ekran Gör",
+    clickToViewFull: "Resmi tam ekran görmek için tıklayın",
+    productNotFound: "Ürün Bulunamadı",
+    productNotFoundText: "Aradığınız ürün sistemde kayıtlı değil veya yayından kaldırılmış."
   },
   en: {
     descTitle: "Product description and usage",
@@ -91,7 +103,19 @@ const pageTranslations: Record<string, Record<string, string>> = {
     rule: "Rule",
     virtualRuleDesc: "Products in central warehouse are shipped or installed & trained on-site.",
     internalWarehouse: "Internal warehouse address",
-    physicalRuleDesc: "Warehouse shows where the product is kept; storefront shows where it is visible to customers."
+    physicalRuleDesc: "Warehouse shows where the product is kept; storefront shows where it is visible to customers.",
+    liveB2bNegotiation: "B2B Live Negotiation",
+    requestQuote: "Request Custom Quote",
+    askRepresentative: "Ask Representative",
+    exchangeHedged: "🛡️ HBS Exchange Hedged",
+    originalBasePrice: "Original Base Price",
+    rawRate: "Raw Rate",
+    exchangeHedging: "Exchange Hedging",
+    rateLockedGuarantee: "* Locked with HBS cross-border exchange rate protection guarantee for 24h.",
+    viewFullScreen: "View Full Screen",
+    clickToViewFull: "Click to view full screen",
+    productNotFound: "Product Not Found",
+    productNotFoundText: "The product you are looking for is not registered or has been removed."
   },
   de: {
     descTitle: "Produktbeschreibung und Verwendung",
@@ -107,7 +131,19 @@ const pageTranslations: Record<string, Record<string, string>> = {
     rule: "Regel",
     virtualRuleDesc: "Produkte im Zentrallager werden per Fracht versandt oder vor Ort installiert & geschult.",
     internalWarehouse: "Interne Lageradresse",
-    physicalRuleDesc: "Lager zeigt den Lagerort; Schaufenster zeigt, wo der Kunde das Produkt online sieht."
+    physicalRuleDesc: "Lager zeigt den Lagerort; Schaufenster zeigt, wo der Kunde das Produkt online sieht.",
+    liveB2bNegotiation: "B2B Live-Verhandlung",
+    requestQuote: "Spezifisches Angebot anfragen",
+    askRepresentative: "Vertreter fragen",
+    exchangeHedged: "🛡️ HBS Wechselkurs-gesichert",
+    originalBasePrice: "Original-Basispreis",
+    rawRate: "Roh-Kurs",
+    exchangeHedging: "Wechselkurssicherung",
+    rateLockedGuarantee: "* Für 24 Stunden mit der HBS-Garantie gegen grenzüberschreitende Wechselkursrisiken gesichert.",
+    viewFullScreen: "Vollbild anzeigen",
+    clickToViewFull: "Klicken Sie hier, um das Bild im Vollbildmodus anzuzeigen",
+    productNotFound: "Produkt nicht gefunden",
+    productNotFoundText: "Das gesuchte Produkt ist nicht registriert oder wurde entfernt."
   },
   ru: {
     descTitle: "Описание товара и использование",
@@ -123,7 +159,19 @@ const pageTranslations: Record<string, Record<string, string>> = {
     rule: "Правило",
     virtualRuleDesc: "Товары с центрального склада отправляются почтой или доставляются с установкой и обучением на месте.",
     internalWarehouse: "Внутренний адрес склада",
-    physicalRuleDesc: "Склад показывает физическое место хранения; витрина показывает, где товар виден клиенту."
+    physicalRuleDesc: "Склад показывает физическое место хранения; витрина показывает, где товар виден клиенту.",
+    liveB2bNegotiation: "Онлайн B2B торги",
+    requestQuote: "Запросить цену",
+    askRepresentative: "Спросить представителя",
+    exchangeHedged: "🛡️ HBS Защищенный курс",
+    originalBasePrice: "Оригинальная базовая цена",
+    rawRate: "Чистый курс",
+    exchangeHedging: "Защита от колебаний курса",
+    rateLockedGuarantee: "* Заблокировано на 24 часа с гарантией защиты от колебаний курса HBS.",
+    viewFullScreen: "На весь экран",
+    clickToViewFull: "Нажмите, чтобы просмотреть во весь экран",
+    productNotFound: "Товар не найден",
+    productNotFoundText: "Товар не найден или удален."
   },
   ka: {
     descTitle: "პროდუქტის აღწერა და გამოყენება",
@@ -139,7 +187,19 @@ const pageTranslations: Record<string, Record<string, string>> = {
     rule: "წესი",
     virtualRuleDesc: "ცენტრალური საწყობის პროდუქტები იგზავნება ფოსტით ან ხდება ადგილზე მონტაჟი და ტრენინგი.",
     internalWarehouse: "საწყობის შიდა მისამართი",
-    physicalRuleDesc: "საწყობი აჩვენებს სად ინახება პროდუქტი; ვიტრინა აჩვენებს სად ხედავს მას კლიენტი."
+    physicalRuleDesc: "საწყობი აჩვენებს სად ინახება პროდუქტი; ვიტრინა აჩვენებს სად ხედავს მას კლიენტი.",
+    liveB2bNegotiation: "B2B ცოცხალი მოლაპარაკება",
+    requestQuote: "მოითხოვეთ ფასი",
+    askRepresentative: "კითხვის დასმა წარმომადგენელთან",
+    exchangeHedged: "🛡️ HBS კურსით დაცული",
+    originalBasePrice: "ორიგინალი საბაზისო ფასი",
+    rawRate: "სუფთა კურსი",
+    exchangeHedging: "ვალუტის კურსის დაცვა",
+    rateLockedGuarantee: "* დაბლოკილია 24 საათით HBS-ის კურსის დაცვის გარანტიით.",
+    viewFullScreen: "სრულ ეკრანზე ნახვა",
+    clickToViewFull: "დააწკაპუნეთ სრულ ეკრანზე სანახავად",
+    productNotFound: "პროდუქტი ვერ მოიძებნა",
+    productNotFoundText: "პროდუქტი არ არის რეგისტრირებული ან წაშლილია."
   }
 };
 
@@ -473,15 +533,15 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
             const item = data[0];
             const mapped: ProductData = {
               slug: item.id,
-              name: { tr: item.name, en: item.name, de: item.name, ru: item.name, ka: item.name },
+              name: parseLocalizedField(item.name),
               brand: item.brand || "Genel",
               model: { tr: item.code || "Genel", en: item.code || "General" },
-              category: { tr: item.category || "Diğer", en: item.category || "Other" },
+              category: parseLocalizedField(item.category || "Diğer"),
               storeName: item.companies?.name || "HBS Mağaza",
               storeSlug: item.companies?.code || "unknown",
               country: item.companies?.country || "Türkiye",
               city: item.companies?.city || "İstanbul",
-              description: { tr: item.description || "", en: item.description || "", de: item.description || "", ru: item.description || "", ka: item.description || "" },
+              description: parseLocalizedField(item.description || ""),
               priceText: {
                 tr: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Teklif isteyin",
                 en: item.sale_price ? `${item.sale_price} ${item.currency || "GEL"}` : "Request quote",
@@ -517,15 +577,15 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                     .filter((sim: any) => sim.brand !== "DELETED" && sim.category !== "DELETED")
                     .map((sim: any) => ({
                     slug: sim.id,
-                    name: { tr: sim.name, en: sim.name, de: sim.name, ru: sim.name, ka: sim.name },
+                    name: parseLocalizedField(sim.name),
                     brand: sim.brand || "Genel",
                     model: { tr: sim.code || "Genel", en: sim.code || "General" },
-                    category: { tr: sim.category || "Diğer", en: sim.category || "Other" },
+                    category: parseLocalizedField(sim.category || "Diğer"),
                     storeName: sim.companies?.name || "HBS Mağaza",
                     storeSlug: sim.companies?.code || "unknown",
                     country: sim.companies?.country || "Türkiye",
                     city: sim.companies?.city || "İstanbul",
-                    description: { tr: sim.description || "", en: sim.description || "", de: sim.description || "", ru: sim.description || "", ka: sim.description || "" },
+                    description: parseLocalizedField(sim.description || ""),
                     priceText: {
                       tr: sim.sale_price ? `${sim.sale_price} ${sim.currency || "GEL"}` : "Teklif isteyin",
                       en: sim.sale_price ? `${sim.sale_price} ${sim.currency || "GEL"}` : "Request quote",
@@ -603,21 +663,15 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
 
             const mapped: ProductData = {
               slug: found.id,
-              name: { tr: found.name, en: found.name, de: found.name, ru: found.name, ka: found.name },
+              name: parseLocalizedField(found.name),
               brand: found.brand || "Genel",
               model: { tr: found.model || "Genel", en: found.model || "General" },
-              category: { tr: found.category || "Diğer", en: found.category || "Other" },
+              category: parseLocalizedField(found.category || "Diğer"),
               storeName: matchingStore.name,
               storeSlug: matchingStore.code,
               country: matchingStore.city.toLowerCase().includes("batum") ? "Georgia" : "Türkiye",
               city: matchingStore.city || "İstanbul",
-              description: {
-                tr: found.description || "",
-                en: found.description || "",
-                de: found.description || "",
-                ru: found.description || "",
-                ka: found.description || ""
-              },
+              description: parseLocalizedField(found.description || ""),
               priceText: {
                 tr: found.pricingMode === "quote" ? "Teklif isteyin" : found.pricingMode === "bidding" ? "Teklif verin" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
                 en: found.pricingMode === "quote" ? "Request quote" : found.pricingMode === "bidding" ? "Make an offer" : `${found.salePrice || "0"} ${found.currency || "GEL"}`,
@@ -642,21 +696,15 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               .slice(0, 3)
               .map(sim => ({
                 slug: sim.id,
-                name: { tr: sim.name, en: sim.name, de: sim.name, ru: sim.name, ka: sim.name },
+                name: parseLocalizedField(sim.name),
                 brand: sim.brand || "Genel",
                 model: { tr: sim.model || "Genel", en: sim.model || "General" },
-                category: { tr: sim.category || "Diğer", en: sim.category || "Other" },
+                category: parseLocalizedField(sim.category || "Diğer"),
                 storeName: matchingStore.name,
                 storeSlug: matchingStore.code,
                 country: matchingStore.city.toLowerCase().includes("batum") ? "Georgia" : "Türkiye",
                 city: matchingStore.city || "İstanbul",
-                description: {
-                  tr: sim.description || "",
-                  en: sim.description || "",
-                  de: sim.description || "",
-                  ru: sim.description || "",
-                  ka: sim.description || ""
-                },
+                description: parseLocalizedField(sim.description || ""),
                 priceText: {
                   tr: sim.pricingMode === "quote" ? "Teklif isteyin" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`,
                   en: sim.pricingMode === "quote" ? "Request quote" : `${sim.salePrice || "0"} ${sim.currency || "GEL"}`,
@@ -697,8 +745,8 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
     return (
       <main className="min-h-screen hbs-market-page px-6 py-8 text-slate-950">
         <div className="mx-auto flex min-h-screen max-w-4xl flex-col items-center justify-center text-center">
-          <h1 className="text-4xl font-black">{t.product.productNotFound}</h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">{t.product.productNotFoundText}</p>
+          <h1 className="text-4xl font-black">{pageTxt("productNotFound", language)}</h1>
+          <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">{pageTxt("productNotFoundText", language)}</p>
           <Link href="/customer" className="mt-6 rounded-2xl bg-white px-6 py-3 font-black text-slate-950 hover:bg-slate-200">{t.product.goToCustomerPortal}</Link>
           
           {/* HBS Teknik Teşhis Paneli - Premium DX */}
@@ -1145,12 +1193,12 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               <div 
                 className="hbs-product-image cursor-pointer hover:opacity-95 hover:scale-[1.01] transition-all duration-300 relative group shadow-sm"
                 onClick={() => setLightboxImage(currentMainImage)}
-                title={language === "tr" ? "Resmi tam ekran görmek için tıklayın" : "Click to view full screen"}
+                title={pageTxt("clickToViewFull", language)}
               >
                 <img src={currentMainImage} alt={txt(activeProduct.name, language)} />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center pointer-events-none">
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white rounded-full px-3 py-1.5 text-xs flex items-center gap-1.5 shadow-md">
-                    🔍 {language === "tr" ? "Tam Ekran Gör" : "View Full Screen"}
+                    🔍 {pageTxt("viewFullScreen", language)}
                   </span>
                 </div>
               </div>
@@ -1189,7 +1237,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                   <>
                     <span className="text-[10px] font-black text-blue-700 bg-blue-100/70 border border-blue-200/50 px-2 py-0.5 rounded-md uppercase tracking-wider inline-flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                      {language === "tr" ? "🛡️ HBS Kur Korumalı Fiyat" : "🛡️ HBS Exchange Hedged"}
+                      {pageTxt("exchangeHedged", language)}
                     </span>
                     <h2 className="text-2xl font-black text-blue-900 tracking-tight">
                       {parseFloat(convertedPricing.finalPrice).toLocaleString(language === "tr" ? "tr-TR" : "en-US", {minimumFractionDigits: 2})} {convertedPricing.targetCurrency}
@@ -1197,28 +1245,24 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                     
                     {convertedPricing.baseCurrency !== convertedPricing.targetCurrency && (
                       <p className="text-[10px] text-slate-500 font-semibold">
-                        {language === "tr" 
-                          ? `Orijinal Taban Fiyat: ${convertedPricing.basePrice} ${convertedPricing.baseCurrency}` 
-                          : `Original Base Price: ${convertedPricing.basePrice} ${convertedPricing.baseCurrency}`}
+                        {`${pageTxt("originalBasePrice", language)}: ${convertedPricing.basePrice} ${convertedPricing.baseCurrency}`}
                       </p>
                     )}
 
                     {/* Breakdown Tooltip/Panel for absolute transparency */}
                     <div className="mt-2.5 rounded-xl bg-white/70 border border-blue-100 p-2 text-[10px] leading-relaxed text-slate-600 font-bold space-y-1">
                       <p className="flex justify-between">
-                        <span>{language === "tr" ? "Ham Çevrim:" : "Raw Rate:"}</span>
+                        <span>{pageTxt("rawRate", language)}</span>
                         <span className="text-slate-900">{parseFloat(convertedPricing.rawConverted).toFixed(2)} {convertedPricing.targetCurrency}</span>
                       </p>
                       {convertedPricing.isHedgingEnabled && (
                         <p className="flex justify-between text-indigo-700">
-                          <span>{language === "tr" ? `Döviz Koruma Kalkanı (+%${convertedPricing.bufferPercent}):` : `Exchange Hedging (+${convertedPricing.bufferPercent}%):`}</span>
+                          <span>{pageTxt("exchangeHedging", language)} (+%${convertedPricing.bufferPercent}):</span>
                           <span className="font-extrabold">+{parseFloat(convertedPricing.hedgeFee).toFixed(2)} {convertedPricing.targetCurrency}</span>
                         </p>
                       )}
                       <p className="border-t border-slate-100 pt-1 text-[9px] text-slate-400 font-semibold italic">
-                        {language === "tr" 
-                          ? "* Sınır ötesi kur riskine karşı 24 saat boyunca HBS garantisiyle kilitlenmiştir."
-                          : "* Locked with HBS cross-border exchange rate protection guarantee for 24h."}
+                        {pageTxt("rateLockedGuarantee", language)}
                       </p>
                     </div>
                   </>
@@ -1239,21 +1283,21 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                   onClick={addToCart} 
                   className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 py-3 text-xs font-black text-white shadow-md active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  🤝 {language === "tr" ? "Canlı B2B Pazarlık Odası" : "B2B Live Negotiation"}
+                  🤝 {pageTxt("liveB2bNegotiation", language)}
                 </button>
                 <button 
                   type="button" 
                   onClick={requestOffer} 
                   className="w-full rounded-xl border border-slate-200 bg-white hover:bg-slate-50 py-3 text-xs font-black text-slate-800 active:scale-[0.98] transition flex items-center justify-center gap-1 cursor-pointer"
                 >
-                  🔒 {language === "tr" ? "Özel Teklif İste & Kilitle" : "Request Custom Quote"}
+                  🔒 {pageTxt("requestQuote", language)}
                 </button>
                 <button 
                   type="button" 
                   onClick={askQuestion} 
                   className="w-full rounded-xl border border-slate-200 bg-white hover:bg-slate-50 py-3 text-xs font-black text-slate-800 active:scale-[0.98] transition flex items-center justify-center gap-1 cursor-pointer"
                 >
-                  💬 {language === "tr" ? "Temsilciye Soru Sor" : "Ask Representative"}
+                  💬 {pageTxt("askRepresentative", language)}
                 </button>
               </div>
 
