@@ -1579,79 +1579,7 @@ export default function WarehousesRevampPage() {
         setProducts(parsedProducts);
       };
 
-      if (isSupabaseConfigured && slug) {
-        supabase
-          .from("offerable_items")
-          .select("*, companies!inner(code)")
-          .eq("companies.code", slug)
-          .then(({ data, error }) => {
-            if (data && !error) {
-              const mapped: ProductRecord[] = data
-                .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
-                .map((item: any) => ({
-                  id: item.id,
-                  itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
-                  name: item.name,
-                  category: item.category || "Genel",
-                  brand: item.brand || "",
-                  model: "",
-                  description: item.description || "",
-                  salePrice: item.sale_price ? String(item.sale_price) : "",
-                  purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
-                  currency: item.currency || "GEL",
-                  barcode: item.barcode || "",
-                  qrCode: item.qr_code || "",
-                  sku: item.code || "",
-                  oemCode: "",
-                  manufacturerCode: "",
-                  stockTracking: true,
-                  quantity: item.quantity ? String(item.quantity) : "10",
-                  warehouse: item.warehouse || "Ana Depo",
-                  shelf: item.shelf || "",
-                  entryDate: "",
-                  exitDate: "",
-                  pricingMode: item.sale_price ? "fixed" : "quote",
-                  visibility: item.is_visible_in_storefront ? "visible" : "hidden",
-                  imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
-                  videoUrl: item.video_urls?.[0] || "",
-                  variants: [],
-                  galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
-                }));
-              setProducts(mapped);
-              window.localStorage.setItem(`hbs-store-products-${slug}`, JSON.stringify(mapped));
-            } else {
-              loadLocalFallback();
-            }
-          });
-      } else {
-        loadLocalFallback();
-      }
-
-      // B) Load Stock Movements
-      const movStr = window.localStorage.getItem("hbs-store-stock-movements");
-      if (movStr) {
-        setMovements(JSON.parse(movStr));
-      }
-
-      // C) Load Shelf Capacities
-      const capStr = window.localStorage.getItem("hbs-shelf-capacities");
-      if (capStr) {
-        setShelfCapacities(JSON.parse(capStr));
-      }
-
-      // E) Load Shelf Aliases
-      const aliasStr = window.localStorage.getItem("hbs-shelf-aliases");
-      if (aliasStr) {
-        setShelfAliases(JSON.parse(aliasStr));
-      }
-
-      // D) Load Stock Transfers
-      const transStr = window.localStorage.getItem("hbs-stock-transfers");
-      if (transStr) {
-        setStockTransfers(JSON.parse(transStr));
-      }
-
-      const loadSyncWarehouses = async () => {
+      const loadSyncWarehouses = async (loadedProductsList: ProductRecord[]) => {
         try {
           const { data: compData } = await supabase
             .from("companies")
@@ -1675,9 +1603,21 @@ export default function WarehousesRevampPage() {
                 .in("warehouse_id", whIds);
 
               const mapped = dbWhs.map(w => {
-                const shelves = dbLocs
+                const dbShelves = dbLocs
                   ? dbLocs.filter(l => l.warehouse_id === w.id).map(l => l.name)
                   : [];
+                
+                // Read shelves from loaded products list to merge
+                const productShelvesForWh = Array.from(
+                  new Set(
+                    loadedProductsList
+                      .filter(p => p.warehouse.toLowerCase() === w.name.toLowerCase() && p.shelf && p.shelf.trim() !== "")
+                      .map(p => p.shelf)
+                  )
+                );
+
+                const shelves = Array.from(new Set([...dbShelves, ...productShelvesForWh]));
+
                 return {
                   id: w.id,
                   name: w.name,
@@ -1780,27 +1720,52 @@ export default function WarehousesRevampPage() {
       };
 
       if (isSupabaseConfigured && slug) {
-        loadSyncWarehouses();
+        supabase
+          .from("offerable_items")
+          .select("*, companies!inner(code)")
+          .eq("companies.code", slug)
+          .then(({ data, error }) => {
+            if (data && !error) {
+              const mapped: ProductRecord[] = data
+                .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
+                .map((item: any) => ({
+                  id: item.id,
+                  itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+                  name: item.name,
+                  category: item.category || "Genel",
+                  brand: item.brand || "",
+                  model: "",
+                  description: item.description || "",
+                  salePrice: item.sale_price ? String(item.sale_price) : "",
+                  purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+                  currency: item.currency || "GEL",
+                  barcode: item.barcode || "",
+                  qrCode: item.qr_code || "",
+                  sku: item.code || "",
+                  oemCode: "",
+                  manufacturerCode: "",
+                  stockTracking: true,
+                  quantity: item.quantity ? String(item.quantity) : "10",
+                  warehouse: item.warehouse || "Ana Depo",
+                  shelf: item.shelf || "",
+                  entryDate: "",
+                  exitDate: "",
+                  pricingMode: item.sale_price ? "fixed" : "quote",
+                  visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+                  imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                  videoUrl: item.video_urls?.[0] || "",
+                  variants: [],
+                  galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
+                }));
+              setProducts(mapped);
+              window.localStorage.setItem(`hbs-store-products-${slug}`, JSON.stringify(mapped));
+              loadSyncWarehouses(mapped);
+            } else {
+              loadLocalFallback();
+            }
+          });
       } else {
-        // Fallback local loading
-        const storesStr = window.localStorage.getItem("hbs-registered-stores");
-        const registeredStores = storesStr ? JSON.parse(storesStr) : [];
-        let myStore = registeredStores.find((s: any) => s.code === slug);
-
-        if (myStore) {
-          setStoreName(myStore.name || "OBDTR Diagnostics");
-          if (myStore.warehouses && myStore.warehouses.length > 0) {
-            setWarehouses(myStore.warehouses);
-            setActiveWarehouseId(myStore.warehouses[0].id);
-            const activeWh = myStore.warehouses[0];
-            setShaperZones(activeWh.zones ? activeWh.zones.join(", ") : "A, B, C");
-            setCorridors(activeWh.corridorConfigs || parseShelvesToConfig(activeWh.shelves || []));
-          } else {
-            setShowWizard(true);
-          }
-        } else {
-          setShowWizard(true);
-        }
+        loadLocalFallback();
       }
     } catch (e) {
       console.error("DB Load error", e);

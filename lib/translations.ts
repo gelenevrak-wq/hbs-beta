@@ -386,12 +386,38 @@ export const translations = {
 export function getLocalizedField(fieldValue: string | null | undefined, lang: string): string {
   if (!fieldValue) return "";
   const clean = String(fieldValue).trim();
+  
+  const isWarning = (val: string) => {
+    const l = val.toLowerCase();
+    return l.includes("exceeded") || l.includes("limit") || l.includes("mymemory") || l.includes("warning");
+  };
+
   if (clean.startsWith("{") && clean.endsWith("}")) {
     try {
       const parsed = JSON.parse(clean);
-      return parsed[lang] || parsed["tr"] || parsed["en"] || clean;
+      let val = parsed[lang];
+      if (val === undefined || val === null || isWarning(String(val))) {
+        val = parsed["tr"];
+      }
+      if (val === undefined || val === null || isWarning(String(val))) {
+        val = parsed["en"];
+      }
+      if (val !== undefined && val !== null) return String(val);
     } catch (e) {
-      // fallback
+      try {
+        const regex = new RegExp(`"${lang}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, "i");
+        const match = clean.match(regex);
+        if (match && match[1] !== undefined && !isWarning(match[1])) {
+          return match[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+        }
+        for (const fallback of ["tr", "en"]) {
+          const fallbackRegex = new RegExp(`"${fallback}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, "i");
+          const fallbackMatch = clean.match(fallbackRegex);
+          if (fallbackMatch && fallbackMatch[1] !== undefined && !isWarning(fallbackMatch[1])) {
+            return fallbackMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+          }
+        }
+      } catch (err) {}
     }
   }
   return fieldValue;
@@ -400,10 +426,12 @@ export function getLocalizedField(fieldValue: string | null | undefined, lang: s
 export async function translateText(text: string, from: string, to: string): Promise<string> {
   if (!text || !text.trim()) return "";
   try {
-    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
-    const data = await res.json();
-    if (data?.responseData?.translatedText) {
-      return data.responseData.translatedText;
+    const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data[0] && data[0][0] && data[0][0][0]) {
+        return data[0][0][0];
+      }
     }
   } catch (e) {
     console.error("Translation helper error:", e);
