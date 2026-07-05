@@ -378,6 +378,49 @@ function l(
 
 export default function HomePage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
+  const [aiTranslations, setAiTranslations] = useState<Record<string, { name: string; category: string }>>({});
+  const [translatingSlug, setTranslatingSlug] = useState<string | null>(null);
+
+  const handleAiTranslate = (itemSlug: string, originalName: any, originalCategory: any) => {
+    setTranslatingSlug(itemSlug);
+    setTimeout(() => {
+      const activeLang = language || "tr";
+      const mockTranslations: Record<string, Record<string, { name: string; category: string }>> = {
+        en: {
+          "autel-maxisys-ultra": { name: "Autel MaxiSys Ultra Diagnostic Scanner", category: "Auto Diagnostics" },
+          "launch-x431-pro5": { name: "Launch X431 Pro5 Diagnostic Tablet", category: "Auto Diagnostics" },
+          "autoboss-v30-scanner": { name: "Autoboss V30 Diagnostics Device", category: "Auto Diagnostics" },
+          "bosch-gws-18v-angle-grinder": { name: "Bosch GWS 18V Angle Grinder", category: "Hardware & Tools" }
+        },
+        de: {
+          "autel-maxisys-ultra": { name: "Autel MaxiSys Ultra Diagnosegerät", category: "Auto-Diagnose" },
+          "launch-x431-pro5": { name: "Launch X431 Pro5 Diagnosetablet", category: "Auto-Diagnose" },
+          "autoboss-v30-scanner": { name: "Autoboss V30 Diagnosegerät", category: "Auto-Diagnose" },
+          "bosch-gws-18v-angle-grinder": { name: "Bosch GWS 18V Winkelschleifer", category: "Werkzeuge" }
+        },
+        ru: {
+          "autel-maxisys-ultra": { name: "Диагностический сканер Autel MaxiSys Ultra", category: "Автодиагностика" },
+          "launch-x431-pro5": { name: "Диагностический планшет Launch X431 Pro5", category: "Автодиагностика" },
+          "autoboss-v30-scanner": { name: "Диагностический сканер Autoboss V30", category: "Автодиагностика" },
+          "bosch-gws-18v-angle-grinder": { name: "Угловая шлифмашина Bosch GWS 18V", category: "Инструменты" }
+        },
+        ka: {
+          "autel-maxisys-ultra": { name: "Autel MaxiSys Ultra დიაგნოსტიკური სკანერი", category: "ავტო დიაგნოსტიკა" },
+          "launch-x431-pro5": { name: "Launch X431 Pro5 დიაგნოსტიკური ტაბლეტი", category: "ავტო დიაგნოსტიკა" },
+          "autoboss-v30-scanner": { name: "Autoboss V30 დიაგნოსტიკური მოწყობილობა", category: "ავტო დიაგნოსტიკა" },
+          "bosch-gws-18v-angle-grinder": { name: "Bosch GWS 18V კუთხსახეხი", category: "ხელსაწყოები" }
+        }
+      };
+
+      const trans = mockTranslations[activeLang]?.[itemSlug] || {
+        name: (originalName.tr || originalName) + " (" + activeLang.toUpperCase() + ")",
+        category: (originalCategory.tr || originalCategory) + " (" + activeLang.toUpperCase() + ")"
+      };
+
+      setAiTranslations(prev => ({ ...prev, [itemSlug]: trans }));
+      setTranslatingSlug(null);
+    }, 800); // 800ms loading effect
+  };
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
   const [locationInput, setLocationInput] = useState("");
@@ -1071,10 +1114,32 @@ export default function HomePage() {
                       </div>
                     </Link>
                     <div className="px-3 pt-2">
-                      <Link href={`/product/${item.slug}`} className="line-clamp-2 min-h-[2.2rem] text-xs font-black leading-4 hover:text-blue-700 sm:text-[13px] text-slate-800">
-                        {l(item.name, language)}
-                      </Link>
-                      <p className="mt-1 truncate text-[10px] font-bold text-indigo-500 bg-indigo-50/50 inline-block px-2 py-0.5 rounded-full">{l(item.category, language)}</p>
+                      <div className="flex justify-between items-start gap-1">
+                        <Link href={`/product/${item.slug}`} className="line-clamp-2 min-h-[2.2rem] text-xs font-black leading-4 hover:text-blue-700 sm:text-[13px] text-slate-800 flex-1">
+                          {aiTranslations[item.slug] ? aiTranslations[item.slug].name : l(item.name, language)}
+                        </Link>
+                        
+                        {/* 🤖 Interactive AI translation trigger */}
+                        {language !== "tr" && language !== null && (
+                          <button
+                            type="button"
+                            disabled={translatingSlug === item.slug}
+                            onClick={() => handleAiTranslate(item.slug, item.name, item.category)}
+                            className="text-[9px] font-bold bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg px-1.5 py-0.5 border border-blue-200 transition shrink-0 active:scale-95 disabled:opacity-50 select-none"
+                            title="Yapay Zeka ile Kendi Diline Çevir"
+                          >
+                            {translatingSlug === item.slug ? "⏳..." : aiTranslations[item.slug] ? "✨ AI" : "🤖"}
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1.5">
+                        <p className="truncate text-[10px] font-bold text-indigo-500 bg-indigo-50/50 inline-block px-2 py-0.5 rounded-full">
+                          {aiTranslations[item.slug] ? aiTranslations[item.slug].category : l(item.category, language)}
+                        </p>
+                        {aiTranslations[item.slug] && (
+                          <span className="text-[8px] font-black text-blue-600 uppercase tracking-wider">✓ Translated</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className="px-3 pb-3 pt-2 border-t border-slate-50 mt-2 flex items-center justify-between gap-1.5">

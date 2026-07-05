@@ -112,6 +112,7 @@ type ProductRecord = {
   galleryUrls?: string[];
   trackExpirationDate?: boolean;
   expirationDate?: string;
+  dynamicPricingEnabled?: boolean;
 };
 
 const INITIAL_PRODUCTS: ProductRecord[] = [];
@@ -314,6 +315,28 @@ export default function ProductsPage() {
     return parts[2] + "." + parts[1] + "." + parts[0];
   };
 
+  const getDynamicPrice = (p: ProductRecord) => {
+    const basePrice = parseFloat(p.salePrice) || 0;
+    if (!p.dynamicPricingEnabled) return `${basePrice} ${p.currency}`;
+    
+    const qty = parseInt(p.quantity) || 0;
+    let adjusted = basePrice;
+    let reason = "";
+    
+    if (qty <= 3 && qty > 0) {
+      adjusted = Math.round(basePrice * 1.15);
+      reason = " (+%15 Az Stok)";
+    } else if (qty === 0) {
+      adjusted = Math.round(basePrice * 1.25);
+      reason = " (+%25 Yok)";
+    } else if (qty > 15) {
+      adjusted = Math.round(basePrice * 0.90);
+      reason = " (-%10 Stok Eritme)";
+    }
+    
+    return `${adjusted} ${p.currency} 🤖${reason}`;
+  };
+
   const uniqueCategories = useMemo(() => {
     const cats = products
       .map(p => p.category?.trim())
@@ -357,11 +380,13 @@ export default function ProductsPage() {
           setItemType(prod.itemType || "product");
           setPricingMode(prod.pricingMode || "fixed");
           setVideoUrl(prod.videoUrl || "");
+          setDynamicPricingEnabled(prod.dynamicPricingEnabled || false);
           setStockTracking(prod.stockTracking ?? true);
         }
       }
     }
   }, [products]);
+  const [dynamicPricingEnabled, setDynamicPricingEnabled] = useState(false);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -946,6 +971,7 @@ export default function ProductsPage() {
     setVisibility("visible");
     setImageUrl("");
     setVideoUrl("");
+    setDynamicPricingEnabled(false);
     setVariants([]);
     setGalleryUrls([]);
   }
@@ -1690,6 +1716,7 @@ export default function ProductsPage() {
               expirationDate: trackExpirationDate ? expirationDate : "",
               pricingMode,
               visibility,
+              dynamicPricingEnabled,
               imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
               videoUrl,
               variants: variants.length > 0 ? variants : undefined,
@@ -1782,6 +1809,7 @@ export default function ProductsPage() {
           expirationDate: trackExpirationDate ? expirationDate : "",
           pricingMode,
           visibility,
+          dynamicPricingEnabled,
           imageUrl: imageUrl.trim() || "/product-images/diagnostic-scanner.svg",
           videoUrl,
           variants: variants.length > 0 ? variants : undefined,
@@ -2129,19 +2157,36 @@ export default function ProductsPage() {
                     placeholder="Örn: 1500 (Boş bırakırsanız Teklif Alın olur)"
                     className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-159" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                 </label>
-                <div className="flex items-center gap-2 pt-4 sm:pt-6 select-none cursor-pointer">
-                  <input
-                    type="checkbox"
-                    id="hide-price-checkbox"
-                    checked={pricingMode === "quote"}
-                    onChange={(e) => {
-                      setPricingMode(e.target.checked ? "quote" : "fixed");
-                    }}
-                    className="h-4 w-4 rounded border-slate-300 text-blue-600 cursor-pointer"
-                  />
-                  <label htmlFor="hide-price-checkbox" className="text-xs font-black text-slate-800 cursor-pointer">
-                    Fiyatı Gizle (Ziyaretçiden Teklif İste)
-                  </label>
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 select-none col-span-2">
+                  <div className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      id="hide-price-checkbox"
+                      checked={pricingMode === "quote"}
+                      onChange={(e) => {
+                        setPricingMode(e.target.checked ? "quote" : "fixed");
+                      }}
+                      className="h-4 w-4 rounded border-slate-300 text-blue-600 cursor-pointer"
+                    />
+                    <label htmlFor="hide-price-checkbox" className="text-xs font-black text-slate-800 cursor-pointer">
+                      Fiyatı Gizle (Ziyaretçiden Teklif İste)
+                    </label>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 cursor-pointer bg-blue-50/50 px-3 py-1.5 rounded-xl border border-blue-100">
+                    <input
+                      type="checkbox"
+                      id="ai-pricing-checkbox"
+                      checked={dynamicPricingEnabled}
+                      onChange={(e) => {
+                        setDynamicPricingEnabled(e.target.checked);
+                      }}
+                      className="h-4 w-4 rounded border-blue-300 text-blue-600 cursor-pointer"
+                    />
+                    <label htmlFor="ai-pricing-checkbox" className="text-xs font-black text-blue-900 cursor-pointer flex items-center gap-1.5">
+                      🤖 AI Dinamik Fiyatlandırma Aktif
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -2874,7 +2919,11 @@ export default function ProductsPage() {
                           className="h-4 w-4 rounded border-slate-350 text-blue-650 cursor-pointer shrink-0" id="id-page-h-4-w-4-rounded-border-slate-350-text-blue-650-cursor-pointer-shrink-0-478" aria-label="H 4 w 4 rounded border slate 350 text blue 650 cursor pointer shrink 0" />
                         <h3 className="font-black text-slate-800 truncate">{getLocalizedField(p.name, language || "tr")}</h3>
                       </div>
+                      {p.dynamicPricingEnabled && (
+                        <span className="rounded-full px-2 py-0.5 text-[9px] font-extrabold bg-blue-600 text-white animate-pulse shrink-0 border border-blue-700">🤖 AI Fiyatı</span>
+                      )}
                       <span className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold shrink-0 ${p.pricingMode === "fixed" ? "bg-emerald-100 text-emerald-800 border border-emerald-200" : p.pricingMode === "quote" ? "bg-amber-100 text-amber-800 border border-amber-200" : "bg-purple-100 text-purple-800 border border-purple-200"}`}>
+
                         {p.pricingMode === "fixed" ? "Fiyat Göster" : p.pricingMode === "quote" ? "Teklif Alın" : "Teklif Verin"}
                       </span>
                     </div>
@@ -2884,7 +2933,7 @@ export default function ProductsPage() {
                         <p><b>Kategori:</b> {p.category}</p>
                         <p><b>Stok SKU:</b> {p.sku || "-"}</p>
                         <p><b>Barkod:</b> {p.barcode || "-"}</p>
-                        <p><b>Fiyat:</b> {p.pricingMode === "fixed" ? `${p.salePrice} ${p.currency}` : "Gizli"}</p>
+                        <p><b>Fiyat:</b> {p.pricingMode === "fixed" ? getDynamicPrice(p) : "Gizli"}</p>
                         <p><b>Konum:</b> {p.warehouse} · {p.shelf}</p>
                         <p><b>Giriş:</b> {p.entryDate || "-"}</p>
                       </div>
