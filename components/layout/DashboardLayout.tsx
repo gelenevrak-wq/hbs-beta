@@ -195,6 +195,8 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
   const [isAdmin, setIsAdmin] = useState(false);
   const [language, setLanguage] = useState("tr");
   const [currentPath, setCurrentPath] = useState("");
+  const [isAsistanOpen, setIsAsistanOpen] = useState(false);
+  const [sector, setSector] = useState("automotive");
 
   useEffect(() => {
     try {
@@ -221,6 +223,8 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
       if (savedLanguage) {
         setLanguage(savedLanguage);
       }
+      const savedSector = window.localStorage.getItem("hbs-business-sector") || "automotive";
+      setSector(savedSector);
       if (typeof window !== "undefined") {
         setCurrentPath(window.location.pathname);
       }
@@ -298,6 +302,171 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
           <div className="mx-auto w-full max-w-[1850px] p-3 sm:p-4 lg:p-5">{children}</div>
         </section>
       </div>
+      {/* Floating Animated Asistan Widget */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        {/* Breathing, winking smiley button */}
+        <button
+          type="button"
+          onClick={() => setIsAsistanOpen(!isAsistanOpen)}
+          className="flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-tr from-indigo-600 to-blue-500 text-white shadow-2xl transition hover:scale-110 active:scale-95 animate-bounce select-none cursor-pointer focus:outline-none relative group ring-4 ring-indigo-200"
+          title="Akıllı Asistan"
+        >
+          {/* Animated cute face SVG */}
+          <svg className="h-8 w-8 animate-pulse" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="white" />
+            <circle cx="8" cy="10" r="1.5" fill="#312e81" className="group-hover:scale-y-25 origin-center transition-transform" />
+            <circle cx="16" cy="10" r="1.5" fill="#312e81" className="group-hover:scale-y-25 origin-center transition-transform" />
+            <path d="M8 15C8.5 16.5 10 17.5 12 17.5C14 17.5 15.5 16.5 16 15" stroke="#312e81" strokeWidth="2" strokeLinecap="round" />
+            <path d="M12 2C10.5 4 13.5 4 12 2Z" fill="currentColor" />
+          </svg>
+          {/* Pulsing notification badge */}
+          <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-4 w-4 bg-rose-500 text-[9px] font-black text-white items-center justify-center">1</span>
+          </span>
+        </button>
+
+        {/* Sliding Asistan Drawer */}
+        {isAsistanOpen && (
+          <div className="fixed inset-y-0 right-0 z-50 w-80 bg-white border-l border-slate-200 shadow-2xl p-5 flex flex-col justify-between animate-slideIn">
+            <div className="space-y-5">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🤖</span>
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 leading-none">HBS Akıllı Asistan</h3>
+                    <span className="text-[10px] text-indigo-600 font-bold">Ağamın Akıllı Çırağı</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAsistanOpen(false)}
+                  className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition font-black text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Business Sector Mode Selector */}
+              <div className="space-y-1.5 rounded-2xl bg-indigo-50/50 border border-indigo-100/80 p-3.5 shadow-sm">
+                <span className="text-[10px] font-black uppercase text-indigo-800 tracking-wider block">🎭 Dükkan Sektör Modu</span>
+                <p className="text-[10px] text-slate-650 font-bold leading-relaxed mb-2.5">
+                  Seçtiğiniz sektöre göre ürün listeleriniz, marka önerileriniz ve depo şablonlarınız otomatik adapte olur.
+                </p>
+                <div className="grid gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSector("automotive");
+                      window.localStorage.setItem("hbs-business-sector", "automotive");
+                      window.dispatchEvent(new Event("hbs-sector-changed"));
+                    }}
+                    className={"w-full rounded-xl py-2 px-3 text-xs font-black transition text-left flex items-center justify-between border " + (
+                      sector === "automotive"
+                        ? "bg-indigo-600 border-indigo-600 text-white shadow-md"
+                        : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                    )}
+                  >
+                    <span>🚗 Oto Yedek Parça</span>
+                    {sector === "automotive" && <span>✓</span>}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSector("footwear");
+                      window.localStorage.setItem("hbs-business-sector", "footwear");
+                      window.dispatchEvent(new Event("hbs-sector-changed"));
+                    }}
+                    className={"w-full rounded-xl py-2 px-3 text-xs font-black transition text-left flex items-center justify-between border " + (
+                      sector === "footwear"
+                        ? "bg-indigo-600 border-indigo-600 text-white shadow-md"
+                        : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                    )}
+                  >
+                    <span>👞 Ayakkabı & Giyim</span>
+                    {sector === "footwear" && <span>✓</span>}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSector("grocery");
+                      window.localStorage.setItem("hbs-business-sector", "grocery");
+                      window.dispatchEvent(new Event("hbs-sector-changed"));
+                    }}
+                    className={"w-full rounded-xl py-2 px-3 text-xs font-black transition text-left flex items-center justify-between border " + (
+                      sector === "grocery"
+                        ? "bg-indigo-600 border-indigo-600 text-white shadow-md"
+                        : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                    )}
+                  >
+                    <span>🛒 Market & Perakende</span>
+                    {sector === "grocery" && <span>✓</span>}
+                  </button>
+                </div>
+              </div>
+
+              {/* Contextual Page Help Guide */}
+              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
+                <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">📖 Sayfa Kılavuzu</span>
+                
+                {currentPath.includes("/dashboard/products") ? (
+                  <div className="space-y-2.5 bg-slate-50 rounded-2xl p-3 border border-slate-150">
+                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">🛍️ Ürünler Sayfası</h4>
+                    <ul className="space-y-1.5 text-[11px] text-slate-650 font-bold leading-normal list-disc pl-3.5">
+                      <li>Uyumlu markaları altındaki <b>çiplerle</b> tek tıkla seçebilirsiniz.</li>
+                      <li><b>Sanayi Modu</b> düğmesine basarak yazıları büyütebilirsiniz.</li>
+                      <li>Yanlışlıkla ürün sildiğinizde tepedeki <b>Geri Al</b> şeridine basın.</li>
+                      <li>Barkod okutmak için <b>Kamera simgesine</b> dokunun.</li>
+                    </ul>
+                  </div>
+                ) : currentPath.includes("/dashboard/warehouses") ? (
+                  <div className="space-y-2.5 bg-slate-50 rounded-2xl p-3 border border-slate-150">
+                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">🗺️ Akıllı Depo Şeması</h4>
+                    <ul className="space-y-1.5 text-[11px] text-slate-650 font-bold leading-normal list-disc pl-3.5">
+                      <li><b>Depoları Düzenle / Ekle</b> butonu ile depolarınızı çoğaltıp adlarını değiştirebilirsiniz.</li>
+                      <li>Şemadaki reyon ve depo isimlerine tıklayarak <b>doğrudan yeniden adlandırın</b>.</li>
+                      <li>Rafların üzerine tıklayarak <b>içindeki ürünleri resimleriyle görebilir</b> veya özel isim/takma ad tanımlayabilirsiniz.</li>
+                    </ul>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5 bg-slate-50 rounded-2xl p-3 border border-slate-150">
+                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">🏠 HBS Ana Kontrol Paneli</h4>
+                    <ul className="space-y-1.5 text-[11px] text-slate-650 font-bold leading-normal list-disc pl-3.5">
+                      <li>Sol menüden dükkanınızın tüm süreçlerini yönetebilirsiniz.</li>
+                      <li>Müşteri taleplerini görmek için <b>Talep Panosuna</b> göz atın.</li>
+                      <li>Şu an aktif olan <b>sektör modunuza göre</b> ekranınız en uygun dile kavuşur.</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Bottom Support Call Action */}
+            <div className="border-t border-slate-150 pt-3">
+              <a
+                href="https://wa.me/905300000000?text=Merhaba%20Ozgur%20Bey,%20HBS%20paneli%20kullaniminda%20takildim,%20yardimci%20olabilir%20misiniz?"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3 text-center flex items-center justify-center gap-2 shadow-md transition active:scale-95 cursor-pointer"
+              >
+                <span>💬</span> Özgür Bey'e WhatsApp'tan Sor
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style jsx global>{`
+        @keyframes slideIn {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+        .animate-slideIn {
+          animation: slideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
     </main>
   );
 }
+

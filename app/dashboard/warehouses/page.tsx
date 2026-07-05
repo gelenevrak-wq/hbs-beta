@@ -50,6 +50,8 @@ type ProductRecord = {
   variants?: any[];
   weight?: string;
   volume?: string;
+  imageUrl?: string;
+  galleryUrls?: string[];
 };
 
 type StockMovement = {
@@ -522,6 +524,10 @@ export default function WarehousesRevampPage() {
   // Active / Selected UI states
   const [activeWarehouseId, setActiveWarehouseId] = useState<string>("");
   const [productSearch, setProductSearch] = useState("");
+  const [editingWarehouseId, setEditingWarehouseId] = useState<string | null>(null);
+  const [editingWarehouseName, setEditingWarehouseName] = useState("");
+  const [editingZoneId, setEditingZoneId] = useState<string | null>(null);
+  const [editingZoneName, setEditingZoneName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<'placement' | 'transfer' | 'audit' | 'zpl' | 'picking'>('placement');
 
@@ -682,6 +688,46 @@ export default function WarehousesRevampPage() {
       const tiers = map[zone].levels.size > 0 ? Math.max(...Array.from(map[zone].levels)) : 1;
       return { zone, depth, tiers };
     });
+  };
+
+  const handleSaveWarehouseName = (whId: string) => {
+    if (!editingWarehouseName.trim()) {
+      setEditingWarehouseId(null);
+      return;
+    }
+    const updated = warehouses.map(w => 
+      w.id === whId ? { ...w, name: editingWarehouseName.trim() } : w
+    );
+    setWarehouses(updated);
+    
+    // Save to local storage registeredStores
+    const storesStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+    const registeredStores = JSON.parse(storesStr);
+    const updatedStores = registeredStores.map((s: any) => {
+      if (s.code === storeSlug) {
+        return { ...s, warehouses: updated };
+      }
+      return s;
+    });
+    window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+    setEditingWarehouseId(null);
+  };
+
+  const handleSaveZoneName = (oldZone: string) => {
+    if (!editingZoneName.trim() || editingZoneName.trim() === oldZone) {
+      setEditingZoneId(null);
+      return;
+    }
+    if (corridors.some(c => c.zone === editingZoneName.trim())) {
+      showError("Bu reyon adı zaten kullanılıyor.");
+      setEditingZoneId(null);
+      return;
+    }
+    const updated = corridors.map(c => 
+      c.zone === oldZone ? { ...c, zone: editingZoneName.trim() } : c
+    );
+    setCorridors(updated);
+    setEditingZoneId(null);
   };
 
   const loadDatabase = () => {
@@ -2019,7 +2065,33 @@ ${sizeStr}
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <h3 className="font-black text-slate-900 text-sm flex items-center gap-1">
-                        🏪 {w.name}
+                        {editingWarehouseId === w.id ? (
+                          <input
+                            type="text"
+                            value={editingWarehouseName}
+                            onChange={(e) => setEditingWarehouseName(e.target.value)}
+                            onBlur={() => handleSaveWarehouseName(w.id)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleSaveWarehouseName(w.id);
+                              if (e.key === "Escape") setEditingWarehouseId(null);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="rounded border border-blue-500 px-2 py-0.5 text-xs font-black text-slate-900 bg-white"
+                            autoFocus
+                          />
+                        ) : (
+                          <span
+                            className="hover:text-blue-600 transition flex items-center gap-1"
+                            title="Yeniden adlandırmak için çift tıklayın ağam"
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              setEditingWarehouseId(w.id);
+                              setEditingWarehouseName(w.name);
+                            }}
+                          >
+                            🏪 {w.name} <span className="text-[10px] text-slate-400 font-normal">✏️</span>
+                          </span>
+                        )}
                       </h3>
                       <p className="text-[10px] text-slate-600 font-bold mt-0.5">{w.city} · {w.purpose}</p>
                     </div>
@@ -2195,7 +2267,31 @@ ${sizeStr}
                       <div key={c.zone} className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 space-y-3.5 shadow-sm relative group hover:border-slate-300 transition">
                         <div className="flex justify-between items-center border-b border-slate-100 pb-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-black text-slate-800">📍 Reyon {c.zone}</span>
+                            {editingZoneId === c.zone ? (
+                              <input
+                                type="text"
+                                value={editingZoneName}
+                                onChange={(e) => setEditingZoneName(e.target.value)}
+                                onBlur={() => handleSaveZoneName(c.zone)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") handleSaveZoneName(c.zone);
+                                  if (e.key === "Escape") setEditingZoneId(null);
+                                }}
+                                className="rounded border border-blue-500 px-2 py-0.5 text-xs font-black text-slate-900 bg-white"
+                                autoFocus
+                              />
+                            ) : (
+                              <span
+                                className="text-sm font-black text-slate-800 hover:text-blue-600 transition cursor-pointer flex items-center gap-1"
+                                title="Yeniden adlandırmak için çift tıklayın"
+                                onDoubleClick={() => {
+                                  setEditingZoneId(c.zone);
+                                  setEditingZoneName(c.zone);
+                                }}
+                              >
+                                📍 Reyon {c.zone} <span className="text-[9px] text-slate-400 font-normal">✏️</span>
+                              </span>
+                            )}
                             <span className="text-[10px] bg-slate-200 text-slate-700 font-extrabold px-2 py-0.5 rounded-full">
                               {c.depth * c.tiers} Toplam Raf
                             </span>
@@ -3217,14 +3313,14 @@ ${sizeStr}
 
         {/* SHELF BINS & COMPARTMENTS CONFIGURATOR POPUP */}
         {activeWh && selectedWhiteboardShelfCode && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
-            <div className="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 m-4 relative animate-scaleUp">
+          <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/60 backdrop-blur-sm animate-fadeIn" onClick={() => setSelectedWhiteboardShelfCode(null)}>
+            <div className="bg-white border-l border-slate-200 h-full w-96 p-6 shadow-2xl space-y-4 relative animate-slideIn flex flex-col justify-between overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <button
                 type="button"
                 onClick={() => setSelectedWhiteboardShelfCode(null)}
-                className="absolute top-4 right-4 text-slate-550 hover:text-slate-600 font-bold"
+                className="absolute top-4 right-4 text-slate-550 hover:text-slate-600 font-bold text-sm"
               >
-                ✕ Close
+                ✕ Kapat
               </button>
 
               <div>
@@ -3357,9 +3453,14 @@ ${sizeStr}
                       .filter(p => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && p.shelf.toLowerCase() === selectedWhiteboardShelfCode.toLowerCase())
                       .map(p => (
                         <div key={p.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1.5 flex items-center justify-between gap-2">
-                          <div className="flex flex-col min-w-0">
-                            <strong className="text-slate-900 font-bold truncate">{p.name}</strong>
-                            <span className="text-[9px] text-slate-500 font-mono">{p.sku}</span>
+                          <div className="flex items-center gap-2 min-w-0">
+                            {p.imageUrl && (
+                              <img src={p.imageUrl} alt={p.name} className="h-7 w-7 rounded-lg object-cover border border-slate-200 shrink-0" />
+                            )}
+                            <div className="flex flex-col min-w-0">
+                              <strong className="text-slate-900 font-bold truncate">{p.name}</strong>
+                              <span className="text-[9px] text-slate-500 font-mono">{p.sku}</span>
+                            </div>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <span className="font-mono font-black text-blue-650 bg-blue-50 px-2 py-0.5 rounded text-[9px]">{p.quantity} Adet</span>

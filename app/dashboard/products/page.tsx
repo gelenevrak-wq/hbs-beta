@@ -255,6 +255,9 @@ export default function ProductsPage() {
   const [successModalTitle, setSuccessModalTitle] = useState("");
   const [successModalDesc, setSuccessModalDesc] = useState("");
   const [storeSlug, setStoreSlug] = useState("");
+  const [sector, setSector] = useState("automotive");
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -610,8 +613,27 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
+    const updateSector = () => {
+      const savedSector = window.localStorage.getItem("hbs-business-sector") || "automotive";
+      setSector(savedSector);
+    };
+    updateSector();
+    window.addEventListener("hbs-sector-changed", updateSector);
+    return () => {
+      window.removeEventListener("hbs-sector-changed", updateSector);
+    };
+  }, []);
+
+  useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
     setLanguage((savedLanguage as LanguageCode) || "tr");
+
+    const updateSector = () => {
+      const savedSector = window.localStorage.getItem("hbs-business-sector") || "automotive";
+      setSector(savedSector);
+    };
+    updateSector();
+    window.addEventListener("hbs-sector-changed", updateSector);
 
     const isSupabaseConfigured = 
       process.env.NEXT_PUBLIC_SUPABASE_URL && 
@@ -2036,17 +2058,36 @@ export default function ProductsPage() {
                 <input
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
-                  placeholder="Örn: Bosch"
+                  placeholder={sector === "footwear" ? "Örn: Nike, Adidas" : sector === "grocery" ? "Örn: Ülker, Eti" : "Örn: Bosch"}
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 />
+                <div className="flex flex-wrap gap-1 mt-1 select-none">
+                  {(sector === "footwear"
+                    ? ['Nike', 'Adidas', 'Puma', 'Flo', 'Derimod', 'Skechers', 'Vans', 'Converse']
+                    : sector === "grocery"
+                    ? ['Ülker', 'Eti', 'Coca-Cola', 'Pınar', 'Sütaş', 'Lipton', 'Torku']
+                    : ['Mercedes', 'BMW', 'Audi', 'Toyota', 'Opel', 'Ford', 'Honda', 'Fiat', 'Renault']
+                  ).map((chip) => (
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => setBrand(chip)}
+                      className="rounded bg-slate-100 border border-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 transition"
+                    >
+                      + {chip}
+                    </button>
+                  ))}
+                </div>
               </label>
 
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-900 font-extrabold">Uyumlu Model</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">
+                  {sector === "footwear" ? "Seri / Koleksiyon" : sector === "grocery" ? "Özellik / Çeşit" : "Uyumlu Model"}
+                </span>
                 <input
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
-                  placeholder="Örn: A4 / Golf 7"
+                  placeholder={sector === "footwear" ? "Örn: Air Max, Stan Smith" : sector === "grocery" ? "Örn: Kakaolu, Diyet" : "Örn: A4 / Golf 7"}
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 />
               </label>
@@ -2441,11 +2482,13 @@ export default function ProductsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xs font-black text-slate-900 font-extrabold uppercase tracking-wider flex items-center gap-1.5">
-                    📦 Ürün Varyantları (İsteğe Bağlı)
+                    📦 {sector === "footwear" ? "Renk & Beden Ayarları" : "Ürün Seçenekleri / Varyantlar"}
                     <AICopilotTooltip fieldKey="variants" position="right" />
                   </h3>
                   <p className="text-[10px] text-slate-900 font-extrabold leading-normal mt-0.5">
-                    Modeller (örn: Autel Ultra/Elite), aksesuarlar veya beden/renk ekleyin.
+                    {sector === "footwear" 
+                      ? "Ayakkabı numaralarını ve renklerini işaretleyerek toplu beden varyantı oluşturun."
+                      : "Ürüne ait farklı çeşitler, aksesuarlar veya beden/renk varyasyonları tanımlayın."}
                   </p>
                 </div>
                 <button
@@ -2456,6 +2499,107 @@ export default function ProductsPage() {
                   + Varyant Ekle
                 </button>
               </div>
+
+              {/* Shoe/Size Quick Matrix Generator */}
+              {sector === "footwear" && (
+                <div className="rounded-xl border border-indigo-100 bg-indigo-50/30 p-3 space-y-3 shadow-xs">
+                  <span className="text-[10px] font-black uppercase text-indigo-700 tracking-wider flex items-center gap-1">
+                    ⚡ Hızlı Renk & Beden Oluşturucu (Esnaf Modu)
+                  </span>
+                  
+                  {/* Sizes */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-slate-650 block">Ayakkabı Numaraları:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'].map(sz => {
+                        const checked = selectedSizes.includes(sz);
+                        return (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => {
+                              setSelectedSizes(prev => 
+                                prev.includes(sz) ? prev.filter(s => s !== sz) : [...prev, sz]
+                              );
+                            }}
+                            className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition ${
+                              checked 
+                                ? "bg-indigo-600 border-indigo-650 text-white shadow-xs" 
+                                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                            }`}
+                          >
+                            {sz}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Colors */}
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-slate-650 block">Renkler:</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {['Siyah', 'Beyaz', 'Kahverengi', 'Lacivert', 'Gri', 'Kırmızı', 'Mavi'].map(col => {
+                        const checked = selectedColors.includes(col);
+                        return (
+                          <button
+                            key={col}
+                            type="button"
+                            onClick={() => {
+                              setSelectedColors(prev => 
+                                prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
+                              );
+                            }}
+                            className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition ${
+                              checked 
+                                ? "bg-indigo-600 border-indigo-650 text-white shadow-xs" 
+                                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                            }`}
+                          >
+                            {col}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Generate Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (selectedSizes.length === 0 || selectedColors.length === 0) {
+                        alert("Lütfen en az bir beden ve bir renk seçin ağam!");
+                        return;
+                      }
+                      const newVars: ProductVariant[] = [];
+                      selectedColors.forEach(color => {
+                        selectedSizes.forEach(size => {
+                          const id = `var-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+                          const nameVal = `${color} - ${size}`;
+                          const skuVal = barcode ? `${barcode}-${color}-${size}` : `SKU-${Date.now()}-${color}-${size}`;
+                          newVars.push({
+                            id,
+                            name: nameVal,
+                            sku: skuVal,
+                            barcode: skuVal,
+                            purchasePrice: purchasePrice || "0",
+                            salePrice: salePrice || "0",
+                            quantity: "10",
+                            warehouse: "Ana Depo",
+                            shelf: ""
+                          });
+                        });
+                      });
+                      setVariants(prev => [...prev, ...newVars]);
+                      setSelectedSizes([]);
+                      setSelectedColors([]);
+                    }}
+                    className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-black py-2 shadow-sm transition active:scale-98 cursor-pointer"
+                  >
+                    ⚡ Seçilen Beden & Renk Kombinasyonlarını Listeye Ekle
+                  </button>
+                </div>
+              )}
 
               {variants.length === 0 ? (
                 <div className="rounded-lg border border-dashed border-slate-200 p-4 text-center">
