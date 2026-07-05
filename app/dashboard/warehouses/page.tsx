@@ -4175,11 +4175,27 @@ ${sizeStr}
               </div>
 
               {/* 2. Görsel Depo Haritası ve Raf Listesi (Layout Map) */}
-              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              {placeProductId && (
+                <div className="fixed inset-0 z-[8887] bg-slate-900/60 backdrop-blur-sm" onClick={() => { setPlaceProductId(""); setPlaceShelf(""); }} />
+              )}
+              <div className={`rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 transition-all duration-300 relative ${
+                placeProductId 
+                  ? "fixed inset-4 md:inset-10 z-[8888] shadow-2xl ring-4 ring-blue-500 overflow-y-auto flex flex-col justify-between" 
+                  : ""
+              }`}>
                 {placeProductId && (
-                  <div className="bg-blue-600 text-white rounded-2xl p-3 text-xs font-black flex justify-between items-center shadow-lg animate-pulse mb-2">
-                    <span className="flex items-center gap-1.5 text-[11px]">🎯 {language === "tr" ? `Yerleşim Modu: Haritadan hedef rafa tıklayın, ardından yerleştirmek için rafa bir kez daha basarak onaylayın` : `Placement Mode: Click a target shelf on the map, then click it again to confirm`}</span>
-                  </div>
+                  <>
+                    <button 
+                      type="button"
+                      onClick={() => { setPlaceProductId(""); setPlaceShelf(""); }}
+                      className="absolute top-4 right-4 text-xs font-black text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-1.5 hover:bg-rose-100 transition active:scale-95 z-50 shadow-sm"
+                    >
+                      ✕ {language === "tr" ? "Yerleşimi Kapat / İptal Et" : "Cancel / Close"}
+                    </button>
+                    <div className="bg-blue-600 text-white rounded-2xl p-3 text-xs font-black flex justify-between items-center shadow-lg animate-pulse mb-2">
+                      <span className="flex items-center gap-1.5 text-[11px]">🎯 {language === "tr" ? `Yerleşim Modu: Haritadan hedef rafa tıklayın, ardından yerleştirmek için rafa bir kez daha basarak onaylayın` : `Placement Mode: Click a target shelf on the map, then click it again to confirm`}</span>
+                    </div>
+                  </>
                 )}
                 <div>
                   <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">{t.printCenterTitle}</span>
@@ -4708,7 +4724,9 @@ ${sizeStr}
                     {/* Interactive Grid representing shelves layout */}
                     <div className="space-y-1 pt-1">
                       <span className="text-[9px] font-black text-slate-550 uppercase tracking-wider block">🏢 Reyon Şematik Görünümü</span>
-                      <div className="rounded-2xl border border-slate-150 p-1.5 pb-4 pr-4 overflow-x-auto bg-slate-50/50 relative select-none">
+                      <div className={`rounded-2xl border border-slate-150 p-1.5 pb-4 pr-4 overflow-x-auto bg-slate-50/50 relative select-none transition-all duration-300 origin-top-left ${
+                        placeProductId ? "scale-[0.8] md:scale-[0.9] shadow-inner" : ""
+                      }`}>
                         <div className="flex flex-col gap-1 min-w-[280px]">
                           {/* Column Headers (Slot 1, Slot 2, ...) */}
                           <div className="flex items-center gap-1 border-b border-slate-100 pb-1 mb-1">
