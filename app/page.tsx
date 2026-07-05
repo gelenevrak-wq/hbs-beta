@@ -925,6 +925,8 @@ export default function HomePage() {
             <form className="flex w-full items-center rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 shadow-sm transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-500/10 focus-within:bg-white" onSubmit={handleSearchSubmit}>
               <span className="text-slate-400 text-xs sm:text-sm select-none mr-2">🔍</span>
               <input
+                id="global-search-input"
+                aria-label={t.search}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t.search}
@@ -941,6 +943,8 @@ export default function HomePage() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
                 </svg>
                 <input
+                  id="camera-capture-input"
+                  aria-label="Camera Capture Input"
                   type="file"
                   accept="image/*"
                   capture="environment"
