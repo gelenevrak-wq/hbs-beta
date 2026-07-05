@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type OrderStatus =
   | "new"
@@ -285,6 +285,16 @@ export default function OrdersPage() {
   const [replyText, setReplyText] = useState("");
   const [message, setMessage] = useState("");
   const [escrowStates, setEscrowStates] = useState<Record<string, "pending" | "locked" | "released" | "charged">>({});
+  const [language, setLanguage] = useState("tr");
+
+  useEffect(() => {
+    const savedLanguage = window.localStorage.getItem("hbs-language");
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
+  const t = translations[language] || translations.tr;
 
   const filteredOrders = useMemo(() => {
     const q = search.trim().toLowerCase();
