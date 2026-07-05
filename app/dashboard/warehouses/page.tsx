@@ -4268,6 +4268,7 @@ ${sizeStr}
                               onPointerDown={(e) => handlePointerDownDrag(e, up.id, getLocalizedField(up.name, language || "tr"), parseInt(up.quantity) || 1)}
                               onPointerMove={handlePointerMoveDrag}
                               onPointerUp={handlePointerUpDrag}
+                              style={{ touchAction: "none" }}
                               className={`flex justify-between items-center border p-2 rounded-xl transition-all cursor-grab active:cursor-grabbing select-none ${
                                 isSelected 
                                   ? "border-blue-500 bg-blue-50 ring-2 ring-blue-300 shadow-md animate-pulse" 
