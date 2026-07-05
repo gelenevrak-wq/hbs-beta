@@ -98,16 +98,16 @@ function movementBadgeClass(type: MovementType) {
   switch (type) {
     case "stock_in":
     case "return":
-      return "bg-emerald-950 text-emerald-200";
+      return "bg-emerald-50 text-emerald-700 border border-emerald-250";
     case "sale":
     case "stock_out":
-      return "bg-blue-950 text-blue-200";
+      return "bg-blue-50 text-blue-700 border border-blue-200";
     case "waste":
-      return "bg-red-950 text-red-200";
+      return "bg-red-50 text-red-700 border border-red-200";
     case "transfer":
-      return "bg-purple-950 text-purple-200";
+      return "bg-purple-50 text-purple-700 border border-purple-200";
     case "manual_adjustment":
-      return "bg-yellow-950 text-yellow-200";
+      return "bg-amber-50 text-amber-805 border border-amber-200";
   }
 }
 
@@ -734,59 +734,59 @@ export default function StockMovementsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-8 text-white">
+    <main className="min-h-screen bg-slate-50/50 px-6 py-8 text-slate-800">
       <div className="mx-auto max-w-7xl">
         <header className="mb-8 flex items-center justify-between">
-          <Link href="/dashboard" className="text-2xl font-black tracking-wide">
+          <Link href="/dashboard" className="text-2xl font-black tracking-wide text-slate-900">
             HBS
           </Link>
 
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard/products"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
             >
               {t.navProducts}
             </Link>
 
             <Link
               href="/dashboard"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
             >
               {t.navDashboard}
             </Link>
 
             <Link
               href="/"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
             >
               {t.navHome}
             </Link>
           </div>
         </header>
 
-        <section className="mb-6 rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
+        <section className="mb-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8 text-slate-800">
           <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-200/80">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">
                 {language === "en" ? "STOCK IN / OUT" : language === "de" ? "BESTANDSEINGANG / AUSHANG" : language === "ru" ? "ПРИХОД / РАСХОД" : language === "ka" ? "მარაგის მიღება / გაცემა" : "STOK GİRİŞ / ÇIKIŞ"}
               </p>
 
-              <h1 className="mt-4 text-4xl font-black sm:text-5xl">
+              <h1 className="mt-4 text-3xl font-black sm:text-4xl text-slate-900">
                 {t.title}
               </h1>
 
-              <p className="mt-5 max-w-3xl leading-7 text-slate-300">
+              <p className="mt-4 max-w-3xl leading-relaxed text-slate-650 text-sm">
                 {t.desc}
               </p>
             </div>
 
-            <div className="rounded-3xl border border-blue-400/20 bg-blue-400/10 p-5">
-              <h2 className="text-lg font-black text-blue-100">
+            <div className="rounded-3xl border border-blue-150 bg-blue-50/50 p-5">
+              <h2 className="text-sm font-black text-blue-900">
                 {t.barcodeCompatibilityTitle}
               </h2>
 
-              <p className="mt-3 text-sm leading-6 text-blue-100/90">
+              <p className="mt-2.5 text-xs leading-relaxed text-blue-700 font-semibold">
                 {t.barcodeCompatibility}
               </p>
             </div>
@@ -794,18 +794,18 @@ export default function StockMovementsPage() {
         </section>
 
         {message && (
-          <div className="mb-6 rounded-3xl border border-blue-400/20 bg-blue-400/10 p-5 text-sm leading-6 text-blue-100">
+          <div className="mb-6 rounded-3xl border border-blue-150 bg-blue-50/50 p-5 text-sm leading-relaxed text-blue-800 font-semibold shadow-sm">
             {message}
           </div>
         )}
 
         <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
-            <h2 className="text-2xl font-black">{t.createMovementHeader}</h2>
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-black text-slate-900">{t.createMovementHeader}</h2>
 
             <div className="mt-6 grid gap-5">
               <label className="grid gap-2">
-                <span className="text-sm text-slate-300">
+                <span className="text-xs font-black text-slate-700 uppercase tracking-wider">
                   {t.barcodePlaceholder}
                 </span>
                 <input
@@ -813,42 +813,42 @@ export default function StockMovementsPage() {
                   onChange={(event) => setCodeInput(event.target.value)}
                   onKeyDown={handleCodeKeyDown}
                   placeholder={t.scanPlaceholder}
-                  className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-524" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-524" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
               </label>
 
               <button
                 type="button"
                 onClick={handleCodeSearch}
-                className="rounded-2xl bg-white px-6 py-4 font-black text-slate-950 hover:bg-slate-200"
+                className="rounded-2xl bg-slate-900 hover:bg-slate-800 text-white px-6 py-4 font-black text-xs transition shadow-sm active:scale-98 cursor-pointer"
               >
                 {t.findProductBtn}
               </button>
 
               {selectedProduct && (
-                <div className="rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5">
-                  <h3 className="text-lg font-black text-emerald-100">
+                <div className="rounded-3xl border border-emerald-150 bg-emerald-50/50 p-5">
+                  <h3 className="text-base font-black text-emerald-900">
                     {getLocalizedField(selectedProduct.name, language)}
                   </h3>
 
-                  <div className="mt-3 grid gap-2 text-sm text-emerald-100/90">
+                  <div className="mt-3 grid gap-2 text-xs text-emerald-800 font-semibold">
                     <p>
-                      <span className="font-bold text-white">{t.barcodeLabel}:</span>{" "}
+                      <span className="font-extrabold text-emerald-950">{t.barcodeLabel}:</span>{" "}
                       {selectedProduct.barcode}
                     </p>
                     <p>
-                      <span className="font-bold text-white">{t.skuLabel}:</span>{" "}
+                      <span className="font-extrabold text-emerald-950">{t.skuLabel}:</span>{" "}
                       {selectedProduct.sku}
                     </p>
                     <p>
-                      <span className="font-bold text-white">{t.oemLabel}:</span>{" "}
+                      <span className="font-extrabold text-emerald-950">{t.oemLabel}:</span>{" "}
                       {selectedProduct.oemCode || "-"}
                     </p>
                     <p>
-                      <span className="font-bold text-white">{t.currentStockLabel}:</span>{" "}
+                      <span className="font-extrabold text-emerald-950">{t.currentStockLabel}:</span>{" "}
                       {selectedProduct.currentStock}
                     </p>
                     <p>
-                      <span className="font-bold text-white">{t.warehouseShelfLabel}:</span>{" "}
+                      <span className="font-extrabold text-emerald-950">{t.warehouseShelfLabel}:</span>{" "}
                       {selectedProduct.warehouse} / {selectedProduct.shelf}
                     </p>
                   </div>
@@ -856,13 +856,13 @@ export default function StockMovementsPage() {
               )}
 
               <label className="grid gap-2">
-                <span className="text-sm text-slate-300">{t.movementTypeLabel}</span>
+                <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.movementTypeLabel}</span>
                 <select
                   value={movementType}
                   onChange={(event) =>
                     setMovementType(event.target.value as MovementType)
                   }
-                  className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none focus:border-white"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
                 >
                   <option value="stock_in">{t.stockIn}</option>
                   <option value="stock_out">{t.stockOut}</option>
@@ -876,17 +876,17 @@ export default function StockMovementsPage() {
 
               <div className="grid gap-5 md:grid-cols-3">
                 <label className="grid gap-2">
-                  <span className="text-sm text-slate-300">{t.qtyLabel}</span>
+                  <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.qtyLabel}</span>
                   <input
                     value={quantity}
                     onChange={(event) => setQuantity(event.target.value)}
                     type="number"
                     placeholder={t.qtyPlaceholder}
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-978" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-978" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
                 </label>
 
                 <label className="grid gap-2">
-                  <span className="text-sm text-slate-300">{t.warehouseLabel}</span>
+                  <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.warehouseLabel}</span>
                   {availableWarehouses.length > 0 ? (
                     <select
                       value={warehouse}
@@ -900,10 +900,10 @@ export default function StockMovementsPage() {
                           setShelf("");
                         }
                       }}
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none focus:border-white text-white"
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
                     >
                       {availableWarehouses.map((wh) => (
-                        <option key={wh.name} value={wh.name} className="bg-slate-950 text-white">{wh.name}</option>
+                        <option key={wh.name} value={wh.name}>{wh.name}</option>
                       ))}
                     </select>
                   ) : (
@@ -911,24 +911,24 @@ export default function StockMovementsPage() {
                       value={warehouse}
                       onChange={(event) => setWarehouse(event.target.value)}
                       placeholder={language === "en" ? "Main Warehouse" : language === "de" ? "Hauptlager" : language === "ru" ? "Основной склад" : language === "ka" ? "მთავარი საწყობი" : "Ana Depo"}
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-522" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-522" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
                   )}
                 </label>
 
                 <label className="grid gap-2">
-                  <span className="text-sm text-slate-300">{t.shelfLabel}</span>
+                  <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.shelfLabel}</span>
                   {availableWarehouses.length > 0 ? (
                     <select
                       value={shelf}
                       onChange={(event) => setShelf(event.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none focus:border-white text-white"
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
                     >
                       {(availableWarehouses.find(wh => wh.name === warehouse)?.shelves || []).map((sh: string) => (
-                        <option key={sh} value={sh} className="bg-slate-950 text-white">{sh}</option>
+                        <option key={sh} value={sh}>{sh}</option>
                       ))}
                       {(!availableWarehouses.find(wh => wh.name === warehouse)?.shelves || 
                         availableWarehouses.find(wh => wh.name === warehouse)?.shelves.length === 0) && (
-                        <option value="" className="bg-slate-950 text-white">{language === "en" ? "No Shelf Position" : language === "de" ? "Keine Regalposition" : language === "ru" ? "Нет положения полки" : language === "ka" ? "თაროს მდებარეობა არ არის" : "Raf Konumu Yok"}</option>
+                        <option value="">{language === "en" ? "No Shelf Position" : language === "de" ? "Keine Regalposition" : language === "ru" ? "Нет положения полки" : language === "ka" ? "თაროს მდებარეობა არ არის" : "Raf Konumu Yok"}</option>
                       )}
                     </select>
                   ) : (
@@ -936,26 +936,26 @@ export default function StockMovementsPage() {
                       value={shelf}
                       onChange={(event) => setShelf(event.target.value)}
                       placeholder="A-01"
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-808" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-808" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
                   )}
                 </label>
               </div>
 
               <label className="grid gap-2">
-                <span className="text-sm text-slate-300">{t.noteLabel}</span>
+                <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.noteLabel}</span>
                 <textarea
                   value={note}
                   onChange={(event) => setNote(event.target.value)}
                   rows={4}
                   placeholder={t.descPlaceholder}
-                  className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner"
                 />
               </label>
 
               <button
                 type="button"
                 onClick={createMovement}
-                className="rounded-2xl bg-white px-6 py-4 font-black text-slate-950 hover:bg-slate-200"
+                className="rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-4 font-black text-xs transition shadow-sm active:scale-98 cursor-pointer"
               >
                 {t.saveBtn}
               </button>
@@ -963,20 +963,20 @@ export default function StockMovementsPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
-              <h2 className="text-2xl font-black">{t.movementsHeader}</h2>
+            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+              <h2 className="text-2xl font-black text-slate-900">{t.movementsHeader}</h2>
 
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={t.searchPlaceholder}
-                className="mt-5 w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-mt-5-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-627" aria-label="Mt 5 w full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                className="mt-5 w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-mt-5-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-627" aria-label="Mt 5 w full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
 
               <div className="mt-5 grid gap-4">
                 {filteredMovements.map((movement) => (
                   <article
                     key={movement.id}
-                    className="rounded-3xl border border-white/10 bg-slate-950/70 p-5"
+                    className="rounded-3xl border border-slate-150 bg-slate-50/40 p-5 shadow-sm"
                   >
                     <div className="mb-3 flex flex-wrap gap-2">
                       <span
@@ -987,33 +987,33 @@ export default function StockMovementsPage() {
                         {movementTypeText(movement.movementType, language)}
                       </span>
 
-                      <span className="rounded-full bg-slate-900 px-3 py-1 text-xs text-slate-300">
+                      <span className="rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs text-slate-500 font-extrabold font-mono">
                         {movement.createdAt}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-black">
+                    <h3 className="text-lg font-black text-slate-900">
                       {getLocalizedField(movement.productName, language)}
                     </h3>
 
-                    <div className="mt-4 grid gap-2 text-sm text-slate-300">
+                    <div className="mt-4 grid gap-2 text-sm text-slate-650 font-medium">
                       <p>
-                        <span className="font-bold text-white">{t.codeLabel}:</span>{" "}
+                        <span className="font-extrabold text-slate-800">{t.codeLabel}:</span>{" "}
                         {movement.productCode}
                       </p>
 
                       <p>
-                        <span className="font-bold text-white">{t.qtyLabel}:</span>{" "}
+                        <span className="font-extrabold text-slate-800">{t.qtyLabel}:</span>{" "}
                         {movement.quantity}
                       </p>
 
                       <p>
-                        <span className="font-bold text-white">{t.warehouseShelfLabel}:</span>{" "}
+                        <span className="font-extrabold text-slate-800">{t.warehouseShelfLabel}:</span>{" "}
                         {movement.warehouse} / {movement.shelf}
                       </p>
 
                       <p>
-                        <span className="font-bold text-white">{t.noteLabel}:</span>{" "}
+                        <span className="font-extrabold text-slate-800">{t.noteLabel}:</span>{" "}
                         {movement.note || "-"}
                       </p>
                     </div>
@@ -1021,19 +1021,19 @@ export default function StockMovementsPage() {
                 ))}
 
                 {filteredMovements.length === 0 && (
-                  <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5 text-sm text-slate-400">
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50/50 p-5 text-sm text-slate-500 text-center">
                     {t.noMovementFound}
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-amber-400/20 bg-amber-400/10 p-6 shadow-2xl">
-              <h2 className="text-2xl font-black text-amber-100">
+            <div className="rounded-[2rem] border border-amber-200 bg-amber-50/50 p-6 shadow-sm">
+              <h2 className="text-lg font-black text-amber-900">
                 {t.realDataConn}
               </h2>
 
-              <p className="mt-3 text-sm leading-6 text-amber-100/90">
+              <p className="mt-3 text-xs leading-relaxed text-amber-805 font-semibold">
                 {t.realDataConnDesc}
               </p>
             </div>
@@ -1042,17 +1042,17 @@ export default function StockMovementsPage() {
       </div>
 
       {isVerifyingBiometric && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-sm transform overflow-hidden rounded-[2.5rem] border border-white/10 bg-slate-900/90 p-8 text-center shadow-2xl backdrop-blur-2xl transition-all text-white">
-            <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-blue-950/50 border border-blue-500/30 text-blue-400 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-fadeIn">
+          <div className="relative w-full max-w-sm transform overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white p-8 text-center shadow-2xl transition-all text-slate-900">
+            <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-blue-50 border border-blue-200 text-blue-600 relative">
               <div className="absolute inset-0 rounded-full border-2 border-blue-500/40 animate-ping opacity-75"></div>
-              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="w-10 h-10 animate-pulse text-blue-400" viewBox="0 0 16 16">
+              <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="w-10 h-10 animate-pulse text-blue-600" viewBox="0 0 16 16">
                 <path d="M4.828 8.9A.5.5 0 0 1 5 8.5c0-.18.064-.324.152-.424.089-.1.202-.154.348-.154.146 0 .26.054.348.154.088.1.152.244.152.424a.5.5 0 1 1-1 0c0-.07-.024-.12-.042-.14-.017-.02-.044-.03-.058-.03-.014 0-.04.01-.058.03-.018.02-.042.07-.042.14a.5.5 0 0 1-.5.5M7 6.5C7 5.672 7.672 5 8.5 5s1.5.672 1.5 1.5c0 .313-.083.56-.217.74-.132.18-.3.26-.483.26-.183 0-.35-.08-.483-.26-.134-.18-.217-.427-.217-.74a.5.5 0 0 0-1 0c0 .687.217 1.14.517 1.543.3.4.717.657 1.183.657.466 0 .883-.257 1.183-.657.3-.404.517-.856.517-1.543 0-1.38-1.12-2.5-2.5-2.5S6 5.12 6 6.5a.5.5 0 0 0 1 0"/>
                 <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M1.5 8a6.5 6.5 0 1 1 13 0 6.5 6.5 0 0 1-13 0"/>
               </svg>
             </div>
             <h3 className="text-xl font-black tracking-tight">{t.biometricAuth}</h3>
-            <p className="mt-3 text-sm text-slate-300 font-semibold leading-relaxed">
+            <p className="mt-3 text-sm text-slate-600 font-semibold leading-relaxed">
               {biometricMessage}
             </p>
           </div>
