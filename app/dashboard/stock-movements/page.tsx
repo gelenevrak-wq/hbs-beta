@@ -75,6 +75,80 @@ function movementBadgeClass(type: MovementType) {
   }
 }
 
+// Translations Dictionary
+const translations = {
+  tr: {
+    createMovementHeader: "Stok İşlemi Oluştur",
+    scanPlaceholder: "Okuyucu ile okutun veya elle yazın",
+    movementTypeLabel: "İşlem Türü",
+    stockIn: "Stok Girişi",
+    stockOut: "Stok Çıkışı",
+    sale: "Satış",
+    return: "İade",
+    waste: "Fire / Hatalı Ürün",
+    manualAdjustment: "Manuel Düzeltme",
+    qtyPlaceholder: "Örn: 5",
+    descPlaceholder: "İşlem açıklaması, tedarikçi, müşteri veya düzeltme nedeni",
+    searchPlaceholder: "Ürün, kod, depo, raf veya not ara"
+  },
+  en: {
+    createMovementHeader: "Create Stock Transaction",
+    scanPlaceholder: "Scan with reader or type manually",
+    movementTypeLabel: "Transaction Type",
+    stockIn: "Stock In",
+    stockOut: "Stock Out",
+    sale: "Sale",
+    return: "Return",
+    waste: "Waste / Defective",
+    manualAdjustment: "Manual Adjustment",
+    qtyPlaceholder: "E.g., 5",
+    descPlaceholder: "Transaction description, supplier, customer or reason",
+    searchPlaceholder: "Search product, code, warehouse, shelf or note"
+  },
+  de: {
+    createMovementHeader: "Lagerbewegung erstellen",
+    scanPlaceholder: "Mit Lesegerät scannen oder manuell eingeben",
+    movementTypeLabel: "Transaktionsart",
+    stockIn: "Wareneingang",
+    stockOut: "Warenausgang",
+    sale: "Verkauf",
+    return: "Retoure",
+    waste: "Ausschuss / Defekt",
+    manualAdjustment: "Manuelle Anpassung",
+    qtyPlaceholder: "Z.B., 5",
+    descPlaceholder: "Transaktionsbeschreibung, Lieferant, Kunde oder Grund",
+    searchPlaceholder: "Produkt, Code, Lager, Regal oder Notiz suchen"
+  },
+  ru: {
+    createMovementHeader: "Создать складскую операцию",
+    scanPlaceholder: "Отсканируйте сканером или введите вручную",
+    movementTypeLabel: "Тип операции",
+    stockIn: "Поступление товара",
+    stockOut: "Расход товара",
+    sale: "Продажа",
+    return: "Возврат",
+    waste: "Брак / Дефект",
+    manualAdjustment: "Ручная корректировка",
+    qtyPlaceholder: "Напр., 5",
+    descPlaceholder: "Описание операции, поставщик, клиент или причина",
+    searchPlaceholder: "Поиск товара, кода, склада, полки или примечания"
+  },
+  ka: {
+    createMovementHeader: "მარაგის ოპერაციის შექმნა",
+    scanPlaceholder: "დაასკანირეთ მკითხველით ან შეიყვანეთ ხელით",
+    movementTypeLabel: "ოპერაციის ტიპი",
+    stockIn: "მარაგის მიღება",
+    stockOut: "მარაგის გაცემა",
+    sale: "გაყიდვა",
+    return: "დაბრუნება",
+    waste: "წუნი / დეფექტი",
+    manualAdjustment: "მანუალური კორექტირება",
+    qtyPlaceholder: "მაგ: 5",
+    descPlaceholder: "ოპერაციის აღწერა, მომწოდებელი, კლიენტი ან მიზეზი",
+    searchPlaceholder: "ძებნა პროდუქტის, კოდის, საწყობის, თაროს ან შენიშვნის მიხედვით"
+  }
+};
+
 export default function StockMovementsPage() {
   const [products, setProducts] = useState<Product[]>(demoProducts);
   const [movements, setMovements] = useState<StockMovement[]>(initialMovements);
@@ -423,7 +497,7 @@ export default function StockMovementsPage() {
 
         <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl">
-            <h2 className="text-2xl font-black">Stok İşlemi Oluştur</h2>
+            <h2 className="text-2xl font-black">{t.createMovementHeader}</h2>
 
             <div className="mt-6 grid gap-5">
               <label className="grid gap-2">
@@ -434,7 +508,7 @@ export default function StockMovementsPage() {
                   value={codeInput}
                   onChange={(event) => setCodeInput(event.target.value)}
                   onKeyDown={handleCodeKeyDown}
-                  placeholder="Okuyucu ile okutun veya elle yazın"
+                  placeholder={t.scanPlaceholder}
                   className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-524" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
               </label>
 
@@ -478,7 +552,7 @@ export default function StockMovementsPage() {
               )}
 
               <label className="grid gap-2">
-                <span className="text-sm text-slate-300">İşlem Türü</span>
+                <span className="text-sm text-slate-300">{t.movementTypeLabel}</span>
                 <select
                   value={movementType}
                   onChange={(event) =>
@@ -486,13 +560,13 @@ export default function StockMovementsPage() {
                   }
                   className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none focus:border-white"
                 >
-                  <option value="stock_in">Stok Girişi</option>
-                  <option value="stock_out">Stok Çıkışı</option>
-                  <option value="sale">Satış</option>
-                  <option value="return">İade</option>
-                  <option value="waste">Fire / Hatalı Ürün</option>
+                  <option value="stock_in">{t.stockIn}</option>
+                  <option value="stock_out">{t.stockOut}</option>
+                  <option value="sale">{t.sale}</option>
+                  <option value="return">{t.return}</option>
+                  <option value="waste">{t.waste}</option>
                   <option value="transfer">Depo Transferi</option>
-                  <option value="manual_adjustment">Manuel Düzeltme</option>
+                  <option value="manual_adjustment">{t.manualAdjustment}</option>
                 </select>
               </label>
 
@@ -503,7 +577,7 @@ export default function StockMovementsPage() {
                     value={quantity}
                     onChange={(event) => setQuantity(event.target.value)}
                     type="number"
-                    placeholder="Örn: 5"
+                    placeholder={t.qtyPlaceholder}
                     className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-978" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
                 </label>
 
@@ -569,7 +643,7 @@ export default function StockMovementsPage() {
                   value={note}
                   onChange={(event) => setNote(event.target.value)}
                   rows={4}
-                  placeholder="İşlem açıklaması, tedarikçi, müşteri veya düzeltme nedeni"
+                  placeholder={t.descPlaceholder}
                   className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
                 />
               </label>
@@ -591,7 +665,7 @@ export default function StockMovementsPage() {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Ürün, kod, depo, raf veya not ara"
+                placeholder={t.searchPlaceholder}
                 className="mt-5 w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-mt-5-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-627" aria-label="Mt 5 w full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
 
               <div className="mt-5 grid gap-4">

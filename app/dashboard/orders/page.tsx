@@ -181,6 +181,100 @@ function orderTotalText(order: CustomerOrder) {
   return `${total.toFixed(2)} GEL`;
 }
 
+// Translations Dictionary
+const translations = {
+  tr: {
+    customerInfo: "Müşteri Bilgileri",
+    city: "Şehir",
+    escrowTitle: "Kiralama Güvence Bedeli (Escrow Deposit)",
+    escrowDesc: "Airbnb tarzı otomatik hasar ve iade güvence sistemi aktiftir.",
+    products: "Ürünler",
+    statusManagement: "Durum Yönetimi",
+    messageToCustomer: "Müşteriye Mesaj",
+    messagePlaceholder: "Fiyat, teslimat süresi, stok durumu veya ek açıklama yazın",
+    allRecords: "Tüm Kayıtlar",
+    waitingCustomer: "Müşteri Onayı Bekliyor",
+    approved: "Onaylandı",
+    preparing: "Hazırlanıyor",
+    completed: "Tamamlandı",
+    cancelled: "İptal",
+    searchPlaceholder: "Müşteri, telefon, ürün, kod veya şehir ara",
+    transactionId: "İşlem ID"
+  },
+  en: {
+    customerInfo: "Customer Information",
+    city: "City",
+    escrowTitle: "Rental Escrow Deposit",
+    escrowDesc: "Airbnb-style automatic damage and refund assurance system is active.",
+    products: "Products",
+    statusManagement: "Status Management",
+    messageToCustomer: "Message to Customer",
+    messagePlaceholder: "Write price, delivery time, stock status or additional notes",
+    allRecords: "All Records",
+    waitingCustomer: "Waiting for Customer Approval",
+    approved: "Approved",
+    preparing: "Preparing",
+    completed: "Completed",
+    cancelled: "Cancelled",
+    searchPlaceholder: "Search customer, phone, product, code or city",
+    transactionId: "Transaction ID"
+  },
+  de: {
+    customerInfo: "Kundeninformationen",
+    city: "Stadt",
+    escrowTitle: "Mietkautionshinterlegung (Treuhand)",
+    escrowDesc: "Automatische Kautions- und Rückerstattungsgarantie nach Airbnb-Art ist aktiv.",
+    products: "Produkte",
+    statusManagement: "Statusverwaltung",
+    messageToCustomer: "Nachricht an den Kunden",
+    messagePlaceholder: "Preis, Lieferzeit, Lagerstatus oder zusätzliche Notizen schreiben",
+    allRecords: "Alle Einträge",
+    waitingCustomer: "Wartet auf Kundenfreigabe",
+    approved: "Freigegeben",
+    preparing: "In Vorbereitung",
+    completed: "Abgeschlossen",
+    cancelled: "Storniert",
+    searchPlaceholder: "Kunde, Telefon, Produkt, Code oder Stadt suchen",
+    transactionId: "Transaktions-ID"
+  },
+  ru: {
+    customerInfo: "Информация о клиенте",
+    city: "Город",
+    escrowTitle: "Гарантийный депозит аренды (Escrow)",
+    escrowDesc: "Активна система автоматического страхования ущерба и возврата средств в стиле Airbnb.",
+    products: "Товары",
+    statusManagement: "Управление статусом",
+    messageToCustomer: "Сообщение клиенту",
+    messagePlaceholder: "Напишите цену, срок поставки, наличие на складе или примечания",
+    allRecords: "Все записи",
+    waitingCustomer: "Ожидает одобрения клиента",
+    approved: "Одобрено",
+    preparing: "Подготовка",
+    completed: "Выполнено",
+    cancelled: "Отменено",
+    searchPlaceholder: "Поиск клиента, телефона, товара, кода или города",
+    transactionId: "ID транзакции"
+  },
+  ka: {
+    customerInfo: "კლიენტის ინფორმაცია",
+    city: "ქალაქი",
+    escrowTitle: "საიჯარო დეპოზიტი (Escrow)",
+    escrowDesc: "აქტიურია Airbnb-ის სტილის ავტომატური დაზიანებისა და თანხის დაბრუნების გარანტიის სისტემა.",
+    products: "პროდუქტები",
+    statusManagement: "სტატუსის მართვა",
+    messageToCustomer: "შეტყობინება კლიენტისთვის",
+    messagePlaceholder: "მიუთითეთ ფასი, მიწოდების დრო, მარაგის სტატუსი ან დამატებითი შენიშვნა",
+    allRecords: "ყველა ჩანაწერი",
+    waitingCustomer: "მომხმარებლის დასტურის მოლოდინში",
+    approved: "დადასტურებული",
+    preparing: "მზადდება",
+    completed: "დასრულებული",
+    cancelled: "გაუქმებული",
+    searchPlaceholder: "ძებნა კლიენტის, ტელეფონის, პროდუქტის, კოდის ან ქალაქის მიხედვით",
+    transactionId: "ტრანზაქციის ID"
+  }
+};
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState<CustomerOrder[]>(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState<CustomerOrder | null>(
@@ -345,7 +439,7 @@ export default function OrdersPage() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                  placeholder="Müşteri, telefon, ürün, kod veya şehir ara" id="id-page-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-862" aria-label="Rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                  placeholder={t.searchPlaceholder} id="id-page-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-862" aria-label="Rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
               </label>
 
               <label className="grid gap-2">
@@ -357,14 +451,14 @@ export default function OrdersPage() {
                   }
                   className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none focus:border-white"
                 >
-                  <option value="all">Tüm Kayıtlar</option>
+                  <option value="all">{t.allRecords}</option>
                   <option value="new">Yeni</option>
                   <option value="quoted">Teklif Verildi</option>
-                  <option value="waiting_customer">Müşteri Onayı Bekliyor</option>
-                  <option value="approved">Onaylandı</option>
-                  <option value="preparing">Hazırlanıyor</option>
-                  <option value="completed">Tamamlandı</option>
-                  <option value="cancelled">İptal</option>
+                  <option value="waiting_customer">{t.waitingCustomer}</option>
+                  <option value="approved">{t.approved}</option>
+                  <option value="preparing">{t.preparing}</option>
+                  <option value="completed">{t.completed}</option>
+                  <option value="cancelled">{t.cancelled}</option>
                 </select>
               </label>
             </div>
@@ -448,7 +542,7 @@ export default function OrdersPage() {
 
                 <div className="grid gap-4">
                   <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-                    <h3 className="mb-3 font-black">Müşteri Bilgileri</h3>
+                    <h3 className="mb-3 font-black">{t.customerInfo}</h3>
 
                     <div className="grid gap-2 text-sm text-slate-300 md:grid-cols-2">
                       <p>
@@ -467,7 +561,7 @@ export default function OrdersPage() {
                       </p>
 
                       <p>
-                        <span className="font-bold text-white">Şehir:</span>{" "}
+                        <span className="font-bold text-white">{t.city}:</span>{" "}
                         {selectedOrder.city}
                       </p>
                     </div>
@@ -485,8 +579,8 @@ export default function OrdersPage() {
                         <div className="flex items-center gap-2">
                           <span className="text-xl">🔒</span>
                           <div>
-                            <h4 className="text-sm font-black text-blue-200">Kiralama Güvence Bedeli (Escrow Deposit)</h4>
-                            <p className="text-[10px] text-blue-400 font-bold leading-relaxed">Airbnb tarzı otomatik hasar ve iade güvence sistemi aktiftir.</p>
+                            <h4 className="text-sm font-black text-blue-200">{t.escrowTitle}</h4>
+                            <p className="text-[10px] text-blue-400 font-bold leading-relaxed">{t.escrowDesc}</p>
                           </div>
                         </div>
                         <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider border ${
@@ -518,7 +612,7 @@ export default function OrdersPage() {
                           <span className="font-bold text-white">{selectedOrder.customerName}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-slate-400">İşlem ID:</span>
+                          <span className="text-slate-400">{t.transactionId}:</span>
                           <span className="font-mono text-slate-500">ESC-LOCK-{selectedOrder.id.toUpperCase()}</span>
                         </div>
                       </div>
@@ -567,7 +661,7 @@ export default function OrdersPage() {
                   )}
 
                   <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-                    <h3 className="mb-4 font-black">Ürünler</h3>
+                    <h3 className="mb-4 font-black">{t.products}</h3>
 
                     <div className="grid gap-3">
                       {selectedOrder.items.map((item) => (
@@ -615,7 +709,7 @@ export default function OrdersPage() {
                   </div>
 
                   <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-                    <h3 className="mb-3 font-black">Durum Yönetimi</h3>
+                    <h3 className="mb-3 font-black">{t.statusManagement}</h3>
 
                     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                       <button
@@ -669,14 +763,14 @@ export default function OrdersPage() {
                   </div>
 
                   <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
-                    <h3 className="mb-3 font-black">Müşteriye Mesaj</h3>
+                    <h3 className="mb-3 font-black">{t.messageToCustomer}</h3>
 
                     <textarea
                       value={replyText}
                       onChange={(event) => setReplyText(event.target.value)}
                       rows={5}
                       className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                      placeholder="Fiyat, teslimat süresi, stok durumu veya ek açıklama yazın"
+                      placeholder={t.messagePlaceholder}
                     />
 
                     <button
