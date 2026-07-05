@@ -647,6 +647,57 @@ const translateWarehousePurpose = (purpose: string, lang: string) => {
 
 export default function WarehousesRevampPage() {
 
+  // Pick-to-Light & AR Camera overlay states
+  const [pickToLightActiveShelf, setPickToLightActiveShelf] = useState<string | null>(null);
+  const [isArActive, setIsArActive] = useState(false);
+  const [arVideoStream, setArVideoStream] = useState<MediaStream | null>(null);
+
+  // Periodic audible beep guidance for Pick-to-Light guide
+  useEffect(() => {
+    if (!pickToLightActiveShelf) return;
+    const interval = setInterval(() => {
+      // Gentle audible tone
+      try {
+        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioCtx.currentTime); // 800Hz gentle guided beep
+        gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.08);
+      } catch (e) {
+        console.warn("Audio Context blocked or unavailable:", e);
+      }
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [pickToLightActiveShelf]);
+
+  const handleStartAR = () => {
+    setIsArActive(true);
+    if (typeof window !== "undefined" && navigator.mediaDevices) {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+        .then(stream => {
+          setArVideoStream(stream);
+          const videoEl = document.getElementById("ar-video-feed") as HTMLVideoElement;
+          if (videoEl) videoEl.srcObject = stream;
+        })
+        .catch(err => {
+          console.warn("Camera access denied or unavailable, showing simulated AR overlay.", err);
+        });
+    }
+  };
+
+  const handleStopAR = () => {
+    if (arVideoStream) {
+      arVideoStream.getTracks().forEach(track => track.stop());
+      setArVideoStream(null);
+    }
+    setIsArActive(false);
+  };
+
   // Direct quantity adjustments inside the visual shelf matrix (for child-proof ease of use!)
   const handleAdjustQuantity = (productId: string, delta: number) => {
     const updated = products.map(p => {
@@ -3093,14 +3144,19 @@ ${sizeStr}
                         <div
                           key={sh}
                           onClick={() => handleShelfCardClick(sh)}
-                          className={`group rounded-2xl border p-3 flex flex-col justify-between items-stretch transition cursor-pointer hover:shadow-md ${
+                          className={`group rounded-2xl border p-3 flex flex-col justify-between items-stretch transition cursor-pointer hover:shadow-md ${sh === pickToLightActiveShelf ? "ring-4 ring-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.7)] border-emerald-400 bg-emerald-50/30 scale-[1.02] animate-pulse" : 
                             containsProduct
                               ? "bg-indigo-50/40 border-indigo-300/80 ring-1 ring-indigo-100"
                               : "bg-slate-50/40 border-slate-200 hover:border-slate-350 border-dashed"
                           }`}
                         >
                           <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
-                            <span className="font-mono text-xs font-black text-slate-800 bg-slate-200/80 px-2 py-0.5 rounded-lg group-hover:bg-blue-650 group-hover:text-white transition">{sh}</span>
+                            <span className="font-mono text-xs font-black text-slate-800 bg-slate-200/80 px-2 py-0.5 rounded-lg group-hover:bg-blue-650 group-hover:text-white transition flex items-center gap-1">
+                              {sh}
+                              {sh === pickToLightActiveShelf && (
+                                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping"></span>
+                              )}
+                            </span>
                             <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
                               containsProduct ? "bg-indigo-100 text-indigo-800" : "bg-slate-100 text-slate-500"
                             }`}>

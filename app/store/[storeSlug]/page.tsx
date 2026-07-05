@@ -1069,6 +1069,8 @@ export default function StorePage() {
   const [message, setMessage] = useState("");
 
   const [products, setProducts] = useState<ProductRecord[]>([]);
+  const [activeGroupBuy, setActiveGroupBuy] = useState<{ productId: string; productName: string; poolCode: string; count: number } | null>(null);
+  const [hasJoinedGroup, setHasJoinedGroup] = useState(false);
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [isOwner, setIsOwner] = useState(false);
 
@@ -1470,6 +1472,26 @@ export default function StorePage() {
                       <div className="flex justify-between items-center pt-2.5 border-t border-slate-100 mt-2">
                         <span className="font-black text-xs text-slate-900">{displayPrice}</span>
                         <div className="flex gap-1.5">
+                          {isPricingFixed && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                checkProfileAndExecute(() => {
+                                  setActiveGroupBuy({
+                                    productId: p.id,
+                                    productName: finalName,
+                                    poolCode: "B2B-POOL-" + Math.floor(Math.random() * 9000 + 1000),
+                                    count: 1
+                                  });
+                                  setHasJoinedGroup(false);
+                                });
+                              }}
+                              className="rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-800 font-extrabold text-[10px] px-2.5 py-1.5 transition active:scale-95 flex items-center gap-1 shrink-0"
+                              title="Toptan indirim için ortak sipariş grubu oluşturun"
+                            >
+                              👥 Birlikte Al
+                            </button>
+                          )}
                           {isPricingFixed ? (
                             <button
                               type="button"
@@ -1808,6 +1830,89 @@ export default function StorePage() {
         )}
 
       </div>
+
+      {activeGroupBuy && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4 animate-scaleIn">
+            <div className="flex items-center justify-between">
+              <span className="text-xl">👥</span>
+              <h3 className="text-base font-black text-slate-900">B2B Ortak Satın Alma Grubu</h3>
+              <button
+                type="button"
+                onClick={() => setActiveGroupBuy(null)}
+                className="text-slate-400 hover:text-slate-600 text-lg font-black"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
+              <p className="text-xs font-bold text-slate-800">📦 {activeGroupBuy.productName}</p>
+              <p className="text-[10px] text-slate-500 font-bold">Grup Kodu: <span className="font-mono text-blue-600">{activeGroupBuy.poolCode}</span></p>
+              <div className="border-t border-slate-200/60 pt-2 flex justify-between text-xs font-extrabold">
+                <span className="text-slate-600">Ortak Alım İndirimi:</span>
+                <span className="text-emerald-600">-%20 Toptan İskonto</span>
+              </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-[10px] font-black text-slate-700 uppercase">
+                <span>Katılımcı Sayısı</span>
+                <span>{activeGroupBuy.count} / 3 Üye</span>
+              </div>
+              <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
+                <div 
+                  className="bg-blue-600 h-full rounded-full transition-all duration-500" 
+                  style={{ width: `${(activeGroupBuy.count / 3) * 100}%` }}
+                />
+              </div>
+              <p className="text-[9px] text-slate-500 font-semibold leading-relaxed">
+                {activeGroupBuy.count < 3 
+                  ? "Toptan iskonto oranının aktifleşmesi için 3 katılımcıya ulaşılamadı. Grubu paylaşarak diğer dükkanların katılımını sağlayın."
+                  : "✓ Tebrikler! Grup tamamlandı. %20 indirim kuponunuz proforma faturanıza uygulandı: HBS-GROUP-20"}
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              {activeGroupBuy.count < 3 ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={hasJoinedGroup}
+                    onClick={() => {
+                      setActiveGroupBuy(prev => prev ? { ...prev, count: prev.count + 1 } : null);
+                      setHasJoinedGroup(true);
+                      setMessage("Gruba başarıyla katıldınız!");
+                    }}
+                    className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 py-2.5 text-xs font-black text-white transition active:scale-95 disabled:opacity-50"
+                  >
+                    {hasJoinedGroup ? "✓ Katıldınız" : "👥 Gruba Katıl"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.origin + window.location.pathname + "?pool=" + activeGroupBuy.poolCode);
+                      setMessage("Grup bağlantısı panoya kopyalandı! Arkadaşlarınızla paylaşabilirsiniz.");
+                    }}
+                    className="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-800 transition active:scale-95"
+                  >
+                    🔗 Paylaş
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setActiveGroupBuy(null)}
+                  className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 py-2.5 text-xs font-black text-white transition active:scale-95"
+                >
+                  Kuponu Uygula ve Siparişe Git
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {profileModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-md animate-fadeIn">
