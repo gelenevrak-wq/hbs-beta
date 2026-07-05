@@ -385,8 +385,22 @@ export const translations = {
 
 export function getLocalizedField(fieldValue: string | null | undefined, lang: string): string {
   if (!fieldValue) return "";
-  const clean = String(fieldValue).trim();
+  let clean = String(fieldValue).trim();
   
+  // Strip outer quotes if double-stringified
+  if (clean.startsWith('"') && clean.endsWith('"')) {
+    clean = clean.slice(1, -1).trim();
+  }
+  // Try parsing double-escaped strings
+  if (clean.includes('\\"')) {
+    try {
+      const parsedOnce = JSON.parse('"' + clean.replace(/"/g, '\\"') + '"');
+      if (parsedOnce.startsWith("{") && parsedOnce.endsWith("}")) {
+        clean = parsedOnce;
+      }
+    } catch (e) {}
+  }
+
   const isWarning = (val: string) => {
     const l = val.toLowerCase();
     return l.includes("exceeded") || l.includes("limit") || l.includes("mymemory") || l.includes("warning");

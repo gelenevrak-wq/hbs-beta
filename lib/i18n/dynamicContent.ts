@@ -626,7 +626,19 @@ export function translateProductField(
   // 1. Eğer veri nesneyse veya JSON formatında bir string ise çözüp dile göre metni çıkaralım
   let parsedTextObj: any = null;
   if (typeof text === "string") {
-    const trimmed = text.trim();
+    let trimmed = text.trim();
+    if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+      trimmed = trimmed.slice(1, -1).trim();
+    }
+    if (trimmed.includes('\\"')) {
+      try {
+        const parsedOnce = JSON.parse('"' + trimmed.replace(/"/g, '\\"') + '"');
+        if (parsedOnce.startsWith("{") && parsedOnce.endsWith("}")) {
+          trimmed = parsedOnce;
+        }
+      } catch (e) {}
+    }
+
     if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
       try {
         parsedTextObj = JSON.parse(trimmed);
