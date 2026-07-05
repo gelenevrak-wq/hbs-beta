@@ -984,15 +984,114 @@ export default function WarehousesRevampPage() {
     handleAdjustQuantity(placeProductId, delta);
   };
 
+  const executeDirectPlacement = (productId: string, shelfCode: string, qtyVal: number) => {
+    const activeWh = warehouses.find(w => w.id === activeWarehouseId);
+    if (!activeWh) return;
+
+    try {
+      const targetProd = products.find((p) => p.id === productId);
+      if (!targetProd) return;
+
+      // Calculate current occupied weight & volume on shelfCode
+      const currentProductsOnShelf = products.filter(
+        (p) =>
+          p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+          p.shelf.toLowerCase() === shelfCode.toLowerCase() &&
+          p.id !== productId
+      );
+
+      let occupiedWeight = 0;
+      let occupiedVolume = 0;
+
+      currentProductsOnShelf.forEach((p) => {
+        const prodQty = parseFloat(p.quantity) || 0;
+        const prodWeight = parseFloat(p.weight || "1.0") || 1.0;
+        const prodVolume = parseFloat(p.volume || "0.01") || 0.01;
+        occupiedWeight += prodQty * prodWeight;
+        occupiedVolume += prodQty * prodVolume;
+      });
+
+      const newProdWeight = parseFloat(targetProd.weight || "1.0") || 1.0;
+      const newProdVolume = parseFloat(targetProd.volume || "0.01") || 0.01;
+      const newPlacementWeight = qtyVal * newProdWeight;
+      const newPlacementVolume = qtyVal * newProdVolume;
+
+      const totalWeightAfter = occupiedWeight + newPlacementWeight;
+      const totalVolumeAfter = occupiedVolume + newPlacementVolume;
+
+      const shelfCap = shelfCapacities[shelfCode] || { maxWeight: 100, maxVolume: 1.0 };
+
+      if (totalWeightAfter > shelfCap.maxWeight) {
+        showError(activeLang === "en" ? `Capacity Exceeded! Shelf Weight Limit: ${shelfCap.maxWeight} kg. Requested load: ${totalWeightAfter.toFixed(1)} kg.` : `Kapasite Aşımı! Raf Ağırlık Limiti: ${shelfCap.maxWeight} kg. Yerleştirilmek istenen toplam yük: ${totalWeightAfter.toFixed(1)} kg.`);
+        return;
+      }
+
+      if (totalVolumeAfter > shelfCap.maxVolume) {
+        showError(activeLang === "en" ? `Capacity Exceeded! Shelf Volume Limit: ${shelfCap.maxVolume} m³. Requested volume: ${totalVolumeAfter.toFixed(3)} m³.` : `Kapasite Aşımı! Raf Hacim Limiti: ${shelfCap.maxVolume} m³. Yerleştirilmek istenen toplam hacim: ${totalVolumeAfter.toFixed(3)} m³.`);
+        return;
+      }
+
+      // Update quantity and warehouse/shelf on product
+      const updatedProducts = products.map((p) => {
+        if (p.id === productId) {
+          return {
+            ...p,
+            warehouse: activeWh.name,
+            shelf: shelfCode,
+            quantity: qtyVal.toString(),
+          };
+        }
+        return p;
+      });
+
+      // Save products to localStorage
+      window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
+      saveProductsStateAndSync(updatedProducts);
+
+      // Create stock movement
+      const newMovement: StockMovement = {
+        id: `mov-${Date.now()}`,
+        productName: getLocalizedField(targetProd.name, activeLang),
+        productCode: targetProd.sku || targetProd.barcode,
+        movementType: "manual_adjustment",
+        quantity: qtyVal,
+        warehouse: activeWh.name,
+        shelf: shelfCode,
+        note: activeLang === "en" ? "Shelf Placement" : "Raf Konum Yerleşimi",
+        createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)",
+      };
+
+      const updatedMovements = [newMovement, ...movements];
+      window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(updatedMovements));
+      setMovements(updatedMovements);
+
+      // Reset selection
+      setPlaceProductId("");
+      setPlaceQty(1);
+      
+      showSuccess(
+        activeLang === "en" 
+          ? `"${getLocalizedField(targetProd.name, activeLang)}" successfully placed at [${activeWh.name} - ${shelfCode}].` 
+          : `"${getLocalizedField(targetProd.name, "tr")}" başarıyla [${activeWh.name} - ${shelfCode}] konumuna yerleştirildi.`
+      );
+    } catch (e: any) {
+      showError(`Yerleşim sırasında hata: ${e.message || e}`);
+    }
+  };
+
   const handleShelfCardClick = (shelfCode: string) => {
-    setPlaceShelf(shelfCode);
-    const formEl = document.getElementById("product-placement-form");
-    if (formEl) {
-      formEl.scrollIntoView({ behavior: 'smooth' });
-      formEl.classList.add("ring-4", "ring-emerald-400/50");
-      setTimeout(() => {
-        formEl.classList.remove("ring-4", "ring-emerald-400/50");
-      }, 1500);
+    if (placeProductId) {
+      executeDirectPlacement(placeProductId, shelfCode, placeQty || 1);
+    } else {
+      setPlaceShelf(shelfCode);
+      const formEl = document.getElementById("product-placement-form");
+      if (formEl) {
+        formEl.scrollIntoView({ behavior: 'smooth' });
+        formEl.classList.add("ring-4", "ring-emerald-400/50");
+        setTimeout(() => {
+          formEl.classList.remove("ring-4", "ring-emerald-400/50");
+        }, 1500);
+      }
     }
   };
 
@@ -4078,29 +4177,47 @@ ${sizeStr}
                       </div>
 
                       <div className="grid gap-2 max-h-32 overflow-y-auto pr-1 text-xs">
-                        {unplacedProducts.map(up => (
-                          <div key={up.id} className="flex justify-between items-center bg-white border border-amber-200/50 p-2 rounded-xl">
-                            <span className="font-bold text-slate-800">📦 {getLocalizedField(up.name, language || "tr")} ({up.quantity} {t.qty || "Adet"})</span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPlaceProductId(up.id);
-                                setPlaceQty(parseInt(up.quantity) || 1);
-                                const form = document.getElementById("product-placement-form");
-                                if (form) {
-                                  form.scrollIntoView({ behavior: "smooth" });
-                                  form.classList.add("ring-4", "ring-emerald-500", "shadow-[0_0_20px_rgba(16,185,129,0.5)]");
-                                  setTimeout(() => {
-                                    form.classList.remove("ring-4", "ring-emerald-500", "shadow-[0_0_20px_rgba(16,185,129,0.5)]");
-                                  }, 2000);
-                                }
-                              }}
-                              className="text-[9px] font-black text-blue-600 hover:text-blue-700 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100"
+                        {unplacedProducts.map(up => {
+                          const isSelected = up.id === placeProductId;
+                          return (
+                            <div 
+                              key={up.id} 
+                              className={`flex justify-between items-center border p-2 rounded-xl transition-all ${
+                                isSelected 
+                                  ? "border-blue-500 bg-blue-50 ring-2 ring-blue-300 shadow-md animate-pulse" 
+                                  : "bg-white border-amber-200/50 hover:border-blue-300 hover:bg-slate-50"
+                              }`}
                             >
-                              {t.placeBtn || "Yerleştir"} 🔒
-                            </button>
-                          </div>
-                        ))}
+                              <div className="flex flex-col">
+                                <span className="font-bold text-slate-800">📦 {getLocalizedField(up.name, language || "tr")} ({up.quantity} {t.qty || "Adet"})</span>
+                                {isSelected && (
+                                  <span className="text-[9px] text-blue-650 font-black mt-0.5 animate-pulse">
+                                    👈 Seçildi! Yerleştirmek için yukarıdaki tahtadan (canvas) bir rafa tıklayın.
+                                  </span>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (isSelected) {
+                                    setPlaceProductId("");
+                                    setPlaceQty(1);
+                                  } else {
+                                    setPlaceProductId(up.id);
+                                    setPlaceQty(parseInt(up.quantity) || 1);
+                                  }
+                                }}
+                                className={`text-[9px] font-black px-2.5 py-1 rounded-lg border transition ${
+                                  isSelected 
+                                    ? "bg-red-50 border-red-200 text-red-650 hover:bg-red-100" 
+                                    : "bg-blue-50 text-blue-650 border-blue-100 hover:bg-blue-100"
+                                }`}
+                              >
+                                {isSelected ? "İptal Et" : (t.placeBtn || "Yerleştir")}
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   );
