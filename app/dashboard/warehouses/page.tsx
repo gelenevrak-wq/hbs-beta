@@ -3287,7 +3287,22 @@ ${sizeStr}
                               <div className="col-span-2 text-slate-600 leading-normal italic">{language === "en" ? "Description" : "Açıklama"}: {p.description || "—"}</div>
                             </div>
 
-                            <div className="flex justify-end pt-1">
+                            <div className="flex justify-end gap-2 pt-1">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setShelfTransferProductId(p.id);
+                                  setShelfTransferFromShelf(scannedShelfCode);
+                                  setShelfTransferToWarehouse(activeWh.name);
+                                  setShelfTransferToShelf("");
+                                  setShelfTransferQty(p.quantity);
+                                  setIsShelfTransferOpen(true);
+                                }}
+                                className="rounded-lg bg-indigo-50 border border-indigo-200 px-2.5 py-1 text-[9px] font-black text-indigo-700 hover:bg-indigo-100 flex items-center gap-0.5"
+                                title="Raftan Başka Depoya veya Rafa Transfer Et"
+                              >
+                                🔄 {language === "en" ? "Transfer" : "Sevk/Transfer Et"}
+                              </button>
                               <button
                                 type="button"
                                 onClick={() => triggerPrintLabel("product", p.sku || p.barcode, p.name, `Alış: ${p.purchasePrice} EUR | Satış: ${p.salePrice} EUR`, `RAF: ${scannedShelfCode}`)}
