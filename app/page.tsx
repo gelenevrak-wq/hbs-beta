@@ -916,27 +916,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 📊 Trust Statistics Counter Panel */}
-      <section className="mx-auto max-w-[1800px] px-4 pt-8 pb-4 sm:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded-[2rem] bg-white border border-slate-200/80 shadow-md">
-          <div className="text-center p-3 border-r border-slate-100 last:border-0">
-            <p className="text-2xl sm:text-3.5xl font-black text-blue-650">120+</p>
-            <p className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider mt-1">{t.activeStores}</p>
-          </div>
-          <div className="text-center p-3 border-r border-slate-100 last:border-0">
-            <p className="text-2xl sm:text-3.5xl font-black text-indigo-650">45.000+</p>
-            <p className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider mt-1">{t.listedItems}</p>
-          </div>
-          <div className="text-center p-3 border-r border-slate-100 last:border-0 lg:border-r">
-            <p className="text-2xl sm:text-3.5xl font-black text-purple-650">5</p>
-            <p className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider mt-1">{t.countries}</p>
-          </div>
-          <div className="text-center p-3 last:border-0">
-            <p className="text-2xl sm:text-3.5xl font-black text-emerald-650">12.800+</p>
-            <p className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider mt-1">{t.completedOrders}</p>
-          </div>
-        </div>
-      </section>
 
       {/* 🔍 Consolidated Glassmorphic Search & Filters Panel */}
       <section id="search-panel-anchor" className="mx-auto max-w-[1800px] px-4 py-4 sm:px-8 scroll-mt-20">
