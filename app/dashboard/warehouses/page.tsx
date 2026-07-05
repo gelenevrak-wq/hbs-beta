@@ -1475,7 +1475,7 @@ export default function WarehousesRevampPage() {
     });
   };
 
-  const handleSaveWarehouseName = (whId: string) => {
+  const handleSaveWarehouseName = async (whId: string) => {
     if (!editingWarehouseName.trim()) {
       setEditingWarehouseId(null);
       return;
@@ -1485,7 +1485,7 @@ export default function WarehousesRevampPage() {
     );
     setWarehouses(updated);
     
-    // Save to local storage registeredStores
+    // Save to local storage registeredStores backup
     const storesStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
     const registeredStores = JSON.parse(storesStr);
     const updatedStores = registeredStores.map((s: any) => {
@@ -1495,6 +1495,23 @@ export default function WarehousesRevampPage() {
       return s;
     });
     window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+
+    // Save to Supabase
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
+      try {
+        await supabase
+          .from("warehouses")
+          .update({ name: editingWarehouseName.trim() })
+          .eq("id", whId);
+      } catch (e) {
+        console.error("Supabase rename warehouse failed:", e);
+      }
+    }
+
     setEditingWarehouseId(null);
   };
 
@@ -1634,26 +1651,156 @@ export default function WarehousesRevampPage() {
         setStockTransfers(JSON.parse(transStr));
       }
 
-      const storesStr = window.localStorage.getItem("hbs-registered-stores");
-      const registeredStores = storesStr ? JSON.parse(storesStr) : [];
-      let myStore = registeredStores.find((s: any) => s.code === slug);
+      const loadSyncWarehouses = async () => {
+        try {
+          const { data: compData } = await supabase
+            .from("companies")
+            .select("id, name")
+            .eq("code", slug)
+            .single();
 
-      if (myStore) {
-        setStoreName(myStore.name || "OBDTR Diagnostics");
-        if (myStore.warehouses && myStore.warehouses.length > 0) {
-          setWarehouses(myStore.warehouses);
-          setActiveWarehouseId(myStore.warehouses[0].id);
-          // Set layout shaper defaults from active warehouse
-          const activeWh = myStore.warehouses[0];
-          setShaperZones(activeWh.zones ? activeWh.zones.join(", ") : "A, B, C");
-          setCorridors(activeWh.corridorConfigs || parseShelvesToConfig(activeWh.shelves || []));
-        } else {
-          // Open setup wizard if no warehouses exist
+          if (compData) {
+            setStoreName(compData.name || "OBDTR Diagnostics");
+
+            const { data: dbWhs } = await supabase
+              .from("warehouses")
+              .select("*")
+              .eq("company_id", compData.id);
+
+            if (dbWhs && dbWhs.length > 0) {
+              const whIds = dbWhs.map(w => w.id);
+              const { data: dbLocs } = await supabase
+                .from("warehouse_locations")
+                .select("*")
+                .in("warehouse_id", whIds);
+
+              const mapped = dbWhs.map(w => {
+                const shelves = dbLocs
+                  ? dbLocs.filter(l => l.warehouse_id === w.id).map(l => l.name)
+                  : [];
+                return {
+                  id: w.id,
+                  name: w.name,
+                  purpose: w.address || "Depo Açıklaması",
+                  customerVisible: w.is_visible_to_customers || false,
+                  city: w.address || "Türkiye",
+                  zones: Array.from(new Set(shelves.map(s => s.split("-")[0]))).filter(Boolean),
+                  shelves: shelves,
+                  corridorConfigs: parseShelvesToConfig(shelves),
+                  capacity: 1000,
+                  used: 0
+                };
+              });
+
+              setWarehouses(mapped);
+              setActiveWarehouseId(mapped[0].id);
+              setShaperZones(mapped[0].zones ? mapped[0].zones.join(", ") : "A, B, C");
+              setCorridors(mapped[0].corridorConfigs || []);
+
+              // Sync local storage as backup
+              const storesStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+              const registeredStores = JSON.parse(storesStr);
+              const updatedStores = registeredStores.map((s: any) => {
+                if (s.code === slug) {
+                  return { ...s, name: compData.name, warehouses: mapped };
+                }
+                return s;
+              });
+              if (!registeredStores.some((s: any) => s.code === slug)) {
+                updatedStores.push({ code: slug, name: compData.name, warehouses: mapped });
+              }
+              window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+            } else {
+              // Database has no warehouses: try loading from local storage and sync to database
+              const storesStr = window.localStorage.getItem("hbs-registered-stores");
+              const registeredStores = storesStr ? JSON.parse(storesStr) : [];
+              const myStore = registeredStores.find((s: any) => s.code === slug);
+
+              if (myStore && myStore.warehouses && myStore.warehouses.length > 0) {
+                const uploadedWhs: Warehouse[] = [];
+                for (const wh of myStore.warehouses) {
+                  const { data: whData } = await supabase
+                    .from("warehouses")
+                    .insert({
+                      company_id: compData.id,
+                      name: wh.name,
+                      type: "store",
+                      address: wh.city || "Türkiye",
+                      is_visible_to_customers: wh.customerVisible || false,
+                      is_sales_enabled: true,
+                      is_transfer_enabled: true,
+                    })
+                    .select("id")
+                    .single();
+
+                  if (whData) {
+                    const finalWhId = whData.id;
+                    if (wh.shelves && wh.shelves.length > 0) {
+                      const locationsToInsert = wh.shelves.map((shelf: string) => ({
+                        warehouse_id: finalWhId,
+                        name: shelf,
+                        sort_order: 10
+                      }));
+                      await supabase.from("warehouse_locations").insert(locationsToInsert);
+                    }
+                    uploadedWhs.push({
+                      ...wh,
+                      id: finalWhId
+                    });
+                  }
+                }
+                if (uploadedWhs.length > 0) {
+                  setWarehouses(uploadedWhs);
+                  setActiveWarehouseId(uploadedWhs[0].id);
+                  setShaperZones(uploadedWhs[0].zones ? uploadedWhs[0].zones.join(", ") : "A, B, C");
+                  setCorridors(uploadedWhs[0].corridorConfigs || []);
+                  
+                  // Update backup
+                  const updatedStores = registeredStores.map((s: any) => {
+                    if (s.code === slug) {
+                      return { ...s, warehouses: uploadedWhs };
+                    }
+                    return s;
+                  });
+                  window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+                } else {
+                  setShowWizard(true);
+                }
+              } else {
+                setShowWizard(true);
+              }
+            }
+          } else {
+            setShowWizard(true);
+          }
+        } catch (err) {
+          console.error("Sync warehouses error:", err);
           setShowWizard(true);
         }
+      };
+
+      if (isSupabaseConfigured && slug) {
+        loadSyncWarehouses();
       } else {
-        // Fallback store setup
-        setShowWizard(true);
+        // Fallback local loading
+        const storesStr = window.localStorage.getItem("hbs-registered-stores");
+        const registeredStores = storesStr ? JSON.parse(storesStr) : [];
+        let myStore = registeredStores.find((s: any) => s.code === slug);
+
+        if (myStore) {
+          setStoreName(myStore.name || "OBDTR Diagnostics");
+          if (myStore.warehouses && myStore.warehouses.length > 0) {
+            setWarehouses(myStore.warehouses);
+            setActiveWarehouseId(myStore.warehouses[0].id);
+            const activeWh = myStore.warehouses[0];
+            setShaperZones(activeWh.zones ? activeWh.zones.join(", ") : "A, B, C");
+            setCorridors(activeWh.corridorConfigs || parseShelvesToConfig(activeWh.shelves || []));
+          } else {
+            setShowWizard(true);
+          }
+        } else {
+          setShowWizard(true);
+        }
       }
     } catch (e) {
       console.error("DB Load error", e);
@@ -1882,7 +2029,7 @@ export default function WarehousesRevampPage() {
     });
   };
 
-  const handleDeleteWarehouse = (warehouseId: string, warehouseName: string) => {
+  const handleDeleteWarehouse = async (warehouseId: string, warehouseName: string) => {
     const itemsCount = products.filter((p) => p.warehouse.toLowerCase() === warehouseName.toLowerCase()).length;
     if (itemsCount > 0) {
       alert(wm.errHasInventory.replace("{count}", itemsCount.toString()));
@@ -1899,6 +2046,7 @@ export default function WarehousesRevampPage() {
       setActiveWarehouseId(updatedWarehouses[0].id);
     }
 
+    // Backup to local storage registeredStores
     try {
       const storesStr = window.localStorage.getItem("hbs-registered-stores");
       if (storesStr) {
@@ -1912,7 +2060,30 @@ export default function WarehousesRevampPage() {
         window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
       }
     } catch (e) {
-      console.error("Delete warehouse failed:", e);
+      console.error("Delete warehouse backup failed:", e);
+    }
+
+    // Save to Supabase
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
+      try {
+        // Delete locations first
+        await supabase
+          .from("warehouse_locations")
+          .delete()
+          .eq("warehouse_id", warehouseId);
+
+        // Delete warehouse
+        await supabase
+          .from("warehouses")
+          .delete()
+          .eq("id", warehouseId);
+      } catch (e) {
+        console.error("Supabase delete warehouse failed:", e);
+      }
     }
 
     showSuccess(wm.deleteWhSuccess.replace("{name}", warehouseName));
@@ -2015,26 +2186,72 @@ export default function WarehousesRevampPage() {
     showSuccess(wm.dispatchSuccess.replace("{name}", getLocalizedField(targetProd.name, activeLang)));
   };
 
-  const handleAddNewWarehouse = (e: React.FormEvent) => {
+  const handleAddNewWarehouse = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newWhName.trim()) {
       alert(wm.alertValidWhName);
       return;
     }
 
-    const id = `wh-${Date.now()}`;
+    const localId = `wh-${Date.now()}`;
+    let finalId = localId;
+
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    const defaultShelves = [
+      "A-01", "A-02", "A-03",
+      "B-01", "B-02", "B-03",
+      "C-01", "C-02", "C-03"
+    ];
+
+    if (isSupabaseConfigured && storeSlug) {
+      try {
+        const { data: compData } = await supabase
+          .from("companies")
+          .select("id")
+          .eq("code", storeSlug)
+          .single();
+
+        if (compData) {
+          const { data: whData } = await supabase
+            .from("warehouses")
+            .insert({
+              company_id: compData.id,
+              name: newWhName.trim(),
+              type: "store",
+              address: newWhCity.trim() || "Türkiye",
+              is_visible_to_customers: false,
+              is_sales_enabled: true,
+              is_transfer_enabled: true
+            })
+            .select("id")
+            .single();
+
+          if (whData) {
+            finalId = whData.id;
+            const locationsToInsert = defaultShelves.map((shelf) => ({
+              warehouse_id: finalId,
+              name: shelf,
+              sort_order: 10
+            }));
+            await supabase.from("warehouse_locations").insert(locationsToInsert);
+          }
+        }
+      } catch (err) {
+        console.error("Supabase new warehouse error:", err);
+      }
+    }
+
     const newWh: Warehouse = {
-      id,
+      id: finalId,
       name: newWhName.trim(),
       city: newWhCity.trim(),
       purpose: newWhPurpose.trim(),
       customerVisible: false,
       zones: ["A", "B", "C"],
-      shelves: [
-        "A-01", "A-02", "A-03",
-        "B-01", "B-02", "B-03",
-        "C-01", "C-02", "C-03"
-      ],
+      shelves: defaultShelves,
       corridorConfigs: [
         { zone: "A", depth: 3, tiers: 3 },
         { zone: "B", depth: 3, tiers: 3 },
@@ -2046,11 +2263,11 @@ export default function WarehousesRevampPage() {
 
     const updatedWarehouses = [...warehouses, newWh];
     setWarehouses(updatedWarehouses);
-    setActiveWarehouseId(id);
+    setActiveWarehouseId(finalId);
     setShaperZones("A, B, C");
     setCorridors(newWh.corridorConfigs || []);
 
-    // Save to registered stores
+    // Save to registered stores backup
     try {
       const storesStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
       const registeredStores = JSON.parse(storesStr);
@@ -2062,7 +2279,7 @@ export default function WarehousesRevampPage() {
       });
       window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
     } catch (e) {
-      console.error("Save new warehouse failed:", e);
+      console.error("Save new warehouse backup failed:", e);
     }
 
     setIsNewWarehouseModalOpen(false);
@@ -2148,10 +2365,31 @@ export default function WarehousesRevampPage() {
     }
   };
 
-  // Active Warehouse details
+  // Active Warehouse details with shelf auto-healing from products
   const activeWh = useMemo(() => {
-    return warehouses.find((w) => w.id === activeWarehouseId) || null;
-  }, [warehouses, activeWarehouseId]);
+    const wh = warehouses.find((w) => w.id === activeWarehouseId) || null;
+    if (!wh) return null;
+    
+    const productShelvesForWh = Array.from(
+      new Set(
+        products
+          .filter(p => p.warehouse.toLowerCase() === wh.name.toLowerCase() && p.shelf && p.shelf.trim() !== "")
+          .map(p => p.shelf)
+      )
+    );
+
+    const mergedShelves = Array.from(new Set([...(wh.shelves || []), ...productShelvesForWh]));
+    if (mergedShelves.length !== (wh.shelves || []).length) {
+      return {
+        ...wh,
+        shelves: mergedShelves,
+        zones: Array.from(new Set(mergedShelves.map(s => s.split("-")[0]))).filter(Boolean),
+        corridorConfigs: parseShelvesToConfig(mergedShelves)
+      };
+    }
+    
+    return wh;
+  }, [warehouses, activeWarehouseId, products]);
 
   const activeLang = language || "tr";
   const t = translations[activeLang] || translations.tr;
@@ -2238,6 +2476,36 @@ export default function WarehousesRevampPage() {
 
       window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
       setWarehouses(updatedWarehouses);
+
+      // Async save to Supabase
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+      if (isSupabaseConfigured && activeWarehouseId) {
+        (async () => {
+          try {
+            // Delete old layout
+            await supabase
+              .from("warehouse_locations")
+              .delete()
+              .eq("warehouse_id", activeWarehouseId);
+
+            // Bulk insert new shelves
+            if (generatedShelves.length > 0) {
+              const locationsToInsert = generatedShelves.map((shelf) => ({
+                warehouse_id: activeWarehouseId,
+                name: shelf,
+                sort_order: 10
+              }));
+              await supabase.from("warehouse_locations").insert(locationsToInsert);
+            }
+          } catch (e) {
+            console.error("Failed to sync warehouse locations to Supabase:", e);
+          }
+        })();
+      }
+
       showSuccess(activeLang === "en" ? `"${activeWh.name}" shelf layout (${generatedShelves.length} slots) successfully shapered!` : activeLang === "de" ? `"${activeWh.name}" Regallayout (${generatedShelves.length} Fächer) erfolgreich gestaltet!` : activeLang === "ru" ? `Планировка полок склада "${activeWh.name}" (${generatedShelves.length} ячеек) успешно сформирована!` : activeLang === "ka" ? `"${activeWh.name}" თაროების განლაგება (${generatedShelves.length} სლოტი) წარმატებით ჩამოყალიბდა!` : `"${activeWh.name}" raf düzeni (${generatedShelves.length} raf konumu) başarıyla şekillendirildi!`);
     } catch (e: any) {
       showError(activeLang === "en" ? `Error saving layout: ${e.message || e}` : activeLang === "de" ? `Fehler beim Speichern des Layouts: ${e.message || e}` : activeLang === "ru" ? `Ошибка при сохранении планировки: ${e.message || e}` : activeLang === "ka" ? `შეცდომა განლაგების შენახვისას: ${e.message || e}` : `Düzen kaydedilirken hata: ${e.message || e}`);
