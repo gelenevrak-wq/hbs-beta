@@ -1,5 +1,7 @@
 "use client";
 
+import { getLocalizedField, translateAllFields } from "@/lib/translations";
+
 import Link from "next/link";
 import { useEffect, useMemo, useState, useRef } from "react";
 import CompactLanguageSwitcher, {
@@ -338,11 +340,12 @@ export default function ProductsPage() {
         const prod = products.find(p => p.id === editId);
         if (prod) {
           setEditingProductId(prod.id);
-          setName(prod.name);
+          const activeLang = language || "tr";
+          setName(getLocalizedField(prod.name, activeLang));
           setCategory(prod.category);
           setBrand(prod.brand || "");
           setModel(prod.model || "");
-          setDescription(prod.description || "");
+          setDescription(getLocalizedField(prod.description, activeLang));
           setSalePrice(prod.salePrice || "");
           setPurchasePrice(prod.purchasePrice || "");
           setCurrency(prod.currency || "GEL");
@@ -1300,11 +1303,12 @@ export default function ProductsPage() {
   function startEditProduct(p: ProductRecord) {
     setEditingProductId(p.id);
     setItemType(p.itemType);
-    setName(p.name);
+    const activeLang = language || "tr";
+    setName(getLocalizedField(p.name, activeLang));
     setCategory(p.category);
     setBrand(p.brand || "");
     setModel(p.model || "");
-    setDescription(p.description || "");
+    setDescription(getLocalizedField(p.description, activeLang));
     setSalePrice(p.salePrice || "");
     setPurchasePrice(p.purchasePrice || "");
     setCurrency(p.currency || "GEL");
@@ -1622,6 +1626,12 @@ export default function ProductsPage() {
     }
     setIsSaving(true);
 
+    const activeLang = language || "tr";
+    const [translatedName, translatedDesc] = await Promise.all([
+      translateAllFields(name, activeLang),
+      translateAllFields(description, activeLang)
+    ]);
+
     const isSupabaseConfigured = 
       process.env.NEXT_PUBLIC_SUPABASE_URL && 
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
@@ -1657,11 +1667,11 @@ export default function ProductsPage() {
             return {
               ...p,
               itemType,
-              name,
+              name: translatedName,
               category,
               brand,
               model,
-              description,
+              description: translatedDesc,
               salePrice: pricingMode === "fixed" ? salePrice : "",
               purchasePrice,
               currency,
@@ -1695,7 +1705,7 @@ export default function ProductsPage() {
             await supabase
               .from("offerable_items")
               .update({
-                name,
+                name: translatedName,
                 type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
                 category,
                 brand,
@@ -1706,7 +1716,7 @@ export default function ProductsPage() {
                 sale_price: pricingMode === "fixed" ? parseFloat(salePrice) || null : null,
                 purchase_price: parseFloat(purchasePrice) || null,
                 currency,
-                description,
+                description: translatedDesc,
                 photo_urls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"],
                 video_urls: [videoUrl],
                 is_visible_in_storefront: visibility === "visible",
@@ -1716,7 +1726,7 @@ export default function ProductsPage() {
               .eq("id", editingProductId);
           } else {
             await supabase.from("offerable_items").insert({
-              name,
+              name: translatedName,
               type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
               category,
               brand,
@@ -1727,7 +1737,7 @@ export default function ProductsPage() {
               sale_price: pricingMode === "fixed" ? parseFloat(salePrice) || null : null,
               purchase_price: parseFloat(purchasePrice) || null,
               currency,
-              description,
+              description: translatedDesc,
               photo_urls: galleryUrls.length > 0 ? galleryUrls : [imageUrl.trim() || "/product-images/diagnostic-scanner.svg"],
               video_urls: [videoUrl],
               is_visible_in_storefront: visibility === "visible",
@@ -1749,11 +1759,11 @@ export default function ProductsPage() {
         const newProduct: ProductRecord = {
           id: `product-${Date.now()}`,
           itemType,
-          name,
+          name: translatedName,
           category,
           brand,
           model,
-          description,
+          description: translatedDesc,
           salePrice: pricingMode === "fixed" ? salePrice : "",
           purchasePrice,
           currency,
@@ -1780,7 +1790,7 @@ export default function ProductsPage() {
 
         if (isSupabaseConfigured) {
           await supabase.from("offerable_items").insert({
-            name,
+            name: translatedName,
             type: itemType === "product" ? "product" : itemType === "service" ? "service" : "rentable_asset",
             category,
             brand,
@@ -1791,7 +1801,7 @@ export default function ProductsPage() {
             sale_price: pricingMode === "fixed" ? parseFloat(salePrice) || null : null,
             purchase_price: parseFloat(purchasePrice) || null,
             currency,
-            description,
+            description: translatedDesc,
             photo_urls: galleryUrls.length > 0 ? galleryUrls : [newProduct.imageUrl],
             video_urls: [videoUrl],
             is_visible_in_storefront: visibility === "visible",
@@ -2894,7 +2904,7 @@ export default function ProductsPage() {
                           onChange={() => toggleSelectProduct(p.id)}
                           className="h-4 w-4 rounded border-slate-350 text-blue-650 cursor-pointer shrink-0"
                         />
-                        <h3 className="font-black text-slate-800 truncate">{p.name}</h3>
+                        <h3 className="font-black text-slate-800 truncate">{getLocalizedField(p.name, language || "tr")}</h3>
                       </div>
                       <span className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold shrink-0 ${p.pricingMode === "fixed" ? "bg-emerald-100 text-emerald-800 border border-emerald-200" : p.pricingMode === "quote" ? "bg-amber-100 text-amber-800 border border-amber-200" : "bg-purple-100 text-purple-800 border border-purple-200"}`}>
                         {p.pricingMode === "fixed" ? "Fiyat Göster" : p.pricingMode === "quote" ? "Teklif Alın" : "Teklif Verin"}
@@ -3539,7 +3549,7 @@ export default function ProductsPage() {
                       <option value="">-- Lütfen bir ürün barkodu seçin --</option>
                       {products.map(p => (
                         <option key={p.id} value={p.id}>
-                          {p.name} ({p.sku || p.barcode || "KODSUZ"})
+                          {getLocalizedField(p.name, language || "tr")} ({p.sku || p.barcode || "KODSUZ"})
                         </option>
                       ))}
                     </select>
@@ -3678,7 +3688,7 @@ export default function ProductsPage() {
                           products.filter(p => p.shelf && p.shelf.toLowerCase() === terminalScannedShelf.toLowerCase()).map(p => (
                             <div key={p.id} className="bg-[#0b1122] border border-slate-800/80 rounded-xl p-2 flex justify-between items-center text-xs">
                               <div className="truncate pr-2">
-                                <span className="font-bold text-slate-200 block truncate">{p.name}</span>
+                                <span className="font-bold text-slate-200 block truncate">{getLocalizedField(p.name, language || "tr")}</span>
                                 <span className="text-[9px] text-slate-900 font-extrabold font-mono">SKU: {p.sku || "—"}</span>
                               </div>
                               <div className="flex items-center gap-1.5 shrink-0">

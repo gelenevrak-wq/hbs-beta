@@ -382,3 +382,48 @@ export const translations = {
     }
   }
 } as const;
+
+export function getLocalizedField(fieldValue: string | null | undefined, lang: string): string {
+  if (!fieldValue) return "";
+  const clean = String(fieldValue).trim();
+  if (clean.startsWith("{") && clean.endsWith("}")) {
+    try {
+      const parsed = JSON.parse(clean);
+      return parsed[lang] || parsed["tr"] || parsed["en"] || clean;
+    } catch (e) {
+      // fallback
+    }
+  }
+  return fieldValue;
+}
+
+export async function translateText(text: string, from: string, to: string): Promise<string> {
+  if (!text || !text.trim()) return "";
+  try {
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
+    const data = await res.json();
+    if (data?.responseData?.translatedText) {
+      return data.responseData.translatedText;
+    }
+  } catch (e) {
+    console.error("Translation helper error:", e);
+  }
+  return text;
+}
+
+export async function translateAllFields(text: string, fromLang: string): Promise<string> {
+  if (!text || !text.trim()) return "";
+  const targets = ["tr", "en", "de", "ru", "ka"];
+  const result: Record<string, string> = {};
+  result[fromLang] = text;
+  
+  await Promise.all(
+    targets
+      .filter(t => t !== fromLang)
+      .map(async (targetLang) => {
+        result[targetLang] = await translateText(text, fromLang, targetLang);
+      })
+  );
+  
+  return JSON.stringify(result);
+}

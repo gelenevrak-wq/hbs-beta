@@ -618,27 +618,26 @@ export function translateProductField(
 ): string {
   if (!text) return "";
 
-  let rawText = "";
-
-  // 1. Eğer veri nesneyse, dile göre metni çıkaralım
-  if (typeof text === "object") {
-    // Eğer dil 'tr' ise doğrudan 'tr' veya 'en' döndür
-    if (language === "tr") {
-      return text.tr || text.en || "";
+  // 1. Eğer veri nesneyse veya JSON formatında bir string ise çözüp dile göre metni çıkaralım
+  let parsedTextObj: any = null;
+  if (typeof text === "string") {
+    const trimmed = text.trim();
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      try {
+        parsedTextObj = JSON.parse(trimmed);
+      } catch (e) {
+        // Not valid JSON
+      }
     }
-    
-    // Eğer seçilen dildeki değer, 'tr' değerinden farklıysa (demek ki özel el çevirisi var)
-    // onu doğrudan kullanabiliriz.
-    if (text[language] && text[language] !== text.tr) {
-      return text[language]!;
-    }
-    
-    // Aksi halde (yani 'tr' ile aynıysa veya o dilde tanımlı değilse)
-    // 'tr' veya 'en' değerini alıp aşağıda sözlüğe/akıllı çeviriye sokacağız!
-    rawText = text.tr || text.en || "";
-  } else {
-    rawText = text;
+  } else if (typeof text === "object" && text !== null) {
+    parsedTextObj = text;
   }
+
+  if (parsedTextObj) {
+    return parsedTextObj[language] || parsedTextObj["tr"] || parsedTextObj["en"] || "";
+  }
+
+  let rawText = typeof text === "string" ? text : "";
 
   const trimmed = rawText.trim();
   if (!trimmed) return "";
