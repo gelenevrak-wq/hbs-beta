@@ -32,7 +32,29 @@ const translations: Record<string, Record<string, string>> = {
     help: "Yardım Merkezi",
     activeStore: "Aktif Mağaza",
     features: "Ürün + Hizmet + Kiralama",
-    hybridStore: "Karma mağaza"
+    hybridStore: "Karma mağaza",
+    asistanTitle: "HBS Akıllı Asistan",
+    asistanSub: "Ağamın Akıllı Çırağı",
+    sectorModeTitle: "🎭 Dükkan Sektör Modu",
+    sectorModeDesc: "{t.sectorModeDesc}",
+    sectorAuto: "🚗 Oto Yedek Parça",
+    sectorFootwear: "👞 Ayakkabı & Giyim",
+    sectorGrocery: "🛒 Market & Perakende",
+    pageGuideTitle: "📖 Sayfa Kılavuzu",
+    whatsappBtn: "{t.whatsappBtn}",
+    guideProductsTitle: "🛍️ Ürünler Sayfası",
+    guideProductsLi1: "Uyumlu markaları altındaki çiplerle tek tıkla seçebilirsiniz.",
+    guideProductsLi2: "Sanayi Modu düğmesine basarak yazıları büyütebilirsiniz.",
+    guideProductsLi3: "Yanlışlıkla ürün sildiğinizde tepedeki Geri Al şeridine basın.",
+    guideProductsLi4: "Barkod okutmak için Kamera simgesine dokunun.",
+    guideWarehousesTitle: "🗺️ Akıllı Depo Şeması",
+    guideWarehousesLi1: "Depoları Düzenle / Ekle butonu ile depolarınızı çoğaltıp adlarını değiştirebilirsiniz.",
+    guideWarehousesLi2: "Şemadaki reyon ve depo isimlerine tıklayarak doğrudan yeniden adlandırın.",
+    guideWarehousesLi3: "Rafların üzerine tıklayarak içindeki ürünleri resimleriyle görebilir veya özel isim/takma ad tanımlayabilirsiniz.",
+    guideHomeTitle: "🏠 HBS Ana Kontrol Paneli",
+    guideHomeLi1: "Sol menüden dükkanınızın tüm süreçlerini yönetebilirsiniz.",
+    guideHomeLi2: "Müşteri taleplerini görmek için Talep Panosuna göz atın.",
+    guideHomeLi3: "Şu an aktif olan sektör modunuza göre ekranınız en uygun dile kavuşur."
   },
   en: {
     admin: "★ Platform Administration",
@@ -62,7 +84,29 @@ const translations: Record<string, Record<string, string>> = {
     help: "Help Center",
     activeStore: "Active Store",
     features: "Product + Service + Rental",
-    hybridStore: "Hybrid store"
+    hybridStore: "Hybrid store",
+    asistanTitle: "HBS Smart Assistant",
+    asistanSub: "Smart Assistant Tool",
+    sectorModeTitle: "🎭 Shop Sector Mode",
+    sectorModeDesc: "Depending on your selected sector, your product lists, brand recommendations, and warehouse templates adapt automatically.",
+    sectorAuto: "🚗 Auto Spare Parts",
+    sectorFootwear: "👞 Shoes & Apparel",
+    sectorGrocery: "🛒 Grocery & Retail",
+    pageGuideTitle: "📖 Page Guide",
+    whatsappBtn: "Ask Özgür Bey on WhatsApp",
+    guideProductsTitle: "🛍️ Products Page",
+    guideProductsLi1: "You can select compatible brands with a single click using the chips.",
+    guideProductsLi2: "You can enlarge text size by pressing the Industrial Mode button.",
+    guideProductsLi3: "If you delete a product by mistake, click the Undo banner at the top.",
+    guideProductsLi4: "Tap the Camera icon to scan a barcode.",
+    guideWarehousesTitle: "🗺️ Smart Warehouse Layout",
+    guideWarehousesLi1: "You can multiply or rename your warehouses using the Edit / Add Warehouses button.",
+    guideWarehousesLi2: "Click directly on aisle and warehouse names in the diagram to rename them.",
+    guideWarehousesLi3: "Click on shelves to view their contents with pictures, or assign custom names/aliases.",
+    guideHomeTitle: "🏠 HBS Main Control Panel",
+    guideHomeLi1: "You can manage all processes of your store from the left menu.",
+    guideHomeLi2: "Check the Request Board to see customer inquiries.",
+    guideHomeLi3: "According to your currently active sector mode, your screen adapts to the most suitable terms."
   },
   ru: {
     admin: "★ Управление платформой",
@@ -92,7 +136,29 @@ const translations: Record<string, Record<string, string>> = {
     help: "Справка",
     activeStore: "Активный магазин",
     features: "Товар + Услуга + Аренда",
-    hybridStore: "Гибридный магазин"
+    hybridStore: "Гибридный магазин",
+    asistanTitle: "Умный помощник HBS",
+    asistanSub: "Умный инструмент помощника",
+    sectorModeTitle: "🎭 Секторный режим магазина",
+    sectorModeDesc: "В зависимости от выбранного сектора ваши списки товаров, рекомендации брендов и шаблоны складов адаптируются автоматически.",
+    sectorAuto: "🚗 Автозапчасти",
+    sectorFootwear: "👞 Обувь и одежда",
+    sectorGrocery: "🛒 Продукты и розница",
+    pageGuideTitle: "📖 Руководство по странице",
+    whatsappBtn: "Спросить Озгюр Бея в WhatsApp",
+    guideProductsTitle: "🛍️ Страница товаров",
+    guideProductsLi1: "Вы можете выбрать совместимые бренды одним кликом с помощью фишек.",
+    guideProductsLi2: "Вы можете увеличить размер шрифта, нажав кнопку Промышленного режима.",
+    guideProductsLi3: "Если вы допустили ошибку при удалении товара, нажмите на баннер Отмена вверху.",
+    guideProductsLi4: "Нажмите на значок камеры, чтобы отсканировать штрихкод.",
+    guideWarehousesTitle: "🗺️ Умная карта склада",
+    guideWarehousesLi1: "Вы можете дублировать или переименовывать свои склады с помощью кнопки Редактировать / Добавить склады.",
+    guideWarehousesLi2: "Нажимайте прямо на названия проходов и складов на схеме, чтобы переименовать их.",
+    guideWarehousesLi3: "Нажимайте на полки, чтобы просматривать их содержимое с изображениями или назначать им имена/псевдонимы.",
+    guideHomeTitle: "🏠 Главная панель управления HBS",
+    guideHomeLi1: "Вы можете управлять всеми процессами вашего магазина из левого меню.",
+    guideHomeLi2: "Проверьте Панель запросов, чтобы просмотреть запросы клиентов.",
+    guideHomeLi3: "В соответствии с вашим текущим активным режимом сектора ваш экран адаптируется к наиболее подходящим терминам."
   },
   ka: {
     admin: "★ პლატფორმის ადმინისტრირება",
@@ -122,7 +188,29 @@ const translations: Record<string, Record<string, string>> = {
     help: "დახმარების ცენტრი",
     activeStore: "აქტიური მაღაზია",
     features: "პროდუქტი + სერვისი + გაქირავება",
-    hybridStore: "ჰიბრიდული მაღაზია"
+    hybridStore: "ჰიბრიდული მაღაზია",
+    asistanTitle: "HBS ჭკვიანი ასისტენტი",
+    asistanSub: "ჭკვიანი ასისტენტის ინსტრუმენტი",
+    sectorModeTitle: "🎭 მაღაზიის სექტორული რეჟიმი",
+    sectorModeDesc: "არჩეული სექტორის მიხედვით, თქვენი პროდუქტების სიები, ბრენდის რეკომენდაციები და საწყობის შაბლონები ავტომატურად ადაპტირდება.",
+    sectorAuto: "🚗 ავტონაწილები",
+    sectorFootwear: "👞 ფეხსაცმელი და ტანსაცმელი",
+    sectorGrocery: "🛒 სუპერმარკეტი და საცალო ვაჭრობა",
+    pageGuideTitle: "📖 გვერდის სახელმძღვანელო",
+    whatsappBtn: "ჰკითხეთ ოზგურ ბეის WhatsApp-ზე",
+    guideProductsTitle: "🛍️ პროდუქტების გვერდი",
+    guideProductsLi1: "შეგიძლიათ აირჩიოთ თავსებადი ბრენდები ერთი დაწკაპუნებით ჩიპების გამოყენებით.",
+    guideProductsLi2: "შეგიძლიათ გაზარდოთ ტექსტის ზომა სამრეწველო რეჟიმის ღილაკზე დაჭერით.",
+    guideProductsLi3: "თუ შეცდომით წაშალეთ პროდუქტი, დააჭირეთ გაუქმების ბანერს ზემოთ.",
+    guideProductsLi4: "დააჭირეთ კამერის ხატულას შტრიხკოდის დასასკანირებლად.",
+    guideWarehousesTitle: "🗺️ საწყობის ჭკვიანი რუკა",
+    guideWarehousesLi1: "შეგიძლიათ გაამრავლოთ ან გადაარქვათ სახელი თქვენს საწყობებს საწყობების რედაქტირება / დამატება ღილაკით.",
+    guideWarehousesLi2: "დააწკაპუნეთ პირდაპირ დერეფნისა და საწყობის სახელებზე სქემაში მათი სახელის გადასარქმევად.",
+    guideWarehousesLi3: "დააწკაპუნეთ თაროებზე მათი შინაარსის სურათებით სანახავად, ან მიანიჭეთ მორგებული სახელები/ფსევდონიმები.",
+    guideHomeTitle: "🏠 HBS მთავარი მართვის პანელი",
+    guideHomeLi1: "შეგიძლიათ მართოთ თქვენი მაღაზიის ყველა პროცესი მარცხენა მენიუდან.",
+    guideHomeLi2: "შეამოწმეთ მოთხოვნების დაფა კლიენტების მოთხოვნების სანახავად.",
+    guideHomeLi3: "თქვენი ამჟამად აქტიური სექტორის რეჟიმის მიხედვით, თქვენი ეკრანი ადაპტირდება ყველაზე შესაფერის ტერმინებზე."
   },
   de: {
     admin: "★ Plattformverwaltung",
@@ -152,7 +240,29 @@ const translations: Record<string, Record<string, string>> = {
     help: "Hilfezentrum",
     activeStore: "Aktiver Shop",
     features: "Produkt + Service + Miete",
-    hybridStore: "Hybrid-Shop"
+    hybridStore: "Hybrid-Shop",
+    asistanTitle: "HBS Intelligenter Assistent",
+    asistanSub: "Intelligenter Assistent-Tool",
+    sectorModeTitle: "🎭 Shop-Branchenmodus",
+    sectorModeDesc: "Abhängig von Ihrer gewählten Branche passen sich Ihre Produktlisten, Markenempfehlungen und Lagervorlagen automatisch an.",
+    sectorAuto: "🚗 Autoersatzteile",
+    sectorFootwear: "👞 Schuhe & Bekleidung",
+    sectorGrocery: "🛒 Lebensmittel & Einzelhandel",
+    pageGuideTitle: "📖 Seitenhandbuch",
+    whatsappBtn: "Fragen Sie Özgür Bey auf WhatsApp",
+    guideProductsTitle: "🛍️ Produkte-Seite",
+    guideProductsLi1: "Sie können kompatible Marken mit einem Klick über die Chips auswählen.",
+    guideProductsLi2: "Sie können die Schriftgröße vergrößern, indem Sie den Industriemodus-Button drücken.",
+    guideProductsLi3: "Wenn Sie versehentlich ein Produkt löschen, klicken Sie oben auf das Banner Rückgängig.",
+    guideProductsLi4: "Tippen Sie auf das Kamerasymbol, um einen Barcode zu scannen.",
+    guideWarehousesTitle: "🗺️ Smart-Lagerplan",
+    guideWarehousesLi1: "Sie können Ihre Lager über die Schaltfläche Lager bearbeiten / hinzufügen duplizieren oder umbenennen.",
+    guideWarehousesLi2: "Klicken Sie im Diagramm direkt auf Gang- und Lagernamen, um sie umzudenennen.",
+    guideWarehousesLi3: "Klicken Sie auf Regale, um deren Inhalt mit Bildern anzuzeigen, oder weisen Sie benutzerdefinierte Namen/Aliase zu.",
+    guideHomeTitle: "🏠 HBS-Haupt-Dashboard",
+    guideHomeLi1: "Sie können alle Prozesse Ihres Shops über das linke Menü verwalten.",
+    guideHomeLi2: "Überprüfen Sie das Anfrage-Board, um Kundenanfragen anzuzeigen.",
+    guideHomeLi3: "Entsprechend Ihrem aktuell aktiven Branchenmodus passt sich Ihr Bildschirm an die am besten geeigneten Begriffe an."
   }
 };
 
@@ -309,7 +419,7 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
           type="button"
           onClick={() => setIsAsistanOpen(!isAsistanOpen)}
           className="flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-tr from-indigo-600 to-blue-500 text-white shadow-2xl transition hover:scale-110 active:scale-95 animate-bounce select-none cursor-pointer focus:outline-none relative group ring-4 ring-indigo-200"
-          title="Akıllı Asistan"
+          title={t.asistanTitle}
         >
           {/* Animated cute face SVG */}
           <svg className="h-8 w-8 animate-pulse" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -335,8 +445,8 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🤖</span>
                   <div>
-                    <h3 className="text-sm font-black text-slate-900 leading-none">HBS Akıllı Asistan</h3>
-                    <span className="text-[10px] text-indigo-600 font-bold">Ağamın Akıllı Çırağı</span>
+                    <h3 className="text-sm font-black text-slate-900 leading-none">{t.asistanTitle}</h3>
+                    <span className="text-[10px] text-indigo-600 font-bold">{t.asistanSub}</span>
                   </div>
                 </div>
                 <button
@@ -350,7 +460,7 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
 
               {/* Business Sector Mode Selector */}
               <div className="space-y-1.5 rounded-2xl bg-indigo-50/50 border border-indigo-100/80 p-3.5 shadow-sm">
-                <span className="text-[10px] font-black uppercase text-indigo-800 tracking-wider block">🎭 Dükkan Sektör Modu</span>
+                <span className="text-[10px] font-black uppercase text-indigo-800 tracking-wider block">{t.sectorModeTitle}</span>
                 <p className="text-[10px] text-slate-650 font-bold leading-relaxed mb-2.5">
                   Seçtiğiniz sektöre göre ürün listeleriniz, marka önerileriniz ve depo şablonlarınız otomatik adapte olur.
                 </p>
@@ -368,7 +478,7 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
                         : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                     )}
                   >
-                    <span>🚗 Oto Yedek Parça</span>
+                    <span>{t.sectorAuto}</span>
                     {sector === "automotive" && <span>✓</span>}
                   </button>
                   <button
@@ -384,7 +494,7 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
                         : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                     )}
                   >
-                    <span>👞 Ayakkabı & Giyim</span>
+                    <span>{t.sectorFootwear}</span>
                     {sector === "footwear" && <span>✓</span>}
                   </button>
                   <button
@@ -400,7 +510,7 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
                         : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                     )}
                   >
-                    <span>🛒 Market & Perakende</span>
+                    <span>{t.sectorGrocery}</span>
                     {sector === "grocery" && <span>✓</span>}
                   </button>
                 </div>
@@ -408,34 +518,34 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
 
               {/* Contextual Page Help Guide */}
               <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">📖 Sayfa Kılavuzu</span>
+                <span className="text-[10px] font-black uppercase text-slate-500 tracking-wider block">{t.pageGuideTitle}</span>
                 
                 {currentPath.includes("/dashboard/products") ? (
                   <div className="space-y-2.5 bg-slate-50 rounded-2xl p-3 border border-slate-150">
-                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">🛍️ Ürünler Sayfası</h4>
+                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">{t.guideProductsTitle}</h4>
                     <ul className="space-y-1.5 text-[11px] text-slate-650 font-bold leading-normal list-disc pl-3.5">
-                      <li>Uyumlu markaları altındaki <b>çiplerle</b> tek tıkla seçebilirsiniz.</li>
+                      <li>{t.guideProductsLi1}</li>
                       <li><b>Sanayi Modu</b> düğmesine basarak yazıları büyütebilirsiniz.</li>
-                      <li>Yanlışlıkla ürün sildiğinizde tepedeki <b>Geri Al</b> şeridine basın.</li>
-                      <li>Barkod okutmak için <b>Kamera simgesine</b> dokunun.</li>
+                      <li>{t.guideProductsLi3}</li>
+                      <li>{t.guideProductsLi4}</li>
                     </ul>
                   </div>
                 ) : currentPath.includes("/dashboard/warehouses") ? (
                   <div className="space-y-2.5 bg-slate-50 rounded-2xl p-3 border border-slate-150">
-                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">🗺️ Akıllı Depo Şeması</h4>
+                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">{t.guideWarehousesTitle}</h4>
                     <ul className="space-y-1.5 text-[11px] text-slate-650 font-bold leading-normal list-disc pl-3.5">
-                      <li><b>Depoları Düzenle / Ekle</b> butonu ile depolarınızı çoğaltıp adlarını değiştirebilirsiniz.</li>
-                      <li>Şemadaki reyon ve depo isimlerine tıklayarak <b>doğrudan yeniden adlandırın</b>.</li>
-                      <li>Rafların üzerine tıklayarak <b>içindeki ürünleri resimleriyle görebilir</b> veya özel isim/takma ad tanımlayabilirsiniz.</li>
+                      <li>{t.guideWarehousesLi1}</li>
+                      <li>{t.guideWarehousesLi2}</li>
+                      <li>{t.guideWarehousesLi3}</li>
                     </ul>
                   </div>
                 ) : (
                   <div className="space-y-2.5 bg-slate-50 rounded-2xl p-3 border border-slate-150">
-                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">🏠 HBS Ana Kontrol Paneli</h4>
+                    <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">{t.guideHomeTitle}</h4>
                     <ul className="space-y-1.5 text-[11px] text-slate-650 font-bold leading-normal list-disc pl-3.5">
-                      <li>Sol menüden dükkanınızın tüm süreçlerini yönetebilirsiniz.</li>
-                      <li>Müşteri taleplerini görmek için <b>Talep Panosuna</b> göz atın.</li>
-                      <li>Şu an aktif olan <b>sektör modunuza göre</b> ekranınız en uygun dile kavuşur.</li>
+                      <li>{t.guideHomeLi1}</li>
+                      <li>{t.guideHomeLi2}</li>
+                      <li>{t.guideHomeLi3}</li>
                     </ul>
                   </div>
                 )}
