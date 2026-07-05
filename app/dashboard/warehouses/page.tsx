@@ -204,8 +204,8 @@ const translations = {
     dispatchQty: "Sevk Miktarı",
     noShelfOption: "-- Rafsız (Ortalıkta Dursun) --",
     shelfSuffix: "Rafı",
-    dispatchBtn: "{t.dispatchBtn || "⚡ Sevk Et ve Güncelle"}",
-    cancelBtn: "{t.cancelBtn || "Vazgeç"}"
+    dispatchBtn: "⚡ Sevk Et ve Güncelle",
+    cancelBtn: "Vazgeç"
   },
   en: {
     header: "📦 HBS Smart Warehouse Management",
