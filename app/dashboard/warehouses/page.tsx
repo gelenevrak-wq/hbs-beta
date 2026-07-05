@@ -1459,7 +1459,7 @@ export default function WarehousesRevampPage() {
     setWarehouses(updatedWarehouses);
     setActiveWarehouseId(id);
     setShaperZones("A, B, C");
-    setCorridors(newWh.corridorConfigs);
+    setCorridors(newWh.corridorConfigs || []);
 
     // Save to registered stores
     try {
