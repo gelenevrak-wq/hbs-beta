@@ -318,7 +318,17 @@ const translations = {
     printClose: "Close",
     liveReaderPlaceholder: "Enter manual shelf code (e.g., A-01, B-02)",
     scannerTitle: "WAREHOUSE BARCODE / QR SCANNER",
-    liveShelfScan: "Live Shelf Scan"
+    liveShelfScan: "Live Shelf Scan",
+    shelfTransferHeader: "Quick Shelf Dispatch / Transfer",
+    sourceShelf: "Source Shelf",
+    currentQty: "Current Quantity",
+    dispatchWarehouse: "Destination Warehouse",
+    dispatchShelf: "Destination Shelf / Slot",
+    dispatchQty: "Transfer Quantity",
+    noShelfOption: "-- No Shelf (Keep Unplaced) --",
+    shelfSuffix: "Shelf",
+    dispatchBtn: "⚡ Dispatch & Update",
+    cancelBtn: "Cancel"
   },
   de: {
     header: "📦 HBS Intelligentes Lagerverwaltungs-System",
@@ -431,7 +441,17 @@ const translations = {
     printClose: "Schließen",
     liveReaderPlaceholder: "Regalcode manuell eingeben (z. B. A-01, B-02)",
     scannerTitle: "LAGER BARKOD / QR SCANNER",
-    liveShelfScan: "Live Regal Scan"
+    liveShelfScan: "Live Regal Scan",
+    shelfTransferHeader: "Schneller Regalkommissionierung / Transfer",
+    sourceShelf: "Quellregal",
+    currentQty: "Aktuelle Menge",
+    dispatchWarehouse: "Ziel-Lager",
+    dispatchShelf: "Ziel-Regal / Fach",
+    dispatchQty: "Transfermenge",
+    noShelfOption: "-- Kein Regal (Unplatziert lassen) --",
+    shelfSuffix: "Regal",
+    dispatchBtn: "⚡ Buchen & Aktualisieren",
+    cancelBtn: "Abbrechen"
   },
   ru: {
     header: "📦 Умное управление складом HBS",
@@ -544,7 +564,17 @@ const translations = {
     printClose: "Закрыть",
     liveReaderPlaceholder: "Введите код вручную (напр., A-01, B-02)",
     scannerTitle: "СКАНЕР ШТРИХКОДОВ / QR-КОДОВ",
-    liveShelfScan: "Сканирование полки"
+    liveShelfScan: "Сканирование полки",
+    shelfTransferHeader: "Быстрая отгрузка / перемещение с полки",
+    sourceShelf: "Исходная полка",
+    currentQty: "Текущее количество",
+    dispatchWarehouse: "Склад назначения",
+    dispatchShelf: "Полка / ячейка назначения",
+    dispatchQty: "Количество для перемещения",
+    noShelfOption: "-- Без полки (Оставить неразмещенным) --",
+    shelfSuffix: "Полка",
+    dispatchBtn: "⚡ Отгрузить и обновить",
+    cancelBtn: "Отмена"
   },
   ka: {
     header: "📦 HBS საწყობის ჭკვიანი მართვა",
@@ -657,7 +687,17 @@ const translations = {
     printClose: "დახურვა",
     liveReaderPlaceholder: "შეიყვანეთ თაროს კოდი (მაგ: A-01, B-02)",
     scannerTitle: "საწყობის შტრიხკოდის / QR სკანერი",
-    liveShelfScan: "თაროს ცოცხალი სკანირება"
+    liveShelfScan: "თაროს ცოცხალი სკანირება",
+    shelfTransferHeader: "თაროდან სწრაფი გაგზავნა / გადატანა",
+    sourceShelf: "წყარო თარო",
+    currentQty: "მიმდინარე რაოდენობა",
+    dispatchWarehouse: "დანიშნულების საწყობი",
+    dispatchShelf: "დანიშნულების თარო / სლოტი",
+    dispatchQty: "გადატანის რაოდენობა",
+    noShelfOption: "-- თაროს გარეშე (დატოვეთ განუთავსებელი) --",
+    shelfSuffix: "თარო",
+    dispatchBtn: "⚡ გაგზავნა და განახლება",
+    cancelBtn: "გაუქმება"
   }
 };
 
