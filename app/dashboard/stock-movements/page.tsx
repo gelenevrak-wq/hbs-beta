@@ -161,6 +161,16 @@ export default function StockMovementsPage() {
   const [note, setNote] = useState("");
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
+  const [language, setLanguage] = useState("tr");
+
+  useEffect(() => {
+    const savedLanguage = window.localStorage.getItem("hbs-language");
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
+  const t = translations[language as keyof typeof translations] || translations.tr;
   const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [isVerifyingBiometric, setIsVerifyingBiometric] = useState(false);

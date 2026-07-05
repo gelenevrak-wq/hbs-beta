@@ -294,7 +294,7 @@ export default function OrdersPage() {
     }
   }, []);
 
-  const t = translations[language] || translations.tr;
+  const t = translations[language as keyof typeof translations] || translations.tr;
 
   const filteredOrders = useMemo(() => {
     const q = search.trim().toLowerCase();
