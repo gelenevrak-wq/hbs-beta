@@ -29,6 +29,7 @@ type Warehouse = {
   capacity: number;
   used: number;
   shelves?: string[];
+  corridorConfigs?: CorridorConfig[];
 };
 
 type ProductRecord = {
@@ -81,12 +82,12 @@ type StockTransfer = {
 const translations = {
   tr: {
     header: "📦 HBS Akıllı Depo Yönetimi",
-    runWizard: "🧙 Sihirbazı Çalıştır",
+    runWizard: "⚙️ Depoları Düzenle / Ekle",
     stockMovements: "Stok Hareketleri",
     dashboard: "Kontrol Paneli",
-    wizardTitle: "Depolarınızı Hızla Oluşturun",
-    wizardTitleSmall: "KOLAY DEPO SİHİRBAZI 🧙",
-    wizardDesc: "Kaç adet deponuz olduğunu belirtin. Depoları isimlendirmek ve numaralandırmak çok basittir.",
+    wizardTitle: "Depo Yapılandırması ve Düzenleme",
+    wizardTitleSmall: "DEPO YÖNETİM PANELİ ⚙️",
+    wizardDesc: "Buradan depolarınızın sayısını artırıp azaltabilir veya adlarını güncelleyebilirsiniz. Mevcut depolarınızın ayarları korunur.",
     wizardCountLabel: "Kaç Adet Deponuz Var?",
     wizardPlaceholder: "Depo {num} İsmi (Örn: Merkez Depo)",
     cancel: "İptal",
@@ -165,7 +166,7 @@ const translations = {
   },
   en: {
     header: "📦 HBS Smart Warehouse Management",
-    runWizard: "🧙 Run Setup Wizard",
+    runWizard: "⚙️ Edit / Add Warehouses",
     stockMovements: "Stock Movements",
     dashboard: "Dashboard",
     wizardTitle: "Create Your Warehouses Quickly",
@@ -541,6 +542,7 @@ export default function WarehousesRevampPage() {
     { zone: "C", depth: 4, tiers: 3 }
   ]);
   const [shelfCapacities, setShelfCapacities] = useState<{ [shelfCode: string]: ShelfCapacity }>({});
+  const [shelfAliases, setShelfAliases] = useState<Record<string, string>>({});
   const [stockTransfers, setStockTransfers] = useState<StockTransfer[]>([]);
 
   // Product Placement States
@@ -736,6 +738,12 @@ export default function WarehousesRevampPage() {
         setShelfCapacities(JSON.parse(capStr));
       }
 
+      // E) Load Shelf Aliases
+      const aliasStr = window.localStorage.getItem("hbs-shelf-aliases");
+      if (aliasStr) {
+        setShelfAliases(JSON.parse(aliasStr));
+      }
+
       // D) Load Stock Transfers
       const transStr = window.localStorage.getItem("hbs-stock-transfers");
       if (transStr) {
@@ -754,7 +762,7 @@ export default function WarehousesRevampPage() {
           // Set layout shaper defaults from active warehouse
           const activeWh = myStore.warehouses[0];
           setShaperZones(activeWh.zones ? activeWh.zones.join(", ") : "A, B, C");
-          setCorridors(parseShelvesToConfig(activeWh.shelves || []));
+          setCorridors(activeWh.corridorConfigs || parseShelvesToConfig(activeWh.shelves || []));
         } else {
           // Open setup wizard if no warehouses exist
           setShowWizard(true);
@@ -875,7 +883,15 @@ export default function WarehousesRevampPage() {
     }
 
     try {
+      const existingWhs = warehouses || [];
       const initialWarehouses: Warehouse[] = wizardNames.map((name, i) => {
+        const existing = existingWhs[i];
+        if (existing) {
+          return {
+            ...existing,
+            name: name.trim(),
+          };
+        }
         const id = `wh-${Date.now()}-${i}`;
         const zones = ["A", "B"];
         const shelves = ["A-01", "A-02", "B-01", "B-02"];
@@ -996,7 +1012,7 @@ export default function WarehousesRevampPage() {
 
       const updatedWarehouses = warehouses.map((w) =>
         w.id === activeWarehouseId
-          ? { ...w, zones: parsedZones, shelves: generatedShelves }
+          ? { ...w, zones: parsedZones, shelves: generatedShelves, corridorConfigs: corridors }
           : w
       );
 
@@ -1802,7 +1818,13 @@ ${sizeStr}
             <button
               type="button"
               onClick={() => {
-                setWizardNames(Array.from({ length: 3 }, (_, i) => `Depo ${i + 1}`));
+                if (warehouses && warehouses.length > 0) {
+                  setWizardCount(warehouses.length);
+                  setWizardNames(warehouses.map(w => w.name));
+                } else {
+                  setWizardCount(3);
+                  setWizardNames(Array.from({ length: 3 }, (_, i) => `Depo ${i + 1}`));
+                }
                 setShowWizard(true);
               }}
               className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs font-black text-blue-750 hover:bg-blue-100 transition"
@@ -1932,7 +1954,7 @@ ${sizeStr}
                   onClick={() => {
                     setActiveWarehouseId(w.id);
                     setShaperZones(w.zones ? w.zones.join(", ") : "A, B, C");
-                    setCorridors(parseShelvesToConfig(w.shelves || []));
+                    setCorridors(w.corridorConfigs || parseShelvesToConfig(w.shelves || []));
                   }}
                   className={`rounded-2xl border p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-98 ${
                     isActive
@@ -3097,7 +3119,7 @@ ${sizeStr}
                     showError("Yetersiz Yetki! Sıfırlama yapamazsınız.");
                     return;
                   }
-                  setCorridors(parseShelvesToConfig(activeWh.shelves || []));
+                  setCorridors(activeWh.corridorConfigs || parseShelvesToConfig(activeWh.shelves || []));
                   showSuccess("Tüm değişiklikler sıfırlandı.");
                 }}
                 className="rounded-xl border border-slate-200 px-5 py-3 text-xs font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50"
@@ -3139,6 +3161,25 @@ ${sizeStr}
                 <h3 className="text-base font-black text-slate-900 mt-1">Konum: {selectedWhiteboardShelfCode}</h3>
                 <p className="text-xs text-slate-600">Hücrenin taşıma limitlerini ve alt bölme/bölüm (bin) durumunu ayarlayın.</p>
               </div>
+
+              {/* Shelf Nickname / Alias */}
+              <label className="grid gap-1">
+                <span className="text-xs font-extrabold text-slate-900">Raf İsim / Lakap (Örn: Ağır Parçalar)</span>
+                <input
+                  type="text"
+                  placeholder="Bu rafa özel bir isim verin..."
+                  value={shelfAliases[`${activeWh.id}::${selectedWhiteboardShelfCode}`] || ""}
+                  onChange={(e) => {
+                    const updated = {
+                      ...shelfAliases,
+                      [`${activeWh.id}::${selectedWhiteboardShelfCode}`]: e.target.value
+                    };
+                    setShelfAliases(updated);
+                    window.localStorage.setItem("hbs-shelf-aliases", JSON.stringify(updated));
+                  }}
+                  className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 bg-white"
+                />
+              </label>
 
               {/* Capacity settings */}
               <div className="grid gap-3 sm:grid-cols-2">
