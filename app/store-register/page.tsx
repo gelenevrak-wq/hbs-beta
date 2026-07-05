@@ -346,8 +346,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setCompanyName(e.target.value)}
                     required
                     placeholder="Örn: OBDTR Yedek Parça"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-transition-585" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text sm text slate 900 outline none focus border blue 500 focus bg white transition" />
                 </label>
 
                 <label className="grid gap-1.5">
@@ -357,8 +356,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setRepresentative(e.target.value)}
                     required
                     placeholder="Örn: Özgür Yıldız"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-transition-581" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text sm text slate 900 outline none focus border blue 500 focus bg white transition" />
                 </label>
               </div>
 
@@ -370,8 +368,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setPhone(e.target.value)}
                     required
                     placeholder="+90 555 123 45 67"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-transition-599" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text sm text slate 900 outline none focus border blue 500 focus bg white transition" />
                 </label>
 
                 <label className="grid gap-1.5">
@@ -382,8 +379,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     placeholder="firma@email.com"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-transition-370" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text sm text slate 900 outline none focus border blue 500 focus bg white transition" />
                 </label>
               </div>
 
@@ -395,8 +391,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setCity(e.target.value)}
                     required
                     placeholder="Örn: İzmir, İstanbul, Batumi"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-transition-487" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text sm text slate 900 outline none focus border blue 500 focus bg white transition" />
                 </label>
 
                 <label className="grid gap-1.5">
@@ -407,8 +402,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="Güçlü bir şifre girin"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-transition-924" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text sm text slate 900 outline none focus border blue 500 focus bg white transition" />
                 </label>
               </div>
 
@@ -421,8 +415,7 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setTaxNumber(e.target.value)}
                     required
                     placeholder="Vergi numaranızı veya vergi dairesini yazın"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-transition-415" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text sm text slate 900 outline none focus border blue 500 focus bg white transition" />
                 </label>
               )}
 
@@ -489,8 +482,7 @@ export default function StoreRegisterPage() {
                       onChange={(e) => setCustomIndustry(e.target.value)}
                       required
                       placeholder="Yeni sektör ismini girin"
-                      className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition"
-                    />
+                      className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-blue-200-bg-blue-50-px-4-py-2-5-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-transition-935" aria-label="Rounded xl border border blue 200 bg blue 50 px 4 py 2 5 text sm text slate 900 outline none focus border blue 500 focus bg white transition" />
                     <p className="text-[10px] text-slate-500">Bu sektörü eklediğinizde sistem bir sonraki mağaza açılışlarında sektörü otomatik listeye dahil edecektir.</p>
                   </label>
                 )}
@@ -543,8 +535,7 @@ export default function StoreRegisterPage() {
                                   setServiceCountries([...serviceCountries, c.code]);
                                 }
                               }}
-                              className="rounded border-slate-350 text-blue-600 focus:ring-blue-500 h-4.5 w-4.5"
-                            />
+                              className="rounded border-slate-350 text-blue-600 focus:ring-blue-500 h-4.5 w-4.5" id="id-page-rounded-border-slate-350-text-blue-600-focus-ring-blue-500-h-4-5-w-4-5-612" aria-label="Rounded border slate 350 text blue 600 focus ring blue 500 h 4 5 w 4 5" />
                             <span>{c.label}</span>
                           </label>
                         );
@@ -610,8 +601,7 @@ export default function StoreRegisterPage() {
                       value={newWhName}
                       onChange={(e) => setNewWhName(e.target.value)}
                       placeholder="Yeni Depo..."
-                      className="rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-900 outline-none focus:border-blue-500"
-                    />
+                      className="rounded-lg border border-slate-200 px-2 py-1 text-xs text-slate-900 outline-none focus:border-blue-500" id="id-page-rounded-lg-border-border-slate-200-px-2-py-1-text-xs-text-slate-900-outline-none-focus-border-blue-500-921" aria-label="Rounded lg border border slate 200 px 2 py 1 text xs text slate 900 outline none focus border blue 500" />
                     <button
                       type="button"
                       onClick={handleAddWarehouse}
@@ -630,8 +620,7 @@ export default function StoreRegisterPage() {
                       value={newShelf}
                       onChange={(e) => setNewShelf(e.target.value)}
                       placeholder="Örn: A-01 veya GRID-B"
-                      className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-blue-500"
-                    />
+                      className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-blue-500" id="id-page-flex-1-rounded-xl-border-border-slate-200-bg-white-px-3-py-1-5-text-xs-text-slate-900-outline-none-focus-border-blue-500-756" aria-label="Flex 1 rounded xl border border slate 200 bg white px 3 py 1 5 text xs text slate 900 outline none focus border blue 500" />
                     <button
                       type="button"
                       onClick={handleAddShelf}

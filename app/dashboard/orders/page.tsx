@@ -323,8 +323,7 @@ export default function OrdersPage() {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                  placeholder="Müşteri, telefon, ürün, kod veya şehir ara"
-                />
+                  placeholder="Müşteri, telefon, ürün, kod veya şehir ara" id="id-page-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-862" aria-label="Rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
               </label>
 
               <label className="grid gap-2">

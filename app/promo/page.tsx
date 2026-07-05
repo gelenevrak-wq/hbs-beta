@@ -779,8 +779,7 @@ export default function PromoVideoPage() {
                     step="0.5"
                     value={time}
                     onChange={(e) => setTime(Number(e.target.value))}
-                    className="absolute inset-0 w-full opacity-0 cursor-pointer z-30"
-                  />
+                    className="absolute inset-0 w-full opacity-0 cursor-pointer z-30" id="id-page-absolute-inset-0-w-full-opacity-0-cursor-pointer-z-30-397" aria-label="Absolute inset 0 w full opacity 0 cursor pointer z 30" />
                   {/* Custom Glow Thumb */}
                   <div
                     className="absolute w-3.5 h-3.5 bg-white border border-blue-500 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.8)] -translate-x-1/2 pointer-events-none z-20 transition-all group-hover/slider:scale-125"

@@ -280,8 +280,7 @@ export default function BalancesPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Firma veya yetkili ara..."
-                className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-blue-500 focus:bg-white"
-              />
+                className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-blue-500 focus:bg-white" id="id-page-mt-2-w-full-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-text-xs-outline-none-focus-border-blue-500-focus-bg-white-128" aria-label="Mt 2 w full rounded xl border border slate 200 bg slate 50 px 3 py 2 text xs outline none focus border blue 500 focus bg white" />
             </div>
 
             <div className="space-y-2 max-h-[450px] overflow-y-auto pr-1">

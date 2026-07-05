@@ -1314,8 +1314,7 @@ export default function StorePage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Mağazada ürün ara..."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-8 py-2 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition text-slate-800 shadow-inner"
-                />
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-8 py-2 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition text-slate-800 shadow-inner" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-slate-50-pl-8-pr-8-py-2-text-xs-font-semibold-outline-none-focus-border-blue-500-focus-bg-white-transition-text-slate-800-shadow-inner-302" aria-label="W full rounded xl border border slate 200 bg slate 50 pl 8 pr 8 py 2 text xs font semibold outline none focus border blue 500 focus bg white transition text slate 800 shadow inner" />
                 {search && (
                   <button
                     type="button"
@@ -1581,8 +1580,7 @@ export default function StorePage() {
                           value={offerValue}
                           onChange={(e) => setOfferValue(e.target.value)}
                           placeholder={getTxt("offerPricePlaceholder")}
-                          className="flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-900 outline-none focus:border-blue-500"
-                        />
+                          className="flex-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-900 outline-none focus:border-blue-500" id="id-page-flex-1-rounded-lg-border-border-slate-200-bg-white-px-2-5-py-1-text-xs-text-slate-900-outline-none-focus-border-blue-500-370" aria-label="Flex 1 rounded lg border border slate 200 bg white px 2 5 py 1 text xs text slate 900 outline none focus border blue 500" />
                         <button
                           type="button"
                           onClick={() => {
@@ -1730,8 +1728,7 @@ export default function StorePage() {
                     value={plateNumber}
                     onChange={(e) => setPlateNumber(e.target.value)}
                     placeholder={getTxt("platePlaceholder")}
-                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white"
-                  />
+                    className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white" id="id-page-flex-1-rounded-xl-border-border-slate-200-bg-slate-50-px-3-5-py-2-text-xs-text-slate-900-outline-none-focus-border-blue-500-focus-bg-white-263" aria-label="Flex 1 rounded xl border border slate 200 bg slate 50 px 3 5 py 2 text xs text slate 900 outline none focus border blue 500 focus bg white" />
                   <button
                     type="button"
                     onClick={() => {
@@ -1836,8 +1833,7 @@ export default function StorePage() {
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
-                  placeholder="Ahmet Yılmaz"
-                />
+                  placeholder="Ahmet Yılmaz" id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-text-slate-900-dark-text-white-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-915" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm text slate 900 dark text white outline none focus border blue 500 dark focus border blue 400 transition" />
               </div>
 
               <div className="space-y-1.5">
@@ -1848,8 +1844,7 @@ export default function StorePage() {
                   value={profilePhone}
                   onChange={(e) => setProfilePhone(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
-                  placeholder="+90 532 000 00 00"
-                />
+                  placeholder="+90 532 000 00 00" id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-text-slate-900-dark-text-white-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-978" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm text slate 900 dark text white outline none focus border blue 500 dark focus border blue 400 transition" />
               </div>
 
               <div className="space-y-1.5">
@@ -1860,8 +1855,7 @@ export default function StorePage() {
                   value={profileCity}
                   onChange={(e) => setProfileCity(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
-                  placeholder="İstanbul"
-                />
+                  placeholder="İstanbul" id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-text-slate-900-dark-text-white-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-907" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm text slate 900 dark text white outline none focus border blue 500 dark focus border blue 400 transition" />
               </div>
 
               <div className="flex gap-2 pt-2">

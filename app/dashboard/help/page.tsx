@@ -260,8 +260,7 @@ export default function HelpCenterPage() {
                 activeLang === "ru" ? "Ищите по темам поддержки... (например: штрихкод, предложение, excel)" :
                 "Hilfethemen oder Spalten durchsuchen... (z.B. Barcode, Angebot, Excel)"
               }
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-3 text-xs sm:text-sm font-semibold outline-none focus:border-indigo-500 focus:bg-white transition"
-            />
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-4 py-3 text-xs sm:text-sm font-semibold outline-none focus:border-indigo-500 focus:bg-white transition" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-slate-50-pl-10-pr-4-py-3-text-xs-sm-text-sm-font-semibold-outline-none-focus-border-indigo-500-focus-bg-white-transition-65" aria-label="W full rounded xl border border slate 200 bg slate 50 pl 10 pr 4 py 3 text xs sm text sm font semibold outline none focus border indigo 500 focus bg white transition" />
           </div>
 
           {/* Dynamic Category Filter Buttons */}

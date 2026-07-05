@@ -58,8 +58,7 @@ export default function ForgotPasswordPage() {
               <input
                 required
                 className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-sm"
-                placeholder={t.placeholder}
-              />
+                placeholder={t.placeholder} id="id-page-w-full-rounded-2xl-border-border-slate-200-bg-slate-50-px-4-py-3-text-sm-font-semibold-text-slate-800-outline-none-focus-border-blue-500-focus-ring-4-focus-ring-blue-500-10-transition-all-duration-300-shadow-sm-946" aria-label="W full rounded 2xl border border slate 200 bg slate 50 px 4 py 3 text sm font semibold text slate 800 outline none focus border blue 500 focus ring 4 focus ring blue 500 10 transition all duration 300 shadow sm" />
             </label>
             
             <button className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-4 py-3.5 text-sm font-black text-white hover:shadow-lg transition-all duration-300 select-none cursor-pointer flex items-center justify-center gap-1.5 shadow-md">

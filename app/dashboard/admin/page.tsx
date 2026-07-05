@@ -585,8 +585,7 @@ export default function AdminPage() {
                   placeholder="Kullanıcı veya bilgi ara..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-ring-2-focus-ring-blue-500-190" aria-label="W full rounded xl border border slate 200 bg slate 50 px 3 py 2 text xs font semibold focus outline none focus ring 2 focus ring blue 500" />
               </div>
             </div>
 
@@ -783,8 +782,7 @@ export default function AdminPage() {
                               : { ...editingUserObj, displayName: e.target.value }
                           )
                         }
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-ring-2-focus-ring-blue-500-599" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none focus ring 2 focus ring blue 500" />
                     </div>
 
                     {/* Email / Username */}
@@ -803,8 +801,7 @@ export default function AdminPage() {
                               : { ...editingUserObj, username: e.target.value }
                           )
                         }
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-400"
-                      />
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-400" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-ring-2-focus-ring-blue-500-disabled-bg-slate-100-disabled-text-slate-400-291" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none focus ring 2 focus ring blue 500 disabled bg slate 100 disabled text slate 400" />
                     </div>
 
                     {/* Password */}
@@ -817,8 +814,7 @@ export default function AdminPage() {
                         placeholder="Yeni şifre girin"
                         value={editingUserObj.password || ""}
                         onChange={(e) => setEditingUserObj({ ...editingUserObj, password: e.target.value })}
-                        className="w-full rounded-xl border border-amber-300 bg-amber-50/20 px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      />
+                        className="w-full rounded-xl border border-amber-300 bg-amber-50/20 px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:ring-2 focus:ring-amber-500" id="id-page-w-full-rounded-xl-border-border-amber-300-bg-amber-50-20-px-3-py-2-text-xs-font-mono-font-bold-focus-outline-none-focus-ring-2-focus-ring-amber-500-93" aria-label="W full rounded xl border border amber 300 bg amber 50 20 px 3 py 2 text xs font mono font bold focus outline none focus ring 2 focus ring amber 500" />
                     </div>
 
                     {/* Phone */}
@@ -831,8 +827,7 @@ export default function AdminPage() {
                           type="text"
                           value={editingUserObj.phone || ""}
                           onChange={(e) => setEditingUserObj({ ...editingUserObj, phone: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-ring-2-focus-ring-blue-500-857" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none focus ring 2 focus ring blue 500" />
                       </div>
                     )}
 
@@ -1004,8 +999,7 @@ export default function AdminPage() {
                           type="text"
                           value={editingWhObj.name || ""}
                           onChange={(e) => setEditingWhObj({ ...editingWhObj, name: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none"
-                        />
+                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-92" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Bulunduğu Şehir</label>
@@ -1013,8 +1007,7 @@ export default function AdminPage() {
                           type="text"
                           value={editingWhObj.city || ""}
                           onChange={(e) => setEditingWhObj({ ...editingWhObj, city: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none"
-                        />
+                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-194" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none" />
                       </div>
                     </div>
 
@@ -1024,8 +1017,7 @@ export default function AdminPage() {
                         type="text"
                         value={editingWhObj.purpose || ""}
                         onChange={(e) => setEditingWhObj({ ...editingWhObj, purpose: e.target.value })}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none"
-                      />
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-498" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -1035,8 +1027,7 @@ export default function AdminPage() {
                           type="number"
                           value={editingWhObj.capacity || 0}
                           onChange={(e) => setEditingWhObj({ ...editingWhObj, capacity: e.target.value })}
-                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none"
-                        />
+                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-240" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none" />
                       </div>
                       <div className="flex items-center pt-5">
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
@@ -1044,8 +1035,7 @@ export default function AdminPage() {
                             type="checkbox"
                             checked={editingWhObj.customerVisible || false}
                             onChange={(e) => setEditingWhObj({ ...editingWhObj, customerVisible: e.target.checked })}
-                            className="rounded border-slate-350 text-blue-600 focus:ring-blue-500"
-                          />
+                            className="rounded border-slate-350 text-blue-600 focus:ring-blue-500" id="id-page-rounded-border-slate-350-text-blue-600-focus-ring-blue-500-262" aria-label="Rounded border slate 350 text blue 600 focus ring blue 500" />
                           Müşteri Portalında Görünsün (Showroom)
                         </label>
                       </div>
@@ -1060,8 +1050,7 @@ export default function AdminPage() {
                         placeholder="Örn: A, B, C, D"
                         value={editingWhObj.zonesStr || ""}
                         onChange={(e) => setEditingWhObj({ ...editingWhObj, zonesStr: e.target.value })}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-mono font-bold focus:outline-none"
-                      />
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-mono font-bold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-mono-font-bold-focus-outline-none-277" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font mono font bold focus outline none" />
                       <p className="text-[10px] text-slate-400 mt-1">Virgülle ayırarak girin.</p>
                     </div>
 
@@ -1121,8 +1110,7 @@ export default function AdminPage() {
                           placeholder="Örn: Gürcistan Sınır Deposu"
                           value={newWhName}
                           onChange={(e) => setNewWhName(e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none"
-                        />
+                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-653" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none" />
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Şehir</label>
@@ -1131,8 +1119,7 @@ export default function AdminPage() {
                           placeholder="Örn: Batumi"
                           value={newWhCity}
                           onChange={(e) => setNewWhCity(e.target.value)}
-                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none"
-                        />
+                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-32" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none" />
                       </div>
                     </div>
 
@@ -1143,8 +1130,7 @@ export default function AdminPage() {
                         placeholder="Örn: Gümrük ve transit geçiş yedek parça depolaması"
                         value={newWhPurpose}
                         onChange={(e) => setNewWhPurpose(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none"
-                      />
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-82" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -1154,8 +1140,7 @@ export default function AdminPage() {
                           type="number"
                           value={newWhCapacity}
                           onChange={(e) => setNewWhCapacity(Number(e.target.value))}
-                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none"
-                        />
+                          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-semibold-focus-outline-none-707" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font semibold focus outline none" />
                       </div>
                       <div className="flex items-center pt-5">
                         <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
@@ -1163,8 +1148,7 @@ export default function AdminPage() {
                             type="checkbox"
                             checked={newWhVisible}
                             onChange={(e) => setNewWhVisible(e.target.checked)}
-                            className="rounded border-slate-350 text-blue-600 focus:ring-blue-500"
-                          />
+                            className="rounded border-slate-350 text-blue-600 focus:ring-blue-500" id="id-page-rounded-border-slate-350-text-blue-600-focus-ring-blue-500-825" aria-label="Rounded border slate 350 text blue 600 focus ring blue 500" />
                           Müşteri Portalında Görünsün
                         </label>
                       </div>
@@ -1177,8 +1161,7 @@ export default function AdminPage() {
                         placeholder="Örn: A, B, C"
                         value={newWhZones}
                         onChange={(e) => setNewWhZones(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-mono font-bold focus:outline-none"
-                      />
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-mono font-bold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-mono-font-bold-focus-outline-none-794" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font mono font bold focus outline none" />
                     </div>
 
                     <div>
@@ -1188,8 +1171,7 @@ export default function AdminPage() {
                         placeholder="Örn: A-01, A-02, B-01"
                         value={newWhShelves}
                         onChange={(e) => setNewWhShelves(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-mono font-bold focus:outline-none"
-                      />
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs font-mono font-bold focus:outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-font-mono-font-bold-focus-outline-none-381" aria-label="W full rounded xl border border slate 200 px 3 py 2 text xs font mono font bold focus outline none" />
                     </div>
                   </div>
 

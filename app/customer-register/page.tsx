@@ -175,8 +175,7 @@ export default function CustomerRegisterPage() {
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition"
-                    placeholder="ornek@email.com"
-                  />
+                    placeholder="ornek@email.com" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-4-py-3-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-ring-1-focus-ring-blue-500-20-transition-988" aria-label="W full rounded xl border border slate 200 bg white px 4 py 3 text sm text slate 900 outline none focus border blue 500 focus ring 1 focus ring blue 500 20 transition" />
                 </div>
 
                 <div className="space-y-1.5">
@@ -187,8 +186,7 @@ export default function CustomerRegisterPage() {
                     value={phone}
                     onChange={(event) => setPhone(event.target.value)}
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition"
-                    placeholder="+90 555 123 45 67"
-                  />
+                    placeholder="+90 555 123 45 67" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-4-py-3-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-ring-1-focus-ring-blue-500-20-transition-627" aria-label="W full rounded xl border border slate 200 bg white px 4 py 3 text sm text slate 900 outline none focus border blue 500 focus ring 1 focus ring blue 500 20 transition" />
                 </div>
 
                 <div className="space-y-1.5">
@@ -199,8 +197,7 @@ export default function CustomerRegisterPage() {
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition"
-                    placeholder="••••••••"
-                  />
+                    placeholder="••••••••" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-4-py-3-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-ring-1-focus-ring-blue-500-20-transition-908" aria-label="W full rounded xl border border slate 200 bg white px 4 py 3 text sm text slate 900 outline none focus border blue 500 focus ring 1 focus ring blue 500 20 transition" />
                 </div>
 
                 <div className="space-y-1.5">
@@ -210,8 +207,7 @@ export default function CustomerRegisterPage() {
                     value={fullName}
                     onChange={(event) => setFullName(event.target.value)}
                     className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 transition"
-                    placeholder="Ahmet Yılmaz"
-                  />
+                    placeholder="Ahmet Yılmaz" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-4-py-3-text-sm-text-slate-900-outline-none-focus-border-blue-500-focus-ring-1-focus-ring-blue-500-20-transition-192" aria-label="W full rounded xl border border slate 200 bg white px 4 py 3 text sm text slate 900 outline none focus border blue 500 focus ring 1 focus ring blue 500 20 transition" />
                 </div>
 
                 <div className="space-y-1.5">

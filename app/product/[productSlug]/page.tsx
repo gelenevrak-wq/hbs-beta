@@ -1434,8 +1434,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
-                  placeholder="Ahmet Yılmaz"
-                />
+                  placeholder="Ahmet Yılmaz" id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-479" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm outline none focus border blue 500 dark focus border blue 400 transition" />
               </div>
 
               <div className="space-y-1.5">
@@ -1446,8 +1445,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                   value={profilePhone}
                   onChange={(e) => setProfilePhone(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
-                  placeholder="+90 532 000 00 00"
-                />
+                  placeholder="+90 532 000 00 00" id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-23" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm outline none focus border blue 500 dark focus border blue 400 transition" />
               </div>
 
               <div className="space-y-1.5">
@@ -1458,8 +1456,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                   value={profileCity}
                   onChange={(e) => setProfileCity(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
-                  placeholder="İstanbul"
-                />
+                  placeholder="İstanbul" id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-629" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm outline none focus border blue 500 dark focus border blue 400 transition" />
               </div>
 
               <div className="flex gap-2 pt-2">
@@ -1593,8 +1590,7 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
                         step={10}
                         value={negotiatedPrice}
                         onChange={(e) => setNegotiatedPrice(parseInt(e.target.value))}
-                        className="flex-1 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500"
-                      />
+                        className="flex-1 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-orange-500" id="id-page-flex-1-h-1-5-bg-slate-700-rounded-lg-appearance-none-cursor-pointer-accent-orange-500-807" aria-label="Flex 1 h 1 5 bg slate 700 rounded lg appearance none cursor pointer accent orange 500" />
                       <button
                         type="button"
                         onClick={handleSuggestPrice}

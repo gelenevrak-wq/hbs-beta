@@ -630,8 +630,7 @@ export default function ReportsPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t.searchPlaceholder}
-                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500"
-                />
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-outline-none-focus-border-blue-500-90" aria-label="Rounded xl border border slate 200 px 3 py 2 text xs outline none focus border blue 500" />
               </label>
 
               <label className="grid gap-1">
@@ -640,8 +639,7 @@ export default function ReportsPage() {
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500"
-                />
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-outline-none-focus-border-blue-500-57" aria-label="Rounded xl border border slate 200 px 3 py 2 text xs outline none focus border blue 500" />
               </label>
 
               <label className="grid gap-1">
@@ -650,8 +648,7 @@ export default function ReportsPage() {
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500"
-                />
+                  className="rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-outline-none-focus-border-blue-500-553" aria-label="Rounded xl border border slate 200 px 3 py 2 text xs outline none focus border blue 500" />
               </label>
 
               <div className="grid grid-cols-2 gap-2">
@@ -847,8 +844,7 @@ export default function ReportsPage() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={t.expirySearchPlaceholder}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500"
-                  />
+                    className="rounded-xl border border-slate-200 px-3 py-2 text-xs outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-200-px-3-py-2-text-xs-outline-none-focus-border-blue-500-283" aria-label="Rounded xl border border slate 200 px 3 py 2 text xs outline none focus border blue 500" />
                 </label>
 
                 <label className="grid gap-1 col-span-2">

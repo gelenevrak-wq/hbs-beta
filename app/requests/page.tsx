@@ -952,8 +952,7 @@ export default function RequestsBoardPage() {
                               value={bidAmount}
                               onChange={(e) => setBidAmount(e.target.value)}
                               placeholder={t.bidAmountPlaceholder}
-                              className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold outline-none focus:border-indigo-500"
-                            />
+                              className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold outline-none focus:border-indigo-500" id="id-page-rounded-xl-border-border-slate-200-bg-white-px-3-5-py-2-text-xs-font-semibold-outline-none-focus-border-indigo-500-651" aria-label="Rounded xl border border slate 200 bg white px 3 5 py 2 text xs font semibold outline none focus border indigo 500" />
                           </label>
                           <label className="grid gap-1">
                             <span className="text-[11px] font-black text-indigo-800">{t.bidDuration}</span>
@@ -961,8 +960,7 @@ export default function RequestsBoardPage() {
                               value={bidDuration}
                               onChange={(e) => setBidDuration(e.target.value)}
                               placeholder={t.bidDurationPlaceholder}
-                              className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold outline-none focus:border-indigo-500"
-                            />
+                              className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold outline-none focus:border-indigo-500" id="id-page-rounded-xl-border-border-slate-200-bg-white-px-3-5-py-2-text-xs-font-semibold-outline-none-focus-border-indigo-500-661" aria-label="Rounded xl border border slate 200 bg white px 3 5 py 2 text xs font semibold outline none focus border indigo 500" />
                           </label>
                         </div>
 
@@ -1009,8 +1007,7 @@ export default function RequestsBoardPage() {
                     onChange={(e) => setNewTitle(e.target.value)}
                     required
                     placeholder={t.labelTitlePlaceholder}
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-xs-font-semibold-outline-none-focus-border-blue-500-focus-bg-white-transition-145" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text xs font semibold outline none focus border blue 500 focus bg white transition" />
                 </label>
 
                 <label className="grid gap-1">
@@ -1036,8 +1033,7 @@ export default function RequestsBoardPage() {
                       value={newBudget}
                       onChange={(e) => setNewBudget(e.target.value)}
                       placeholder={t.labelBudgetPlaceholder}
-                      className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition"
-                    />
+                      className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-xs-font-semibold-outline-none-focus-border-blue-500-focus-bg-white-transition-661" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text xs font semibold outline none focus border blue 500 focus bg white transition" />
                   </label>
                   <label className="grid gap-1">
                     <span className="text-xs font-bold text-slate-600">{t.labelCity}</span>
@@ -1046,8 +1042,7 @@ export default function RequestsBoardPage() {
                       onChange={(e) => setNewCity(e.target.value)}
                       required
                       placeholder={t.labelCityPlaceholder}
-                      className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition"
-                    />
+                      className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-xs-font-semibold-outline-none-focus-border-blue-500-focus-bg-white-transition-504" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text xs font semibold outline none focus border blue 500 focus bg white transition" />
                   </label>
                 </div>
 
@@ -1074,8 +1069,7 @@ export default function RequestsBoardPage() {
                         onChange={(e) => setNewOwnerName(e.target.value)}
                         required
                         placeholder={t.labelNamePlaceholder}
-                        className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition"
-                      />
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-xs-font-semibold-outline-none-focus-border-blue-500-focus-bg-white-transition-308" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text xs font semibold outline none focus border blue 500 focus bg white transition" />
                     </label>
                     <label className="grid gap-1">
                       <span className="text-xs font-bold text-slate-600">{t.labelEmail}</span>
@@ -1085,8 +1079,7 @@ export default function RequestsBoardPage() {
                         onChange={(e) => setNewOwnerEmail(e.target.value)}
                         required
                         placeholder="altan@gokdelen.ge"
-                        className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition"
-                      />
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-2-5-text-xs-font-semibold-outline-none-focus-border-blue-500-focus-bg-white-transition-586" aria-label="Rounded xl border border slate 200 bg slate 50 px 4 py 2 5 text xs font semibold outline none focus border blue 500 focus bg white transition" />
                     </label>
                   </div>
                   <p className="text-[10px] text-blue-600 font-bold leading-normal">

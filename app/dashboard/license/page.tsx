@@ -563,8 +563,7 @@ export default function LicensePage() {
                   value={activationKey}
                   onChange={(e) => setActivationKey(e.target.value)}
                   placeholder="Örn: HBS-B1-DF3A-8K91"
-                  className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold uppercase tracking-wider outline-none focus:border-blue-500 focus:bg-white transition"
-                />
+                  className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold uppercase tracking-wider outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-flex-1-rounded-xl-border-border-slate-200-bg-slate-50-px-4-py-3-text-sm-font-bold-uppercase-tracking-wider-outline-none-focus-border-blue-500-focus-bg-white-transition-482" aria-label="Flex 1 rounded xl border border slate 200 bg slate 50 px 4 py 3 text sm font bold uppercase tracking wider outline none focus border blue 500 focus bg white transition" />
                 <button
                   type="button"
                   onClick={handleActivateKey}
@@ -605,8 +604,7 @@ export default function LicensePage() {
                     max="30"
                     value={users}
                     onChange={(e) => setUsers(Number(e.target.value))}
-                    className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none"
-                  />
+                    className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none" id="id-page-h-1-5-w-full-cursor-pointer-appearance-none-rounded-lg-bg-slate-100-accent-blue-600-focus-outline-none-347" aria-label="H 1 5 w full cursor pointer appearance none rounded lg bg slate 100 accent blue 600 focus outline none" />
                 </div>
 
                 <div className="space-y-1.5">
@@ -620,8 +618,7 @@ export default function LicensePage() {
                     max="10"
                     value={warehouses}
                     onChange={(e) => setWarehouses(Number(e.target.value))}
-                    className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none"
-                  />
+                    className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none" id="id-page-h-1-5-w-full-cursor-pointer-appearance-none-rounded-lg-bg-slate-100-accent-blue-600-focus-outline-none-986" aria-label="H 1 5 w full cursor pointer appearance none rounded lg bg slate 100 accent blue 600 focus outline none" />
                 </div>
 
                 <div className="space-y-1.5">
@@ -636,8 +633,7 @@ export default function LicensePage() {
                     step="100"
                     value={products}
                     onChange={(e) => setProducts(Number(e.target.value))}
-                    className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none"
-                  />
+                    className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none" id="id-page-h-1-5-w-full-cursor-pointer-appearance-none-rounded-lg-bg-slate-100-accent-blue-600-focus-outline-none-355" aria-label="H 1 5 w full cursor pointer appearance none rounded lg bg slate 100 accent blue 600 focus outline none" />
                 </div>
 
                 <div className="space-y-2">
@@ -698,8 +694,7 @@ export default function LicensePage() {
                         step="1"
                         value={pricingRates.baseRate}
                         onChange={(e) => setPricingRates({ ...pricingRates, baseRate: Number(e.target.value) })}
-                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition"
-                      />
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-5-py-2-text-sm-font-black-outline-none-focus-border-blue-500-focus-bg-white-transition-312" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 5 py 2 text sm font black outline none focus border blue 500 focus bg white transition" />
                     </label>
 
                     <label className="grid gap-1">
@@ -709,8 +704,7 @@ export default function LicensePage() {
                         step="0.5"
                         value={pricingRates.userRate}
                         onChange={(e) => setPricingRates({ ...pricingRates, userRate: Number(e.target.value) })}
-                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition"
-                      />
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-5-py-2-text-sm-font-black-outline-none-focus-border-blue-500-focus-bg-white-transition-295" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 5 py 2 text sm font black outline none focus border blue 500 focus bg white transition" />
                     </label>
 
                     <label className="grid gap-1">
@@ -720,8 +714,7 @@ export default function LicensePage() {
                         step="0.5"
                         value={pricingRates.whRate}
                         onChange={(e) => setPricingRates({ ...pricingRates, whRate: Number(e.target.value) })}
-                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition"
-                      />
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-5-py-2-text-sm-font-black-outline-none-focus-border-blue-500-focus-bg-white-transition-53" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 5 py 2 text sm font black outline none focus border blue 500 focus bg white transition" />
                     </label>
 
                     <label className="grid gap-1">
@@ -731,8 +724,7 @@ export default function LicensePage() {
                         step="0.1"
                         value={pricingRates.prodRate}
                         onChange={(e) => setPricingRates({ ...pricingRates, prodRate: Number(e.target.value) })}
-                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition"
-                      />
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm font-black outline-none focus:border-blue-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-5-py-2-text-sm-font-black-outline-none-focus-border-blue-500-focus-bg-white-transition-215" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 5 py 2 text sm font black outline none focus border blue 500 focus bg white transition" />
                     </label>
                   </div>
                   
@@ -806,8 +798,7 @@ export default function LicensePage() {
                         max="100"
                         value={genMaxUsers}
                         onChange={(e) => setGenMaxUsers(Number(e.target.value))}
-                        className="h-1 w-full cursor-pointer appearance-none bg-slate-200 accent-amber-500 focus:outline-none"
-                      />
+                        className="h-1 w-full cursor-pointer appearance-none bg-slate-200 accent-amber-500 focus:outline-none" id="id-page-h-1-w-full-cursor-pointer-appearance-none-bg-slate-200-accent-amber-500-focus-outline-none-845" aria-label="H 1 w full cursor pointer appearance none bg slate 200 accent amber 500 focus outline none" />
                     </div>
 
                     <div className="space-y-1.5">
@@ -821,8 +812,7 @@ export default function LicensePage() {
                         max="20"
                         value={genMaxWarehouses}
                         onChange={(e) => setGenMaxWarehouses(Number(e.target.value))}
-                        className="h-1 w-full cursor-pointer appearance-none bg-slate-200 accent-amber-500 focus:outline-none"
-                      />
+                        className="h-1 w-full cursor-pointer appearance-none bg-slate-200 accent-amber-500 focus:outline-none" id="id-page-h-1-w-full-cursor-pointer-appearance-none-bg-slate-200-accent-amber-500-focus-outline-none-855" aria-label="H 1 w full cursor pointer appearance none bg slate 200 accent amber 500 focus outline none" />
                     </div>
 
                     <div className="space-y-1.5">
@@ -837,8 +827,7 @@ export default function LicensePage() {
                         step="100"
                         value={genMaxProducts}
                         onChange={(e) => setGenMaxProducts(Number(e.target.value))}
-                        className="h-1 w-full cursor-pointer appearance-none bg-slate-200 accent-amber-500 focus:outline-none"
-                      />
+                        className="h-1 w-full cursor-pointer appearance-none bg-slate-200 accent-amber-500 focus:outline-none" id="id-page-h-1-w-full-cursor-pointer-appearance-none-bg-slate-200-accent-amber-500-focus-outline-none-386" aria-label="H 1 w full cursor pointer appearance none bg slate 200 accent amber 500 focus outline none" />
                     </div>
                   </div>
 
@@ -873,8 +862,7 @@ export default function LicensePage() {
                         max="1000"
                         value={genCount}
                         onChange={(e) => setGenCount(Number(e.target.value))}
-                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-black outline-none focus:border-amber-500 focus:bg-white transition"
-                      />
+                        className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-black outline-none focus:border-amber-500 focus:bg-white transition" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-5-py-2-5-text-sm-font-black-outline-none-focus-border-amber-500-focus-bg-white-transition-331" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 5 py 2 5 text sm font black outline none focus border amber 500 focus bg white transition" />
                     </label>
 
                     <div className="flex items-end">

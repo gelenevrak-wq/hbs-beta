@@ -246,8 +246,7 @@ export default function MessagesPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="İsim, ürün veya kelime ara..."
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-blue-500 focus:bg-white"
-                />
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs outline-none focus:border-blue-500 focus:bg-white" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-text-xs-outline-none-focus-border-blue-500-focus-bg-white-749" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 py 2 text xs outline none focus border blue 500 focus bg white" />
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as MessageStatus | "all")}
@@ -358,8 +357,7 @@ export default function MessagesPage() {
                       type="checkbox"
                       checked={autoTranslate}
                       onChange={(e) => setAutoTranslate(e.target.checked)}
-                      className="rounded accent-blue-600"
-                    />
+                      className="rounded accent-blue-600" id="id-page-rounded-accent-blue-600-829" aria-label="Rounded accent blue 600" />
                     Yapay Zeka Çeviriyi Aktif Tut ({activeThread.customerLang.toUpperCase()} Diline)
                   </label>
 

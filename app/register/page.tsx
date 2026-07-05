@@ -416,15 +416,15 @@ export default function RegisterPage() {
                 <button type="button" onClick={() => setMode("select")} className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black">{t.back}</button>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <input name="fullName" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.fullName} autoComplete="off" />
-                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
-                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
-                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
-                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
-                <input name="city" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.cityOptional} autoComplete="off" />
+                <input name="fullName" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.fullName} autoComplete="off" id="id-page-fullName-143" aria-label="FullName" />
+                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" id="id-page-email-718" aria-label="Email" />
+                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" id="id-page-phone-418" aria-label="Phone" />
+                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" id="id-page-password-777" aria-label="Password" />
+                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" id="id-page-country-63" aria-label="Country" />
+                <input name="city" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.cityOptional} autoComplete="off" id="id-page-city-251" aria-label="City" />
               </div>
               <label className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs font-semibold leading-5 text-slate-700">
-                <input type="checkbox" className="mt-1" />
+                <input type="checkbox" className="mt-1" id="id-page-mt-1-532" aria-label="Mt 1" />
                 <span>{t.customerCampaign}</span>
               </label>
               {error && <div className="rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700">{error}</div>}
@@ -440,19 +440,19 @@ export default function RegisterPage() {
               </div>
               <p className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs font-bold leading-5 text-blue-900">{t.storeNote}</p>
               <div className="grid gap-3 sm:grid-cols-2">
-                <input name="company" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.company} autoComplete="off" />
-                <input name="representative" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.representative} autoComplete="off" />
-                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" />
-                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" />
-                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" />
-                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" />
-                <input name="city" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.cityOptional.replace("(zorunlu değil)", "").replace("(optional)", "").replace("(необязательно)", "").replace("(არასავალდებულო)", "")} autoComplete="off" />
-                <input name="address" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.address} autoComplete="off" />
-                <input name="whatsapp" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.whatsapp} autoComplete="off" />
-                <input name="maps" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.maps} autoComplete="off" />
+                <input name="company" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.company} autoComplete="off" id="id-page-company-357" aria-label="Company" />
+                <input name="representative" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.representative} autoComplete="off" id="id-page-representative-997" aria-label="Representative" />
+                <input name="email" required type="email" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.email} autoComplete="off" id="id-page-email-235" aria-label="Email" />
+                <input name="phone" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.phone} autoComplete="off" id="id-page-phone-44" aria-label="Phone" />
+                <input name="password" required type="password" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.password} autoComplete="new-password" id="id-page-password-752" aria-label="Password" />
+                <input name="country" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.country} autoComplete="off" id="id-page-country-974" aria-label="Country" />
+                <input name="city" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.cityOptional.replace("(zorunlu değil)", "").replace("(optional)", "").replace("(необязательно)", "").replace("(არასავალდებულო)", "")} autoComplete="off" id="id-page-city-689" aria-label="City" />
+                <input name="address" required className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.address} autoComplete="off" id="id-page-address-828" aria-label="Address" />
+                <input name="whatsapp" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.whatsapp} autoComplete="off" id="id-page-whatsapp-618" aria-label="Whatsapp" />
+                <input name="maps" className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500" placeholder={t.maps} autoComplete="off" id="id-page-maps-243" aria-label="Maps" />
               </div>
               <label className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-black leading-5 text-amber-950">
-                <input required type="checkbox" className="mt-1" />
+                <input required type="checkbox" className="mt-1" id="id-page-mt-1-267" aria-label="Mt 1" />
                 <span>{t.ownerDeclaration}</span>
               </label>
               {error && <div className="rounded-xl border border-red-200 bg-red-50 p-2.5 text-xs font-bold text-red-700">{error}</div>}

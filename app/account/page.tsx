@@ -107,7 +107,7 @@ export default function AccountPage() {
               Bu kayıtlar işlem bütünlüğü, mağaza/müşteri güvenliği, uyuşmazlık çözümü ve ticari geçmiş takibi için korunur. Askıya alma işlemi yeni görünürlük ve yeni işlem akışını durdurur; geçmiş kayıtları silmez.
             </p>
             <label className="mt-4 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm font-bold text-slate-800">
-              <input type="checkbox" checked={approved} onChange={(event) => setApproved(event.target.checked)} className="mt-1 h-4 w-4" />
+              <input type="checkbox" checked={approved} onChange={(event) => setApproved(event.target.checked)} className="mt-1 h-4 w-4" id="id-page-mt-1-h-4-w-4-322" aria-label="Mt 1 h 4 w 4" />
               <span>Bu açıklamaları okudum, anladım ve üyeliğimi askıya alırken geçmiş ticari kayıtların saklanacağını kabul ediyorum.</span>
             </label>
             <div className="mt-4 flex flex-wrap justify-end gap-2">

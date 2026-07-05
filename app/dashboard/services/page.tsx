@@ -248,8 +248,7 @@ export default function ServicesPage() {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Örn: Toyota Corolla 10.000 KM Bakımı"
                   className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition"
-                  required
-                />
+                  required id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-5-text-xs-font-bold-text-slate-800-outline-none-focus-border-blue-500-focus-bg-white-transition-509" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 py 2 5 text xs font bold text slate 800 outline none focus border blue 500 focus bg white transition" />
               </label>
 
               <div className="grid grid-cols-2 gap-3">
@@ -276,8 +275,7 @@ export default function ServicesPage() {
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                     placeholder="Örn: 45 dk"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-5-text-xs-font-bold-text-slate-800-outline-none-focus-border-blue-500-focus-bg-white-946" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 py 2 5 text xs font bold text slate 800 outline none focus border blue 500 focus bg white" />
                 </label>
               </div>
 
@@ -288,8 +286,7 @@ export default function ServicesPage() {
                     value={capacity}
                     onChange={(e) => setCapacity(e.target.value)}
                     placeholder="Örn: 1 Araç / Seans"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-5-text-xs-font-bold-text-slate-800-outline-none-focus-border-blue-500-focus-bg-white-217" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 py 2 5 text xs font bold text slate 800 outline none focus border blue 500 focus bg white" />
                 </label>
 
                 <label className="grid gap-1">
@@ -298,8 +295,7 @@ export default function ServicesPage() {
                     value={staffName}
                     onChange={(e) => setStaffName(e.target.value)}
                     placeholder="Örn: Altan Cancı"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-5-text-xs-font-bold-text-slate-800-outline-none-focus-border-blue-500-focus-bg-white-886" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 py 2 5 text xs font bold text slate 800 outline none focus border blue 500 focus bg white" />
                 </label>
               </div>
 
@@ -310,8 +306,7 @@ export default function ServicesPage() {
                     value={pricing}
                     onChange={(e) => setPricing(e.target.value)}
                     placeholder="Örn: 150 GEL veya Teklif usulü"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-5-text-xs-font-bold-text-slate-800-outline-none-focus-border-blue-500-focus-bg-white-497" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 py 2 5 text xs font bold text slate 800 outline none focus border blue 500 focus bg white" />
                 </label>
 
                 <label className="grid gap-1">
@@ -320,8 +315,7 @@ export default function ServicesPage() {
                     value={slotsStr}
                     onChange={(e) => setSlotsStr(e.target.value)}
                     placeholder="Örn: Bugün 14:00, Yarın 11:30"
-                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white"
-                  />
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-blue-500 focus:bg-white" id="id-page-rounded-xl-border-border-slate-200-bg-slate-50-px-3-py-2-5-text-xs-font-bold-text-slate-800-outline-none-focus-border-blue-500-focus-bg-white-135" aria-label="Rounded xl border border slate 200 bg slate 50 px 3 py 2 5 text xs font bold text slate 800 outline none focus border blue 500 focus bg white" />
                 </label>
               </div>
 

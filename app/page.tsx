@@ -968,8 +968,7 @@ export default function HomePage() {
                   }}
                   onFocus={() => setShowSuggestions(true)}
                   placeholder={locationLabel || t.searchCityPlaceholder}
-                  className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-800 outline-none focus:border-blue-500 placeholder:text-slate-400"
-                />
+                  className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-800 outline-none focus:border-blue-500 placeholder:text-slate-400" id="id-page-h-11-w-full-rounded-2xl-border-border-slate-200-bg-white-px-4-text-xs-font-black-text-slate-800-outline-none-focus-border-blue-500-placeholder-text-slate-400-419" aria-label="H 11 w full rounded 2xl border border slate 200 bg white px 4 text xs font black text slate 800 outline none focus border blue 500 placeholder text slate 400" />
                 {showSuggestions && filteredSuggestions.length > 0 && (
                   <ul className="absolute left-0 right-0 top-12 z-50 max-h-48 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1 shadow-lg">
                     {filteredSuggestions.map((item) => (
@@ -1012,8 +1011,7 @@ export default function HomePage() {
               step="1"
               value={radiusSteps.indexOf(radiusKm) !== -1 ? radiusSteps.indexOf(radiusKm) : 3}
               onChange={(e) => setRadiusKm(radiusSteps[Number(e.target.value)])}
-              className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600 focus:outline-none"
-            />
+              className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600 focus:outline-none" id="id-page-h-1-5-flex-1-cursor-pointer-appearance-none-rounded-lg-bg-slate-200-accent-blue-600-focus-outline-none-559" aria-label="H 1 5 flex 1 cursor pointer appearance none rounded lg bg slate 200 accent blue 600 focus outline none" />
             <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700 font-black text-[10px] shadow-sm shrink-0">{radiusLabel}</span>
           </div>
 

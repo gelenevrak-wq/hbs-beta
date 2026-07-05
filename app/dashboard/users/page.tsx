@@ -529,8 +529,7 @@ export default function StoreUsersPage() {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder={t.placeholderName}
-                  className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none text-xs font-bold focus:border-blue-500 focus:bg-slate-900 transition-all"
-                />
+                  className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none text-xs font-bold focus:border-blue-500 focus:bg-slate-900 transition-all" id="id-page-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-text-xs-font-bold-focus-border-blue-500-focus-bg-slate-900-transition-all-517" aria-label="Rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none text xs font bold focus border blue 500 focus bg slate 900 transition all" />
               </label>
 
               <label className="grid gap-2">
@@ -541,8 +540,7 @@ export default function StoreUsersPage() {
                   value={formUsername}
                   onChange={(e) => setFormUsername(e.target.value)}
                   placeholder={t.placeholderUser}
-                  className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none text-xs font-bold focus:border-blue-500 focus:bg-slate-900 transition-all"
-                />
+                  className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none text-xs font-bold focus:border-blue-500 focus:bg-slate-900 transition-all" id="id-page-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-text-xs-font-bold-focus-border-blue-500-focus-bg-slate-900-transition-all-543" aria-label="Rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none text xs font bold focus border blue 500 focus bg slate 900 transition all" />
               </label>
 
               <label className="grid gap-2">
@@ -553,8 +551,7 @@ export default function StoreUsersPage() {
                   value={formPassword}
                   onChange={(e) => setFormPassword(e.target.value)}
                   placeholder={t.placeholderPass}
-                  className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none text-xs font-bold focus:border-blue-500 focus:bg-slate-900 transition-all"
-                />
+                  className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none text-xs font-bold focus:border-blue-500 focus:bg-slate-900 transition-all" id="id-page-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-text-xs-font-bold-focus-border-blue-500-focus-bg-slate-900-transition-all-636" aria-label="Rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none text xs font bold focus border blue 500 focus bg slate 900 transition all" />
               </label>
 
               <label className="grid gap-2">

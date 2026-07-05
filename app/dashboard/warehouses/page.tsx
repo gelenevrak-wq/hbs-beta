@@ -2204,8 +2204,7 @@ ${sizeStr}
                     type="number"
                     value={wizardCount}
                     onChange={(e) => handleWizardCountChange(Number(e.target.value))}
-                    className="w-12 h-8 text-center rounded-lg border border-slate-250 font-black text-xs"
-                  />
+                    className="w-12 h-8 text-center rounded-lg border border-slate-250 font-black text-xs" id="id-page-w-12-h-8-text-center-rounded-lg-border-border-slate-250-font-black-text-xs-185" aria-label="W 12 h 8 text center rounded lg border border slate 250 font black text xs" />
                   <button
                     type="button"
                     onClick={() => handleWizardCountChange(wizardCount + 1)}
@@ -2232,8 +2231,7 @@ ${sizeStr}
                         updated[i] = e.target.value;
                         setWizardNames(updated);
                       }}
-                      className="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs outline-none focus:border-blue-500 font-semibold"
-                    />
+                      className="flex-1 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs outline-none focus:border-blue-500 font-semibold" id="id-page-flex-1-bg-white-border-border-slate-200-rounded-lg-px-2-5-py-1-text-xs-outline-none-focus-border-blue-500-font-semibold-775" aria-label="Flex 1 bg white border border slate 200 rounded lg px 2 5 py 1 text xs outline none focus border blue 500 font semibold" />
                   </div>
                 ))}
               </div>
@@ -2293,8 +2291,7 @@ ${sizeStr}
                             }}
                             onClick={(e) => e.stopPropagation()}
                             className="rounded border border-blue-500 px-2 py-0.5 text-xs font-black text-slate-900 bg-white"
-                            autoFocus
-                          />
+                            autoFocus id="id-page-rounded-border-border-blue-500-px-2-py-0-5-text-xs-font-black-text-slate-900-bg-white-422" aria-label="Rounded border border blue 500 px 2 py 0 5 text xs font black text slate 900 bg white" />
                         ) : (
                           <span
                             className="hover:text-blue-600 transition flex items-center gap-1"
@@ -2499,8 +2496,7 @@ ${sizeStr}
                                   if (e.key === "Escape") setEditingZoneId(null);
                                 }}
                                 className="rounded border border-blue-500 px-2 py-0.5 text-xs font-black text-slate-900 bg-white"
-                                autoFocus
-                              />
+                                autoFocus id="id-page-rounded-border-border-blue-500-px-2-py-0-5-text-xs-font-black-text-slate-900-bg-white-553" aria-label="Rounded border border blue 500 px 2 py 0 5 text xs font black text slate 900 bg white" />
                             ) : (
                               <span
                                 className="text-sm font-black text-slate-800 hover:text-blue-600 transition cursor-pointer flex items-center gap-1"
@@ -2659,8 +2655,7 @@ ${sizeStr}
                       placeholder="🔍 Ürün adı veya kodu ile hızlı ara..."
                       value={productSearch}
                       onChange={(e) => setProductSearch(e.target.value)}
-                      className="w-full mb-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500 bg-slate-50"
-                    />
+                      className="w-full mb-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500 bg-slate-50" id="id-page-w-full-mb-1-5-rounded-xl-border-border-slate-200-px-3-py-1-5-text-xs-font-semibold-focus-outline-none-focus-border-blue-500-bg-slate-50-111" aria-label="W full mb 1 5 rounded xl border border slate 200 px 3 py 1 5 text xs font semibold focus outline none focus border blue 500 bg slate 50" />
                     <select
                       value={placeProductId}
                       onChange={(e) => setPlaceProductId(e.target.value)}
@@ -2709,8 +2704,7 @@ ${sizeStr}
                         min="1"
                         value={placeQty}
                         onChange={(e) => setPlaceQty(Number(e.target.value))}
-                        className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500"
-                      />
+                        className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-bold-focus-outline-none-focus-border-blue-500-371" aria-label="Rounded xl border border slate 250 px 3 py 2 text xs font bold focus outline none focus border blue 500" />
                     </label>
                   </div>
 
@@ -2747,8 +2741,7 @@ ${sizeStr}
                               window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                               setProducts(updated);
                             }}
-                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none"
-                          />
+                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none" id="id-page-rounded-lg-border-border-slate-200-bg-white-px-2-py-1-text-xs-font-bold-outline-none-234" aria-label="Rounded lg border border slate 200 bg white px 2 py 1 text xs font bold outline none" />
                         </label>
                         <label className="grid gap-1">
                           <span className="text-[10px] font-black text-slate-700">Birim Hacim (m³)</span>
@@ -2763,8 +2756,7 @@ ${sizeStr}
                               window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                               setProducts(updated);
                             }}
-                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none"
-                          />
+                            className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none" id="id-page-rounded-lg-border-border-slate-200-bg-white-px-2-py-1-text-xs-font-bold-outline-none-813" aria-label="Rounded lg border border slate 200 bg white px 2 py 1 text xs font bold outline none" />
                         </label>
                       </div>
                     </div>
@@ -2777,8 +2769,7 @@ ${sizeStr}
                       value={placeNote}
                       onChange={(e) => setPlaceNote(e.target.value)}
                       placeholder={t.processNotePlaceholder}
-                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500"
-                    />
+                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-border-blue-500-319" aria-label="Rounded xl border border slate 250 px 3 py 2 text xs font semibold focus outline none focus border blue 500" />
                   </label>
                 </div>
 
@@ -2828,8 +2819,7 @@ ${sizeStr}
                     value={manualScanInput}
                     onChange={(e) => setManualScanInput(e.target.value)}
                     placeholder={t.manualCodePlaceholder}
-                    className="flex-1 rounded-xl border border-slate-250 px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:border-blue-500"
-                  />
+                    className="flex-1 rounded-xl border border-slate-250 px-3 py-2 text-xs font-mono font-bold focus:outline-none focus:border-blue-500" id="id-page-flex-1-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-mono-font-bold-focus-outline-none-focus-border-blue-500-183" aria-label="Flex 1 rounded xl border border slate 250 px 3 py 2 text xs font mono font bold focus outline none focus border blue 500" />
                   <button
                     type="button"
                     onClick={() => {
@@ -2889,8 +2879,7 @@ ${sizeStr}
                             };
                             saveShelfCapacities(updated);
                           }}
-                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-bold outline-none"
-                        />
+                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-bold outline-none" id="id-page-w-full-rounded-md-border-border-slate-200-bg-white-px-2-py-1-font-bold-outline-none-322" aria-label="W full rounded md border border slate 200 bg white px 2 py 1 font bold outline none" />
                       </label>
                       <label className="grid gap-1">
                         <span className="text-[10px] text-slate-700 font-black">Maksimum Hacim (m³)</span>
@@ -2909,8 +2898,7 @@ ${sizeStr}
                             };
                             saveShelfCapacities(updated);
                           }}
-                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-bold outline-none"
-                        />
+                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-bold outline-none" id="id-page-w-full-rounded-md-border-border-slate-200-bg-white-px-2-py-1-font-bold-outline-none-537" aria-label="W full rounded md border border slate 200 bg white px 2 py 1 font bold outline none" />
                       </label>
                     </div>
 
@@ -3072,8 +3060,7 @@ ${sizeStr}
                     placeholder={t.searchInventoryPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500 bg-slate-50 focus:bg-white"
-                  />
+                    className="w-full rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500 bg-slate-50 focus:bg-white" id="id-page-w-full-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-border-blue-500-bg-slate-50-focus-bg-white-301" aria-label="W full rounded xl border border slate 250 px 3 py 2 text xs font semibold focus outline none focus border blue 500 bg slate 50 focus bg white" />
                 </div>
 
                 {/* Shelves Grid */}
@@ -3354,8 +3341,7 @@ ${sizeStr}
                             setCorridors(corridors.map((item, i) => i === corrIdx ? { ...item, name: e.target.value } : item));
                           }}
                           placeholder="Özel reyon adı (Örn: Yedek Parça)"
-                          className="w-full text-xs font-bold text-slate-700 outline-none border-b border-dashed border-slate-200 hover:border-slate-350 focus:border-blue-500 py-0.5 font-semibold disabled:opacity-75 disabled:bg-transparent"
-                        />
+                          className="w-full text-xs font-bold text-slate-700 outline-none border-b border-dashed border-slate-200 hover:border-slate-350 focus:border-blue-500 py-0.5 font-semibold disabled:opacity-75 disabled:bg-transparent" id="id-page-w-full-text-xs-font-bold-text-slate-700-outline-none-border-b-border-dashed-border-slate-200-hover-border-slate-350-focus-border-blue-500-py-0-5-font-semibold-disabled-opacity-75-disabled-bg-transparent-683" aria-label="W full text xs font bold text slate 700 outline none border b border dashed border slate 200 hover border slate 350 focus border blue 500 py 0 5 font semibold disabled opacity 75 disabled bg transparent" />
                       </div>
                       {isAuthorized && (
                         <button
@@ -3628,8 +3614,7 @@ ${sizeStr}
                     setShelfAliases(updated);
                     window.localStorage.setItem("hbs-shelf-aliases", JSON.stringify(updated));
                   }}
-                  className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 bg-white"
-                />
+                  className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 bg-white" id="id-page-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-bold-focus-outline-none-focus-border-blue-500-bg-white-224" aria-label="Rounded xl border border slate 250 px 3 py 2 text xs font bold focus outline none focus border blue 500 bg white" />
               </label>
 
               {/* Capacity settings */}
@@ -3653,8 +3638,7 @@ ${sizeStr}
                         }
                       });
                     }}
-                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 disabled:opacity-50"
-                  />
+                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 disabled:opacity-50" id="id-page-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-bold-focus-outline-none-focus-border-blue-500-disabled-opacity-50-816" aria-label="Rounded xl border border slate 250 px 3 py 2 text xs font bold focus outline none focus border blue 500 disabled opacity 50" />
                 </label>
 
                 <label className="grid gap-1">
@@ -3677,8 +3661,7 @@ ${sizeStr}
                         }
                       });
                     }}
-                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 disabled:opacity-50"
-                  />
+                    className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500 disabled:opacity-50" id="id-page-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-bold-focus-outline-none-focus-border-blue-500-disabled-opacity-50-584" aria-label="Rounded xl border border slate 250 px 3 py 2 text xs font bold focus outline none focus border blue 500 disabled opacity 50" />
                 </label>
               </div>
 
@@ -3864,8 +3847,7 @@ ${sizeStr}
                       max={transferProductId ? Number(products.find(p => p.id === transferProductId)?.quantity || 1) : 9999}
                       value={transferQty}
                       onChange={(e) => setTransferQty(Number(e.target.value))}
-                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500"
-                    />
+                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold focus:outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-bold-focus-outline-none-focus-border-blue-500-323" aria-label="Rounded xl border border slate 250 px 3 py 2 text xs font bold focus outline none focus border blue 500" />
                   </label>
 
                   <label className="grid gap-1">
@@ -3875,8 +3857,7 @@ ${sizeStr}
                       value={transferNote}
                       onChange={(e) => setTransferNote(e.target.value)}
                       placeholder="Örn: B reyonuna kaydırma"
-                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500"
-                    />
+                      className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-border-blue-500-655" aria-label="Rounded xl border border slate 250 px 3 py 2 text xs font semibold focus outline none focus border blue 500" />
                   </label>
                 </div>
 
@@ -4486,8 +4467,7 @@ ${sizeStr}
                   value={manualScanInput}
                   onChange={(e) => setManualScanInput(e.target.value)}
                   placeholder={t.liveReaderPlaceholder}
-                  className="flex-1 rounded-xl bg-slate-800 border border-slate-700 px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500"
-                />
+                  className="flex-1 rounded-xl bg-slate-800 border border-slate-700 px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500" id="id-page-flex-1-rounded-xl-bg-slate-800-border-border-slate-700-px-3-py-1-5-text-xs-text-white-outline-none-focus-border-blue-500-708" aria-label="Flex 1 rounded xl bg slate 800 border border slate 700 px 3 py 1 5 text xs text white outline none focus border blue 500" />
                 <button
                   type="button"
                   onClick={() => {

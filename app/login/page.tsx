@@ -441,8 +441,7 @@ export default function LoginPage() {
                       onChange={(event) => setUsername(event.target.value)} 
                       className={`w-full rounded-2xl border ${activeDemoGlow ? 'border-blue-500 ring-4 ring-blue-500/20 bg-blue-50/10' : 'border-slate-200 bg-white'} pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-sm`}
                       placeholder={translations[language].auth.placeholderUsername} 
-                      autoComplete="username" 
-                    />
+                      autoComplete="username" id="id-page-username-664" aria-label="Username" />
                   </div>
                 </div>
 
@@ -466,8 +465,7 @@ export default function LoginPage() {
                       onChange={(event) => setPassword(event.target.value)} 
                       className={`w-full rounded-2xl border ${activeDemoGlow ? 'border-blue-500 ring-4 ring-blue-500/20 bg-blue-50/10' : 'border-slate-200 bg-white'} pl-11 pr-11 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-sm`}
                       placeholder="••••••" 
-                      autoComplete="current-password" 
-                    />
+                      autoComplete="current-password" id="id-page-password-52" aria-label="Password" />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}

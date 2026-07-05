@@ -1955,8 +1955,7 @@ export default function ProductsPage() {
                   type="file"
                   accept=".csv"
                   onChange={handleCSVImport}
-                  className="hidden"
-                />
+                  className="hidden" id="id-page-hidden-838" aria-label="Hidden" />
               </label>
             </div>
           </div>
@@ -2023,8 +2022,7 @@ export default function ProductsPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Örn: NGK Buji Seti"
-                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                />
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-89" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
               </label>
 
               <label className="grid gap-1 relative">
@@ -2041,8 +2039,7 @@ export default function ProductsPage() {
                     setTimeout(() => setShowCategorySuggestions(false), 200);
                   }}
                   placeholder="Örn: Oto yedek parçası"
-                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                />
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-946" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                 {showCategorySuggestions && filteredCategorySuggestions.length > 0 && (
                   <ul className="absolute left-0 right-0 top-[100%] mt-1 max-h-48 overflow-y-auto rounded-xl border border-slate-250 bg-white py-1 shadow-lg z-50">
                     {filteredCategorySuggestions.map((cat, idx) => (
@@ -2069,8 +2066,7 @@ export default function ProductsPage() {
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
                   placeholder={sector === "footwear" ? "Örn: Nike, Adidas" : sector === "grocery" ? "Örn: Ülker, Eti" : "Örn: Bosch"}
-                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                />
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-65" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                 <div className="flex flex-wrap gap-1 mt-1 select-none">
                   {(sector === "footwear"
                     ? ['Nike', 'Adidas', 'Puma', 'Flo', 'Derimod', 'Skechers', 'Vans', 'Converse']
@@ -2098,8 +2094,7 @@ export default function ProductsPage() {
                   value={model}
                   onChange={(e) => setModel(e.target.value)}
                   placeholder={sector === "footwear" ? "Örn: Air Max, Stan Smith" : sector === "grocery" ? "Örn: Kakaolu, Diyet" : "Örn: A4 / Golf 7"}
-                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                />
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-387" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
               </label>
             </div>
 
@@ -2132,8 +2127,7 @@ export default function ProductsPage() {
                       }
                     }}
                     placeholder="Örn: 1500 (Boş bırakırsanız Teklif Alın olur)"
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                  />
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-159" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                 </label>
                 <div className="flex items-center gap-2 pt-4 sm:pt-6 select-none cursor-pointer">
                   <input
@@ -2160,8 +2154,7 @@ export default function ProductsPage() {
                   value={purchasePrice}
                   onChange={(e) => setPurchasePrice(e.target.value)}
                   placeholder="Maliyet"
-                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                />
+                  className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-968" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
               </label>
 
               <label className="grid gap-1">
@@ -2243,8 +2236,7 @@ export default function ProductsPage() {
                             reader.readAsDataURL(file);
                           });
                         }}
-                        className="hidden"
-                      />
+                        className="hidden" id="id-page-hidden-399" aria-label="Hidden" />
                     </label>
                     <button
                       type="button"
@@ -2264,8 +2256,7 @@ export default function ProductsPage() {
                     value={videoUrl}
                     onChange={(e) => setVideoUrl(e.target.value)}
                     placeholder="Video bağlantısı (Youtube, mp4 bağlantısı)"
-                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none"
-                  />
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs outline-none" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-3-py-2-text-xs-outline-none-264" aria-label="W full rounded xl border border slate 200 bg white px 3 py 2 text xs outline none" />
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
@@ -2300,8 +2291,7 @@ export default function ProductsPage() {
                     value={barcode}
                     onChange={(e) => setBarcode(e.target.value)}
                     placeholder="Barkod numarası"
-                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                  />
+                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-flex-1-min-w-0-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-489" aria-label="Flex 1 min w 0 rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                   <button
                     type="button"
                     onClick={() => startCamera('scan', 'barcode')}
@@ -2333,8 +2323,7 @@ export default function ProductsPage() {
                     value={qrCode}
                     onChange={(e) => setQrCode(e.target.value)}
                     placeholder="QR Verisi veya URL"
-                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                  />
+                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-flex-1-min-w-0-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-782" aria-label="Flex 1 min w 0 rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                   <button
                     type="button"
                     onClick={() => startCamera('scan', 'qrCode')}
@@ -2366,8 +2355,7 @@ export default function ProductsPage() {
                     value={sku}
                     onChange={(e) => setSku(e.target.value)}
                     placeholder="Örn: SKU-1002"
-                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                  />
+                    className="flex-1 min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-flex-1-min-w-0-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-375" aria-label="Flex 1 min w 0 rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                   <button
                     type="button"
                     onClick={() => {
@@ -2398,8 +2386,7 @@ export default function ProductsPage() {
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     placeholder="Adet"
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                  />
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-691" aria-label="Rounded xl border border slate 300 bg white px 3 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                 </label>
 
                 <label className="grid gap-1">
@@ -2428,8 +2415,7 @@ export default function ProductsPage() {
                       value={warehouse}
                       onChange={(e) => setWarehouse(e.target.value)}
                       placeholder="Örn: Ana Depo"
-                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                    />
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-535" aria-label="Rounded xl border border slate 300 bg white px 3 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                   )}
                 </label>
 
@@ -2454,8 +2440,7 @@ export default function ProductsPage() {
                       value={shelf}
                       onChange={(e) => setShelf(e.target.value)}
                       placeholder="Örn: A-01-R02"
-                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                    />
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-186" aria-label="Rounded xl border border slate 300 bg white px 3 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                   )}
                 </label>
               </div>
@@ -2468,8 +2453,7 @@ export default function ProductsPage() {
                     type="checkbox"
                     checked={trackExpirationDate}
                     onChange={(e) => setTrackExpirationDate(e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-blue-650 focus:ring-blue-500 cursor-pointer"
-                  />
+                    className="h-4 w-4 rounded border-slate-300 text-blue-650 focus:ring-blue-500 cursor-pointer" id="id-page-h-4-w-4-rounded-border-slate-300-text-blue-650-focus-ring-blue-500-cursor-pointer-63" aria-label="H 4 w 4 rounded border slate 300 text blue 650 focus ring blue 500 cursor pointer" />
                   Son Kullanım Tarihi (SKT) Takibi Yapılsın
                 </label>
 
@@ -2480,8 +2464,7 @@ export default function ProductsPage() {
                       type="date"
                       value={expirationDate}
                       onChange={(e) => setExpirationDate(e.target.value)}
-                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                    />
+                      className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-396" aria-label="Rounded xl border border slate 300 bg white px 3 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                   </label>
                 )}
               </div>
@@ -2645,8 +2628,7 @@ export default function ProductsPage() {
                             value={v.name}
                             onChange={(e) => updateVariantField(v.id, "name", e.target.value)}
                             placeholder="Örn: Autel Ultra"
-                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                          />
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-lg-border-border-slate-300-bg-white-px-2-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-770" aria-label="Rounded lg border border slate 300 bg white px 2 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                         </label>
 
                         <label className="grid gap-0.5">
@@ -2655,8 +2637,7 @@ export default function ProductsPage() {
                             value={v.sku}
                             onChange={(e) => updateVariantField(v.id, "sku", e.target.value)}
                             placeholder="SKU-VAR-001"
-                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                          />
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-lg-border-border-slate-300-bg-white-px-2-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-603" aria-label="Rounded lg border border slate 300 bg white px 2 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                         </label>
 
                         <label className="grid gap-0.5">
@@ -2665,8 +2646,7 @@ export default function ProductsPage() {
                             value={v.barcode}
                             onChange={(e) => updateVariantField(v.id, "barcode", e.target.value)}
                             placeholder="Barkod"
-                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                          />
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-lg-border-border-slate-300-bg-white-px-2-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-506" aria-label="Rounded lg border border slate 300 bg white px 2 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                         </label>
                       </div>
 
@@ -2677,8 +2657,7 @@ export default function ProductsPage() {
                             value={v.purchasePrice}
                             onChange={(e) => updateVariantField(v.id, "purchasePrice", e.target.value)}
                             placeholder="Maliyet"
-                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                          />
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-lg-border-border-slate-300-bg-white-px-2-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-564" aria-label="Rounded lg border border slate 300 bg white px 2 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                         </label>
 
                         <label className="grid gap-0.5">
@@ -2687,8 +2666,7 @@ export default function ProductsPage() {
                             value={v.salePrice}
                             onChange={(e) => updateVariantField(v.id, "salePrice", e.target.value)}
                             placeholder="Fiyat"
-                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                          />
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-lg-border-border-slate-300-bg-white-px-2-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-922" aria-label="Rounded lg border border slate 300 bg white px 2 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                         </label>
                       </div>
 
@@ -2699,8 +2677,7 @@ export default function ProductsPage() {
                             value={v.quantity}
                             onChange={(e) => updateVariantField(v.id, "quantity", e.target.value)}
                             placeholder="Adet"
-                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                          />
+                            className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-lg-border-border-slate-300-bg-white-px-2-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-809" aria-label="Rounded lg border border slate 300 bg white px 2 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                         </label>
 
                         <label className="grid gap-0.5">
@@ -2731,8 +2708,7 @@ export default function ProductsPage() {
                               value={v.warehouse}
                               onChange={(e) => updateVariantField(v.id, "warehouse", e.target.value)}
                               placeholder="Ana Depo"
-                              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                            />
+                              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-lg-border-border-slate-300-bg-white-px-2-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-586" aria-label="Rounded lg border border slate 300 bg white px 2 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                           )}
                         </label>
 
@@ -2760,8 +2736,7 @@ export default function ProductsPage() {
                               value={v.shelf}
                               onChange={(e) => updateVariantField(v.id, "shelf", e.target.value)}
                               placeholder="Örn: A-01"
-                              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                            />
+                              className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-lg-border-border-slate-300-bg-white-px-2-py-1-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-83" aria-label="Rounded lg border border slate 300 bg white px 2 py 1 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                           )}
                         </label>
                       </div>
@@ -2807,8 +2782,7 @@ export default function ProductsPage() {
                         type="checkbox"
                         checked={filteredProducts.length > 0 && filteredProducts.every(p => selectedProductIds.includes(p.id))}
                         onChange={toggleSelectAllProducts}
-                        className="h-3.5 w-3.5 rounded border-slate-350 text-blue-650 cursor-pointer"
-                      />
+                        className="h-3.5 w-3.5 rounded border-slate-350 text-blue-650 cursor-pointer" id="id-page-h-3-5-w-3-5-rounded-border-slate-350-text-blue-650-cursor-pointer-397" aria-label="H 3 5 w 3 5 rounded border slate 350 text blue 650 cursor pointer" />
                       {language === "en" ? "Select All" : "Tümünü Seç"}
                     </label>
                     {selectedProductIds.length > 0 && (
@@ -2829,8 +2803,7 @@ export default function ProductsPage() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Kod, marka veya isimle filtrele..."
-                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-semibold"
-                />
+                  className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-semibold" id="id-page-w-full-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-semibold-67" aria-label="W full rounded xl border border slate 300 bg white px 3 py 2 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font semibold" />
                 
                 <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 bg-slate-50/40 border border-slate-350 p-4 rounded-2xl shadow-sm">
                   {/* Showcase Visibility */}
@@ -2856,16 +2829,14 @@ export default function ProductsPage() {
                         placeholder="Min"
                         value={filterMinPrice}
                         onChange={(e) => setFilterMinPrice(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
-                      />
+                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-2-py-1-5-text-xs-outline-none-focus-border-blue-500-font-semibold-text-center-291" aria-label="W full rounded xl border border slate 200 bg white px 2 py 1 5 text xs outline none focus border blue 500 font semibold text center" />
                       <span className="text-slate-700 font-bold font-bold">-</span>
                       <input
                         type="number"
                         placeholder="Max"
                         value={filterMaxPrice}
                         onChange={(e) => setFilterMaxPrice(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
-                      />
+                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-2-py-1-5-text-xs-outline-none-focus-border-blue-500-font-semibold-text-center-40" aria-label="W full rounded xl border border slate 200 bg white px 2 py 1 5 text xs outline none focus border blue 500 font semibold text center" />
                     </div>
                   </div>
 
@@ -2878,16 +2849,14 @@ export default function ProductsPage() {
                         placeholder="Min"
                         value={filterMinQty}
                         onChange={(e) => setFilterMinQty(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
-                      />
+                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-2-py-1-5-text-xs-outline-none-focus-border-blue-500-font-semibold-text-center-169" aria-label="W full rounded xl border border slate 200 bg white px 2 py 1 5 text xs outline none focus border blue 500 font semibold text center" />
                       <span className="text-slate-700 font-bold font-bold">-</span>
                       <input
                         type="number"
                         placeholder="Max"
                         value={filterMaxQty}
                         onChange={(e) => setFilterMaxQty(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center"
-                      />
+                        className="w-full rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-center" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-white-px-2-py-1-5-text-xs-outline-none-focus-border-blue-500-font-semibold-text-center-133" aria-label="W full rounded xl border border slate 200 bg white px 2 py 1 5 text xs outline none focus border blue 500 font semibold text center" />
                     </div>
                   </div>
                 </div>
@@ -2902,8 +2871,7 @@ export default function ProductsPage() {
                           type="checkbox"
                           checked={selectedProductIds.includes(p.id)}
                           onChange={() => toggleSelectProduct(p.id)}
-                          className="h-4 w-4 rounded border-slate-350 text-blue-650 cursor-pointer shrink-0"
-                        />
+                          className="h-4 w-4 rounded border-slate-350 text-blue-650 cursor-pointer shrink-0" id="id-page-h-4-w-4-rounded-border-slate-350-text-blue-650-cursor-pointer-shrink-0-478" aria-label="H 4 w 4 rounded border slate 350 text blue 650 cursor pointer shrink 0" />
                         <h3 className="font-black text-slate-800 truncate">{getLocalizedField(p.name, language || "tr")}</h3>
                       </div>
                       <span className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold shrink-0 ${p.pricingMode === "fixed" ? "bg-emerald-100 text-emerald-800 border border-emerald-200" : p.pricingMode === "quote" ? "bg-amber-100 text-amber-800 border border-amber-200" : "bg-purple-100 text-purple-800 border border-purple-200"}`}>
@@ -3353,8 +3321,7 @@ export default function ProductsPage() {
                       value={manualScanInput}
                       onChange={(e) => setManualScanInput(e.target.value)}
                       placeholder="Kod numarası (Simülasyon test)"
-                      className="flex-1 rounded-xl bg-slate-800 border border-slate-750 px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500"
-                    />
+                      className="flex-1 rounded-xl bg-slate-800 border border-slate-750 px-3 py-1.5 text-xs text-white outline-none focus:border-blue-500" id="id-page-flex-1-rounded-xl-bg-slate-800-border-border-slate-750-px-3-py-1-5-text-xs-text-white-outline-none-focus-border-blue-500-9" aria-label="Flex 1 rounded xl bg slate 800 border border slate 750 px 3 py 1 5 text xs text white outline none focus border blue 500" />
                     <button
                       onClick={() => {
                         if (manualScanInput.trim()) {
@@ -3497,8 +3464,7 @@ export default function ProductsPage() {
                           }
                         }}
                         placeholder="Kod girin (Örn: A-01, TT-MASTER...)"
-                        className="flex-1 rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-100 outline-none focus:border-orange-500 font-mono"
-                      />
+                        className="flex-1 rounded-xl bg-slate-800 border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-100 outline-none focus:border-orange-500 font-mono" id="id-page-flex-1-rounded-xl-bg-slate-800-border-border-slate-700-px-3-py-2-text-xs-font-semibold-text-slate-100-outline-none-focus-border-orange-500-font-mono-697" aria-label="Flex 1 rounded xl bg slate 800 border border slate 700 px 3 py 2 text xs font semibold text slate 100 outline none focus border orange 500 font mono" />
                       <button
                         type="button"
                         onClick={() => {
@@ -3646,8 +3612,7 @@ export default function ProductsPage() {
                             safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
                           }}
                           placeholder="Raf Konumu örn: A-01, B-12"
-                          className="w-full rounded-lg bg-[#0c1224] border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 outline-none focus:border-blue-500 font-mono"
-                        />
+                          className="w-full rounded-lg bg-[#0c1224] border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 outline-none focus:border-blue-500 font-mono" id="id-page-w-full-rounded-lg-bg---0c1224--border-border-slate-800-px-3-py-1-5-text-xs-font-semibold-text-slate-100-outline-none-focus-border-blue-500-font-mono-265" aria-label="W full rounded lg bg   0c1224  border border slate 800 px 3 py 1 5 text xs font semibold text slate 100 outline none focus border blue 500 font mono" />
                       </div>
                     </div>
                   ) : terminalScannedShelf ? (

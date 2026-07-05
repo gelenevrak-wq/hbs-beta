@@ -435,8 +435,7 @@ export default function StockMovementsPage() {
                   onChange={(event) => setCodeInput(event.target.value)}
                   onKeyDown={handleCodeKeyDown}
                   placeholder="Okuyucu ile okutun veya elle yazın"
-                  className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                />
+                  className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-524" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
               </label>
 
               <button
@@ -505,8 +504,7 @@ export default function StockMovementsPage() {
                     onChange={(event) => setQuantity(event.target.value)}
                     type="number"
                     placeholder="Örn: 5"
-                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                  />
+                    className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-978" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
                 </label>
 
                 <label className="grid gap-2">
@@ -535,8 +533,7 @@ export default function StockMovementsPage() {
                       value={warehouse}
                       onChange={(event) => setWarehouse(event.target.value)}
                       placeholder="Ana Depo"
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                    />
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-522" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
                   )}
                 </label>
 
@@ -561,8 +558,7 @@ export default function StockMovementsPage() {
                       value={shelf}
                       onChange={(event) => setShelf(event.target.value)}
                       placeholder="A-01"
-                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-                    />
+                      className="w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-808" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
                   )}
                 </label>
               </div>
@@ -596,8 +592,7 @@ export default function StockMovementsPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Ürün, kod, depo, raf veya not ara"
-                className="mt-5 w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white"
-              />
+                className="mt-5 w-full rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 outline-none placeholder:text-slate-600 focus:border-white" id="id-page-mt-5-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-627" aria-label="Mt 5 w full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
 
               <div className="mt-5 grid gap-4">
                 {filteredMovements.map((movement) => (
