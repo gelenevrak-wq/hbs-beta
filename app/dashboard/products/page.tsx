@@ -245,8 +245,218 @@ function generateQrCodeSvg(text: string) {
   );
 }
 
+// Translations Dictionary
+const translations = {
+  tr: {
+    header: "HBS Ürün & Stok Kataloğu",
+    searchPlaceholder: "{t.barcode}, SKU, ürün adı veya marka ara...",
+    categoryFilterLabel: "{t.category} Filtresi",
+    brandFilterLabel: "{t.brand} Filtresi",
+    allCategories: "{t.allCategories}",
+    allBrands: "{t.allBrands}",
+    addNewProductBtn: "{t.addNewProductBtn}",
+    importExcelBtn: "{t.importExcelBtn}",
+    availableProductsHeader: "Mevcut Ürünler",
+    selectAll: "Tümünü Seç",
+    deleteSelected: "Seçilenleri Sil",
+    noProductsFound: "Filtreye uygun ürün bulunamadı.",
+    actionsLabel: "{t.actionsLabel}",
+    editBtn: "✏️ Düzenle",
+    deleteBtn: "🗑️ Sil",
+    duplicateBtn: "👯 Kopya Üret",
+    printLabelBtn: "🖨️ Yazdır",
+    transferBtn: "🔄 Sevk Et",
+    recordType: "{t.recordType}",
+    productName: "{t.productName}",
+    skuCode: "{t.skuCode}",
+    barcode: "Barkod",
+    brand: "Marka",
+    category: "Kategori",
+    description: "{t.description}",
+    purchasePrice: "{t.purchasePrice}",
+    salePrice: "{t.salePrice}",
+    currency: "{t.currency}",
+    warehouseLocation: "{t.warehouseLocation}",
+    shelfLocation: "{t.shelfLocation}",
+    stockQuantity: "{t.stockQuantity}",
+    imageUrl: "{t.imageUrl}",
+    save: "Kaydet",
+    cancel: "İptal",
+    editProduct: "Ürünü Düzenle",
+    newProduct: "Yeni Ürün Ekle",
+    saving: "Kaydediliyor...",
+    saveChanges: "Değişiklikleri Kaydet",
+    completeRegistration: "Kaydı Tamamla"
+  },
+  en: {
+    header: "HBS Product & Stock Catalog",
+    searchPlaceholder: "Search barcode, SKU, product name or brand...",
+    categoryFilterLabel: "Category Filter",
+    brandFilterLabel: "Brand Filter",
+    allCategories: "All Categories",
+    allBrands: "All Brands",
+    addNewProductBtn: "➕ Add New Product",
+    importExcelBtn: "📥 Import Excel / CSV",
+    availableProductsHeader: "Available Products",
+    selectAll: "Select All",
+    deleteSelected: "Delete Selected",
+    noProductsFound: "No products found matching the filter.",
+    actionsLabel: "Actions",
+    editBtn: "✏️ Edit",
+    deleteBtn: "🗑️ Delete",
+    duplicateBtn: "👯 Duplicate",
+    printLabelBtn: "🖨️ Print",
+    transferBtn: "🔄 Transfer",
+    recordType: "Record Type",
+    productName: "Product Name",
+    skuCode: "SKU / Product Code",
+    barcode: "Barcode",
+    brand: "Brand",
+    category: "Category",
+    description: "Description",
+    purchasePrice: "Purchase Price (Cost)",
+    salePrice: "Sale Price",
+    currency: "Currency",
+    warehouseLocation: "Warehouse Location",
+    shelfLocation: "Shelf Location",
+    stockQuantity: "Stock Quantity",
+    imageUrl: "Image URL",
+    save: "Save",
+    cancel: "Cancel",
+    editProduct: "Edit Product",
+    newProduct: "New Product",
+    saving: "Saving...",
+    saveChanges: "Save Changes",
+    completeRegistration: "Complete Registration"
+  },
+  de: {
+    header: "HBS Produkt- & Lagerkatalog",
+    searchPlaceholder: "Barcode, SKU, Produktname oder Marke suchen...",
+    categoryFilterLabel: "Kategoriefilter",
+    brandFilterLabel: "Markenfilter",
+    allCategories: "Alle Kategorien",
+    allBrands: "Alle Marken",
+    addNewProductBtn: "➕ Produkt hinzufügen",
+    importExcelBtn: "📥 Excel / CSV importieren",
+    availableProductsHeader: "Verfügbare Produkte",
+    selectAll: "Alle auswählen",
+    deleteSelected: "Ausgewählte löschen",
+    noProductsFound: "Keine passenden Produkte gefunden.",
+    actionsLabel: "Aktionen",
+    editBtn: "✏️ Bearbeiten",
+    deleteBtn: "🗑️ Löschen",
+    duplicateBtn: "👯 Duplizieren",
+    printLabelBtn: "🖨️ Drucken",
+    transferBtn: "🔄 Umlagern",
+    recordType: "Registrierungsart",
+    productName: "Produktname",
+    skuCode: "SKU / Produktcode",
+    barcode: "Barcode",
+    brand: "Marke",
+    category: "Kategorie",
+    description: "Beschreibung",
+    purchasePrice: "Einkaufspreis (Kosten)",
+    salePrice: "Verkaufspreis",
+    currency: "Währung",
+    warehouseLocation: "Lagerstandort",
+    shelfLocation: "Regalstandort",
+    stockQuantity: "Lagerbestand",
+    imageUrl: "Bild-URL",
+    save: "Speichern",
+    cancel: "Abbrechen",
+    editProduct: "Produkt bearbeiten",
+    newProduct: "Neues Produkt hinzufügen",
+    saving: "Wird gespeichert...",
+    saveChanges: "Änderungen speichern",
+    completeRegistration: "Registrierung abschließen"
+  },
+  ru: {
+    header: "Каталог товаров и запасов HBS",
+    searchPlaceholder: "Поиск штрихкода, SKU, названия или бренда...",
+    categoryFilterLabel: "Фильтр категорий",
+    brandFilterLabel: "Фильтр брендов",
+    allCategories: "Все категории",
+    allBrands: "Все бренды",
+    addNewProductBtn: "➕ Добавить новый товар",
+    importExcelBtn: "📥 Импорт Excel / CSV",
+    availableProductsHeader: "Доступные товары",
+    selectAll: "Выбрать все",
+    deleteSelected: "Удалить выбранные",
+    noProductsFound: "Товары, соответствующие фильтру, не найдены.",
+    actionsLabel: "Действия",
+    editBtn: "✏️ Редактировать",
+    deleteBtn: "🗑️ Удалить",
+    duplicateBtn: "👯 Дублировать",
+    printLabelBtn: "🖨️ Печать",
+    transferBtn: "🔄 Переместить",
+    recordType: "Тип записи",
+    productName: "Название товара",
+    skuCode: "SKU / Код товара",
+    barcode: "Штрихкод",
+    brand: "Бренд",
+    category: "Категория",
+    description: "Описание",
+    purchasePrice: "Цена закупки (Себестоимость)",
+    salePrice: "Цена продажи",
+    currency: "Валюта",
+    warehouseLocation: "Расположение склада",
+    shelfLocation: "Расположение полки",
+    stockQuantity: "Количество запасов",
+    imageUrl: "URL изображения",
+    save: "Сохранить",
+    cancel: "Отмена",
+    editProduct: "Редактировать товар",
+    newProduct: "Добавить товар",
+    saving: "Сохранение...",
+    saveChanges: "Сохранить изменения",
+    completeRegistration: "Завершить регистрацию"
+  },
+  ka: {
+    header: "HBS პროდუქტების და მარაგების კატალოგი",
+    searchPlaceholder: "შტრიხკოდის, SKU-ს, პროდუქტის სახელის ძებნა...",
+    categoryFilterLabel: "კატეგორიის ფილტრი",
+    brandFilterLabel: "ბრენდის ფილტრი",
+    allCategories: "ყველა კატეგორია",
+    allBrands: "ყველა ბრენდი",
+    addNewProductBtn: "➕ ახალი პროდუქტის დამატება",
+    importExcelBtn: "📥 Excel / CSV იმპორტი",
+    availableProductsHeader: "არსებული პროდუქტები",
+    selectAll: "ყველას არჩევა",
+    deleteSelected: "არჩეულის წაშლა",
+    noProductsFound: "ფილტრის შესაბამისი პროდუქტები ვერ მოიძებნა.",
+    actionsLabel: "მოქმედებები",
+    editBtn: "✏️ რედაქტირება",
+    deleteBtn: "🗑️ წაშლა",
+    duplicateBtn: "👯 დუბლირება",
+    printLabelBtn: "🖨️ ბეჭდვა",
+    transferBtn: "🔄 გადატანა",
+    recordType: "ჩანაწერის ტიპი",
+    productName: "პროდუქტის სახელი",
+    skuCode: "SKU / პროდუქტის კოდი",
+    barcode: "შტრიხკოდი",
+    brand: "ბრენდი",
+    category: "კატეგორია",
+    description: "აღწერა",
+    purchasePrice: "შესყიდვის ფასი (თვითღირებულება)",
+    salePrice: "გასაყიდი ფასი",
+    currency: "ვალუტა",
+    warehouseLocation: "საწყობის მდებარეობა",
+    shelfLocation: "თაროს მდებარეობა",
+    stockQuantity: "მარაგის რაოდენობა",
+    imageUrl: "სურათის URL",
+    save: "შენახვა",
+    cancel: "გაუქმება",
+    editProduct: "პროდუქტის რედაქტირება",
+    newProduct: "ახალი პროდუქტის დამატება",
+    saving: "ინახება...",
+    saveChanges: "ცვლილებების შენახვა",
+    completeRegistration: "რეგისტრაციის დასრულება"
+  }
+};
+
 export default function ProductsPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
+  const t = translations[language || "tr"];
   const [isSaving, setIsSaving] = useState(false);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
 
@@ -2124,7 +2334,7 @@ export default function ProductsPage() {
             className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-4"
           >
             <h2 className="text-lg font-black border-b border-slate-100 pb-2 flex items-center justify-between">
-              <span>{editingProductId ? "Ürünü Düzenle" : "Yeni Ürün Ekle"}</span>
+              <span>{editingProductId ? t.editProduct : t.newProduct}</span>
               {editingProductId && (
                 <span className="text-[10px] bg-blue-100 text-blue-800 font-extrabold px-2.5 py-0.5 rounded-full uppercase">
                   DÜZENLEME MODU
@@ -2931,7 +3141,7 @@ export default function ProductsPage() {
                 disabled={isSaving}
                 className="flex-1 rounded-xl py-3 text-sm font-black text-white transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 hover:bg-blue-700"
               >
-                {isSaving ? "Kaydediliyor..." : (editingProductId ? "Değişiklikleri Kaydet" : "Kaydı Tamamla")}
+                {isSaving ? t.saving : (editingProductId ? t.saveChanges : t.completeRegistration)}
               </button>
             </div>
           </form>
@@ -2940,7 +3150,7 @@ export default function ProductsPage() {
           <aside className="space-y-3">
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-2.5">
-                <h2 className="text-lg font-black">{language === "en" ? "Available Products" : "Mevcut Ürünler"} ({filteredProducts.length})</h2>
+                <h2 className="text-lg font-black">{t.availableProductsHeader} ({filteredProducts.length})</h2>
                 {filteredProducts.length > 0 && (
                   <div className="flex items-center gap-2">
                     <label className="flex items-center gap-1.5 text-xs font-black text-slate-900 font-extrabold cursor-pointer select-none bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:bg-slate-100">
@@ -2949,7 +3159,7 @@ export default function ProductsPage() {
                         checked={filteredProducts.length > 0 && filteredProducts.every(p => selectedProductIds.includes(p.id))}
                         onChange={toggleSelectAllProducts}
                         className="h-3.5 w-3.5 rounded border-slate-350 text-blue-650 cursor-pointer" id="id-page-h-3-5-w-3-5-rounded-border-slate-350-text-blue-650-cursor-pointer-397" aria-label="H 3 5 w 3 5 rounded border slate 350 text blue 650 cursor pointer" />
-                      {language === "en" ? "Select All" : "Tümünü Seç"}
+                      {t.selectAll}
                     </label>
                     {selectedProductIds.length > 0 && (
                       <button
@@ -2957,7 +3167,7 @@ export default function ProductsPage() {
                         onClick={deleteSelectedProducts}
                         className="rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs px-3 py-1.5 shadow transition active:scale-95 flex items-center gap-1"
                       >
-                        🗑️ {language === "en" ? `Delete Selected (${selectedProductIds.length})` : `Seçilenleri Sil (${selectedProductIds.length})`}
+                        🗑️ {t.deleteSelected} (${selectedProductIds.length})
                       </button>
                     )}
                   </div>
@@ -3061,7 +3271,7 @@ export default function ProductsPage() {
 
                       <div className="w-16 h-16 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
                         {p.imageUrl ? (
-                          <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                          <img src={p.imageUrl} alt={getLocalizedField(p.name, language || "tr")} className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-xl text-slate-400">📦</span>
                         )}
@@ -3113,7 +3323,7 @@ export default function ProductsPage() {
                           className="rounded-lg bg-slate-50 border border-slate-200 text-slate-900 font-extrabold hover:bg-slate-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Etiket & Barkod Yazdır"
                         >
-                          <span>🖨️ Yazdır</span>
+                          <span>{t.printLabelBtn}</span>
                         </button>
                         <button
                           type="button"
@@ -3127,7 +3337,7 @@ export default function ProductsPage() {
                           className="rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Depolar Arası Stok Sevk/Transfer Et"
                         >
-                          <span>🔄 Sevk Et</span>
+                          <span>{t.transferBtn}</span>
                         </button>
                         <button
                           type="button"
@@ -3135,7 +3345,7 @@ export default function ProductsPage() {
                           className="rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Ürünü Düzenle"
                         >
-                          <span>✏️ Düzenle</span>
+                          <span>{t.editBtn}</span>
                         </button>
                         <button
                           type="button"
@@ -3143,15 +3353,15 @@ export default function ProductsPage() {
                           className="rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Ürünün Kopyasını Üret (Çoğalt)"
                         >
-                          <span>👯 Kopya Üret</span>
+                          <span>{t.duplicateBtn}</span>
                         </button>
                         <button
                           type="button"
-                          onClick={() => deleteProduct(p.id, p.name, p.sku)}
+                          onClick={() => deleteProduct(p.id, getLocalizedField(p.name, language || "tr"), p.sku)}
                           className="rounded-lg bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Ürünü Sil"
                         >
-                          <span>🗑️ Sil</span>
+                          <span>{t.deleteBtn}</span>
                         </button>
                       </div>
                     </div>
@@ -3159,7 +3369,7 @@ export default function ProductsPage() {
                 ))}
 
                 {filteredProducts.length === 0 && (
-                  <p className="text-slate-700 font-bold italic text-center py-4">Filtreye uygun ürün bulunamadı.</p>
+                  <p className="text-slate-700 font-bold italic text-center py-4">{t.noProductsFound}</p>
                 )}
               </div>
 
