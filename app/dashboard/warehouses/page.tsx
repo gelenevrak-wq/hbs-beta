@@ -646,6 +646,49 @@ const translateWarehousePurpose = (purpose: string, lang: string) => {
 
 export default function WarehousesRevampPage() {
 
+  // Direct quantity adjustments inside the visual shelf matrix (for child-proof ease of use!)
+  const handleAdjustQuantity = (productId: string, delta: number) => {
+    const updated = products.map(p => {
+      if (p.id === productId) {
+        const currentQty = parseInt(p.quantity) || 0;
+        const newQty = Math.max(0, currentQty + delta);
+        
+        // Also update Supabase in the background if configured
+        const isSupabaseConfigured = 
+          process.env.NEXT_PUBLIC_SUPABASE_URL && 
+          process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+        if (isSupabaseConfigured) {
+          supabase
+            .from("offerable_items")
+            .update({ quantity: String(newQty) })
+            .eq("id", productId)
+            .then(({ error }) => {
+              if (error) console.error("Supabase qty adjust error", error);
+            });
+        }
+
+        return { ...p, quantity: String(newQty) };
+      }
+      return p;
+    });
+
+    setProducts(updated);
+    window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
+    showSuccess("Stok seviyesi güncellendi.");
+  };
+
+  const handleShelfCardClick = (shelfCode: string) => {
+    setPlaceShelf(shelfCode);
+    const formEl = document.getElementById("product-placement-form");
+    if (formEl) {
+      formEl.scrollIntoView({ behavior: 'smooth' });
+      formEl.classList.add("ring-4", "ring-emerald-400/50");
+      setTimeout(() => {
+        formEl.classList.remove("ring-4", "ring-emerald-400/50");
+      }, 1500);
+    }
+  };
+
   // Resizable Panel layout states
   const [leftWidth, setLeftWidth] = useState(50); // 50% default width
   const [isResizing, setIsResizing] = useState(false);
@@ -2601,7 +2644,7 @@ ${sizeStr}
               </div>
 
               {/* 2. Ürün Rafa Yerleştirme İstasyonu (Product Placement Board) */}
-              <form onSubmit={handlePlaceProduct} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <form id="product-placement-form" onSubmit={handlePlaceProduct} className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 transition-all duration-300">
                 <div>
                   <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">{t.lockLocationTitle}</span>
                   <h2 className="text-base font-black text-slate-900 mt-1">{t.lockLocationHeader}</h2>
@@ -3034,42 +3077,93 @@ ${sizeStr}
                 </div>
 
                 {/* Shelves Grid */}
-                <div className="grid grid-cols-3 gap-2 max-h-72 overflow-y-auto pr-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[30rem] overflow-y-auto pr-1">
                   {activeWh.shelves && activeWh.shelves.length > 0 ? (
                     activeWh.shelves.map((sh) => {
-                      const containsProduct = products.some(
+                      const shelfProducts = products.filter(
                         (p) =>
                           p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
                           p.shelf.toLowerCase() === sh.toLowerCase()
                       );
+                      const containsProduct = shelfProducts.length > 0;
                       return (
                         <div
                           key={sh}
-                          className={`rounded-xl border p-2.5 text-center flex flex-col justify-between items-center transition ${
+                          onClick={() => handleShelfCardClick(sh)}
+                          className={`group rounded-2xl border p-3 flex flex-col justify-between items-stretch transition cursor-pointer hover:shadow-md ${
                             containsProduct
-                              ? "bg-indigo-50/50 border-indigo-200"
-                              : "bg-slate-50/50 border-slate-200 hover:border-slate-300"
+                              ? "bg-indigo-50/40 border-indigo-300/80 ring-1 ring-indigo-100"
+                              : "bg-slate-50/40 border-slate-200 hover:border-slate-350 border-dashed"
                           }`}
                         >
-                          <div className="font-mono text-xs font-black text-slate-800">{sh}</div>
-                          <div className="text-[9px] font-bold text-slate-550 mt-1">
-                            {containsProduct ? t.badgeFull : t.badgeEmpty}
+                          <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
+                            <span className="font-mono text-xs font-black text-slate-800 bg-slate-200/80 px-2 py-0.5 rounded-lg group-hover:bg-blue-650 group-hover:text-white transition">{sh}</span>
+                            <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                              containsProduct ? "bg-indigo-100 text-indigo-800" : "bg-slate-100 text-slate-500"
+                            }`}>
+                              {containsProduct ? `${shelfProducts.length} ${t.badgeFull || "dolu"}` : t.badgeEmpty || "boş"}
+                            </span>
                           </div>
+
+                          {/* Occupied Shelf Details / Interactive steppers */}
+                          {containsProduct ? (
+                            <div className="py-2.5 space-y-2 flex-1" onClick={(e) => e.stopPropagation()}>
+                              {shelfProducts.map(sp => (
+                                <div key={sp.id} className="flex flex-col p-1.5 bg-white border border-slate-200/60 rounded-xl shadow-sm">
+                                  <span className="text-[10px] font-black text-slate-900 line-clamp-1">📦 {sp.name}</span>
+                                  <span className="text-[8px] font-bold text-slate-650">SKU: {sp.sku || "Kodu Yok"}</span>
+                                  
+                                  {/* Stepper with click prevent propagation */}
+                                  <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-100">
+                                    <span className="text-[10px] font-black text-slate-800">{t.qty || "Adet"}: <span className="font-mono text-blue-600">{sp.quantity}</span></span>
+                                    <div className="flex gap-1">
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAdjustQuantity(sp.id, -1);
+                                        }}
+                                        className="w-5 h-5 rounded-lg border border-slate-300 bg-slate-50 text-xs font-black hover:bg-slate-100 flex items-center justify-center transition active:scale-90"
+                                        title="Stok Azalt"
+                                      >
+                                        -
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAdjustQuantity(sp.id, 1);
+                                        }}
+                                        className="w-5 h-5 rounded-lg border border-slate-300 bg-slate-50 text-xs font-black hover:bg-slate-100 flex items-center justify-center transition active:scale-90"
+                                        title="Stok Artır"
+                                      >
+                                        +
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="flex-1 py-4 flex items-center justify-center text-[10px] text-slate-400 font-semibold italic">
+                              -- {language === "tr" ? "Raf Boş" : language === "de" ? "Regal leer" : "Shelf Empty"} --
+                            </div>
+                          )}
                           
-                          <div className="mt-2 flex gap-1 w-full">
+                          <div className="mt-2.5 pt-2 border-t border-slate-100 flex gap-1.5" onClick={(e) => e.stopPropagation()}>
                             <button
                               type="button"
                               onClick={() => handleScanSuccess(sh)}
-                              className="flex-1 rounded bg-white border border-slate-200 py-0.5 text-[8px] font-bold text-slate-600 hover:bg-slate-100"
+                              className="flex-1 rounded-xl bg-white border border-slate-200 py-1.5 text-[8px] font-bold text-slate-650 hover:bg-slate-50 transition active:scale-95"
                             >
-                              {t.inspectBtn}
+                              🔍 {t.inspectBtn}
                             </button>
                             <button
                               type="button"
                               onClick={() => triggerPrintLabel("shelf", sh, `RAF: ${sh}`)}
-                              className="flex-1 rounded bg-blue-50 border border-blue-200 py-0.5 text-[8px] font-black text-blue-700 hover:bg-blue-100"
+                              className="flex-1 rounded-xl bg-blue-50 border border-blue-200 py-1.5 text-[8px] font-black text-blue-700 hover:bg-blue-100 transition active:scale-95"
                             >
-                              {t.printBtn}
+                              🖨️ {t.printBtn}
                             </button>
                           </div>
                         </div>
