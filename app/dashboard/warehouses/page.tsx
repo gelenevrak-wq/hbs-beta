@@ -4321,27 +4321,29 @@ ${sizeStr}
                       const containsProduct = shelfProducts.length > 0;
 
                       if (placeProductId) {
-                        const isTargeted = placeShelf === sh;
+                        const product = products.find(p => p.id === placeProductId);
+                        const prodName = product ? getLocalizedField(product.name, language || "tr") : "";
                         return (
                           <div
                             key={sh}
                             onClick={() => {
-                              if (isTargeted) {
+                              const confirmed = window.confirm(
+                                language === "tr"
+                                  ? `"${prodName}" ürününü "${sh}" rafına yerleştirmek istiyor musunuz?`
+                                  : `Do you want to place the product "${prodName}" onto the shelf "${sh}"?`
+                              );
+                              if (confirmed) {
                                 executeDirectPlacement(placeProductId, sh, placeQty || 1);
-                              } else {
-                                setPlaceShelf(sh);
                               }
                             }}
-                            className={`rounded-xl border px-3 py-2 flex items-center justify-center gap-1.5 transition cursor-pointer select-none active:scale-95 text-xs font-mono font-black ${
-                              isTargeted
-                                ? "bg-yellow-100 border-yellow-500 text-yellow-950 ring-2 ring-yellow-300 animate-pulse"
-                                : containsProduct
-                                  ? "bg-indigo-50 border-indigo-200 text-indigo-750 hover:bg-indigo-100"
-                                  : "bg-emerald-50 border-emerald-250 border-dashed text-emerald-700 hover:bg-emerald-100"
+                            className={`rounded-xl px-3 py-2 flex items-center justify-center gap-1.5 transition cursor-pointer select-none active:scale-95 text-xs font-mono font-black ${
+                              containsProduct
+                                ? "bg-indigo-100 text-indigo-850 hover:bg-indigo-200"
+                                : "bg-emerald-50 text-emerald-750 hover:bg-emerald-100"
                             }`}
                           >
-                            <span>{isTargeted ? (activeLang === "en" ? "CONFIRM 👍" : "ONAY 👍") : sh}</span>
-                            {containsProduct && !isTargeted && <span className="text-[10px]">📦</span>}
+                            <span>{sh}</span>
+                            {containsProduct && <span className="text-[10px]">📦</span>}
                           </div>
                         );
                       }
@@ -4458,44 +4460,36 @@ ${sizeStr}
                 </div>
                 </div>
 
-                {/* Filtered Inventory list table inside warehouse */}
-                {activeWhInventory.length > 0 && (
-                  <div className="border-t border-slate-100 pt-4 space-y-2">
-                    <h3 className="text-xs font-black text-slate-800">{t.warehouseInventory} ({filteredInventory.length} {t.itemsUnit})</h3>
-                    <div className="overflow-x-auto max-h-56">
-                      <table className="w-full text-left text-[11px] border-collapse">
-                        <thead>
-                          <tr className="border-b border-slate-200 bg-slate-50 text-[9px] font-black text-slate-700 uppercase">
-                            <th className="p-2">{t.colProductSku}</th>
-                            <th className="p-2 text-center">{t.colShelf}</th>
-                            <th className="p-2 text-center">{t.colQty}</th>
-                            <th className="p-2 text-right">{t.colSalePrice}</th>
-                            <th className="p-2 text-right">{t.colLabel}</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
-                          {filteredInventory.map((p) => (
-                            <tr key={p.id} className="hover:bg-slate-50/50">
-                              <td className="p-2">
-                                <span className="font-bold text-slate-900 truncate block max-w-xs">{getLocalizedField(p.name, activeLang)}</span>
-                                <span className="text-[9px] text-slate-550 font-mono">{p.sku}</span>
-                              </td>
-                              <td className="p-2 text-center font-mono font-bold text-blue-600">{p.shelf}</td>
-                              <td className="p-2 text-center font-black text-slate-900">{p.quantity}</td>
-                              <td className="p-2 text-right font-mono text-slate-800">{p.salePrice} EUR</td>
-                              <td className="p-2 text-right">
-                                <button
-                                  type="button"
-                                  onClick={() => triggerPrintLabel("product", p.sku || p.barcode, getLocalizedField(p.name, activeLang), `${activeLang === "en" ? "Purchase" : activeLang === "de" ? "Einkauf" : activeLang === "ru" ? "Закупка" : activeLang === "ka" ? "შესყიდვა" : "Alış"}: ${p.purchasePrice} EUR | ${activeLang === "en" ? "Sale" : activeLang === "de" ? "Verkauf" : activeLang === "ru" ? "Продажа" : activeLang === "ka" ? "გაყიდვა" : "Satış"}: ${p.salePrice} EUR`, `${activeLang === "en" ? "SHELF" : activeLang === "de" ? "REGAL" : activeLang === "ru" ? "ПОЛКА" : activeLang === "ka" ? "თარო" : "RAF"}: ${p.shelf}`)}
-                                  className="rounded bg-blue-50 border border-blue-200 px-2 py-0.5 text-[8px] font-black text-blue-700 hover:bg-blue-100"
-                                >
-                                  {t.printBtn}
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                {/* Son 5 Raf Yerleşim Hareketi Geçmişi */}
+                {movements.length > 0 && (
+                  <div className="border-t border-slate-100 pt-4 space-y-2 select-none">
+                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                      ⏱️ {language === "tr" ? "Son 5 Raf/Yerleşim Hareketi" : "Last 5 Shelf Movements"}
+                    </h3>
+                    <div className="space-y-1.5">
+                      {movements
+                        .filter(m => m.warehouse.toLowerCase() === activeWh.name.toLowerCase())
+                        .slice(0, 5)
+                        .map((m) => (
+                          <div key={m.id} className="bg-slate-50 rounded-xl p-2.5 text-[10px] leading-normal font-semibold text-slate-700 flex justify-between items-center">
+                            <div>
+                              <span className="font-bold text-slate-900">📦 {m.productName}</span>
+                              <span className="text-slate-550"> ➔ </span>
+                              <span className="font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md">{m.shelf || "Rafsız"}</span>
+                            </div>
+                            <div className="text-right font-mono text-slate-550 shrink-0 ml-2">
+                              <span className={m.movementType === "stock_in" ? "text-emerald-700 font-bold" : "text-rose-600 font-bold"}>
+                                {m.movementType === "stock_in" ? "+" : ""}{m.quantity} Adet
+                              </span>
+                              <span className="text-slate-400"> | {m.createdAt}</span>
+                            </div>
+                          </div>
+                        ))}
+                      {movements.filter(m => m.warehouse.toLowerCase() === activeWh.name.toLowerCase()).length === 0 && (
+                        <p className="text-[10px] text-slate-400 italic text-center py-2">
+                          {language === "tr" ? "Henüz bir raf hareketi yapılmadı." : "No shelf movements recorded yet."}
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -4821,32 +4815,31 @@ ${sizeStr}
                                                       data-shelf-code={binCode}
                                                       onClick={() => {
                                                         if (placeProductId) {
-                                                          if (placeShelf === binCode) {
+                                                          const product = products.find(p => p.id === placeProductId);
+                                                          const prodName = product ? getLocalizedField(product.name, language || "tr") : "";
+                                                          const confirmed = window.confirm(
+                                                            language === "tr"
+                                                              ? `"${prodName}" ürününü "${binCode}" rafına yerleştirmek istiyor musunuz?`
+                                                              : `Do you want to place the product "${prodName}" onto the shelf "${binCode}"?`
+                                                          );
+                                                          if (confirmed) {
                                                             executeDirectPlacement(placeProductId, binCode, placeQty || 1);
-                                                          } else {
-                                                            setPlaceShelf(binCode);
                                                           }
                                                         } else {
                                                           setSelectedWhiteboardShelfCode(binCode);
                                                         }
                                                       }}
                                                       title={`${binCode} (${hasProduct ? "Dolu" : "Boş"}) - Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın`}
-                                                      className={`flex-1 h-9 rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
-                                                        placeShelf === binCode
-                                                          ? "bg-yellow-100 border-yellow-500 border-2 text-yellow-950 ring-2 ring-yellow-300 animate-pulse font-black"
-                                                          : hasProduct
-                                                            ? "bg-indigo-50 border-indigo-300 text-indigo-750 hover:bg-indigo-100"
-                                                            : "bg-emerald-50 border-emerald-300 border-dashed text-emerald-700 hover:bg-emerald-100/50"
+                                                      className={`flex-1 h-9 rounded-lg text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
+                                                        hasProduct
+                                                          ? "bg-indigo-100 text-indigo-850 hover:bg-indigo-200"
+                                                          : "bg-emerald-55 border border-dashed border-emerald-300 text-emerald-700 hover:bg-emerald-100/50"
                                                       }`}
                                                     >
                                                       <span className="text-[9px] font-mono font-bold leading-none">
-                                                        {placeShelf === binCode 
-                                                          ? (activeLang === "en" ? "CONFIRM 👍" : "ONAY 👍") 
-                                                          : binsCount > 1 
-                                                            ? `B${bIdx + 1}` 
-                                                            : `${slot}-${level}`}
+                                                        {binsCount > 1 ? `B${bIdx + 1}` : `${slot}-${level}`}
                                                       </span>
-                                                      {hasProduct && placeShelf !== binCode && <span className="text-[7px] font-black leading-none block mt-0.5">📦</span>}
+                                                      {hasProduct && <span className="text-[7px] font-black leading-none block mt-0.5">📦</span>}
                                                     </div>
                                                   );
                                                 })}
