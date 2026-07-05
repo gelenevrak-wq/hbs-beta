@@ -4207,7 +4207,17 @@ ${sizeStr}
               </div>
 
               {/* 2. Görsel Depo Haritası ve Raf Listesi (Layout Map) */}
-              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+              <div className={`rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 transition-all duration-300 ${
+                activeDragProduct 
+                  ? "fixed inset-4 md:inset-10 z-[8888] shadow-2xl ring-4 ring-blue-500 overflow-y-auto flex flex-col justify-between" 
+                  : ""
+              }`}>
+                {activeDragProduct && (
+                  <div className="bg-blue-600 text-white rounded-2xl p-3 text-xs font-black flex justify-between items-center shadow-lg animate-pulse mb-2">
+                    <span className="flex items-center gap-1.5 text-[11px]">🎯 {language === "tr" ? `Depo Harita Taşıma Modu: "${activeDragProduct.name}" ürününü yerleştirmek için bir rafa bırakın` : `Warehouse Drag Mode: Drop "${activeDragProduct.name}" onto a shelf`}</span>
+                    <span className="text-[9px] bg-white/20 px-2 py-0.5 rounded-full shrink-0">{language === "tr" ? "Otomatik Kapanır" : "Auto-closes on drop"}</span>
+                  </div>
+                )}
                 <div>
                   <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">{t.printCenterTitle}</span>
                   <h2 className="text-base font-black text-slate-900 mt-1">{t.matrixHeader}</h2>
@@ -4738,7 +4748,9 @@ ${sizeStr}
                     {/* Interactive Grid representing shelves layout */}
                     <div className="space-y-1 pt-1">
                       <span className="text-[9px] font-black text-slate-550 uppercase tracking-wider block">🏢 Reyon Şematik Görünümü</span>
-                      <div className="rounded-2xl border border-slate-150 p-1.5 pb-4 pr-4 overflow-x-auto bg-slate-50/50 relative select-none">
+                      <div className={`rounded-2xl border border-slate-150 p-1.5 pb-4 pr-4 overflow-x-auto bg-slate-50/50 relative select-none transition-all duration-300 origin-top-left ${
+                        activeDragProduct ? "scale-[0.8] md:scale-[0.9] shadow-inner" : ""
+                      }`}>
                         <div className="flex flex-col gap-1 min-w-[280px]">
                           {/* Column Headers (Slot 1, Slot 2, ...) */}
                           <div className="flex items-center gap-1 border-b border-slate-100 pb-1 mb-1">
