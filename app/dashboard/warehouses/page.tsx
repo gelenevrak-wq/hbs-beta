@@ -1106,37 +1106,7 @@ export default function WarehousesRevampPage() {
 
 
 
-  const handlePointerDownDrag = (e: React.PointerEvent, id: string, name: string, qty: number) => {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    setActiveDragProduct({ id, name, qty });
-    setDragCoords({ x: e.clientX, y: e.clientY });
-  };
 
-  const handlePointerMoveDrag = (e: React.PointerEvent) => {
-    if (!activeDragProduct) return;
-    setDragCoords({ x: e.clientX, y: e.clientY });
-  };
-
-  const handlePointerUpDrag = (e: React.PointerEvent) => {
-    if (!activeDragProduct) return;
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch (err) {}
-
-    const element = document.elementFromPoint(e.clientX, e.clientY);
-    if (element) {
-      const shelfEl = element.closest("[data-shelf-code]");
-      if (shelfEl) {
-        const shelfCode = shelfEl.getAttribute("data-shelf-code");
-        if (shelfCode) {
-          executeDirectPlacement(activeDragProduct.id, shelfCode, activeDragProduct.qty);
-        }
-      }
-    }
-
-    setActiveDragProduct(null);
-    setDragCoords(null);
-  };
 
   // Resizable Panel layout states
   const [leftWidth, setLeftWidth] = useState(50); // 50% default width
@@ -1216,8 +1186,6 @@ export default function WarehousesRevampPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [showAiThumbsUp, setShowAiThumbsUp] = useState(false);
-  const [activeDragProduct, setActiveDragProduct] = useState<{ id: string, name: string, qty: number } | null>(null);
-  const [dragCoords, setDragCoords] = useState<{ x: number, y: number } | null>(null);
 
   // Add Warehouse States
   const [isNewWarehouseModalOpen, setIsNewWarehouseModalOpen] = useState(false);
@@ -4207,15 +4175,10 @@ ${sizeStr}
               </div>
 
               {/* 2. Görsel Depo Haritası ve Raf Listesi (Layout Map) */}
-              <div className={`rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 transition-all duration-300 ${
-                activeDragProduct 
-                  ? "fixed inset-4 md:inset-10 z-[8888] shadow-2xl ring-4 ring-blue-500 overflow-y-auto flex flex-col justify-between" 
-                  : ""
-              }`}>
-                {activeDragProduct && (
+              <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
+                {placeProductId && (
                   <div className="bg-blue-600 text-white rounded-2xl p-3 text-xs font-black flex justify-between items-center shadow-lg animate-pulse mb-2">
-                    <span className="flex items-center gap-1.5 text-[11px]">🎯 {language === "tr" ? `Depo Harita Taşıma Modu: "${activeDragProduct.name}" ürününü yerleştirmek için bir rafa bırakın` : `Warehouse Drag Mode: Drop "${activeDragProduct.name}" onto a shelf`}</span>
-                    <span className="text-[9px] bg-white/20 px-2 py-0.5 rounded-full shrink-0">{language === "tr" ? "Otomatik Kapanır" : "Auto-closes on drop"}</span>
+                    <span className="flex items-center gap-1.5 text-[11px]">🎯 {language === "tr" ? `Yerleşim Modu: Haritadan hedef rafa tıklayın, ardından yerleştirmek için rafa bir kez daha basarak onaylayın` : `Placement Mode: Click a target shelf on the map, then click it again to confirm`}</span>
                   </div>
                 )}
                 <div>
@@ -4265,25 +4228,21 @@ ${sizeStr}
                           return (
                             <div 
                               key={up.id} 
-                              onPointerDown={(e) => handlePointerDownDrag(e, up.id, getLocalizedField(up.name, language || "tr"), parseInt(up.quantity) || 1)}
-                              onPointerMove={handlePointerMoveDrag}
-                              onPointerUp={handlePointerUpDrag}
-                              style={{ touchAction: "none" }}
-                              className={`flex justify-between items-center border p-2 rounded-xl transition-all cursor-grab active:cursor-grabbing select-none ${
+                              className={`flex justify-between items-center border p-2 rounded-xl transition-all hover:border-blue-300 hover:bg-slate-50 ${
                                 isSelected 
                                   ? "border-blue-500 bg-blue-50 ring-2 ring-blue-300 shadow-md animate-pulse" 
-                                  : "bg-white border-amber-200/50 hover:border-blue-300 hover:bg-slate-50"
+                                  : "bg-white border-amber-200/50"
                               }`}
                             >
                               <div className="flex flex-col">
                                 <span className="font-bold text-slate-800">📦 {getLocalizedField(up.name, language || "tr")} ({up.quantity} {t.qty || "Adet"})</span>
                                 {isSelected ? (
                                   <span className="text-[9px] text-blue-650 font-black mt-0.5 animate-pulse">
-                                    👈 Seçildi! Yerleştirmek için yukarıdaki tahtadan (canvas) bir rafa tıklayın.
+                                    👈 Seçildi! Yukarıdaki haritada hedef rafa tıklayın (seçildiğinde ONAY yazacaktır).
                                   </span>
                                 ) : (
-                                  <span className="text-[9px] text-slate-500 mt-0.5">
-                                    💡 Sürükleyip yukarıdaki haritada bir rafa bırakabilirsiniz.
+                                  <span className="text-[9px] text-slate-500 mt-0.5 font-bold">
+                                    🎯 Rafa yerleştirmek için "Yerleştir" butonuna basın.
                                   </span>
                                 )}
                               </div>
@@ -4749,9 +4708,7 @@ ${sizeStr}
                     {/* Interactive Grid representing shelves layout */}
                     <div className="space-y-1 pt-1">
                       <span className="text-[9px] font-black text-slate-550 uppercase tracking-wider block">🏢 Reyon Şematik Görünümü</span>
-                      <div className={`rounded-2xl border border-slate-150 p-1.5 pb-4 pr-4 overflow-x-auto bg-slate-50/50 relative select-none transition-all duration-300 origin-top-left ${
-                        activeDragProduct ? "scale-[0.8] md:scale-[0.9] shadow-inner" : ""
-                      }`}>
+                      <div className="rounded-2xl border border-slate-150 p-1.5 pb-4 pr-4 overflow-x-auto bg-slate-50/50 relative select-none">
                         <div className="flex flex-col gap-1 min-w-[280px]">
                           {/* Column Headers (Slot 1, Slot 2, ...) */}
                           <div className="flex items-center gap-1 border-b border-slate-100 pb-1 mb-1">
@@ -4812,22 +4769,32 @@ ${sizeStr}
                                                       data-shelf-code={binCode}
                                                       onClick={() => {
                                                         if (placeProductId) {
-                                                          handleShelfCardClick(binCode);
+                                                          if (placeShelf === binCode) {
+                                                            executeDirectPlacement(placeProductId, binCode, placeQty || 1);
+                                                          } else {
+                                                            setPlaceShelf(binCode);
+                                                          }
                                                         } else {
                                                           setSelectedWhiteboardShelfCode(binCode);
                                                         }
                                                       }}
                                                       title={`${binCode} (${hasProduct ? "Dolu" : "Boş"}) - Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın`}
                                                       className={`flex-1 h-9 rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
-                                                        hasProduct
-                                                          ? "bg-indigo-50 border-indigo-300 text-indigo-750 hover:bg-indigo-100"
-                                                          : "bg-emerald-50 border-emerald-300 border-dashed text-emerald-700 hover:bg-emerald-100/50"
+                                                        placeShelf === binCode
+                                                          ? "bg-yellow-100 border-yellow-500 border-2 text-yellow-950 ring-2 ring-yellow-300 animate-pulse font-black"
+                                                          : hasProduct
+                                                            ? "bg-indigo-50 border-indigo-300 text-indigo-750 hover:bg-indigo-100"
+                                                            : "bg-emerald-50 border-emerald-300 border-dashed text-emerald-700 hover:bg-emerald-100/50"
                                                       }`}
                                                     >
                                                       <span className="text-[9px] font-mono font-bold leading-none">
-                                                        {binsCount > 1 ? `B${bIdx + 1}` : `${slot}-${level}`}
+                                                        {placeShelf === binCode 
+                                                          ? (activeLang === "en" ? "CONFIRM 👍" : "ONAY 👍") 
+                                                          : binsCount > 1 
+                                                            ? `B${bIdx + 1}` 
+                                                            : `${slot}-${level}`}
                                                       </span>
-                                                      {hasProduct && <span className="text-[7px] font-black leading-none block mt-0.5">📦</span>}
+                                                      {hasProduct && placeShelf !== binCode && <span className="text-[7px] font-black leading-none block mt-0.5">📦</span>}
                                                     </div>
                                                   );
                                                 })}
@@ -6019,23 +5986,6 @@ ${sizeStr}
         </div>
       )}
 
-      {/* Custom Pointer Drag Preview Card */}
-      {activeDragProduct && dragCoords && (
-        <div 
-          className="fixed pointer-events-none z-[9999] rounded-xl border-2 border-blue-500 bg-white/90 p-3 shadow-2xl flex items-center gap-2 select-none animate-pulse"
-          style={{ 
-            left: `${dragCoords.x + 12}px`, 
-            top: `${dragCoords.y + 12}px`,
-            transform: "translate(0, -50%)"
-          }}
-        >
-          <span className="text-lg">📦</span>
-          <div className="text-[10px] leading-tight">
-            <p className="font-black text-slate-800">{activeDragProduct.name}</p>
-            <p className="font-bold text-blue-600">{activeDragProduct.qty} Adet</p>
-          </div>
-        </div>
-      )}
 
       {/* AI Thumbs Up Feedback Overlay */}
       {showAiThumbsUp && (
