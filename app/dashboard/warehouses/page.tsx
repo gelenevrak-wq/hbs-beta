@@ -701,6 +701,139 @@ const translations = {
   }
 };
 
+const whMessages = {
+  tr: {
+    transferOutNote: "Transfer Çıkışı -> {dest} ({shelf})",
+    transferInNote: "Transfer Girişi <- {source} ({shelf})",
+    countCorrectionNote: "Sayım Düzeltmesi (Sistem: {system} -> Sayılan: {counted})",
+    autoPlacementNote: "Otomatik Raf Dağıtımı",
+    errHasInventory: "Bu depoda hala {count} adet envanter kaydı bulunuyor! Depoyu silmeden önce lütfen tüm ürünleri diğer depolara transfer edin.",
+    confirmDeleteWh: "\"{name}\" deposunu tamamen silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    deleteWhSuccess: "\"{name}\" deposu başarıyla silindi.",
+    errNoShelvesForAuto: "Otomatik yerleştirme için önce reyon/raf tanımlanmış olmalıdır.",
+    errNoFreeShelf: "Otomatik dağıtılacak boş raf hücresi bulunamadı!",
+    autoPlaceSuccess: "Toplam {count} adet rafsız ürün boş raflara otomatik olarak dağıtıldı.",
+    alertValidQty: "Geçerli bir miktar giriniz.",
+    alertStockLimitExceeded: "Mevcut stok sınırını aştınız! (Maksimum: {max})",
+    dispatchSuccess: "\"{name}\" başarıyla sevk edildi.",
+    alertValidWhName: "Lütfen geçerli bir depo ismi girin.",
+    createWhSuccess: "\"{name}\" deposu başarıyla oluşturuldu.",
+    errUnauthorizedCreate: "Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler yeni depolar oluşturabilir.",
+    errEmptyWhName: "Lütfen tüm depolar için isim tanımlayın.",
+    mainWhPurpose: "Ana Satış Deposu",
+    backupWhPurpose: "Yedek / Depolama Sahası {num}",
+    optChooseOption: "Seçiniz",
+    optDeleteOnlyShelf: "1 - Sadece Rafı Sil (Ürünler depoda rafsız/ortalıkta kalır)",
+    optDeleteFull: "2 - Tamamen Sil (Ürün tamamen silinir)",
+    promptDeleteOption: "Lütfen seçiminizi yazın (1 veya 2):",
+    confirmLockProduct: "[{shelf}] konumunda {qty} adet \"{name}\" kaydedildi."
+  },
+  en: {
+    transferOutNote: "Transfer Out -> {dest} ({shelf})",
+    transferInNote: "Transfer In <- {source} ({shelf})",
+    countCorrectionNote: "Count Adjustment (System: {system} -> Counted: {counted})",
+    autoPlacementNote: "Auto Shelf Placement",
+    errHasInventory: "There are still {count} inventory records in this warehouse! Please transfer all products to other warehouses before deleting this one.",
+    confirmDeleteWh: "Are you sure you want to completely delete the warehouse \"{name}\"? This action cannot be undone.",
+    deleteWhSuccess: "Warehouse \"{name}\" successfully deleted.",
+    errNoShelvesForAuto: "Aisle/shelf configurations must be defined first for auto placement.",
+    errNoFreeShelf: "No empty shelf compartment found for auto distribution!",
+    autoPlaceSuccess: "A total of {count} unplaced products were automatically distributed to empty shelves.",
+    alertValidQty: "Please enter a valid quantity.",
+    alertStockLimitExceeded: "Stock limit exceeded! (Maximum: {max})",
+    dispatchSuccess: "\"{name}\" successfully dispatched.",
+    alertValidWhName: "Please enter a valid warehouse name.",
+    createWhSuccess: "Warehouse \"{name}\" successfully created.",
+    errUnauthorizedCreate: "Insufficient Permissions! Only Store Owner or Managers can create new warehouses.",
+    errEmptyWhName: "Please define a name for all warehouses.",
+    mainWhPurpose: "Main Sales Warehouse",
+    backupWhPurpose: "Backup / Storage Area {num}",
+    optChooseOption: "Choose",
+    optDeleteOnlyShelf: "1 - Delete Shelf Only (Products remain scattered in warehouse)",
+    optDeleteFull: "2 - Delete Completely (Product is deleted completely)",
+    promptDeleteOption: "Please enter your choice (1 or 2):",
+    confirmLockProduct: "Saved {qty} units of \"{name}\" at location [{shelf}]."
+  },
+  de: {
+    transferOutNote: "Transfer-Ausgang -> {dest} ({shelf})",
+    transferInNote: "Transfer-Eingang <- {source} ({shelf})",
+    countCorrectionNote: "Bestandskorrektur (System: {system} -> Gezählt: {counted})",
+    autoPlacementNote: "Automatische Regalplatzierung",
+    errHasInventory: "In diesem Lager befinden sich noch {count} Bestandsdatensätze! Bitte übertragen Sie alle Produkte in andere Lager, bevor Sie dieses löschen.",
+    confirmDeleteWh: "Sind Sie sicher, dass Sie das Lager \"{name}\" vollständig löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+    deleteWhSuccess: "Lager \"{name}\" erfolgreich gelöscht.",
+    errNoShelvesForAuto: "Für die automatische Platzierung müssen zuerst Gang-/Regalkonfigurationen definiert werden.",
+    errNoFreeShelf: "Kein freies Regalfach für die automatische Verteilung gefunden!",
+    autoPlaceSuccess: "Insgesamt {count} unplatzierte Produkte wurden automatisch auf freie Regale verteilt.",
+    alertValidQty: "Bitte geben Sie eine gültige Menge ein.",
+    alertStockLimitExceeded: "Lagergrenze überschritten! (Maximum: {max})",
+    dispatchSuccess: "\"{name}\" erfolgreich versandt.",
+    alertValidWhName: "Bitte geben Sie einen gültigen Lagernamen ein.",
+    createWhSuccess: "Lager \"{name}\" erfolgreich erstellt.",
+    errUnauthorizedCreate: "Unzureichende Berechtigungen! Nur der Ladenbesitzer oder Manager können neue Lager erstellen.",
+    errEmptyWhName: "Bitte definieren Sie einen Namen für alle Lager.",
+    mainWhPurpose: "Hauptverkaufslager",
+    backupWhPurpose: "Backup- / Lagerbereich {num}",
+    optChooseOption: "Wählen",
+    optDeleteOnlyShelf: "1 - Nur Regal löschen (Produkte bleiben unplatziert im Lager)",
+    optDeleteFull: "2 - Vollständig löschen (Produkt wird vollständig gelöscht)",
+    promptDeleteOption: "Bitte geben Sie Ihre Wahl ein (1 oder 2):",
+    confirmLockProduct: "{qty} Einheiten von \"{name}\" wurden an der Position [{shelf}] gespeichert."
+  },
+  ru: {
+    transferOutNote: "Расход перевода -> {dest} ({shelf})",
+    transferInNote: "Приход перевода <- {source} ({shelf})",
+    countCorrectionNote: "Корректировка остатков (Система: {system} -> Фактически: {counted})",
+    autoPlacementNote: "Автоматическое размещение на полках",
+    errHasInventory: "На этом складе все еще находится {count} записей о запасах! Пожалуйста, перенесите все товары на другие склады перед его удалением.",
+    confirmDeleteWh: "Вы уверены, что хотите полностью удалить склад \"{name}\"? Это действие нельзя отменить.",
+    deleteWhSuccess: "Склад \"{name}\" успешно удален.",
+    errNoShelvesForAuto: "Сначала необходимо настроить проходы/полки для авторазмещения.",
+    errNoFreeShelf: "Свободная полка для автораспределения не найдена!",
+    autoPlaceSuccess: "Всего {count} неразмещенных товаров были автоматически распределены по пустым полкам.",
+    alertValidQty: "Пожалуйста, введите корректное количество.",
+    alertStockLimitExceeded: "Лимит запасов превышен! (Максимум: {max})",
+    dispatchSuccess: "\"{name}\" успешно отгружен.",
+    alertValidWhName: "Пожалуйста, введите корректное название склада.",
+    createWhSuccess: "Склад \"{name}\" успешно создан.",
+    errUnauthorizedCreate: "Недостаточно прав! Только владелец магазина или управляющие могут создавать новые склады.",
+    errEmptyWhName: "Пожалуйста, укажите названия для всех складов.",
+    mainWhPurpose: "Основной склад продаж",
+    backupWhPurpose: "Резервная / Зона хранения {num}",
+    optChooseOption: "Выбрать",
+    optDeleteOnlyShelf: "1 - Удалить только полку (Товары останутся неразмещенными на складе)",
+    optDeleteFull: "2 - Удалить полностью (Товар будет полностью удален)",
+    promptDeleteOption: "Пожалуйста, введите ваш выбор (1 или 2):",
+    confirmLockProduct: "Сохранено {qty} шт. \"{name}\" в ячейке [{shelf}]."
+  },
+  ka: {
+    transferOutNote: "გადაცემის გასავალი -> {dest} ({shelf})",
+    transferInNote: "გადაცემის შემოსავალი <- {source} ({shelf})",
+    countCorrectionNote: "ინვენტარიზაციის კორექტირება (სისტემა: {system} -> დათვლილი: {counted})",
+    autoPlacementNote: "ავტომატური განაწილება თაროებზე",
+    errHasInventory: "ამ საწყობში ჯერ კიდევ არის {count} ინვენტარის ჩანაწერი! გთხოვთ, წაშლამდე გადაიტანოთ ყველა პროდუქტი სხვა საწყობში.",
+    confirmDeleteWh: "დარწმუნებული ხართ, რომ გსურთ საწყობის \"{name}\" სრულიად წაშლა? ეს ქმედება შეუქცევადია.",
+    deleteWhSuccess: "საწყობი \"{name}\" წარმატებით წაიშალა.",
+    errNoShelvesForAuto: "ავტომატური განთავსებისთვის ჯერ უნდა იყოს განსაზღვრული დერეფნები/თაროები.",
+    errNoFreeShelf: "ცარიელი თარო ავტომატური განაწილებისთვის ვერ მოიძებნა!",
+    autoPlaceSuccess: "სულ {count} განუთავსებელი პროდუქტი ავტომატურად განაწილდა ცარიელ თაროებზე.",
+    alertValidQty: "გთხოვთ შეიყვანოთ რაოდენობის ვალიდური მნიშვნელობა.",
+    alertStockLimitExceeded: "მარაგის ლიმიტი გადაჭარბებულია! (მაქსიმუმი: {max})",
+    dispatchSuccess: "\"{name}\" წარმატებით გაიგზავნა.",
+    alertValidWhName: "გთხოვთ შეიყვანოთ საწყობის ვალიდური სახელი.",
+    createWhSuccess: "საწყობი \"{name}\" წარმატებით შეიქმნა.",
+    errUnauthorizedCreate: "არასაკმარისი უფლებები! საწყობის შექმნა შეუძლია მხოლოდ მაღაზიის მფლობელს ან მენეჯერებს.",
+    errEmptyWhName: "გთხოვთ მიუთითოთ საწყობების სახელები.",
+    mainWhPurpose: "ძირითადი გაყიდვების საწყობი",
+    backupWhPurpose: "სარეზერვო / შესანახი ზონა {num}",
+    optChooseOption: "არჩევა",
+    optDeleteOnlyShelf: "1 - მხოლოდ თაროს წაშლა (პროდუქტები დარჩება საწყობში განუთავსებლად)",
+    optDeleteFull: "2 - სრულიად წაშლა (პროდუქტი სრულიად წაიშლება)",
+    promptDeleteOption: "გთხოვთ შეიყვანოთ თქვენი არჩევანი (1 ან 2):",
+    confirmLockProduct: "შენახულია {qty} ერთეული \"{name}\" თაროზე [{shelf}]."
+  }
+};
+
 
 
 const translateWarehouseName = (name: string, lang: string) => {
@@ -963,7 +1096,25 @@ export default function WarehousesRevampPage() {
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
     if (isSupabaseConfigured) {
-      for (const prod of updatedList) {
+      let targetCompanyId = "a123bc45-6789-abcd-ef01-234567890123";
+      try {
+        const { data: compData } = await supabase
+          .from("companies")
+          .select("id")
+          .eq("code", storeSlug || "obdtr")
+          .single();
+        if (compData && compData.id) {
+          targetCompanyId = compData.id;
+        }
+      } catch (e) {
+        console.error("Failed to look up company ID in saveProductsStateAndSync:", e);
+      }
+
+      const finalList = [...updatedList];
+      let stateChanged = false;
+
+      for (let i = 0; i < finalList.length; i++) {
+        const prod = finalList[i];
         const oldProd = products.find(p => p.id === prod.id);
         const hasChanged = !oldProd || 
           oldProd.quantity !== prod.quantity || 
@@ -972,19 +1123,61 @@ export default function WarehousesRevampPage() {
 
         if (hasChanged) {
           try {
-            const { error } = await supabase
-              .from("offerable_items")
-              .update({
-                quantity: parseInt(prod.quantity) || 0,
-                warehouse: prod.warehouse || null,
-                shelf: prod.shelf || null
-              })
-              .eq("id", prod.id);
+            if (!oldProd) {
+              // Insert new product record
+              const { data, error } = await supabase
+                .from("offerable_items")
+                .insert({
+                  company_id: targetCompanyId,
+                  type: "product",
+                  name: prod.name,
+                  category: prod.category || "Genel",
+                  brand: prod.brand || "",
+                  code: prod.sku || `SKU-${Date.now()}`,
+                  barcode: prod.barcode || "",
+                  quantity: parseInt(prod.quantity) || 0,
+                  warehouse: prod.warehouse || null,
+                  shelf: prod.shelf || null,
+                  sale_price: parseFloat(prod.salePrice) || null,
+                  purchase_price: parseFloat(prod.purchasePrice) || null,
+                  description: prod.description || "",
+                  photo_urls: prod.imageUrl ? [prod.imageUrl] : []
+                })
+                .select()
+                .single();
 
-            if (error) console.error("Database sync failed for product ID:", prod.id, error.message);
+              if (error) {
+                console.error("Database insert failed for new product transfer:", error.message);
+              } else if (data) {
+                finalList[i] = {
+                  ...prod,
+                  id: data.id
+                };
+                stateChanged = true;
+              }
+            } else {
+              // Update existing product record
+              const { error } = await supabase
+                .from("offerable_items")
+                .update({
+                  quantity: parseInt(prod.quantity) || 0,
+                  warehouse: prod.warehouse || null,
+                  shelf: prod.shelf || null
+                })
+                .eq("id", prod.id);
+
+              if (error) console.error("Database sync failed for product ID:", prod.id, error.message);
+            }
           } catch (e) {
             console.error("Supabase request failed:", e);
           }
+        }
+      }
+
+      if (stateChanged) {
+        setProducts(finalList);
+        if (storeSlug) {
+          window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(finalList));
         }
       }
     }
@@ -1043,6 +1236,11 @@ export default function WarehousesRevampPage() {
   const [isWhiteboardMode, setIsWhiteboardMode] = useState(false);
   const [selectedWhiteboardCorridorZone, setSelectedWhiteboardCorridorZone] = useState("");
   const [selectedWhiteboardShelfCode, setSelectedWhiteboardShelfCode] = useState<string | null>(null);
+  const [draggedZone, setDraggedZone] = useState<string | null>(null);
+  const [resizingCorridorZone, setResizingCorridorZone] = useState<string | null>(null);
+  const [resizeType, setResizeType] = useState<"depth" | "tiers" | null>(null);
+  const [resizeStartCoord, setResizeStartCoord] = useState(0);
+  const [resizeStartValue, setResizeStartValue] = useState(0);
 
   // Scanner & Live Inspector states
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -1332,10 +1530,10 @@ export default function WarehousesRevampPage() {
 
     const handleDeleteProductFromShelf = async (productId: string, productName: string) => {
     const answer = window.prompt(
-      `"${productName}" için yapmak istediğiniz işlemi seçin:\n\n` +
-      `1 - Raftan Kaldır (Sadece raf adresi silinir, ürün envanterde kalır)\n` +
-      `2 - Tamamen Sil (Ürün tamamen silinir)\n\n` +
-      `Lütfen seçiminizi yazın (1 veya 2):`
+      `"${productName}" ${activeLang === "en" ? "choose action:" : activeLang === "de" ? "Aktion wählen:" : activeLang === "ru" ? "выберите действие:" : activeLang === "ka" ? "აირჩიეთ ქმედება:" : "için yapmak istediğiniz işlemi seçin:"}\n\n` +
+      wm.optDeleteOnlyShelf + "\n" +
+      wm.optDeleteFull + "\n\n" +
+      wm.promptDeleteOption
     );
 
     if (answer === "1") {
@@ -1343,7 +1541,7 @@ export default function WarehousesRevampPage() {
       const updated = products.map(p => p.id === productId ? { ...p, shelf: "" } : p);
       saveProductsStateAndSync(updated);
       window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
-      alert(`"${productName}" raf konumu temizlendi.`);
+      alert(activeLang === "en" ? `"${productName}" shelf location cleared.` : activeLang === "de" ? `"${productName}" Regalposition gelöscht.` : activeLang === "ru" ? `Для товар "${productName}" очищено местоположение на полке.` : activeLang === "ka" ? `"${productName}" თაროს მდებარეობა გასუფთავდა.` : `"${productName}" raf konumu temizlendi.`);
 
       const isSupabaseConfigured = 
         process.env.NEXT_PUBLIC_SUPABASE_URL && 
@@ -1364,7 +1562,7 @@ export default function WarehousesRevampPage() {
       const updatedProducts = products.filter((p) => p.id !== productId);
       saveProductsStateAndSync(updatedProducts);
       window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
-      alert(`"${productName}" envanterden silindi.`);
+      alert(activeLang === "en" ? `"${productName}" deleted from inventory.` : activeLang === "de" ? `"${productName}" aus dem Inventar gelöscht.` : activeLang === "ru" ? `"${productName}" удален из инвентаря.` : activeLang === "ka" ? `"${productName}" წაიშალა ინვენტარიდან.` : `"${productName}" envanterden silindi.`);
 
       const isSupabaseConfigured = 
         process.env.NEXT_PUBLIC_SUPABASE_URL && 
@@ -1450,14 +1648,97 @@ export default function WarehousesRevampPage() {
     }
   };
 
+  // Drag and Drop reordering for corridors in Whiteboard
+  const handleCorridorDragStart = (e: React.DragEvent, zone: string) => {
+    if (!isAuthorized) return;
+    setDraggedZone(zone);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleCorridorDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleCorridorDrop = (e: React.DragEvent, targetZone: string) => {
+    e.preventDefault();
+    if (!isAuthorized || !draggedZone || draggedZone === targetZone) return;
+
+    const sourceIdx = corridors.findIndex(c => c.zone === draggedZone);
+    const targetIdx = corridors.findIndex(c => c.zone === targetZone);
+    if (sourceIdx === -1 || targetIdx === -1) return;
+
+    const updated = [...corridors];
+    const [removed] = updated.splice(sourceIdx, 1);
+    updated.splice(targetIdx, 0, removed);
+    setCorridors(updated);
+    setDraggedZone(null);
+
+    // Persist layout automatically
+    handleSaveLayout(updated);
+  };
+
+  const handleResizeStart = (e: React.PointerEvent, zone: string, type: "depth" | "tiers", initialVal: number) => {
+    if (!isAuthorized) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingCorridorZone(zone);
+    setResizeType(type);
+    setResizeStartCoord(type === "depth" ? e.clientX : e.clientY);
+    setResizeStartValue(initialVal);
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handleResizeMove = (e: React.PointerEvent, zone: string) => {
+    if (resizingCorridorZone !== zone || !resizeType) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const corrIdx = corridors.findIndex(c => c.zone === zone);
+    if (corrIdx === -1) return;
+    const corr = corridors[corrIdx];
+
+    if (resizeType === "depth") {
+      const diffX = e.clientX - resizeStartCoord;
+      const step = 90; // approx slot width in whiteboard grid
+      const newVal = Math.max(1, Math.min(20, resizeStartValue + Math.round(diffX / step)));
+      if (newVal !== corr.depth) {
+        const updated = corridors.map((item, i) => i === corrIdx ? { ...item, depth: newVal } : item);
+        setCorridors(updated);
+      }
+    } else if (resizeType === "tiers") {
+      const diffY = e.clientY - resizeStartCoord;
+      const step = 50; // approx tier height in whiteboard grid
+      const newVal = Math.max(1, Math.min(10, resizeStartValue + Math.round(diffY / step)));
+      if (newVal !== corr.tiers) {
+        const updated = corridors.map((item, i) => i === corrIdx ? { ...item, tiers: newVal } : item);
+        setCorridors(updated);
+      }
+    }
+  };
+
+  const handleResizeEnd = (e: React.PointerEvent, zone: string) => {
+    if (resizingCorridorZone !== zone) return;
+    e.preventDefault();
+    e.stopPropagation();
+    (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+    setResizingCorridorZone(null);
+    setResizeType(null);
+
+    // Save final layout to local storage using functional update to avoid stale closures
+    setCorridors((prevCorridors) => {
+      handleSaveLayout(prevCorridors);
+      return prevCorridors;
+    });
+  };
+
   const handleDeleteWarehouse = (warehouseId: string, warehouseName: string) => {
     const itemsCount = products.filter((p) => p.warehouse.toLowerCase() === warehouseName.toLowerCase()).length;
     if (itemsCount > 0) {
-      alert(`Bu depoda hala ${itemsCount} adet envanter kaydı bulunuyor! Depoyu silmeden önce lütfen tüm ürünleri diğer depolara transfer edin.`);
+      alert(wm.errHasInventory.replace("{count}", itemsCount.toString()));
       return;
     }
 
-    if (!window.confirm(`"${warehouseName}" deposunu tamamen silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`)) {
+    if (!window.confirm(wm.confirmDeleteWh.replace("{name}", warehouseName))) {
       return;
     }
 
@@ -1483,13 +1764,13 @@ export default function WarehousesRevampPage() {
       console.error("Delete warehouse failed:", e);
     }
 
-    showSuccess(`"${warehouseName}" deposu başarıyla silindi.`);
+    showSuccess(wm.deleteWhSuccess.replace("{name}", warehouseName));
   };
 
   const handleAutoPlaceProducts = () => {
     const activeWh = warehouses.find(w => w.id === activeWarehouseId);
     if (!activeWh || !activeWh.shelves || activeWh.shelves.length === 0) {
-      showError("Otomatik yerleştirme için önce reyon/raf tanımlanmış olmalıdır.");
+      showError(wm.errNoShelvesForAuto);
       return;
     }
 
@@ -1501,7 +1782,7 @@ export default function WarehousesRevampPage() {
     );
 
     if (emptyShelves.length === 0) {
-      showError("Otomatik dağıtılacak boş raf hücresi bulunamadı!");
+      showError(wm.errNoFreeShelf);
       return;
     }
 
@@ -1517,7 +1798,7 @@ export default function WarehousesRevampPage() {
 
     saveProductsStateAndSync(updatedProducts);
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
-    showSuccess(`Toplam ${shelfIndex} adet rafsız ürün boş raflara otomatik olarak dağıtıldı.`);
+    showSuccess(wm.autoPlaceSuccess.replace("{count}", shelfIndex.toString()));
   };
 
   const handleShelfTransfer = () => {
@@ -1529,12 +1810,12 @@ export default function WarehousesRevampPage() {
     const currentQty = parseInt(targetProd.quantity) || 0;
 
     if (qtyVal <= 0) {
-      alert("Geçerli bir miktar giriniz.");
+      alert(wm.alertValidQty);
       return;
     }
 
     if (qtyVal > currentQty) {
-      alert(`Mevcut stok sınırını aştınız! (Maksimum: ${currentQty})`);
+      alert(wm.alertStockLimitExceeded.replace("{max}", currentQty.toString()));
       return;
     }
 
@@ -1580,13 +1861,13 @@ export default function WarehousesRevampPage() {
     saveProductsStateAndSync(updatedProducts);
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setIsShelfTransferOpen(false);
-    showSuccess(`"${targetProd.name}" başarıyla sevk edildi.`);
+    showSuccess(wm.dispatchSuccess.replace("{name}", getLocalizedField(targetProd.name, activeLang)));
   };
 
   const handleAddNewWarehouse = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newWhName.trim()) {
-      alert("Lütfen geçerli bir depo ismi girin.");
+      alert(wm.alertValidWhName);
       return;
     }
 
@@ -1635,7 +1916,7 @@ export default function WarehousesRevampPage() {
 
     setIsNewWarehouseModalOpen(false);
     setNewWhName("");
-    showSuccess(`"${newWh.name}" deposu başarıyla oluşturuldu.`);
+    showSuccess(wm.createWhSuccess.replace("{name}", newWh.name));
   };
 
   const handleWizardCountChange = (count: number) => {
@@ -1648,11 +1929,11 @@ export default function WarehousesRevampPage() {
   const handleSaveWizard = (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthorized) {
-      showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler yeni depolar oluşturabilir.");
+      showError(wm.errUnauthorizedCreate);
       return;
     }
     if (wizardNames.some((n) => !n.trim())) {
-      showError("Lütfen tüm depolar için isim tanımlayın.");
+      showError(wm.errEmptyWhName);
       return;
     }
 
@@ -1672,7 +1953,7 @@ export default function WarehousesRevampPage() {
         return {
           id,
           name: name.trim(),
-          purpose: i === 0 ? "Ana Satış Deposu" : `Yedek / Depolama Sahası ${i + 1}`,
+          purpose: i === 0 ? wm.mainWhPurpose : wm.backupWhPurpose.replace("{num}", String(i + 1)),
           customerVisible: false,
           city: "Batumi",
           zones,
@@ -1710,9 +1991,9 @@ export default function WarehousesRevampPage() {
       setActiveWarehouseId(initialWarehouses[0].id);
       setCorridors(initialWarehouses[0].corridorConfigs || parseShelvesToConfig(initialWarehouses[0].shelves || []));
       setShowWizard(false);
-      showSuccess(`Sihirbaz tamamlandı! ${initialWarehouses.length} adet depo başarıyla oluşturuldu.`);
+      showSuccess(activeLang === "en" ? `Wizard completed! ${initialWarehouses.length} warehouses successfully created.` : activeLang === "de" ? `Assistent abgeschlossen! ${initialWarehouses.length} Lager erfolgreich erstellt.` : activeLang === "ru" ? `Мастер настройки успешно завершен! Создано складов: ${initialWarehouses.length}.` : activeLang === "ka" ? `ოსტატი დასრულდა! წარმატებით შეიქმნა ${initialWarehouses.length} საწყობი.` : `Sihirbaz tamamlandı! ${initialWarehouses.length} adet depo başarıyla oluşturuldu.`);
     } catch (e: any) {
-      showError(`Sihirbaz kaydedilirken hata: ${e.message || e}`);
+      showError(activeLang === "en" ? `Error saving wizard: ${e.message || e}` : activeLang === "de" ? `Fehler beim Speichern des Assistenten: ${e.message || e}` : activeLang === "ru" ? `Ошибка при сохранении мастера: ${e.message || e}` : activeLang === "ka" ? `შეცდომა ოსტატის შენახვისას: ${e.message || e}` : `Sihirbaz kaydedilirken hata: ${e.message || e}`);
     }
   };
 
@@ -1721,22 +2002,26 @@ export default function WarehousesRevampPage() {
     return warehouses.find((w) => w.id === activeWarehouseId) || null;
   }, [warehouses, activeWarehouseId]);
 
-  const t = translations[language];
+  const activeLang = language || "tr";
+  const t = translations[activeLang] || translations.tr;
+  const wm = whMessages[activeLang] || whMessages.tr;
 
   // Layout Shaper logic
-  const handleSaveLayout = () => {
+  const handleSaveLayout = (customCorridors?: CorridorConfig[]) => {
     if (!activeWh) return;
     if (!isAuthorized) {
-      showError("Yetersiz Yetki! Sadece Mağaza Sahibi (Owner) ve Yöneticiler (Manager) depo raf yerleşimlerini değiştirebilir.");
+      showError(activeLang === "en" ? "Insufficient Permissions! Only Store Owner and Managers can change warehouse shelf layouts." : activeLang === "de" ? "Unzureichende Berechtigungen! Nur der Ladenbesitzer und Manager können die Regallayouts des Lagers ändern." : activeLang === "ru" ? "Недостаточно прав! Только владелец магазина и управляющие могут изменять планировку полок склада." : activeLang === "ka" ? "არასაკმარისი უფლებები! საწყობის თაროების განლაგების შეცვლა შეუძლიათ მხოლოდ მაღაზიის მფლობელს და მენეჯერებს." : "Yetersiz Yetki! Sadece Mağaza Sahibi (Owner) ve Yöneticiler (Manager) depo raf yerleşimlerini değiştirebilir.");
       return;
     }
+
+    const currentCorridors = customCorridors || corridors;
 
     try {
       const generatedShelves: string[] = [];
       const parsedZones: string[] = [];
       const updatedCapacities = { ...shelfCapacities };
 
-      corridors.forEach((corr) => {
+      currentCorridors.forEach((corr) => {
         const zone = corr.zone.trim().toUpperCase();
         if (zone) {
           if (!parsedZones.includes(zone)) {
@@ -1781,13 +2066,13 @@ export default function WarehousesRevampPage() {
       setShelfCapacities(updatedCapacities);
 
       if (parsedZones.length === 0) {
-        showError("Lütfen en az bir adet bölge tanımlayın.");
+        showError(activeLang === "en" ? "Please define at least one zone." : activeLang === "de" ? "Bitte definieren Sie mindestens eine Zone." : activeLang === "ru" ? "Пожалуйста, определите хотя бы одну зону." : activeLang === "ka" ? "გთხოვთ განსაზღვროთ მინიმუმ ერთი ზონა." : "Lütfen en az bir adet bölge tanımlayın.");
         return;
       }
 
       const updatedWarehouses = warehouses.map((w) =>
         w.id === activeWarehouseId
-          ? { ...w, zones: parsedZones, shelves: generatedShelves, corridorConfigs: corridors }
+          ? { ...w, zones: parsedZones, shelves: generatedShelves, corridorConfigs: currentCorridors }
           : w
       );
 
@@ -1802,9 +2087,9 @@ export default function WarehousesRevampPage() {
 
       window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
       setWarehouses(updatedWarehouses);
-      showSuccess(`"${activeWh.name}" raf düzeni (${generatedShelves.length} raf konumu) başarıyla şekillendirildi!`);
+      showSuccess(activeLang === "en" ? `"${activeWh.name}" shelf layout (${generatedShelves.length} slots) successfully shapered!` : activeLang === "de" ? `"${activeWh.name}" Regallayout (${generatedShelves.length} Fächer) erfolgreich gestaltet!` : activeLang === "ru" ? `Планировка полок склада "${activeWh.name}" (${generatedShelves.length} ячеек) успешно сформирована!` : activeLang === "ka" ? `"${activeWh.name}" თაროების განლაგება (${generatedShelves.length} სლოტი) წარმატებით ჩამოყალიბდა!` : `"${activeWh.name}" raf düzeni (${generatedShelves.length} raf konumu) başarıyla şekillendirildi!`);
     } catch (e: any) {
-      showError(`Düzen kaydedilirken hata: ${e.message || e}`);
+      showError(activeLang === "en" ? `Error saving layout: ${e.message || e}` : activeLang === "de" ? `Fehler beim Speichern des Layouts: ${e.message || e}` : activeLang === "ru" ? `Ошибка при сохранении планировки: ${e.message || e}` : activeLang === "ka" ? `შეცდომა განლაგების შენახვისას: ${e.message || e}` : `Düzen kaydedilirken hata: ${e.message || e}`);
     }
   };
 
@@ -1812,18 +2097,18 @@ export default function WarehousesRevampPage() {
   const handlePlaceProduct = (e: React.FormEvent) => {
     e.preventDefault();
     if (!placeProductId) {
-      showError("Lütfen yerleştirmek için bir ürün seçin.");
+      showError(activeLang === "en" ? "Please select a product to place." : activeLang === "de" ? "Bitte wählen Sie ein Produkt zum Platzieren aus." : activeLang === "ru" ? "Пожалуйста, выберите товар для размещения." : activeLang === "ka" ? "გთხოვთ აირჩიოთ პროდუქტი განსათავსებლად." : "Lütfen yerleştirmek için bir ürün seçin.");
       return;
     }
     if (!placeShelf) {
-      showError("Lütfen raf konumu seçin.");
+      showError(activeLang === "en" ? "Please select a shelf location." : activeLang === "de" ? "Bitte wählen Sie eine Regalposition aus." : activeLang === "ru" ? "Пожалуйста, выберите положение полки." : activeLang === "ka" ? "გთხოვთ აირჩიოთ თაროს მდებარეობა." : "Lütfen raf konumu seçin.");
       return;
     }
     if (!activeWh) return;
 
     const qty = Number(placeQty);
     if (!qty || qty <= 0) {
-      showError("Miktar sıfırdan büyük olmalıdır.");
+      showError(activeLang === "en" ? "Quantity must be greater than zero." : activeLang === "de" ? "Menge muss größer als Null sein." : activeLang === "ru" ? "Количество должно быть больше нуля." : activeLang === "ka" ? "რაოდენობა უნდა იყოს ნულზე მეტი." : "Miktar sıfırdan büyük olmalıdır.");
       return;
     }
 
@@ -1861,12 +2146,12 @@ export default function WarehousesRevampPage() {
       const shelfCap = shelfCapacities[placeShelf] || { maxWeight: 100, maxVolume: 1.0 };
 
       if (totalWeightAfter > shelfCap.maxWeight) {
-        showError(`Kapasite Aşımı! Raf Ağırlık Limiti: ${shelfCap.maxWeight} kg. Yerleştirilmek istenen toplam yük: ${totalWeightAfter.toFixed(1)} kg.`);
+        showError(activeLang === "en" ? `Capacity Exceeded! Shelf Weight Limit: ${shelfCap.maxWeight} kg. Requested load: ${totalWeightAfter.toFixed(1)} kg.` : activeLang === "de" ? `Kapazitätsüberschreitung! Regalgewichtslimit: ${shelfCap.maxWeight} kg. Angeforderte Last: ${totalWeightAfter.toFixed(1)} kg.` : activeLang === "ru" ? `Превышение емкости! Лимит веса полки: ${shelfCap.maxWeight} кг. Запрашиваемый вес: ${totalWeightAfter.toFixed(1)} кг.` : activeLang === "ka" ? `ტევადობის გადაჭარბება! თაროს წონის ლიმიტი: ${shelfCap.maxWeight} კგ. მოთხოვნილი წონა: ${totalWeightAfter.toFixed(1)} კგ.` : `Kapasite Aşımı! Raf Ağırlık Limiti: ${shelfCap.maxWeight} kg. Yerleştirilmek istenen toplam yük: ${totalWeightAfter.toFixed(1)} kg.`);
         return;
       }
 
       if (totalVolumeAfter > shelfCap.maxVolume) {
-        showError(`Kapasite Aşımı! Raf Hacim Limiti: ${shelfCap.maxVolume} m³. Yerleştirilmek istenen toplam hacim: ${totalVolumeAfter.toFixed(3)} m³.`);
+        showError(activeLang === "en" ? `Capacity Exceeded! Shelf Volume Limit: ${shelfCap.maxVolume} m³. Requested volume: ${totalVolumeAfter.toFixed(3)} m³.` : activeLang === "de" ? `Kapazitätsüberschreitung! Regalgewichtslimit: ${shelfCap.maxVolume} m³. Angeforderte Last: ${totalVolumeAfter.toFixed(3)} m³.` : activeLang === "ru" ? `Превышение емкости! Лимит объема полки: ${shelfCap.maxVolume} м³. Запрашиваемый объем: ${totalVolumeAfter.toFixed(3)} м³.` : activeLang === "ka" ? `ტევადობის გადაჭარბება! თაროს მოცულობის ლიმიტი: ${shelfCap.maxVolume} მ³. მოთხოვნილი მოცულობა: ${totalVolumeAfter.toFixed(3)} მ³.` : `Kapasite Aşımı! Raf Hacim Limiti: ${shelfCap.maxVolume} m³. Yerleştirilmek istenen toplam hacim: ${totalVolumeAfter.toFixed(3)} m³.`);
         return;
       }
 
@@ -1890,14 +2175,14 @@ export default function WarehousesRevampPage() {
       // Create stock movement
       const newMovement: StockMovement = {
         id: `mov-${Date.now()}`,
-        productName: targetProd.name,
+        productName: getLocalizedField(targetProd.name, activeLang),
         productCode: targetProd.sku || targetProd.barcode,
         movementType: "manual_adjustment",
         quantity: qty,
         warehouse: activeWh.name,
         shelf: placeShelf,
-        note: placeNote || "Raf Konum Yerleşimi",
-        createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)",
+        note: placeNote || (activeLang === "en" ? "Shelf Placement" : activeLang === "de" ? "Regalplatzierung" : activeLang === "ru" ? "Размещение на полке" : activeLang === "ka" ? "თაროზე განთავსება" : "Raf Konum Yerleşimi"),
+        createdAt: new Date().toLocaleTimeString(activeLang === "ka" ? "ka-GE" : activeLang === "ru" ? "ru-RU" : activeLang === "de" ? "de-DE" : activeLang === "en" ? "en-US" : "tr-TR", { hour: "2-digit", minute: "2-digit" }) + (activeLang === "en" ? " (Today)" : activeLang === "de" ? " (Heute)" : activeLang === "ru" ? " (Сегодня)" : activeLang === "ka" ? " (დღეს)" : " (Bugün)"),
       };
 
       const updatedMovements = [newMovement, ...movements];
@@ -1906,10 +2191,10 @@ export default function WarehousesRevampPage() {
 
       setPlaceProductId("");
       setPlaceQty(1);
-      setPlaceNote("Raf Konum Yerleşimi");
-      showSuccess(`"${targetProd.name}" başarıyla [${activeWh.name} - ${placeShelf}] konumuna yerleştirildi.`);
+      setPlaceNote(activeLang === "en" ? "Shelf Placement" : activeLang === "de" ? "Regalplatzierung" : activeLang === "ru" ? "Размещение на полке" : activeLang === "ka" ? "თაროზე განთავსება" : "Raf Konum Yerleşimi");
+      showSuccess(activeLang === "en" ? `"${getLocalizedField(targetProd.name, activeLang)}" successfully placed at [${activeWh.name} - ${placeShelf}].` : activeLang === "de" ? `"${getLocalizedField(targetProd.name, activeLang)}" erfolgreich am Standort [${activeWh.name} - ${placeShelf}] platziert.` : activeLang === "ru" ? `"${getLocalizedField(targetProd.name, activeLang)}" успешно размещен по адресу [${activeWh.name} - ${placeShelf}].` : activeLang === "ka" ? `"${getLocalizedField(targetProd.name, activeLang)}" წარმატებით განთავსდა ლოკაციაზე [${activeWh.name} - ${placeShelf}].` : `"${getLocalizedField(targetProd.name, "tr")}" başarıyla [${activeWh.name} - ${placeShelf}] konumuna yerleştirildi.`);
     } catch (e: any) {
-      showError(`Yerleşim sırasında hata: ${e.message || e}`);
+      showError(activeLang === "en" ? `Error during placement: ${e.message || e}` : activeLang === "de" ? `Fehler bei der Regalplatzierung: ${e.message || e}` : activeLang === "ru" ? `Ошибка при размещении: ${e.message || e}` : activeLang === "ka" ? `შეცდომა განთავსებისას: ${e.message || e}` : `Yerleşim sırasında hata: ${e.message || e}`);
     }
   };
 
@@ -2006,8 +2291,8 @@ export default function WarehousesRevampPage() {
       sourceShelf: prod.shelf,
       destShelf: transferDestShelf,
       status: 'in_transit',
-      createdAt: new Date().toLocaleString("tr-TR"),
-      note: transferNote || "Depolar Arası Sevkiyat"
+      createdAt: new Date().toLocaleString(activeLang === "ka" ? "ka-GE" : activeLang === "ru" ? "ru-RU" : activeLang === "de" ? "de-DE" : activeLang === "en" ? "en-US" : "tr-TR"),
+      note: transferNote || wm.autoPlacementNote
     };
 
     // Save
@@ -2020,14 +2305,14 @@ export default function WarehousesRevampPage() {
     // Create stock movement for source deduction
     const deductMovement: StockMovement = {
       id: `mov-${Date.now()}-out`,
-      productName: prod.name,
+      productName: getLocalizedField(prod.name, activeLang),
       productCode: prod.sku || prod.barcode,
       movementType: "stock_out",
       quantity: qty,
       warehouse: prod.warehouse,
       shelf: prod.shelf,
-      note: `Transfer Çıkışı -> ${destWh.name} (${transferDestShelf})`,
-      createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)"
+      note: wm.transferOutNote.replace("{dest}", destWh.name).replace("{shelf}", transferDestShelf),
+      createdAt: new Date().toLocaleTimeString(activeLang === "ka" ? "ka-GE" : activeLang === "ru" ? "ru-RU" : activeLang === "de" ? "de-DE" : activeLang === "en" ? "en-US" : "tr-TR", { hour: "2-digit", minute: "2-digit" }) + (activeLang === "en" ? " (Today)" : activeLang === "de" ? " (Heute)" : activeLang === "ru" ? " (Сегодня)" : activeLang === "ka" ? " (დღეს)" : " (Bugün)")
     };
     const updatedMovements = [deductMovement, ...movements];
     window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(updatedMovements));
@@ -2038,9 +2323,9 @@ export default function WarehousesRevampPage() {
     setTransferDestWhId("");
     setTransferDestShelf("");
     setTransferQty(1);
-    setTransferNote("Depolar Arası Sevkiyat");
+    setTransferNote(wm.autoPlacementNote);
 
-    showSuccess(`Transfer işlemi başlatıldı! Ürünler "${destWh.name}" yolunda.`);
+    showSuccess(activeLang === "en" ? `Transfer initiated! Products on their way to "${destWh.name}".` : activeLang === "de" ? `Transfer gestartet! Produkte auf dem Weg zu "${destWh.name}".` : activeLang === "ru" ? `Перевод инициирован! Товары на пути к "${destWh.name}".` : activeLang === "ka" ? `გადაცემა დაიწყო! პროდუქტები გზაშია "${destWh.name}"-ისკენ.` : `Transfer işlemi başlatıldı! Ürünler "${destWh.name}" yolunda.`);
   };
 
   const handleConfirmTransfer = (transferId: string) => {
@@ -2105,14 +2390,14 @@ export default function WarehousesRevampPage() {
       quantity: trans.quantity,
       warehouse: trans.destWh,
       shelf: trans.destShelf,
-      note: `Transfer Girişi <- ${trans.sourceWh} (${trans.sourceShelf})`,
-      createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)"
+      note: wm.transferInNote.replace("{source}", trans.sourceWh).replace("{shelf}", trans.sourceShelf),
+      createdAt: new Date().toLocaleTimeString(activeLang === "ka" ? "ka-GE" : activeLang === "ru" ? "ru-RU" : activeLang === "de" ? "de-DE" : activeLang === "en" ? "en-US" : "tr-TR", { hour: "2-digit", minute: "2-digit" }) + (activeLang === "en" ? " (Today)" : activeLang === "de" ? " (Heute)" : activeLang === "ru" ? " (Сегодня)" : activeLang === "ka" ? " (დღეს)" : " (Bugün)")
     };
     const updatedMovements = [addMovement, ...movements];
     window.localStorage.setItem("hbs-store-stock-movements", JSON.stringify(updatedMovements));
     setMovements(updatedMovements);
 
-    showSuccess(`Sevkiyat başarıyla teslim alındı ve [${trans.destWh} - ${trans.destShelf}] konumuna eklendi.`);
+    showSuccess(activeLang === "en" ? `Shipment successfully received and added to location [${trans.destWh} - ${trans.destShelf}].` : activeLang === "de" ? `Lieferung erfolgreich empfangen und dem Standort [${trans.destWh} - ${trans.destShelf}] hinzugefügt.` : activeLang === "ru" ? `Посылка успешно получена и добавлена в ячейку [${trans.destWh} - ${trans.destShelf}].` : activeLang === "ka" ? `გზავნილი წარმატებით მიღებულია და დაემატა ლოკაციაზე [${trans.destWh} - ${trans.destShelf}].` : `Sevkiyat başarıyla teslim alındı ve [${trans.destWh} - ${trans.destShelf}] konumuna eklendi.`);
   };
 
   const handleCancelTransfer = (transferId: string) => {
@@ -2227,13 +2512,13 @@ ${sizeStr}
     const logMsg = {
       id: Date.now(),
       shelf: auditCurrentShelf,
-      productName: prod.name,
+      productName: getLocalizedField(prod.name, activeLang),
       sku: prod.sku,
       quantity: qty,
-      time: new Date().toLocaleTimeString("tr-TR")
+      time: new Date().toLocaleTimeString(activeLang === "ka" ? "ka-GE" : activeLang === "ru" ? "ru-RU" : activeLang === "de" ? "de-DE" : activeLang === "en" ? "en-US" : "tr-TR")
     };
     setAuditLogs([logMsg, ...auditLogs]);
-    showSuccess(`[${auditCurrentShelf}] konumunda ${qty} adet "${prod.name}" kaydedildi.`);
+    showSuccess(wm.confirmLockProduct.replace("{shelf}", auditCurrentShelf).replace("{qty}", qty.toString()).replace("{name}", getLocalizedField(prod.name, activeLang)));
   };
 
   const handleApplyAuditAdjustments = () => {
@@ -2267,14 +2552,14 @@ ${sizeStr}
         const movementType = diff > 0 ? "stock_in" : "stock_out";
         const adjMovement: StockMovement = {
           id: `mov-audit-${Date.now()}-${p.id}`,
-          productName: p.name,
+          productName: getLocalizedField(p.name, activeLang),
           productCode: p.sku || p.barcode,
           movementType: movementType,
           quantity: Math.abs(diff),
           warehouse: p.warehouse,
           shelf: p.shelf,
-          note: `Sayım Düzeltmesi (Sistem: ${systemQty} -> Sayılan: ${counted})`,
-          createdAt: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) + " (Bugün)"
+          note: wm.countCorrectionNote.replace("{system}", systemQty.toString()).replace("{counted}", counted.toString()),
+          createdAt: new Date().toLocaleTimeString(activeLang === "ka" ? "ka-GE" : activeLang === "ru" ? "ru-RU" : activeLang === "de" ? "de-DE" : activeLang === "en" ? "en-US" : "tr-TR", { hour: "2-digit", minute: "2-digit" }) + (activeLang === "en" ? " (Today)" : activeLang === "de" ? " (Heute)" : activeLang === "ru" ? " (Сегодня)" : activeLang === "ka" ? " (დღეს)" : " (Bugün)")
         };
         newMovements.push(adjMovement);
       }
@@ -2288,13 +2573,13 @@ ${sizeStr}
     setIsAuditActive(false);
     setAuditCounts({});
     setAuditLogs([]);
-    showSuccess(`Sayım oturumu onaylandı. Toplam ${correctionsCount} adet üründe stok seviyesi düzeltildi.`);
+    showSuccess(activeLang === "en" ? `Count session approved. Stock levels adjusted for a total of ${correctionsCount} products.` : activeLang === "de" ? `Zählsitzung genehmigt. Lagerbestände für insgesamt ${correctionsCount} Produkte angepasst.` : activeLang === "ru" ? `Сессия подсчета подтверждена. Корректировка запасов выполнена для ${correctionsCount} товаров.` : activeLang === "ka" ? `ინვენტარიზაციის სესია დადასტურდა. სულ ${correctionsCount} პროდუქტზე გასწორდა მარაგი.` : `Sayım oturumu onaylandı. Toplam ${correctionsCount} adet üründe stok seviyesi düzeltildi.`);
   };
 
   // Picking (Sipariş Toplama) Handlers
   const handleGeneratePickingRoute = () => {
     if (pickingItems.length === 0) {
-      showError("Lütfen toplanacak en az bir ürün ekleyin.");
+      showError(activeLang === "en" ? "Please add at least one product to collect." : activeLang === "de" ? "Bitte fügen Sie mindestens ein Produkt zum Sammeln hinzu." : activeLang === "ru" ? "Пожалуйста, добавьте хотя бы один товар для сбора." : activeLang === "ka" ? "გთხოვთ დაამატოთ მინიმუმ ერთი პროდუქტი ასაკრეფად." : "Lütfen toplanacak en az bir ürün ekleyin.");
       return;
     }
     if (!activeWh) return;
@@ -3294,7 +3579,7 @@ ${sizeStr}
 
                 <button
                   type="button"
-                  onClick={handleSaveLayout}
+                  onClick={() => handleSaveLayout()}
                   className="w-full rounded-xl bg-slate-900 py-3 text-xs font-black text-white hover:bg-slate-800 transition active:scale-98 shadow-sm flex items-center justify-center gap-1.5"
                 >
                   <span>⚡</span> {t.generateLayoutBtn}
@@ -3343,7 +3628,7 @@ ${sizeStr}
                         })
                         .map((p) => (
                           <option key={p.id} value={p.id}>
-                            {p.name} ({p.sku || p.barcode || "Kodu Yok"}) - Stok: {p.quantity || "0"} adet
+                            {getLocalizedField(p.name, activeLang)} ({p.sku || p.barcode || (activeLang === "en" ? "No Code" : activeLang === "de" ? "Kein Code" : activeLang === "ru" ? "Нет кода" : activeLang === "ka" ? "კოდის გარეშე" : "Kodu Yok")}) - {activeLang === "en" ? "Stock" : activeLang === "de" ? "Bestand" : activeLang === "ru" ? "Запас" : activeLang === "ka" ? "მარაგი" : "Stok"}: {p.quantity || "0"} {activeLang === "en" ? "pcs" : activeLang === "de" ? "Stk" : activeLang === "ru" ? "шт" : activeLang === "ka" ? "ცალი" : "adet"}
                           </option>
                         ))}
                     </select>
@@ -3579,19 +3864,19 @@ ${sizeStr}
                           <div key={p.id} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm space-y-2">
                             <div className="flex justify-between items-start">
                               <div>
-                                <h5 className="font-bold text-slate-850 text-xs">{p.name}</h5>
+                                <h5 className="font-bold text-slate-850 text-xs">{getLocalizedField(p.name, activeLang)}</h5>
                                 <p className="text-[9px] text-slate-550 font-mono mt-0.5">SKU: {p.sku || "—"} | OEM: {p.oemCode || "—"}</p>
                               </div>
                               <span className="text-xs font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
-                                {p.quantity} Adet
+                                {p.quantity} {activeLang === "en" ? "pcs" : activeLang === "de" ? "Stk" : activeLang === "ru" ? "шт" : activeLang === "ka" ? "ცალი" : "Adet"}
                               </span>
                             </div>
 
                             <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold text-slate-650 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                              <div>💰 {language === "en" ? "Purchase" : "Alış"}: <strong className="text-rose-700 font-mono">{p.purchasePrice || "0"} EUR</strong></div>
-                              <div>💵 {language === "en" ? "Sale" : "Satış"}: <strong className="text-emerald-700 font-mono">{p.salePrice || "0"} EUR</strong></div>
-                              <div className="col-span-2">🏷️ {language === "en" ? "Category/Brand" : "Kategori/Marka"}: <span className="text-slate-900 font-bold">{p.category} · {p.brand} ({p.model})</span></div>
-                              <div className="col-span-2 text-slate-600 leading-normal italic">{language === "en" ? "Description" : "Açıklama"}: {p.description || "—"}</div>
+                              <div>💰 {activeLang === "en" ? "Purchase" : activeLang === "de" ? "Einkauf" : activeLang === "ru" ? "Закупка" : activeLang === "ka" ? "შესყიდვა" : "Alış"}: <strong className="text-rose-700 font-mono">{p.purchasePrice || "0"} EUR</strong></div>
+                              <div>💵 {activeLang === "en" ? "Sale" : activeLang === "de" ? "Verkauf" : activeLang === "ru" ? "Продажа" : activeLang === "ka" ? "გაყიდვა" : "Satış"}: <strong className="text-emerald-700 font-mono">{p.salePrice || "0"} EUR</strong></div>
+                              <div className="col-span-2">🏷️ {activeLang === "en" ? "Category/Brand" : activeLang === "de" ? "Kategorie/Marke" : activeLang === "ru" ? "Категория/Бренд" : activeLang === "ka" ? "კატეგორია/ბრენდი" : "Kategori/Marka"}: <span className="text-slate-900 font-bold">{getLocalizedField(p.category, activeLang)} · {p.brand} ({p.model})</span></div>
+                              <div className="col-span-2 text-slate-600 leading-normal italic">{activeLang === "en" ? "Description" : activeLang === "de" ? "Beschreibung" : activeLang === "ru" ? "Описание" : activeLang === "ka" ? "აღწერა" : "Açıklama"}: {getLocalizedField(p.description || "", activeLang) || "—"}</div>
                             </div>
 
                             <div className="flex justify-end gap-2 pt-1">
@@ -3956,7 +4241,7 @@ ${sizeStr}
                           {filteredInventory.map((p) => (
                             <tr key={p.id} className="hover:bg-slate-50/50">
                               <td className="p-2">
-                                <span className="font-bold text-slate-900 truncate block max-w-xs">{p.name}</span>
+                                <span className="font-bold text-slate-900 truncate block max-w-xs">{getLocalizedField(p.name, activeLang)}</span>
                                 <span className="text-[9px] text-slate-550 font-mono">{p.sku}</span>
                               </td>
                               <td className="p-2 text-center font-mono font-bold text-blue-600">{p.shelf}</td>
@@ -3965,7 +4250,7 @@ ${sizeStr}
                               <td className="p-2 text-right">
                                 <button
                                   type="button"
-                                  onClick={() => triggerPrintLabel("product", p.sku || p.barcode, p.name, `Alış: ${p.purchasePrice} EUR | Satış: ${p.salePrice} EUR`, `RAF: ${p.shelf}`)}
+                                  onClick={() => triggerPrintLabel("product", p.sku || p.barcode, getLocalizedField(p.name, activeLang), `${activeLang === "en" ? "Purchase" : activeLang === "de" ? "Einkauf" : activeLang === "ru" ? "Закупка" : activeLang === "ka" ? "შესყიდვა" : "Alış"}: ${p.purchasePrice} EUR | ${activeLang === "en" ? "Sale" : activeLang === "de" ? "Verkauf" : activeLang === "ru" ? "Продажа" : activeLang === "ka" ? "გაყიდვა" : "Satış"}: ${p.salePrice} EUR`, `${activeLang === "en" ? "SHELF" : activeLang === "de" ? "REGAL" : activeLang === "ru" ? "ПОЛКА" : activeLang === "ka" ? "თარო" : "RAF"}: ${p.shelf}`)}
                                   className="rounded bg-blue-50 border border-blue-200 px-2 py-0.5 text-[8px] font-black text-blue-700 hover:bg-blue-100"
                                 >
                                   {t.printBtn}
@@ -4094,6 +4379,14 @@ ${sizeStr}
                 .map((c, corrIdx) => (
                   <div
                     key={c.zone}
+                    draggable={isAuthorized}
+                    onDragStart={(e) => handleCorridorDragStart(e, c.zone)}
+                    onDragOver={handleCorridorDragOver}
+                    onDrop={(e) => handleCorridorDrop(e, c.zone)}
+                    style={{
+                      opacity: draggedZone === c.zone ? 0.4 : 1,
+                      cursor: isAuthorized ? 'grab' : 'default'
+                    }}
                     className="w-full max-w-lg bg-white border border-slate-200 rounded-3xl shadow-sm p-4 space-y-4 shrink-0 transition hover:shadow-md"
                   >
                     {/* Corridor Title / Header Panel */}
@@ -4229,18 +4522,18 @@ ${sizeStr}
                     {/* Interactive Grid representing shelves layout */}
                     <div className="space-y-1 pt-1">
                       <span className="text-[9px] font-black text-slate-550 uppercase tracking-wider block">🏢 Reyon Şematik Görünümü</span>
-                      <div className="rounded-2xl border border-slate-150 p-2.5 overflow-x-auto bg-slate-50/50">
-                        <div className="flex flex-col gap-2 min-w-[280px]">
+                      <div className="rounded-2xl border border-slate-150 p-1.5 pb-4 pr-4 overflow-x-auto bg-slate-50/50 relative select-none">
+                        <div className="flex flex-col gap-1 min-w-[280px]">
                           {/* Column Headers (Slot 1, Slot 2, ...) */}
-                          <div className="flex items-center gap-2 border-b border-slate-100 pb-1.5 mb-1">
+                          <div className="flex items-center gap-1 border-b border-slate-100 pb-1 mb-1">
                             <span className="w-8 text-[9px] font-black text-slate-700 text-right shrink-0">Konum</span>
-                            <div className="flex gap-2.5">
+                            <div className="flex gap-1">
                               {Array.from({ length: c.depth }, (_, dIdx) => {
                                 const slot = dIdx + 1;
-                                const sideWidthClass = c.isDoubleRow ? "w-[130px]" : "w-[94px]";
+                                const sideWidthClass = c.isDoubleRow ? "w-[88px]" : "w-[60px]";
                                 return (
-                                  <div key={slot} className={`${sideWidthClass} shrink-0 text-center text-[10px] font-black text-slate-800`}>
-                                    SLOT {slot}
+                                  <div key={slot} className={`${sideWidthClass} shrink-0 text-center text-[9px] font-black text-slate-800`}>
+                                    S{slot}
                                   </div>
                                 );
                               })}
@@ -4250,17 +4543,17 @@ ${sizeStr}
                           {Array.from({ length: c.tiers }, (_, tIdx) => {
                             const level = c.tiers - tIdx; // Top levels first
                             return (
-                              <div key={level} className="flex items-center gap-2">
-                                <span className="w-8 text-[9px] font-black text-slate-700 text-right shrink-0">Kat {level}</span>
-                                <div className="flex gap-2.5">
+                              <div key={level} className="flex items-center gap-1">
+                                <span className="w-8 text-[9px] font-black text-slate-700 text-right shrink-0">K{level}</span>
+                                <div className="flex gap-1">
                                   {Array.from({ length: c.depth }, (_, dIdx) => {
                                     const slot = dIdx + 1;
                                     const baseCode = `${c.zone}-${slot < 10 ? `0${slot}` : `${slot}`}-${level < 10 ? `0${level}` : `${level}`}`;
 
                                     const sides = c.isDoubleRow ? ["S1", "S2"] : [""];
-                                    const sideWidthClass = c.isDoubleRow ? "w-14" : "w-20";
+                                    const sideWidthClass = c.isDoubleRow ? "w-10" : "w-14";
                                     return (
-                                      <div key={baseCode} className="shrink-0 flex gap-1.5 bg-white border border-slate-200 p-1.5 rounded-2xl shadow-inner">
+                                      <div key={baseCode} className="shrink-0 flex gap-1 bg-white border border-slate-200 p-1 rounded-xl shadow-inner">
                                         {sides.map((side) => {
                                           const sideSuffix = side ? `-${side}` : "";
                                           const sideCode = `${baseCode}${sideSuffix}`;
@@ -4268,14 +4561,14 @@ ${sizeStr}
                                           // Sub-bins divisions count
                                           const binsCount = c.binsConfig?.[sideCode] || 1;
                                           return (
-                                            <div key={sideCode} className={`${sideWidthClass} flex flex-col gap-1 shrink-0`}>
+                                            <div key={sideCode} className={`${sideWidthClass} flex flex-col gap-0.5 shrink-0`}>
                                               {/* Row label if double row */}
                                               {c.isDoubleRow && (
-                                                <span className="text-[8px] text-slate-700 font-extrabold text-center block leading-none mb-0.5">{side}</span>
+                                                <span className="text-[7px] text-slate-700 font-extrabold text-center block leading-none mb-0.5">{side}</span>
                                               )}
 
                                               {/* Bins render */}
-                                              <div className="flex gap-1 h-12">
+                                              <div className="flex gap-0.5 h-9">
                                                 {Array.from({ length: binsCount }).map((_, bIdx) => {
                                                   const binCode = binsCount > 1 ? `${sideCode}-B${bIdx + 1}` : sideCode;
                                                   const hasProduct = products.some(
@@ -4289,16 +4582,16 @@ ${sizeStr}
                                                       key={binCode}
                                                       onClick={() => setSelectedWhiteboardShelfCode(binCode)}
                                                       title={`${binCode} (${hasProduct ? "Dolu" : "Boş"}) - Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın`}
-                                                      className={`flex-1 h-12 rounded-xl border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
+                                                      className={`flex-1 h-9 rounded-lg border text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
                                                         hasProduct
-                                                          ? "bg-indigo-50 border-indigo-300 text-indigo-700 hover:bg-indigo-100"
+                                                          ? "bg-indigo-50 border-indigo-300 text-indigo-750 hover:bg-indigo-100"
                                                           : "bg-emerald-50 border-emerald-300 border-dashed text-emerald-700 hover:bg-emerald-100/50"
                                                       }`}
                                                     >
-                                                      <span className="text-[10px] font-mono font-bold leading-none">
+                                                      <span className="text-[9px] font-mono font-bold leading-none">
                                                         {binsCount > 1 ? `B${bIdx + 1}` : `${slot}-${level}`}
                                                       </span>
-                                                      {hasProduct && <span className="text-[8px] font-black leading-none block mt-0.5">📦</span>}
+                                                      {hasProduct && <span className="text-[7px] font-black leading-none block mt-0.5">📦</span>}
                                                     </div>
                                                   );
                                                 })}
@@ -4314,11 +4607,114 @@ ${sizeStr}
                             );
                           })}
                         </div>
+
+                        {isAuthorized && (
+                          <>
+                            {/* Right resize handle for Depth (Slots/Genişlik) */}
+                            <div
+                              onPointerDown={(e) => handleResizeStart(e, c.zone, "depth", c.depth)}
+                              onPointerMove={(e) => handleResizeMove(e, c.zone)}
+                              onPointerUp={(e) => handleResizeEnd(e, c.zone)}
+                              className="absolute right-0 top-0 bottom-0 w-4 hover:bg-indigo-500/10 active:bg-indigo-600/25 cursor-col-resize flex flex-col justify-center items-center select-none"
+                              title="Sürükleyerek Genişliği (Slot Sayısı) Ayarlayın"
+                            >
+                              <div className="w-1.5 h-10 bg-slate-350 rounded-full hover:bg-indigo-600 transition"></div>
+                            </div>
+
+                            {/* Bottom resize handle for Tiers (Kat/Yükseklik) */}
+                            <div
+                              onPointerDown={(e) => handleResizeStart(e, c.zone, "tiers", c.tiers)}
+                              onPointerMove={(e) => handleResizeMove(e, c.zone)}
+                              onPointerUp={(e) => handleResizeEnd(e, c.zone)}
+                              className="absolute bottom-0 left-0 right-0 h-4 hover:bg-indigo-500/10 active:bg-indigo-600/25 cursor-row-resize flex justify-center items-center select-none"
+                              title="Sürükleyerek Yüksekliği (Kat Sayısı) Ayarlayın"
+                            >
+                              <div className="h-1.5 w-10 bg-slate-350 rounded-full hover:bg-indigo-600 transition"></div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
                 ))}
             </div>
+
+            {/* Out-of-layout or Unassigned Products Section */}
+            {activeWh && (
+              (() => {
+                const isShelfCodeValidInLayout = (shelfCode: string) => {
+                  if (!shelfCode) return false;
+                  const parts = shelfCode.split("-");
+                  if (parts.length < 3) return false;
+                  const zone = parts[0];
+                  const slot = parseInt(parts[1], 10);
+                  const level = parseInt(parts[2], 10);
+                  
+                  const corr = corridors.find(c => c.zone === zone);
+                  if (!corr) return false;
+                  if (isNaN(slot) || slot < 1 || slot > corr.depth) return false;
+                  if (isNaN(level) || level < 1 || level > corr.tiers) return false;
+                  
+                  const sideSuffix = parts[3] ? parts[3].split("-")[0] : "";
+                  if (sideSuffix && !corr.isDoubleRow) return false;
+                  
+                  return true;
+                };
+
+                const unassignedProducts = products.filter(
+                  (p) => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && 
+                         (!p.shelf || !isShelfCodeValidInLayout(p.shelf))
+                );
+
+                if (unassignedProducts.length === 0) return null;
+
+                return (
+                  <div className="rounded-3xl border border-rose-150 bg-rose-50/30 p-5 space-y-3 shadow-inner select-none">
+                    <div className="flex items-center gap-2 text-rose-800">
+                      <span className="text-base">⚠️</span>
+                      <h4 className="text-xs font-black uppercase tracking-wider">
+                        {activeLang === "en" ? "Unassigned or Out-of-Layout Products" : activeLang === "de" ? "Nicht zugeordnete oder Layout-fremde Produkte" : activeLang === "ru" ? "Товары вне планировки или без ячейки" : activeLang === "ka" ? "მიუწერილი ან განლაგების გარეთ მყოფი პროდუქტები" : "Raf Atanmamış veya Düzen Dışı Ürünler"} ({unassignedProducts.length})
+                      </h4>
+                    </div>
+                    <p className="text-[11px] text-slate-600">
+                      {activeLang === "en" ? "These products are physically in the warehouse but their shelf codes do not correspond to any valid slot/tier in the current visual layout config. They are hidden from the grid view above." : activeLang === "de" ? "Diese Produkte befinden sich im Lager, aber ihre Regal-Codes entsprechen keinem gültigen Fach im Layout. Sie sind oben im Raster nicht sichtbar." : activeLang === "ru" ? "Эти товары физически находятся на складе, но коды их ячеек не соответствуют ни одному слоту в текущей планировке. Они скрыты с сетки выше." : activeLang === "ka" ? "ეს პროდუქტები ფიზიკურად საწყობშია, მაგრამ მათი თაროს კოდები არ შეესაბამება არცერთ აქტიურ სლოტს. ისინი ზედა ბადეზე არ ჩანან." : "Bu ürünler fiziki olarak depoda bulunuyor ancak raf kodları mevcut görsel yerleşim planında (reyon/slot/kat) tanımlı bir hücreye uymuyor. Yukarıdaki şematik görünümde listelenmezler."}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2.5 max-h-48 overflow-y-auto pr-1">
+                      {unassignedProducts.map((p) => (
+                        <div key={p.id} className="bg-white border border-rose-100 rounded-2xl p-2.5 flex items-center justify-between gap-3 text-xs shrink-0 w-72 shadow-sm">
+                          <div className="flex items-center gap-2 min-w-0">
+                            {p.imageUrl && (
+                              <img src={p.imageUrl} alt={getLocalizedField(p.name, activeLang)} className="h-7 w-7 rounded-lg object-cover border border-slate-200 shrink-0" />
+                            )}
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-bold text-slate-900 truncate block">{getLocalizedField(p.name, activeLang)}</span>
+                              <span className="text-[9px] text-slate-550 font-mono">SKU: {p.sku}</span>
+                              <span className="text-[9px] font-extrabold text-rose-600 font-mono mt-0.5">
+                                {activeLang === "en" ? "Current Shelf:" : activeLang === "de" ? "Aktuelles Regal:" : activeLang === "ru" ? "Текущая полка:" : activeLang === "ka" ? "არსებული თარო:" : "Mevcut Konum:"} {p.shelf || (activeLang === "en" ? "None" : "Yok")}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <span className="font-black text-slate-900 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded text-[10px]">
+                              {p.quantity} {activeLang === "en" ? "pcs" : "Adet"}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedWhiteboardShelfCode(p.shelf || "A-01-01")}
+                              className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold text-[10px] px-2 py-1 rounded-xl transition cursor-pointer"
+                              title={activeLang === "en" ? "Assign to a shelf location" : "Yeni raf konumu atamak için tıklayın"}
+                            >
+                              {activeLang === "en" ? "Assign" : "Konumlandır"}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()
+            )}
 
             {/* Bottom Controls */}
             <div className="flex justify-end gap-3 bg-white p-4 rounded-3xl border border-slate-200 shadow-sm">
@@ -4342,14 +4738,14 @@ ${sizeStr}
                 disabled={!isAuthorized}
                 onClick={() => {
                   if (!isAuthorized) {
-                    showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf yerleşimlerini değiştirebilir.");
+                    showError(activeLang === "en" ? "Insufficient Permissions! Only Store Owner and Managers can change warehouse layouts." : activeLang === "de" ? "Unzureichende Berechtigungen! Nur der Ladenbesitzer und Manager können das Lager-Layout ändern." : activeLang === "ru" ? "Недостаточно прав! Только владелец магазина и управляющие могут изменять планировку." : activeLang === "ka" ? "არასაკმარისი უფლებები! განლაგების შეცვლა შეუძლიათ მხოლოდ მაღაზიის მფლობელს და მენეჯერებს." : "Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf yerleşimlerini değiştirebilir.");
                     return;
                   }
                   handleSaveLayout();
                 }}
                 className="rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-6 py-3 transition shadow-sm active:scale-95 disabled:opacity-50"
               >
-                ⚡ Depo Şablonunu Kaydet ve Uygula
+                {activeLang === "en" ? "⚡ Save & Apply Warehouse Template" : activeLang === "de" ? "⚡ Lagervorlage speichern & anwenden" : activeLang === "ru" ? "⚡ Сохранить и применить шаблон склада" : activeLang === "ka" ? "⚡ საწყობის შაბლონის შენახვა და გამოყენება" : "⚡ Depo Şablonunu Kaydet ve Uygula"}
               </button>
             </div>
           </section>
@@ -4364,21 +4760,29 @@ ${sizeStr}
                 onClick={() => setSelectedWhiteboardShelfCode(null)}
                 className="absolute top-4 right-4 text-slate-550 hover:text-slate-600 font-bold text-sm"
               >
-                ✕ Kapat
+                {activeLang === "en" ? "✕ Close" : activeLang === "de" ? "✕ Schließen" : activeLang === "ru" ? "✕ Закрыть" : activeLang === "ka" ? "✕ დახურვა" : "✕ Kapat"}
               </button>
 
               <div>
-                <span className="text-[9px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">RAF AYARLARI</span>
-                <h3 className="text-base font-black text-slate-900 mt-1">Konum: {selectedWhiteboardShelfCode}</h3>
-                <p className="text-xs text-slate-600">Hücrenin taşıma limitlerini ve alt bölme/bölüm (bin) durumunu ayarlayın.</p>
+                <span className="text-[9px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">
+                  {activeLang === "en" ? "SHELF SETTINGS" : activeLang === "de" ? "REGALEINSTELLUNGEN" : activeLang === "ru" ? "НАСТРОЙКИ ПОЛКИ" : activeLang === "ka" ? "თაროს პარამეტრები" : "RAF AYARLARI"}
+                </span>
+                <h3 className="text-base font-black text-slate-900 mt-1">
+                  {activeLang === "en" ? "Location" : activeLang === "de" ? "Standort" : activeLang === "ru" ? "Расположение" : activeLang === "ka" ? "მდებარეობა" : "Konum"}: {selectedWhiteboardShelfCode}
+                </h3>
+                <p className="text-xs text-slate-600">
+                  {activeLang === "en" ? "Configure the weight limits and subdivide this shelf cell." : activeLang === "de" ? "Tragfähigkeit konfigurieren und das Regal unterteilen." : activeLang === "ru" ? "Настройте лимиты веса и разделите ячейку полки." : activeLang === "ka" ? "თაროს წონის ლიმიტების კონფიგურაცია და დაყოფა." : "Hücrenin taşıma limitlerini ve alt bölme/bölüm (bin) durumunu ayarlayın."}
+                </p>
               </div>
 
               {/* Shelf Nickname / Alias */}
               <label className="grid gap-1">
-                <span className="text-xs font-extrabold text-slate-900">Raf İsim / Lakap (Örn: Ağır Parçalar)</span>
+                <span className="text-xs font-extrabold text-slate-900">
+                  {activeLang === "en" ? "Shelf Name / Alias (e.g., Heavy Parts)" : activeLang === "de" ? "Regalname / Alias (z. B. Schwere Teile)" : activeLang === "ru" ? "Название / псевдоним полки (напр., Тяжелые детали)" : activeLang === "ka" ? "თაროს სახელი / მეტსახელი (მაგ., მძიმე ნაწილები)" : "Raf İsim / Lakap (Örn: Ağır Parçalar)"}
+                </span>
                 <input
                   type="text"
-                  placeholder="Bu rafa özel bir isim verin..."
+                  placeholder={activeLang === "en" ? "Give this shelf a custom name..." : activeLang === "de" ? "Geben Sie diesem Regal einen benutzerdefinierten Namen..." : activeLang === "ru" ? "Дайте этой полке особое название..." : activeLang === "ka" ? "მიეცით ამ თაროს სახელი..." : "Bu rafa özel bir isim verin..."}
                   value={shelfAliases[`${activeWh.id}::${selectedWhiteboardShelfCode}`] || ""}
                   onChange={(e) => {
                     const updated = {
@@ -4394,14 +4798,16 @@ ${sizeStr}
               {/* Capacity settings */}
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Maks Ağırlık Limiti (kg)</span>
+                  <span className="text-xs font-bold text-slate-700">
+                    {activeLang === "en" ? "Max Weight Limit (kg)" : activeLang === "de" ? "Max. Gewichtslimit (kg)" : activeLang === "ru" ? "Макс. лимит веса (кг)" : activeLang === "ka" ? "მაქს. წონის ლიმიტი (კგ)" : "Maks Ağırlık Limiti (kg)"}
+                  </span>
                   <input
                     type="number"
                     value={shelfCapacities[selectedWhiteboardShelfCode]?.maxWeight ?? 100}
                     disabled={!isAuthorized}
                     onChange={(e) => {
                       if (!isAuthorized) {
-                        showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf limitlerini değiştirebilir.");
+                        showError(activeLang === "en" ? "Insufficient Permissions! Only Store Owner and Managers can change shelf limits." : activeLang === "de" ? "Unzureichende Berechtigungen! Nur der Ladenbesitzer und Manager können die Regallimits ändern." : activeLang === "ru" ? "Недостаточно прав! Только владелец магазина и управляющие могут изменять лимиты." : activeLang === "ka" ? "არასაკმარისი უფლებები! თაროს ლიმიტების შეცვლა შეუძლიათ მხოლოდ მფლობელს და მენეჯერებს." : "Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf limitlerini değiştirebilir.");
                         return;
                       }
                       setShelfCapacities({
@@ -4416,7 +4822,9 @@ ${sizeStr}
                 </label>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Maks Hacim Limiti ($m^3$)</span>
+                  <span className="text-xs font-bold text-slate-700">
+                    {activeLang === "en" ? "Max Volume Limit (m³)" : activeLang === "de" ? "Max. Volumenlimit (m³)" : activeLang === "ru" ? "Макс. лимит объема (м³)" : activeLang === "ka" ? "მაქს. მოცულობის ლიმიტი (მ³)" : "Maks Hacim Limiti (m³)"}
+                  </span>
                   <input
                     type="number"
                     step="0.01"
@@ -4424,7 +4832,7 @@ ${sizeStr}
                     disabled={!isAuthorized}
                     onChange={(e) => {
                       if (!isAuthorized) {
-                        showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf limitlerini değiştirebilir.");
+                        showError(activeLang === "en" ? "Insufficient Permissions! Only Store Owner and Managers can change shelf limits." : activeLang === "de" ? "Unzureichende Berechtigungen! Nur der Ladenbesitzer und Manager können die Regallimits ändern." : activeLang === "ru" ? "Недостаточно прав! Только владелец магазина и управляющие могут изменять лимиты." : activeLang === "ka" ? "არასაკმარისი უფლებები! თაროს ლიმიტების შეცვლა შეუძლიათ მხოლოდ მფლობელს და მენეჯერებს." : "Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf limitlerini değiştirebilir.");
                         return;
                       }
                       setShelfCapacities({
@@ -4441,7 +4849,9 @@ ${sizeStr}
 
               {/* Compartments subdivisions count */}
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-slate-700 block">Rafı Hücrelere Böl (Subdivisions)</span>
+                <span className="text-xs font-bold text-slate-700 block">
+                  {activeLang === "en" ? "Subdivide Shelf (Bins)" : activeLang === "de" ? "Regal unterteilen (Fächer)" : activeLang === "ru" ? "Разделить полку (ячейки)" : activeLang === "ka" ? "თაროს დაყოფა (უჯრები)" : "Rafı Hücrelere Böl (Subdivisions)"}
+                </span>
                 <div className="grid grid-cols-4 gap-2">
                   {[1, 2, 3, 4].map((count) => {
                     // Extract zone prefix and code to find corridor config
@@ -4462,14 +4872,16 @@ ${sizeStr}
                         disabled={!isAuthorized}
                         onClick={() => {
                           if (!isAuthorized) {
-                            showError("Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf bölmelerini değiştirebilir.");
+                            showError(activeLang === "en" ? "Insufficient Permissions! Only Store Owner and Managers can change shelf subdivisions." : activeLang === "de" ? "Unzureichende Berechtigungen! Nur der Ladenbesitzer und Manager können die Regalunterteilung ändern." : activeLang === "ru" ? "Недостаточно прав! Только владелец магазина и управляющие могут изменять ячейки." : activeLang === "ka" ? "არასაკმარისი უფლებები! თაროს დაყოფის შეცვლა შეუძლიათ მხოლოდ მფლობელს და მენეჯერებს." : "Yetersiz Yetki! Sadece Mağaza Sahibi veya Yöneticiler depo raf bölmelerini değiştirebilir.");
                             return;
                           }
                           if (corr) {
                             const updatedBinsConfig = { ...(corr.binsConfig || {}) };
                             updatedBinsConfig[baseSideCode] = count;
                             setCorridors(corridors.map(item => item.zone === zone ? { ...item, binsConfig: updatedBinsConfig } : item));
-                            showSuccess(`${baseSideCode} hücresi ${count} bölmeli olarak ayarlandı.`);
+                            
+                            const successAlert = activeLang === "en" ? `Shelf ${baseSideCode} configured with ${count} compartments.` : activeLang === "de" ? `Fach ${baseSideCode} mit ${count} Unterteilungen konfiguriert.` : activeLang === "ru" ? `Ячейка ${baseSideCode} настроена с ${count} отделениями.` : activeLang === "ka" ? `თარო ${baseSideCode} კონფიგურირებულია ${count} განყოფილებით.` : `${baseSideCode} hücresi ${count} bölmeli olarak ayarlandı.`;
+                            showSuccess(successAlert);
                           }
                         }}
                         className={`rounded-xl py-2 px-1 text-xs font-black border transition disabled:opacity-50 ${
@@ -4478,7 +4890,7 @@ ${sizeStr}
                             : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                         }`}
                       >
-                        {count} Bölme
+                        {count} {activeLang === "en" ? "Bins" : activeLang === "de" ? "Fächer" : activeLang === "ru" ? "Ячеек" : activeLang === "ka" ? "უჯრა" : "Bölme"}
                       </button>
                     );
                   })}
@@ -4487,29 +4899,31 @@ ${sizeStr}
 
               {/* Products in this shelf */}
               <div className="border-t border-slate-100 pt-3 space-y-1.5">
-                <span className="text-xs font-bold text-slate-700 block">Hücredeki Mevcut Ürünler</span>
+                <span className="text-xs font-bold text-slate-700 block">
+                  {activeLang === "en" ? "Current Products in Slot" : activeLang === "de" ? "Aktuelle Produkte im Fach" : activeLang === "ru" ? "Товары в ячейке" : activeLang === "ka" ? "პროდუქტები სლოტში" : "Hücredeki Mevcut Ürünler"}
+                </span>
                 <div className="max-h-36 overflow-y-auto space-y-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200 pr-1">
                   {products.filter(p => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && p.shelf.toLowerCase() === selectedWhiteboardShelfCode.toLowerCase()).length > 0 ? (
                     products
                       .filter(p => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && p.shelf.toLowerCase() === selectedWhiteboardShelfCode.toLowerCase())
                       .map(p => (
                         <div key={p.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1.5 flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
+                           <div className="flex items-center gap-2 min-w-0">
                             {p.imageUrl && (
-                              <img src={p.imageUrl} alt={p.name} className="h-7 w-7 rounded-lg object-cover border border-slate-200 shrink-0" />
+                              <img src={p.imageUrl} alt={getLocalizedField(p.name, activeLang)} className="h-7 w-7 rounded-lg object-cover border border-slate-200 shrink-0" />
                             )}
                             <div className="flex flex-col min-w-0">
-                              <strong className="text-slate-900 font-bold truncate">{p.name}</strong>
-                              <span className="text-[9px] text-slate-500 font-mono">{p.sku}</span>
+                              <strong className="text-slate-900 font-bold truncate">{getLocalizedField(p.name, activeLang)}</strong>
+                              <span className="text-[9px] text-slate-550 font-mono">{p.sku}</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="font-mono font-black text-blue-650 bg-blue-50 px-2 py-0.5 rounded text-[9px]">{p.quantity} Adet</span>
+                            <span className="font-mono font-black text-blue-650 bg-blue-50 px-2 py-0.5 rounded text-[9px]">{p.quantity} {activeLang === "en" ? "pcs" : activeLang === "de" ? "Stk" : activeLang === "ru" ? "шт" : activeLang === "ka" ? "ცალი" : "Adet"}</span>
                             <button
                               type="button"
-                              onClick={() => handleDeleteProductFromShelf(p.id, p.name)}
+                              onClick={() => handleDeleteProductFromShelf(p.id, getLocalizedField(p.name, activeLang))}
                               className="text-[10px] font-black text-rose-600 hover:text-rose-700 transition cursor-pointer p-1"
-                              title="Ürünü Yönet / Sil"
+                              title={activeLang === "en" ? "Manage / Delete Product" : activeLang === "de" ? "Produkt verwalten / löschen" : activeLang === "ru" ? "Управление / Удаление товара" : activeLang === "ka" ? "პროდუქტის მართვა / წაშლა" : "Ürünü Yönet / Sil"}
                             >
                               🗑️
                             </button>
@@ -4517,7 +4931,9 @@ ${sizeStr}
                         </div>
                       ))
                   ) : (
-                    <p className="text-[10px] text-slate-550 italic text-center py-4">Bu hücre şu an boş.</p>
+                    <p className="text-[10px] text-slate-550 italic text-center py-4">
+                      {activeLang === "en" ? "This slot is currently empty." : activeLang === "de" ? "Dieses Fach ist derzeit leer." : activeLang === "ru" ? "Эта ячейка пуста." : activeLang === "ka" ? "ეს სლოტი ამჟამად ცარიელია." : "Bu hücre şu an boş."}
+                    </p>
                   )}
                 </div>
               </div>
@@ -4527,7 +4943,7 @@ ${sizeStr}
                 onClick={() => setSelectedWhiteboardShelfCode(null)}
                 className="w-full rounded-xl bg-blue-600 py-2.5 text-xs font-black text-white hover:bg-blue-500 transition active:scale-95 shadow-sm"
               >
-                Uygula ve Kapat
+                {activeLang === "en" ? "Apply & Close" : activeLang === "de" ? "Anwenden & Schließen" : activeLang === "ru" ? "Применить и закрыть" : activeLang === "ka" ? "გამოყენება და დახურვა" : "Uygula ve Kapat"}
               </button>
             </div>
           </div>
@@ -4539,14 +4955,22 @@ ${sizeStr}
             {/* Left: Transfer Form */}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
               <div>
-                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">TRANSFER İSTASYONU</span>
-                <h2 className="text-base font-black text-slate-900 mt-1">Depolar Arası Stok Sevk Et</h2>
-                <p className="text-xs text-slate-600">Stokları başka depolara ve raflara güvenli bir şekilde aktarın.</p>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">
+                  {activeLang === "en" ? "TRANSFER STATION" : activeLang === "de" ? "TRANSFERSTATION" : activeLang === "ru" ? "СТАНЦИЯ ПЕРЕВОДА" : activeLang === "ka" ? "გადაცემის სადგური" : "TRANSFER İSTASYONU"}
+                </span>
+                <h2 className="text-base font-black text-slate-900 mt-1">
+                  {activeLang === "en" ? "Dispatch Stock Inter-Warehouse" : activeLang === "de" ? "Lagerübergreifender Bestandsversand" : activeLang === "ru" ? "Перевести запасы между складами" : activeLang === "ka" ? "საქონლის გადაზიდვა საწყობებს შორის" : "Depolar Arası Stok Sevk Et"}
+                </h2>
+                <p className="text-xs text-slate-600">
+                  {activeLang === "en" ? "Securely transfer stock between different warehouses and shelves." : activeLang === "de" ? "Bestände sicher zwischen verschiedenen Lagern und Regalen übertragen." : activeLang === "ru" ? "Надежно переводите запасы между складами и полками." : activeLang === "ka" ? "უსაფრთხოდ გადაიტანეთ საქონელი სხვა საწყობებსა და თაროებზე." : "Stokları başka depolara ve raflara güvenli bir şekilde aktarın."}
+                </p>
               </div>
 
               <form onSubmit={handleInitiateTransfer} className="space-y-4">
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">Sevk Edilecek Ürün</span>
+                  <span className="text-xs font-bold text-slate-700">
+                    {activeLang === "en" ? "Product to Dispatch" : activeLang === "de" ? "Produkt zum Versenden" : activeLang === "ru" ? "Товар для отправки" : activeLang === "ka" ? "პროდუქტი გასაგზავნად" : "Sevk Edilecek Ürün"}
+                  </span>
                   <select
                     value={transferProductId}
                     onChange={(e) => {
@@ -4558,10 +4982,12 @@ ${sizeStr}
                     }}
                     className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-blue-500"
                   >
-                    <option value="">Ürün Seçin...</option>
+                    <option value="">
+                      {activeLang === "en" ? "Select Product..." : activeLang === "de" ? "Produkt auswählen..." : activeLang === "ru" ? "Выберите товар..." : activeLang === "ka" ? "აირჩიეთ პროდუქტი..." : "Ürün Seçin..."}
+                    </option>
                     {activeWhInventory.map((p) => (
                       <option key={p.id} value={p.id}>
-                        {p.name} ({p.sku}) - Raftaki Mevcut: {p.quantity} Adet (Konum: {p.shelf})
+                        {getLocalizedField(p.name, activeLang)} ({p.sku}) - {activeLang === "en" ? "On Shelf" : activeLang === "de" ? "Auf Regal" : activeLang === "ru" ? "На полке" : activeLang === "ka" ? "თაროზე" : "Raftaki Mevcut"}: {p.quantity} {activeLang === "en" ? "pcs" : activeLang === "de" ? "Stk" : activeLang === "ru" ? "шт" : activeLang === "ka" ? "ცალი" : "Adet"} ({activeLang === "en" ? "Shelf" : activeLang === "de" ? "Regal" : activeLang === "ru" ? "Полка" : activeLang === "ka" ? "თარო" : "Konum"}: {p.shelf})
                       </option>
                     ))}
                   </select>
@@ -4569,14 +4995,20 @@ ${sizeStr}
 
                 {transferProductId && (
                   <div className="p-3 bg-slate-50 border border-slate-150 rounded-2xl text-xs space-y-1 font-semibold text-slate-700">
-                    <div>📍 Kaynak Raf Konumu: <span className="font-mono text-blue-600 font-bold">{products.find(p => p.id === transferProductId)?.shelf}</span></div>
-                    <div>📦 Mevcut Stok Adedi: <span className="text-slate-900 font-bold">{products.find(p => p.id === transferProductId)?.quantity} Adet</span></div>
+                    <div>
+                      {activeLang === "en" ? "📍 Source Shelf:" : activeLang === "de" ? "📍 Quellregal:" : activeLang === "ru" ? "📍 Исходная полка:" : activeLang === "ka" ? "📍 წყარო თარო:" : "📍 Kaynak Raf Konumu:"} <span className="font-mono text-blue-600 font-bold">{products.find(p => p.id === transferProductId)?.shelf}</span>
+                    </div>
+                    <div>
+                      {activeLang === "en" ? "📦 Current Stock:" : activeLang === "de" ? "📦 Aktueller Bestand:" : activeLang === "ru" ? "📦 Текущий запас:" : activeLang === "ka" ? "📦 არსებული მარაგი:" : "📦 Mevcut Stok Adedi:"} <span className="text-slate-900 font-bold">{products.find(p => p.id === transferProductId)?.quantity} {activeLang === "en" ? "pcs" : activeLang === "de" ? "Stk" : activeLang === "ru" ? "шт" : activeLang === "ka" ? "ცალი" : "Adet"}</span>
+                    </div>
                   </div>
                 )}
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="grid gap-1">
-                    <span className="text-xs font-bold text-slate-700">Hedef Depo</span>
+                    <span className="text-xs font-bold text-slate-700">
+                      {activeLang === "en" ? "Target Warehouse" : activeLang === "de" ? "Ziellager" : activeLang === "ru" ? "Целевой склад" : activeLang === "ka" ? "სამიზნე საწყობი" : "Hedef Depo"}
+                    </span>
                     <select
                       value={transferDestWhId}
                       onChange={(e) => {
@@ -4585,7 +5017,9 @@ ${sizeStr}
                       }}
                       className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-blue-500"
                     >
-                      <option value="">Hedef Seçin...</option>
+                      <option value="">
+                        {activeLang === "en" ? "Select Target..." : activeLang === "de" ? "Ziel auswählen..." : activeLang === "ru" ? "Выберите цель..." : activeLang === "ka" ? "აირჩიეთ სამიზნე..." : "Hedef Seçin..."}
+                      </option>
                       {warehouses.filter(w => w.id !== activeWarehouseId).map((w) => (
                         <option key={w.id} value={w.id}>
                           🏪 {w.name} ({w.city})
@@ -4595,17 +5029,21 @@ ${sizeStr}
                   </label>
 
                   <label className="grid gap-1">
-                    <span className="text-xs font-bold text-slate-700">Hedef Raf Konumu</span>
+                    <span className="text-xs font-bold text-slate-700">
+                      {activeLang === "en" ? "Target Shelf Location" : activeLang === "de" ? "Zielregalstandort" : activeLang === "ru" ? "Целевая ячейка" : activeLang === "ka" ? "სამიზნე თაროს მდებარეობა" : "Hedef Raf Konumu"}
+                    </span>
                     <select
                       value={transferDestShelf}
                       onChange={(e) => setTransferDestShelf(e.target.value)}
                       disabled={!transferDestWhId}
                       className="w-full rounded-xl border border-slate-250 px-3 py-2.5 text-xs font-mono font-bold focus:outline-none focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-550"
                     >
-                      <option value="">Raf Konumu Seçin...</option>
+                      <option value="">
+                        {activeLang === "en" ? "Select Shelf Location..." : activeLang === "de" ? "Regalstandort auswählen..." : activeLang === "ru" ? "Выберите ячейку..." : activeLang === "ka" ? "აირჩიეთ თაროს მდებარეობა..." : "Raf Konumu Seçin..."}
+                      </option>
                       {warehouses.find(w => w.id === transferDestWhId)?.shelves?.map((sh) => (
                         <option key={sh} value={sh}>
-                          Raf: {sh}
+                          {activeLang === "en" ? "Shelf" : activeLang === "de" ? "Regal" : activeLang === "ru" ? "Полка" : activeLang === "ka" ? "თარო" : "Raf"}: {sh}
                         </option>
                       ))}
                     </select>
@@ -4614,7 +5052,9 @@ ${sizeStr}
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="grid gap-1">
-                    <span className="text-xs font-bold text-slate-700">Sevk Edilecek Adet</span>
+                    <span className="text-xs font-bold text-slate-700">
+                      {activeLang === "en" ? "Quantity to Dispatch" : activeLang === "de" ? "Versandmenge" : activeLang === "ru" ? "Количество для отправки" : activeLang === "ka" ? "გასაგზავნი რაოდენობა" : "Sevk Edilecek Adet"}
+                    </span>
                     <input
                       type="number"
                       min="1"
@@ -4625,12 +5065,14 @@ ${sizeStr}
                   </label>
 
                   <label className="grid gap-1">
-                    <span className="text-xs font-bold text-slate-700">Sevk Notu</span>
+                    <span className="text-xs font-bold text-slate-700">
+                      {activeLang === "en" ? "Dispatch Note" : activeLang === "de" ? "Versandhinweis" : activeLang === "ru" ? "Примечание к отправке" : activeLang === "ka" ? "გაგზავნის შენიშვნა" : "Sevk Notu"}
+                    </span>
                     <input
                       type="text"
                       value={transferNote}
                       onChange={(e) => setTransferNote(e.target.value)}
-                      placeholder="Örn: B reyonuna kaydırma"
+                      placeholder={activeLang === "en" ? "e.g., Moving to aisle B" : activeLang === "de" ? "z. B. Verschiebung in Gang B" : activeLang === "ru" ? "напр., Перемещение на стеллаж B" : activeLang === "ka" ? "მაგ., გადატანა B სექტორში" : "Örn: B reyonuna kaydırma"}
                       className="rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500" id="id-page-rounded-xl-border-border-slate-250-px-3-py-2-text-xs-font-semibold-focus-outline-none-focus-border-blue-500-655" aria-label="Rounded xl border border slate 250 px 3 py 2 text xs font semibold focus outline none focus border blue 500" />
                   </label>
                 </div>
@@ -4639,7 +5081,7 @@ ${sizeStr}
                   type="submit"
                   className="w-full rounded-xl bg-blue-600 py-3 text-xs font-black text-white hover:bg-blue-500 transition active:scale-95 shadow-sm"
                 >
-                  ⚡ Transfer Sevkiyatını Başlat
+                  {activeLang === "en" ? "⚡ Start Shipping Transfer" : activeLang === "de" ? "⚡ Transferversand starten" : activeLang === "ru" ? "⚡ Начать перевозку" : activeLang === "ka" ? "⚡ გადაზიდვის დაწყება" : "⚡ Transfer Sevkiyatını Başlat"}
                 </button>
               </form>
             </div>
@@ -4647,8 +5089,12 @@ ${sizeStr}
             {/* Right: Active/Pending Transfers */}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
               <div>
-                <h3 className="text-base font-black text-slate-900">Transfer Hareketleri ve İş Emirleri</h3>
-                <p className="text-xs text-slate-600">Depolar arası sevk aşamasındaki ürünlerin takip listesi.</p>
+                <h3 className="text-base font-black text-slate-900">
+                  {activeLang === "en" ? "Transfer Movements & Job Orders" : activeLang === "de" ? "Transferbewegungen & Arbeitsaufträge" : activeLang === "ru" ? "Переводы и заказ-наряды" : activeLang === "ka" ? "შიდა გადაცემის მოძრაობები და სამუშაო ორდერები" : "Transfer Hareketleri ve İş Emirleri"}
+                </h3>
+                <p className="text-xs text-slate-600">
+                  {activeLang === "en" ? "Tracking list of products in the inter-warehouse shipping phase." : activeLang === "de" ? "Verfolgungsliste der Produkte im lagerübergreifenden Versand." : activeLang === "ru" ? "Список отслеживания товаров на этапе межскладской перевозки." : activeLang === "ka" ? "საწყობებს შორის გადაზიდვის პროცესში მყოფი პროდუქტების სია." : "Depolar arası sevk aşamasındaki ürünlerin takip listesi."}
+                </p>
               </div>
 
               <div className="space-y-3 max-h-[480px] overflow-y-auto pr-1">
@@ -4663,16 +5109,28 @@ ${sizeStr}
                         <span className={`rounded-full px-2.5 py-0.5 text-[8px] font-black uppercase ${
                           t.status === 'in_transit' ? 'bg-orange-100 text-orange-700' : 'bg-emerald-100 text-emerald-800'
                         }`}>
-                          {t.status === 'in_transit' ? '✈ Yolda (Beklemede)' : '✓ Teslim Alındı'}
+                          {t.status === 'in_transit' 
+                            ? (activeLang === "en" ? "✈ In Transit (Pending)" : activeLang === "de" ? "✈ Unterwegs (Ausstehend)" : activeLang === "ru" ? "✈ В пути (Ожидание)" : activeLang === "ka" ? "✈ გზაშია (მოლოდინი)" : "✈ Yolda (Beklemede)") 
+                            : (activeLang === "en" ? "✓ Received" : activeLang === "de" ? "✓ Geliefert" : activeLang === "ru" ? "✓ Получено" : activeLang === "ka" ? "✓ მიღებულია" : "✓ Teslim Alındı")}
                         </span>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold text-slate-600 bg-white border border-slate-100 p-2 rounded-xl">
-                        <div>🏪 Çıkış: <strong className="text-slate-800">{t.sourceWh} ({t.sourceShelf})</strong></div>
-                        <div>🏪 Hedef: <strong className="text-slate-800">{t.destWh} ({t.destShelf})</strong></div>
-                        <div>📦 Adet: <strong className="text-blue-600 font-mono">{t.quantity} Adet</strong></div>
-                        <div>📅 Tarih: <span className="text-slate-700 font-mono">{t.createdAt}</span></div>
-                        <div className="col-span-2 italic text-slate-450 mt-1">Not: {t.note}</div>
+                        <div>
+                          {activeLang === "en" ? "🏪 Origin:" : activeLang === "de" ? "🏪 Abgang:" : activeLang === "ru" ? "🏪 Выход:" : activeLang === "ka" ? "🏪 გასავალი:" : "🏪 Çıkış:"} <strong className="text-slate-800">{t.sourceWh} ({t.sourceShelf})</strong>
+                        </div>
+                        <div>
+                          {activeLang === "en" ? "🏪 Target:" : activeLang === "de" ? "🏪 Ziel:" : activeLang === "ru" ? "🏪 Цель:" : activeLang === "ka" ? "🏪 სამიზნე:" : "🏪 Hedef:"} <strong className="text-slate-800">{t.destWh} ({t.destShelf})</strong>
+                        </div>
+                        <div>
+                          {activeLang === "en" ? "📦 Qty:" : activeLang === "de" ? "📦 Menge:" : activeLang === "ru" ? "📦 Кол-во:" : activeLang === "ka" ? "📦 რაოდ:" : "📦 Adet:"} <strong className="text-blue-600 font-mono">{t.quantity} {activeLang === "en" ? "pcs" : activeLang === "de" ? "Stk" : activeLang === "ru" ? "шт" : activeLang === "ka" ? "ცალი" : "Adet"}</strong>
+                        </div>
+                        <div>
+                          {activeLang === "en" ? "📅 Date:" : activeLang === "de" ? "📅 Datum:" : activeLang === "ru" ? "📅 Дата:" : activeLang === "ka" ? "📅 თარიღი:" : "📅 Tarih:"} <span className="text-slate-700 font-mono">{t.createdAt}</span>
+                        </div>
+                        <div className="col-span-2 italic text-slate-450 mt-1">
+                          {activeLang === "en" ? "Note:" : activeLang === "de" ? "Hinweis:" : activeLang === "ru" ? "Прим.:" : activeLang === "ka" ? "შენიშვნა:" : "Not:"} {t.note}
+                        </div>
                       </div>
 
                       {t.status === 'in_transit' && (
@@ -4682,14 +5140,14 @@ ${sizeStr}
                             onClick={() => handleCancelTransfer(t.id)}
                             className="rounded-lg bg-rose-50 border border-rose-200 px-3 py-1.5 text-[10px] font-black text-rose-700 hover:bg-rose-100 transition active:scale-95"
                           >
-                            İptal Et & İade Et
+                            {activeLang === "en" ? "Cancel & Return" : activeLang === "de" ? "Stornieren & Zurückgeben" : activeLang === "ru" ? "Отмена и возврат" : activeLang === "ka" ? "გაუქმება და დაბრუნება" : "İptal Et & İade Et"}
                           </button>
                           <button
                             type="button"
                             onClick={() => handleConfirmTransfer(t.id)}
                             className="rounded-lg bg-emerald-600 px-3 py-1.5 text-[10px] font-black text-white hover:bg-emerald-500 transition active:scale-95 shadow-sm"
                           >
-                            ⚡ Sevkiyatı Teslim Al ve Onayla
+                            {activeLang === "en" ? "⚡ Receive & Confirm Shipment" : activeLang === "de" ? "⚡ Lieferung empfangen & bestätigen" : activeLang === "ru" ? "⚡ Принять и подтвердить поставку" : activeLang === "ka" ? "⚡ მიღება და დადასტურება" : "⚡ Sevkiyatı Teslim Al ve Onayla"}
                           </button>
                         </div>
                       )}
@@ -4697,7 +5155,7 @@ ${sizeStr}
                   ))
                 ) : (
                   <p className="text-xs text-slate-550 italic py-8 text-center bg-slate-50/50 rounded-2xl border border-slate-200">
-                    Aktif depolar arası transfer veya iş emri bulunmuyor.
+                    {activeLang === "en" ? "No active inter-warehouse transfers or job orders found." : activeLang === "de" ? "Keine aktiven lagerübergreifenden Transfers oder Arbeitsaufträge gefunden." : activeLang === "ru" ? "Нет активных межскладских переводов или заказ-нарядов." : activeLang === "ka" ? "აქტიური გადაცემები ან სამუშაო ორდერები არ მოიძებნა." : "Aktif depolar arası transfer veya iş emri bulunmuyor."}
                   </p>
                 )}
               </div>
@@ -4711,14 +5169,20 @@ ${sizeStr}
             {!isAuditActive ? (
               // Start Session Panel
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm max-w-2xl mx-auto space-y-4 text-center">
-                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">STOK DENETİMİ</span>
-                <h2 className="text-lg font-black text-slate-900">Kör Envanter Sayım Oturumu</h2>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">
+                  {activeLang === "en" ? "STOCK AUDIT" : activeLang === "de" ? "BESTANDSPRÜFUNG" : activeLang === "ru" ? "АУДИТ ЗАПАСОВ" : activeLang === "ka" ? "მარაგების აუდიტი" : "STOK DENETİMİ"}
+                </span>
+                <h2 className="text-lg font-black text-slate-900">
+                  {activeLang === "en" ? "Blind Inventory Count Session" : activeLang === "de" ? "Blinde Inventurzählung" : activeLang === "ru" ? "Сессия слепой инвентаризации" : activeLang === "ka" ? "ბრმა ინვენტარიზაციის სესია" : "Kör Envanter Sayım Oturumu"}
+                </h2>
                 <p className="text-xs text-slate-600 max-w-md mx-auto">
-                  Sistemdeki stok adetlerini gizleyerek personelin fiziki envanteri körleme saymasını sağlayın. Sayım bittiğinde otomatik fark raporu çıkarılır.
+                  {activeLang === "en" ? "Hide system stock quantities to allow staff to perform a blind count of physical inventory. A discrepancy report is generated automatically." : activeLang === "de" ? "Systembestände ausblenden, damit das Personal eine blinde Zählung durchführen kann. Ein Differenzbericht wird automatisch erstellt." : activeLang === "ru" ? "Скройте системные количества, чтобы сотрудники могли провести инвентаризацию вслепую. Отчет о расхождениях создается автоматически." : activeLang === "ka" ? "დამალეთ სისტემური რაოდენობა, რათა პერსონალმა ჩაატაროს ბრმა ინვენტარიზაცია. სხვაობის ანგარიში გენერირდება ავტომატურად." : "Sistemdeki stok adetlerini gizleyerek personelin fiziki envanteri körleme saymasını sağlayın. Sayım bittiğinde otomatik fark raporu çıkarılır."}
                 </p>
 
                 <div className="border-t border-slate-100 pt-4 text-left space-y-3">
-                  <span className="text-xs font-bold text-slate-700 block">Sayıma Dahil Edilecek Reyonlar / Raflar</span>
+                  <span className="text-xs font-bold text-slate-700 block">
+                    {activeLang === "en" ? "Corridors / Shelves to Include in Audit" : activeLang === "de" ? "In die Prüfung einzubeziehende Regale" : activeLang === "ru" ? "Полки, включаемые в аудит" : activeLang === "ka" ? "აუდიტში ჩასართავი თაროები" : "Sayıma Dahil Edilecek Reyonlar / Raflar"}
+                  </span>
                   <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-xl border border-slate-200">
                     {activeWh.shelves && activeWh.shelves.length > 0 ? (
                       activeWh.shelves.map((sh) => (
@@ -4733,7 +5197,9 @@ ${sizeStr}
                         </label>
                       ))
                     ) : (
-                      <p className="text-xs text-slate-550 col-span-3 italic text-center py-4">Depoda tanımlanmış raf yok.</p>
+                      <p className="text-xs text-slate-550 col-span-3 italic text-center py-4">
+                        {activeLang === "en" ? "No shelves defined in this warehouse." : activeLang === "de" ? "Keine Regale in diesem Lager definiert." : activeLang === "ru" ? "В этом складе нет определенных полок." : activeLang === "ka" ? "საწყობში თაროები არ არის განსაზღვრული." : "Depoda tanımlanmış raf yok."}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -4752,7 +5218,7 @@ ${sizeStr}
                   }}
                   className="rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs px-6 py-3 transition shadow-sm active:scale-95"
                 >
-                  ⚡ Kör Sayım Oturumunu Başlat (Kilitli Mod)
+                  {activeLang === "en" ? "⚡ Start Blind Count Session (Locked Mode)" : activeLang === "de" ? "⚡ Blinde Zählung starten (Sperrmodus)" : activeLang === "ru" ? "⚡ Начать слепую инвентаризацию (заблокированный режим)" : activeLang === "ka" ? "⚡ ბრმა ინვენტარიზაციის დაწყება (ჩაკეტილი რეჟიმი)" : "⚡ Kör Sayım Oturumunu Başlat (Kilitli Mod)"}
                 </button>
               </div>
             ) : (
@@ -4762,21 +5228,27 @@ ${sizeStr}
                 <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
                   <div className="flex justify-between items-center border-b border-slate-100 pb-2">
                     <div>
-                      <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider bg-amber-50 px-2 py-0.5 rounded-full">SAYIM AKTİF</span>
-                      <h3 className="text-base font-black text-slate-900 mt-1">Barkod / Konum Okutma İstasyonu</h3>
+                      <span className="text-[10px] font-black uppercase text-amber-600 tracking-wider bg-amber-50 px-2 py-0.5 rounded-full">
+                        {activeLang === "en" ? "COUNT ACTIVE" : activeLang === "de" ? "ZÄHLUNG AKTIV" : activeLang === "ru" ? "ИНВЕНТАРИЗАЦИЯ АКТИВНА" : activeLang === "ka" ? "ინვენტარიზაცია აქტიურია" : "SAYIM AKTİF"}
+                      </span>
+                      <h3 className="text-base font-black text-slate-900 mt-1">
+                        {activeLang === "en" ? "Barcode / Location Scan Station" : activeLang === "de" ? "Barcode- / Standort-Scanstation" : activeLang === "ru" ? "Станция сканирования штрихкодов / ячеек" : activeLang === "ka" ? "შტრიხკოდის / მდებარეობის სკანირების სადგური" : "Barkod / Konum Okutma İstasyonu"}
+                      </h3>
                     </div>
                     <button
                       type="button"
                       onClick={() => setIsAuditActive(false)}
                       className="text-xs text-slate-550 hover:text-slate-600 font-bold"
                     >
-                      Oturumu Kapat ✕
+                      {activeLang === "en" ? "Close Session ✕" : activeLang === "de" ? "Sitzung schließen ✕" : activeLang === "ru" ? "Закрыть сессию ✕" : activeLang === "ka" ? "სესიის დახურვა ✕" : "Oturumu Kapat ✕"}
                     </button>
                   </div>
 
                   <div className="space-y-4">
                     <label className="grid gap-1">
-                      <span className="text-xs font-bold text-slate-700">Sayım Yapılan Raf Konumu</span>
+                      <span className="text-xs font-bold text-slate-700">
+                        {activeLang === "en" ? "Audited Shelf Location" : activeLang === "de" ? "Geprüfter Regalstandort" : activeLang === "ru" ? "Проверяемая ячейка" : activeLang === "ka" ? "შემოწმებული თაროს მდებარეობა" : "Sayım Yapılan Raf Konumu"}
+                      </span>
                       <select
                         value={auditCurrentShelf}
                         onChange={(e) => setAuditCurrentShelf(e.target.value)}
@@ -4784,7 +5256,7 @@ ${sizeStr}
                       >
                         {auditShelfSelections.map((sh) => (
                           <option key={sh} value={sh}>
-                            Raf: {sh}
+                            {activeLang === "en" ? "Shelf" : activeLang === "de" ? "Regal" : activeLang === "ru" ? "Полка" : activeLang === "ka" ? "თარო" : "Raf"}: {sh}
                           </option>
                         ))}
                       </select>
@@ -4792,11 +5264,13 @@ ${sizeStr}
 
                     <div className="grid gap-3 sm:grid-cols-[1fr_100px]">
                       <label className="grid gap-1">
-                        <span className="text-xs font-bold text-slate-700">Ürün SKU / Barkod Okutun</span>
+                        <span className="text-xs font-bold text-slate-700">
+                          {activeLang === "en" ? "Scan Product SKU / Barcode" : activeLang === "de" ? "Produkt-SKU / Barcode scannen" : activeLang === "ru" ? "Отсканируйте SKU / штрихкод товара" : activeLang === "ka" ? "დაასკანირეთ პროდუქტის SKU / შტრიხკოდი" : "Ürün SKU / Barkod Okutun"}
+                        </span>
                         <input
                           type="text"
                           id="audit-barcode-input"
-                          placeholder="Barkod Okutun veya SKU Yazın"
+                          placeholder={activeLang === "en" ? "Scan barcode or type SKU" : activeLang === "de" ? "Barcode scannen oder SKU eingeben" : activeLang === "ru" ? "Сканируйте штрихкод или введите SKU" : activeLang === "ka" ? "დაასკანირეთ შტრიხკოდი ან ჩაწერეთ SKU" : "Barkod Okutun veya SKU Yazın"}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
@@ -4814,7 +5288,9 @@ ${sizeStr}
                       </label>
 
                       <label className="grid gap-1">
-                        <span className="text-xs font-bold text-slate-700">Miktar</span>
+                        <span className="text-xs font-bold text-slate-700">
+                          {activeLang === "en" ? "Quantity" : activeLang === "de" ? "Menge" : activeLang === "ru" ? "Количество" : activeLang === "ka" ? "რაოდენობა" : "Miktar"}
+                        </span>
                         <input
                           type="number"
                           id="audit-qty-input"
@@ -4835,18 +5311,20 @@ ${sizeStr}
                           barcodeInput.value = "";
                           barcodeInput.focus();
                         } else {
-                          showError("Lütfen bir ürün barkodu girin.");
+                          showError(activeLang === "en" ? "Please enter a product barcode." : activeLang === "de" ? "Bitte geben Sie einen Produkt-Barcode ein." : activeLang === "ru" ? "Пожалуйста, введите штрихкод товара." : activeLang === "ka" ? "გთხოვთ შეიყვანოთ პროდუქტის შტრიხკოდი." : "Lütfen bir ürün barkodu girin.");
                         }
                       }}
                       className="w-full rounded-xl bg-slate-900 py-3 text-xs font-black text-white hover:bg-slate-800 transition active:scale-95"
                     >
-                      Sayımı Kaydet (Hücreyi Onayla)
+                      {activeLang === "en" ? "Save Count (Confirm Cell)" : activeLang === "de" ? "Zählung speichern (Fach bestätigen)" : activeLang === "ru" ? "Сохранить подсчет (Подтвердить ячейку)" : activeLang === "ka" ? "მარაგის შენახვა (უჯრის დადასტურება)" : "Sayımı Kaydet (Hücreyi Onayla)"}
                     </button>
                   </div>
 
                   {/* Audit logs timeline */}
                   <div className="border-t border-slate-100 pt-4 space-y-2">
-                    <span className="text-xs font-bold text-slate-700 block">Sayım Akışı (Son Okutulanlar)</span>
+                    <span className="text-xs font-bold text-slate-700 block">
+                      {activeLang === "en" ? "Count History (Last Scanned)" : activeLang === "de" ? "Zählverlauf (Zuletzt gescannt)" : activeLang === "ru" ? "История подсчета (Последние сканирования)" : activeLang === "ka" ? "ინვენტარიზაციის ისტორია (ბოლო სკანირებული)" : "Sayım Akışı (Son Okutulanlar)"}
+                    </span>
                     <div className="max-h-56 overflow-y-auto space-y-1.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200 pr-1">
                       {auditLogs.length > 0 ? (
                         auditLogs.map((l) => (
@@ -4856,12 +5334,14 @@ ${sizeStr}
                               <span className="text-blue-600 font-mono font-bold ml-1">({l.shelf})</span>
                             </div>
                             <div className="font-mono text-right shrink-0 ml-2 font-black text-slate-900">
-                              {l.quantity} Adet | <span className="text-slate-550 font-normal">{l.time}</span>
+                              {l.quantity} {activeLang === "en" ? "pcs" : activeLang === "de" ? "Stk" : activeLang === "ru" ? "шт" : activeLang === "ka" ? "ცალი" : "Adet"} | <span className="text-slate-550 font-normal">{l.time}</span>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <p className="text-[10px] text-slate-550 italic text-center py-6">Kör sayıma başlamak için barkod okutun.</p>
+                        <p className="text-[10px] text-slate-550 italic text-center py-6">
+                          {activeLang === "en" ? "Scan a barcode to start the blind count." : activeLang === "de" ? "Scannen Sie einen Barcode, um die blinde Zählung zu starten." : activeLang === "ru" ? "Отсканируйте штрихкод для начала слепой инвентаризации." : activeLang === "ka" ? "დაასკანირეთ შტრიხკოდი ბრმა ინვენტარიზაციის დასაწყებად." : "Kör sayıma başlamak için barkod okutun."}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -4871,8 +5351,12 @@ ${sizeStr}
                 <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-base font-black text-slate-900">Canlı Mutabakat & Fark Raporu</h3>
-                      <p className="text-xs text-slate-600">Sistemdeki stok seviyeleri ile fiziki sayımlar arasındaki sapmalar.</p>
+                      <h3 className="text-base font-black text-slate-900">
+                        {activeLang === "en" ? "Live Reconciliation & Discrepancy Report" : activeLang === "de" ? "Live-Abgleich & Differenzbericht" : activeLang === "ru" ? "Живой отчет о сверке и расхождениях" : activeLang === "ka" ? "სინქრონიზაციისა და სხვაობის ცოცხალი ანგარიში" : "Canlı Mutabakat & Fark Raporu"}
+                      </h3>
+                      <p className="text-xs text-slate-600">
+                        {activeLang === "en" ? "Deviations between system stock levels and physical counts." : activeLang === "de" ? "Abweichungen zwischen Systembestand und physischer Zählung." : activeLang === "ru" ? "Отклонения между уровнями запасов в системе и физическим подсчетом." : activeLang === "ka" ? "სხვაობა სისტემურ რაოდენობასა და ფიზიკურ ინვენტარიზაციას შორის." : "Sistemdeki stok seviyeleri ile fiziki sayımlar arasındaki sapmalar."}
+                      </p>
                     </div>
                   </div>
 
@@ -4880,12 +5364,24 @@ ${sizeStr}
                     <table className="w-full text-left text-[11px] border-collapse">
                       <thead>
                         <tr className="border-b border-slate-200 bg-slate-50 text-[9px] font-black text-slate-700 uppercase">
-                          <th className="p-2.5">Raf</th>
-                          <th className="p-2.5">Ürün</th>
-                          <th className="p-2.5 text-center">Sistem</th>
-                          <th className="p-2.5 text-center">Sayılan</th>
-                          <th className="p-2.5 text-center">Fark</th>
-                          <th className="p-2.5 text-right">Durum</th>
+                          <th className="p-2.5">
+                            {activeLang === "en" ? "Shelf" : activeLang === "de" ? "Regal" : activeLang === "ru" ? "Полка" : activeLang === "ka" ? "თარო" : "Raf"}
+                          </th>
+                          <th className="p-2.5">
+                            {activeLang === "en" ? "Product" : activeLang === "de" ? "Produkt" : activeLang === "ru" ? "Товар" : activeLang === "ka" ? "პროდუქტი" : "Ürün"}
+                          </th>
+                          <th className="p-2.5 text-center">
+                            {activeLang === "en" ? "System" : activeLang === "de" ? "System" : activeLang === "ru" ? "Система" : activeLang === "ka" ? "სისტემა" : "Sistem"}
+                          </th>
+                          <th className="p-2.5 text-center">
+                            {activeLang === "en" ? "Counted" : activeLang === "de" ? "Gezählt" : activeLang === "ru" ? "Подсчитано" : activeLang === "ka" ? "დათვლილი" : "Sayılan"}
+                          </th>
+                          <th className="p-2.5 text-center">
+                            {activeLang === "en" ? "Diff" : activeLang === "de" ? "Diff" : activeLang === "ru" ? "Разн." : activeLang === "ka" ? "სხვაობა" : "Fark"}
+                          </th>
+                          <th className="p-2.5 text-right">
+                            {activeLang === "en" ? "Status" : activeLang === "de" ? "Status" : activeLang === "ru" ? "Статус" : activeLang === "ka" ? "სტატუსი" : "Durum"}
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 font-semibold text-slate-700">
@@ -4904,7 +5400,7 @@ ${sizeStr}
                               <tr key={p.id} className="hover:bg-slate-50/50">
                                 <td className="p-2.5 font-mono text-blue-600 font-bold">{p.shelf}</td>
                                 <td className="p-2.5">
-                                  <span className="font-bold text-slate-900 truncate block max-w-xs">{p.name}</span>
+                                  <span className="font-bold text-slate-900 truncate block max-w-xs">{getLocalizedField(p.name, activeLang)}</span>
                                   <span className="text-[9px] text-slate-550 font-mono">{p.sku}</span>
                                 </td>
                                 <td className="p-2.5 text-center font-mono">{systemQty}</td>
@@ -4916,11 +5412,17 @@ ${sizeStr}
                                 </td>
                                 <td className="p-2.5 text-right font-black uppercase text-[8px]">
                                   {diff === 0 ? (
-                                    <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">MUTABIK</span>
+                                    <span className="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded">
+                                      {activeLang === "en" ? "MATCHED" : activeLang === "de" ? "ABGESTIMMT" : activeLang === "ru" ? "СОВПАДАЕТ" : activeLang === "ka" ? "ემთხვევა" : "MUTABIK"}
+                                    </span>
                                   ) : diff > 0 ? (
-                                    <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded">FAZLA STOK</span>
+                                    <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded">
+                                      {activeLang === "en" ? "SURPLUS" : activeLang === "de" ? "ÜBERSCHUSS" : activeLang === "ru" ? "ИЗЛИШЕК" : activeLang === "ka" ? "ზედმეტი" : "FAZLA STOK"}
+                                    </span>
                                   ) : (
-                                    <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded">EKSİK STOK</span>
+                                    <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded">
+                                      {activeLang === "en" ? "DEFICIT" : activeLang === "de" ? "FEHLBETRAG" : activeLang === "ru" ? "НЕДОСТАЧА" : activeLang === "ka" ? "დეკლარირებული" : "EKSİK STOK"}
+                                    </span>
                                   )}
                                 </td>
                               </tr>
@@ -4936,14 +5438,14 @@ ${sizeStr}
                       onClick={() => setIsAuditActive(false)}
                       className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
                     >
-                      Kaydetmeden Kapat
+                      {activeLang === "en" ? "Close Without Saving" : activeLang === "de" ? "Schließen ohne Speichern" : activeLang === "ru" ? "Закрыть без сохранения" : activeLang === "ka" ? "დახურვა შენახვის გარეშე" : "Kaydetmeden Kapat"}
                     </button>
                     <button
                       type="button"
                       onClick={handleApplyAuditAdjustments}
                       className="rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-black text-white hover:bg-blue-500 transition active:scale-95 shadow-sm"
                     >
-                      ⚡ Sayımı Onayla & Stokları Düzelt
+                      {activeLang === "en" ? "⚡ Approve Count & Adjust Stocks" : activeLang === "de" ? "⚡ Zählung bestätigen & Bestände korrigieren" : activeLang === "ru" ? "⚡ Подтвердить и скорректировать запасы" : activeLang === "ka" ? "⚡ დადასტურება და მარაგის კორექტირება" : "⚡ Sayımı Onayla & Stokları Düzelt"}
                     </button>
                   </div>
                 </div>
@@ -4958,27 +5460,37 @@ ${sizeStr}
             {/* Left: ZPL Generator Form */}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
               <div>
-                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">ZPL ETİKET LABORATUVARI</span>
-                <h2 className="text-base font-black text-slate-900 mt-1">Zebra Termal Barkod Şablonu</h2>
-                <p className="text-xs text-slate-600">Endüstriyel Zebra etiket yazıcıları için anında ZPL II kodu üretin.</p>
+                <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">
+                  {activeLang === "en" ? "ZPL LABEL LABORATORY" : activeLang === "de" ? "ZPL-ETIKETTENLABOR" : activeLang === "ru" ? "ЛАБОРАТОРИЯ ЭТИКЕТОК ZPL" : activeLang === "ka" ? "ZPL ეტიკეტების ლაბორატორია" : "ZPL ETİKET LABORATUVARI"}
+                </span>
+                <h2 className="text-base font-black text-slate-900 mt-1">
+                  {activeLang === "en" ? "Zebra Thermal Barcode Template" : activeLang === "de" ? "Zebra Thermo-Barcode-Vorlage" : activeLang === "ru" ? "Шаблон термоштрихкода Zebra" : activeLang === "ka" ? "Zebra თერმული შტრიხკოდის შაბლონი" : "Zebra Termal Barkod Şablonu"}
+                </h2>
+                <p className="text-xs text-slate-600">
+                  {activeLang === "en" ? "Generate ZPL II code instantly for industrial Zebra label printers." : activeLang === "de" ? "Erzeugen Sie sofort ZPL II-Code für industrielle Zebra-Etikettendrucker." : activeLang === "ru" ? "Мгновенно создавайте код ZPL II для промышленных принтеров этикеток Zebra." : activeLang === "ka" ? "მყისიერად დააგენერირეთ ZPL II კოდი ინდუსტრიული Zebra პრინტერებისთვის." : "Endüstriyel Zebra etiket yazıcıları için anında ZPL II kodu üretin."}
+                </p>
               </div>
 
               <div className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="grid gap-1">
-                    <span className="text-xs font-bold text-slate-700">Etiket Boyutu</span>
+                    <span className="text-xs font-bold text-slate-700">
+                      {activeLang === "en" ? "Label Size" : activeLang === "de" ? "Etikettengröße" : activeLang === "ru" ? "Размер этикетки" : activeLang === "ka" ? "ეტიკეტის ზომა" : "Etiket Boyutu"}
+                    </span>
                     <select
                       value={zplLabelSize}
                       onChange={(e) => setZplLabelSize(e.target.value as "2x1" | "3x2")}
                       className="w-full rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500"
                     >
-                      <option value="3x2">3" x 2" (Büyük Raf/Ürün Etiketi)</option>
-                      <option value="2x1">2" x 1" (Küçük Parça Etiketi)</option>
+                      <option value="3x2">{activeLang === "en" ? "3\" x 2\" (Large Shelf/Product Label)" : activeLang === "de" ? "3\" x 2\" (Großes Regal-/Produktetikett)" : activeLang === "ru" ? "3\" x 2\" (Большая этикетка полки/товара)" : activeLang === "ka" ? "3\" x 2\" (დიდი თაროს/პროდუქტის ეტიკეტი)" : "3\" x 2\" (Büyük Raf/Ürün Etiketi)"}</option>
+                      <option value="2x1">{activeLang === "en" ? "2\" x 1\" (Small Part Label)" : activeLang === "de" ? "2\" x 1\" (Kleines Teileetikett)" : activeLang === "ru" ? "2\" x 1\" (Маленькая этикетка детали)" : activeLang === "ka" ? "2\" x 1\" (მცირე ნაწილის ეტიკეტი)" : "2\" x 1\" (Küçük Parça Etiketi)"}</option>
                     </select>
                   </label>
 
                   <label className="grid gap-1">
-                    <span className="text-xs font-bold text-slate-700">Şablon Hedefi</span>
+                    <span className="text-xs font-bold text-slate-700">
+                      {activeLang === "en" ? "Template Target" : activeLang === "de" ? "Vorlagenziel" : activeLang === "ru" ? "Цель шаблона" : activeLang === "ka" ? "შაბლონის სამიზნე" : "Şablon Hedefi"}
+                    </span>
                     <select
                       value={zplProductId}
                       onChange={(e) => {
@@ -4994,15 +5506,17 @@ ${sizeStr}
                       }}
                       className="w-full rounded-xl border border-slate-250 px-3 py-2 text-xs font-semibold focus:outline-none focus:border-blue-500"
                     >
-                      <option value="">Hedef Seçin...</option>
-                      <optgroup label="Ürünler">
+                      <option value="">
+                        {activeLang === "en" ? "Select Target..." : activeLang === "de" ? "Ziel auswählen..." : activeLang === "ru" ? "Выберите цель..." : activeLang === "ka" ? "აირჩიეთ სამიზნე..." : "Hedef Seçin..."}
+                      </option>
+                      <optgroup label={activeLang === "en" ? "Products" : activeLang === "de" ? "Produkte" : activeLang === "ru" ? "Товары" : activeLang === "ka" ? "პროდუქტები" : "Ürünler"}>
                         {activeWhInventory.map(p => (
-                          <option key={p.id} value={p.id}>📦 {p.name} ({p.sku})</option>
+                          <option key={p.id} value={p.id}>📦 {getLocalizedField(p.name, activeLang)} ({p.sku})</option>
                         ))}
                       </optgroup>
-                      <optgroup label="Depo Rafları">
+                      <optgroup label={activeLang === "en" ? "Warehouse Shelves" : activeLang === "de" ? "Lagerregale" : activeLang === "ru" ? "Полки склада" : activeLang === "ka" ? "საწყობის თაროები" : "Depo Rafları"}>
                         {activeWh.shelves?.map(sh => (
-                          <option key={sh} value={`shelf_${sh}`}>📍 Raf Konumu: {sh}</option>
+                          <option key={sh} value={`shelf_${sh}`}>📍 {activeLang === "en" ? "Shelf Position" : activeLang === "de" ? "Regalposition" : activeLang === "ru" ? "Положение полки" : activeLang === "ka" ? "თაროს მდებარეობა" : "Raf Konumu"}: {sh}</option>
                         ))}
                       </optgroup>
                     </select>
@@ -5010,7 +5524,9 @@ ${sizeStr}
                 </div>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-700">ZPL II Ham Kod Çıktısı (Yazıcıya Gönderilecek Kod)</span>
+                  <span className="text-xs font-bold text-slate-700">
+                    {activeLang === "en" ? "ZPL II Raw Code Output (Code to send to printer)" : activeLang === "de" ? "ZPL II Raw-Code-Ausgabe (Code für den Drucker)" : activeLang === "ru" ? "ZPL II Исходный код (Код для отправки на принтер)" : activeLang === "ka" ? "ZPL II ნედლი კოდის გამოსავალი (კოდი პრინტერისთვის)" : "ZPL II Ham Kod Çıktısı (Yazıcıya Gönderilecek Kod)"}
+                  </span>
                   <textarea
                     rows={8}
                     value={zplText}
@@ -5025,29 +5541,29 @@ ${sizeStr}
                     type="button"
                     onClick={() => {
                       if (!zplText.trim()) {
-                        showError("Lütfen önce bir ZPL kodu oluşturun veya yazın.");
+                        showError(activeLang === "en" ? "Please generate or write a ZPL code first." : activeLang === "de" ? "Bitte generieren oder schreiben Sie zuerst einen ZPL-Code." : activeLang === "ru" ? "Пожалуйста, сначала создайте или напишите код ZPL." : activeLang === "ka" ? "გთხოვთ ჯერ დააგენერიროთ ან ჩაწეროთ ZPL კოდი." : "Lütfen önce bir ZPL kodu oluşturun veya yazın.");
                         return;
                       }
                       navigator.clipboard.writeText(zplText);
-                      showSuccess("ZPL kodu panoya kopyalandı! Termal yazıcı gönderme yazılımlarına doğrudan yapıştırabilirsiniz.");
+                      showSuccess(activeLang === "en" ? "ZPL code copied to clipboard! You can paste it directly to printer software." : activeLang === "de" ? "ZPL-Code in die Zwischenablage kopiert! Sie können ihn direkt in die Druckersoftware einfügen." : activeLang === "ru" ? "Код ZPL скопирован в буфер обмена! Вы можете вставить его непосредственно в ПО принтера." : activeLang === "ka" ? "ZPL კოდი კოპირებულია! შეგიძლიათ პირდაპირ ჩასვათ პრინტერის პროგრამაში." : "ZPL kodu panoya kopyalandı! Termal yazıcı gönderme yazılımlarına doğrudan yapıştırabilirsiniz.");
                     }}
                     className="flex-1 rounded-xl bg-slate-900 py-3 text-xs font-black text-white hover:bg-slate-800 transition text-center shadow-sm"
                   >
-                    Kodu Panoya Kopyala 📋
+                    {activeLang === "en" ? "Copy Code to Clipboard 📋" : activeLang === "de" ? "Code in Zwischenablage kopieren 📋" : activeLang === "ru" ? "Копировать код 📋" : activeLang === "ka" ? "კოდის ბუფერში კოპირება 📋" : "Kodu Panoya Kopyala 📋"}
                   </button>
                   <button
                     type="button"
                     onClick={() => {
                       if (!zplText.trim()) {
-                        showError("Lütfen önce bir ZPL kodu oluşturun.");
+                        showError(activeLang === "en" ? "Please generate a ZPL code first." : activeLang === "de" ? "Bitte generieren Sie zuerst einen ZPL-Code." : activeLang === "ru" ? "Пожалуйста, сначала создайте код ZPL." : activeLang === "ka" ? "გთხოვთ ჯერ დააგენერიროთ ZPL კოდი." : "Lütfen önce bir ZPL kodu oluşturun.");
                         return;
                       }
                       // Simulate direct network socket printing
-                      showSuccess("Termal Yazıcıya Gönderildi (Simüle edildi: RAW Port 9100).");
+                      showSuccess(activeLang === "en" ? "Sent to Thermal Printer (Simulated: RAW Port 9100)." : activeLang === "de" ? "An Thermodrucker gesendet (Simuliert: RAW Port 9100)." : activeLang === "ru" ? "Отправлено на термопринтер (Симуляция: порт RAW 9100)." : activeLang === "ka" ? "გაგზავნილია თერმულ პრინტერთან (სიმულირებული: RAW Port 9100)." : "Termal Yazıcıya Gönderildi (Simüle edildi: RAW Port 9100).");
                     }}
                     className="flex-1 rounded-xl bg-blue-600 py-3 text-xs font-black text-white hover:bg-blue-500 transition text-center shadow-sm active:scale-95"
                   >
-                    Yazıcıya Gönder 🖨️
+                    {activeLang === "en" ? "Send to Printer 🖨️" : activeLang === "de" ? "An Drucker senden 🖨️" : activeLang === "ru" ? "Отправить на принтер 🖨️" : activeLang === "ka" ? "პრინტერთან გაგზავნა 🖨️" : "Yazıcıya Gönder 🖨️"}
                   </button>
                 </div>
               </div>
@@ -5056,8 +5572,12 @@ ${sizeStr}
             {/* Right: Thermal Sticker Preview Simulator */}
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4 flex flex-col justify-between">
               <div>
-                <h3 className="text-base font-black text-slate-900">Termal Etiket Simülasyonu</h3>
-                <p className="text-xs text-slate-600">Yazıcının termal kafasından çıkacak fiziksel etiketin görsel simülasyonu.</p>
+                <h3 className="text-base font-black text-slate-900">
+                  {activeLang === "en" ? "Thermal Label Simulation" : activeLang === "de" ? "Thermoetikett-Simulation" : activeLang === "ru" ? "Симуляция термоэтикетки" : activeLang === "ka" ? "თერმული ეტიკეტის სიმულაცია" : "Termal Etiket Simülasyonu"}
+                </h3>
+                <p className="text-xs text-slate-600">
+                  {activeLang === "en" ? "Visual simulation of the physical label printing from the thermal head." : activeLang === "de" ? "Visuelle Simulation des physikalischen Etikettendrucks vom Thermokopf." : activeLang === "ru" ? "Визуальная симуляция печати физической этикетки с термоголовки." : activeLang === "ka" ? "თერმული თავიდან ფიზიკური ეტიკეტის ბეჭდვის ვიზუალური სიმულაცია." : "Yazıcının termal kafasından çıkacak fiziksel etiketin görsel simülasyonu."}
+                </p>
               </div>
 
               {/* Simulated Sticker Box */}
@@ -5077,7 +5597,9 @@ ${sizeStr}
                       {zplProductId ? (
                         zplProductId.startsWith("shelf_") ? (
                           <div className="text-center space-y-1">
-                            <span className="text-[9px] font-black uppercase text-slate-700">RAF YERLEŞİM BARKODU</span>
+                            <span className="text-[9px] font-black uppercase text-slate-700">
+                              {activeLang === "en" ? "SHELF BARCODE" : activeLang === "de" ? "REGALBARCODE" : activeLang === "ru" ? "ШТРИХКОД ПОЛКИ" : activeLang === "ka" ? "თაროს შტრიხკოდი" : "RAF YERLEŞİM BARKODU"}
+                            </span>
                             <div className="text-4xl font-black tracking-wider text-slate-900 font-mono mt-1">
                               {zplProductId.replace("shelf_", "")}
                             </div>
@@ -5089,15 +5611,17 @@ ${sizeStr}
                             </h4>
                             <div className="flex justify-between font-bold text-[10px] text-slate-600">
                               <span>SKU: {products.find(p => p.id === zplProductId)?.sku}</span>
-                              <span>RAF: {products.find(p => p.id === zplProductId)?.shelf}</span>
+                              <span>{activeLang === "en" ? "Shelf" : activeLang === "de" ? "Regal" : activeLang === "ru" ? "Полка" : activeLang === "ka" ? "თარო" : "Raf"}: {products.find(p => p.id === zplProductId)?.shelf}</span>
                             </div>
                             <div className="text-xs font-black text-slate-800">
-                              Fiyat: {products.find(p => p.id === zplProductId)?.salePrice} EUR
+                              {activeLang === "en" ? "Price" : activeLang === "de" ? "Preis" : activeLang === "ru" ? "Цена" : activeLang === "ka" ? "ფასი" : "Fiyat"}: {products.find(p => p.id === zplProductId)?.salePrice} EUR
                             </div>
                           </div>
                         )
                       ) : (
-                        <div className="text-center text-xs text-slate-550 italic">Özelleştirilmiş Ham Kod</div>
+                        <div className="text-center text-xs text-slate-550 italic">
+                          {activeLang === "en" ? "Custom Raw Code" : activeLang === "de" ? "Benutzerdefinierter Code" : activeLang === "ru" ? "Пользовательский исходный код" : activeLang === "ka" ? "მორგებული ნედლი კოდი" : "Özelleştirilmiş Ham Kod"}
+                        </div>
                       )}
                     </div>
 
@@ -5127,7 +5651,7 @@ ${sizeStr}
                   </div>
                 ) : (
                   <div className="text-center text-xs text-slate-550 italic">
-                    Etiket görsel simülasyonunu görmek için sol taraftan bir hedef şablon seçin veya ZPL kodu girin.
+                    {activeLang === "en" ? "Select a target template on the left or enter ZPL code to see the visual label simulation." : activeLang === "de" ? "Wählen Sie links eine Zielvorlage aus oder geben Sie einen ZPL-Code ein, um die visuelle Etikettensimulation anzuzeigen." : activeLang === "ru" ? "Выберите целевой шаблон слева или введите код ZPL, чтобы увидеть визуальную симуляцию этикетки." : activeLang === "ka" ? "აირჩიეთ სამიზნე შაბლონი მარცხნივ ან შეიყვანეთ ZPL კოდი ეტიკეტის ვიზუალური სიმულაციის სანახავად." : "Etiket görsel simülasyonunu görmek için sol taraftan bir hedef şablon seçin veya ZPL kodu girin."}
                   </div>
                 )}
               </div>

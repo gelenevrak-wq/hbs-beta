@@ -26,9 +26,7 @@ const texts = {
     setupTitle: "İlk Kurulum Adımları",
     step1: "Firma bilgilerini tamamla",
     step2: "Şube ve konum bilgilerini gir",
-    step3: "İlk depoyu oluştur",
-    step4: "Depo haritasını hazırla",
-    step5: "İlk ürün veya hizmeti ekle",
+    step3: "Depo yönetimi, depo haritalandırılması ve depoya ürün yükleme",
     step6: "Müşteri portalı görünürlüğünü ayarla",
     stepCalendar: "Hizmet/kiralama/tur çalışıyorsanız takvim ve kapasiteyi ayarla",
     statusWaiting: "Bekliyor",
@@ -91,9 +89,7 @@ const texts = {
     setupTitle: "Initial Setup Steps",
     step1: "Complete company information",
     step2: "Enter branch and location information",
-    step3: "Create the first warehouse",
-    step4: "Prepare the warehouse map",
-    step5: "Add the first product or service",
+    step3: "Warehouse management, mapping & product uploading",
     step6: "Set customer portal visibility",
     stepCalendar: "If you work with service/rental/tours, set up calendar & capacity",
     statusWaiting: "Waiting",
@@ -156,9 +152,7 @@ const texts = {
     setupTitle: "Первые шаги настройки",
     step1: "Заполнить данные компании",
     step2: "Добавить филиалы и местоположение",
-    step3: "Создать первый склад",
-    step4: "Подготовить карту склада",
-    step5: "Добавить первый товар или услугу",
+    step3: "Управление складом, разметка и загрузка товаров",
     step6: "Настроить видимость в клиентском портале",
     stepCalendar: "Если вы работаете с услугами/арендой/турами, настройте календарь и вместимость",
     statusWaiting: "Ожидает",
@@ -221,9 +215,7 @@ const texts = {
     setupTitle: "პირველი დაყენების ნაბიჯები",
     step1: "კომპანიის ინფორმაციის დასრულება",
     step2: "ფილიალისა და მდებარეობის შეყვანა",
-    step3: "პირველი საწყობის შექმნა",
-    step4: "საწყობის რუკის მომზადება",
-    step5: "პირველი პროდუქტის ან სერვისის დამატება",
+    step3: "საწყობის მართვა, რუკა და პროდუქტის ჩატვირთვა",
     step6: "კლიენტის პორტალის ხილვადობის დაყენება",
     stepCalendar: "თუ მუშაობთ სერვისებთან/იჯარასთან/ტურებთან, დააყენეთ კალენდარი და ტევადობა",
     statusWaiting: "ელოდება",
@@ -286,9 +278,7 @@ const texts = {
     setupTitle: "Erste Einrichtungsschritte",
     step1: "Firmendaten vervollständigen",
     step2: "Filial- und Standortdaten eingeben",
-    step3: "Erstes Lager erstellen",
-    step4: "Lagerplan vorbereiten",
-    step5: "Erstes Produkt oder Service hinzufügen",
+    step3: "Lagerverwaltung, Kartierung und Produktupload",
     step6: "Sichtbarkeit im Kundenportal einstellen",
     stepCalendar: "Wenn Sie mit Dienstleistungen/Vermietung/Touren arbeiten, richten Sie Kalender & Kapazität ein",
     statusWaiting: "Wartet",
@@ -576,18 +566,8 @@ export default function DashboardPage() {
     },
     {
       label: currentText.step3,
-      completed: isWarehouseDone,
+      completed: isWarehouseDone && isProductsDone,
       href: "/dashboard/warehouses",
-    },
-    {
-      label: currentText.step4,
-      completed: isWarehouseDone,
-      href: "/dashboard/warehouses",
-    },
-    {
-      label: currentText.step5,
-      completed: isProductsDone,
-      href: "/dashboard/products",
     },
     {
       label: currentText.stepCalendar,
@@ -802,16 +782,19 @@ export default function DashboardPage() {
                     </div>
 
                     <div>
-                      <div className={`text-xs font-black transition-all ${
-                        step.completed ? "text-slate-500 line-through font-bold" : "text-slate-800"
-                      }`}>{step.label}</div>
-                      <div className="mt-1 text-[10px] font-black uppercase tracking-wider">
-                        {step.completed ? (
-                          <span className="text-emerald-700">✓ {currentText.statusCompleted}</span>
-                        ) : (
-                          <span className="text-amber-600">⏳ {currentText.statusWaiting}</span>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <div className={`text-xs font-black transition-all ${
+                          step.completed ? "text-slate-400 font-bold" : "text-slate-800"
+                        }`}>{step.label}</div>
+                        {step.completed && (
+                          <span className="text-emerald-700 font-black text-xs shrink-0 select-none">✓</span>
                         )}
                       </div>
+                      {!step.completed && (
+                        <div className="mt-1 text-[10px] font-black uppercase tracking-wider">
+                          <span className="text-amber-600">⏳ {currentText.statusWaiting}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 

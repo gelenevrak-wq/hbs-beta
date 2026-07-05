@@ -249,37 +249,37 @@ function generateQrCodeSvg(text: string) {
 const translations = {
   tr: {
     header: "HBS Ürün & Stok Kataloğu",
-    searchPlaceholder: "{t.barcode}, SKU, ürün adı veya marka ara...",
-    categoryFilterLabel: "{t.category} Filtresi",
-    brandFilterLabel: "{t.brand} Filtresi",
-    allCategories: "{t.allCategories}",
-    allBrands: "{t.allBrands}",
-    addNewProductBtn: "{t.addNewProductBtn}",
-    importExcelBtn: "{t.importExcelBtn}",
+    searchPlaceholder: "Barkod, SKU, ürün adı veya marka ara...",
+    categoryFilterLabel: "Kategori Filtresi",
+    brandFilterLabel: "Marka Filtresi",
+    allCategories: "Tüm Kategoriler",
+    allBrands: "Tüm Markalar",
+    addNewProductBtn: "➕ Yeni Ürün Ekle",
+    importExcelBtn: "📥 Excel / CSV İçe Aktar",
     availableProductsHeader: "Mevcut Ürünler",
     selectAll: "Tümünü Seç",
     deleteSelected: "Seçilenleri Sil",
     noProductsFound: "Filtreye uygun ürün bulunamadı.",
-    actionsLabel: "{t.actionsLabel}",
+    actionsLabel: "İşlemler",
     editBtn: "✏️ Düzenle",
     deleteBtn: "🗑️ Sil",
     duplicateBtn: "👯 Kopya Üret",
     printLabelBtn: "🖨️ Yazdır",
     transferBtn: "🔄 Sevk Et",
-    recordType: "{t.recordType}",
-    productName: "{t.productName}",
-    skuCode: "{t.skuCode}",
+    recordType: "Kayıt Türü",
+    productName: "Ürün Adı",
+    skuCode: "SKU / Ürün Kodu",
     barcode: "Barkod",
     brand: "Marka",
     category: "Kategori",
-    description: "{t.description}",
-    purchasePrice: "{t.purchasePrice}",
-    salePrice: "{t.salePrice}",
-    currency: "{t.currency}",
-    warehouseLocation: "{t.warehouseLocation}",
-    shelfLocation: "{t.shelfLocation}",
-    stockQuantity: "{t.stockQuantity}",
-    imageUrl: "{t.imageUrl}",
+    description: "Açıklama",
+    purchasePrice: "Alış Fiyatı",
+    salePrice: "Satış Fiyatı",
+    currency: "Para Birimi",
+    warehouseLocation: "Depo Konumu",
+    shelfLocation: "Raf Konumu",
+    stockQuantity: "Stok Miktarı",
+    imageUrl: "Görsel URL",
     save: "Kaydet",
     cancel: "İptal",
     editProduct: "Ürünü Düzenle",
@@ -454,9 +454,222 @@ const translations = {
   }
 };
 
+const scanMessages = {
+  tr: {
+    loading: "Tarayıcı yükleniyor... Lütfen bekleyin.",
+    libFail: "Tarayıcı kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.",
+    ready: "Kamera hazır. Barkodu veya karekodu hizalayın...",
+    fail: "Kamera başlatılamadı. İzinlerinizi kontrol edin veya manuel giriş yapın.",
+    detectedBarcode: "✓ Algılandı: {code} (Barkod)",
+    detectedQr: "✓ Algılandı: {code} (Karekod)"
+  },
+  en: {
+    loading: "Scanner loading... Please wait.",
+    libFail: "Scanner library failed to load. Check your internet connection.",
+    ready: "Camera ready. Align barcode or QR code...",
+    fail: "Camera failed to start. Check permissions or input manually.",
+    detectedBarcode: "✓ Detected: {code} (Barcode)",
+    detectedQr: "✓ Detected: {code} (QR Code)"
+  },
+  de: {
+    loading: "Scanner lädt... Bitte warten.",
+    libFail: "Scanner-Bibliothek konnte nicht geladen werden. Prüfen Sie Ihre Internetverbindung.",
+    ready: "Kamera bereit. Barcode oder QR-Code ausrichten...",
+    fail: "Kamera konnte nicht gestartet werden. Berechtigungen prüfen oder manuell eingeben.",
+    detectedBarcode: "✓ Erkannt: {code} (Barcode)",
+    detectedQr: "✓ Erkannt: {code} (QR-Code)"
+  },
+  ru: {
+    loading: "Сканер загружается... Пожалуйста, подождите.",
+    libFail: "Не удалось загрузить библиотеку сканера. Проверьте интернет-соединение.",
+    ready: "Камера готова. Выровняйте штрихкод или QR-код...",
+    fail: "Не удалось запустить камеру. Проверьте разрешения или введите вручную.",
+    detectedBarcode: "✓ Обнаружено: {code} (Штрихкод)",
+    detectedQr: "✓ Обнаружено: {code} (QR-код)"
+  },
+  ka: {
+    loading: "სკანერი იტვირთება... გთხოვთ დაელოდოთ.",
+    libFail: "სკანერის ბიბლიოთეკა ვერ ჩაიტვირთა. შეამოწმეთ ინტერნეტ კავშირი.",
+    ready: "კამერა მზადაა. გაასწორეთ შტრიხკოდი ან QR კოდი...",
+    fail: "კამერა ვერ ჩაირთო. შეამოწმეთ ნებართვები ან შეიყვანეთ ხელით.",
+    detectedBarcode: "✓ აღმოჩენილია: {code} (შტრიხკოდი)",
+    detectedQr: "✓ აღმოჩენილია: {code} (QR კოდი)"
+  }
+};
+
+const terminalMessages = {
+  tr: {
+    matched: "✓ Ürün okundu: {name}",
+    notFound: "⚠️ \"{code}\" ile eşleşen raf veya ürün bulunamadı!",
+    locationMatched: "✓ Lokasyon okundu: Raf {shelf}"
+  },
+  en: {
+    matched: "✓ Product matched: {name}",
+    notFound: "⚠️ No shelf or product matched with \"{code}\"!",
+    locationMatched: "✓ Location matched: Shelf {shelf}"
+  },
+  de: {
+    matched: "✓ Produkt erkannt: {name}",
+    notFound: "⚠️ Kein Regal oder Produkt passend zu \"{code}\" gefunden!",
+    locationMatched: "✓ Standort erkannt: Regal {shelf}"
+  },
+  ru: {
+    matched: "✓ Товар распознан: {name}",
+    notFound: "⚠️ Полка или товар с кодом \"{code}\" не найдены!",
+    locationMatched: "✓ Локация считана: Полка {shelf}"
+  },
+  ka: {
+    matched: "✓ პროდუქტი ნაპოვნია: {name}",
+    notFound: "⚠️ თარო ან პროდუქტი კოდით \"{code}\" ვერ მოიძებნა!",
+    locationMatched: "✓ ლოკაცია ნაპოვნია: თარო {shelf}"
+  }
+};
+
+const uiMessages = {
+  tr: {
+    scanAdded: "Kamera kaydı başarıyla eklendi!",
+    transferSuccess: '"{name}" başarıyla {wh} ({shelf}) konumuna sevk edildi.',
+    shelfUnassigned: "Rafsız",
+    excelDownloaded: "Excel ürün şablonu (.xls) geniş sütunlar, renkli başlıklar, açılır seçim listeleri (dropdown) ve özel biçimlendirmelerle indirildi.",
+    errFileEmpty: "Hata: Dosya boş veya başlık satırı dışında veri içermiyor.",
+    importSuccess: "Başarılı! {count} adet ürün/varyant kataloğa toplu olarak aktarıldı.",
+    errNoValidRow: "Hata: Dosyada eklenecek geçerli bir ürün satırı bulunamadı.",
+    errReadCSV: "CSV dosyası okunurken hata oluştu. Lütfen formatı kontrol edin.",
+    loadedForEdit: '"{name}" düzenleme için forma yüklendi. Değişiklikleri yaptıktan sonra sayfanın altındaki butona basarak kaydedebilirsiniz.',
+    deletedMessage: '"{name}" silindi. Geri almak için yukarıdaki butonu kullanabilirsiniz.',
+    copiedMessage: '"{name}" başarıyla kopyalandı! Yeni kopyalanan ürün listede en başa yerleştirildi.',
+    visibilityUpdated: '"{name}" vitrin görünürlüğü "{status}" olarak güncellendi.',
+    statusOpen: "Vitrin ve Pazar Yerinde Açık",
+    statusHidden: "Gizli",
+    errNameCategoryRequired: "Ürün/hizmet adı ve kategori zorunludur.",
+    saveSuccess: "Kayıt başarıyla güncellendi! Veritabanı ve yerel hafıza senkronize edildi.",
+    createSuccess: "Kayıt başarıyla oluşturuldu! Veritabanı ve yerel hafıza güncellendi.",
+    errSave: "Ürün kaydedilirken veritabanı veya yerel sunucu hatası oluştu.",
+    barcodeGenerated: "Benzersiz barkod kodu ({code}) otomatik olarak üretildi.",
+    qrGenerated: "Benzersiz karekod verisi ({code}) otomatik olarak üretildi.",
+    editCancelled: "Düzenleme iptal edildi.",
+    alertValidQty: "Lütfen geçerli bir sevk miktarı girin.",
+    alertInsufficientStock: "Yetersiz stok! En fazla {qty} adet transfer edebilirsiniz.",
+    alertValidNum: "Geçerli bir sayı giriniz.",
+    restoreSuccess: "Silinen ürün başarıyla geri yüklendi."
+  },
+  en: {
+    scanAdded: "Camera record successfully added!",
+    transferSuccess: '"{name}" was successfully transferred to {wh} ({shelf}).',
+    shelfUnassigned: "Unassigned",
+    excelDownloaded: "Excel product template (.xls) downloaded with wide columns, colored headers, dropdown selection lists, and custom formatting.",
+    errFileEmpty: "Error: File is empty or contains no data other than header row.",
+    importSuccess: "Success! {count} products/variants imported to catalog in bulk.",
+    errNoValidRow: "Error: No valid product row found to add in file.",
+    errReadCSV: "Error reading CSV file. Please check the format.",
+    loadedForEdit: '"{name}" loaded into form for editing. After making changes, click the button at the bottom of the page to save.',
+    deletedMessage: '"{name}" deleted. You can use the button above to undo.',
+    copiedMessage: '"{name}" successfully duplicated! The new duplicate product has been placed at the top of the list.',
+    visibilityUpdated: '"{name}" storefront visibility updated to "{status}".',
+    statusOpen: "Visible in Storefront & Marketplace",
+    statusHidden: "Hidden",
+    errNameCategoryRequired: "Product/service name and category are required.",
+    saveSuccess: "Record updated successfully! Database and local storage synchronized.",
+    createSuccess: "Record created successfully! Database and local storage updated.",
+    errSave: "An error occurred while saving the product to database or local storage.",
+    barcodeGenerated: "Unique barcode ({code}) generated automatically.",
+    qrGenerated: "Unique QR code ({code}) generated automatically.",
+    editCancelled: "Editing cancelled.",
+    alertValidQty: "Please enter a valid transfer quantity.",
+    alertInsufficientStock: "Insufficient stock! You can transfer at most {qty} units.",
+    alertValidNum: "Please enter a valid number.",
+    restoreSuccess: "Deleted product has been successfully restored."
+  },
+  de: {
+    scanAdded: "Kameraaufnahme erfolgreich hinzugefügt!",
+    transferSuccess: '"{name}" wurde erfolgreich nach {wh} ({shelf}) übertragen.',
+    shelfUnassigned: "Nicht zugewiesen",
+    excelDownloaded: "Excel-Produktvorlage (.xls) mit breiten Spalten, farbigen Kopfzeilen, Dropdown-Auswahllisten und benutzerdefinierter Formatierung heruntergeladen.",
+    errFileEmpty: "Fehler: Die Datei ist leer oder enthält außer der Kopfzeile keine Daten.",
+    importSuccess: "Erfolg! {count} Produkte/Varianten wurden in großen Mengen in den Katalog importiert.",
+    errNoValidRow: "Fehler: Keine gültige Produktzeile zum Hinzufügen in der Datei gefunden.",
+    errReadCSV: "Fehler beim Lesen der CSV-Datei. Bitte überprüfen Sie das Format.",
+    loadedForEdit: '"{name}" wurde zur Bearbeitung in das Formular geladen. Klicken Sie nach den Änderungen auf die Schaltfläche unten auf der Seite, um zu speichern.',
+    deletedMessage: '"{name}" gelöscht. Sie können die obige Schaltfläche verwenden, um dies rückgängig zu machen.',
+    copiedMessage: '"{name}" erfolgreich dupliziert! Das neue Duplikat wurde an den Anfang der Liste gesetzt.',
+    visibilityUpdated: '"{name}" Sichtbarkeit im Schaufenster wurde auf "{status}" aktualisiert.',
+    statusOpen: "Sichtbar in Schaufenster & Marktplatz",
+    statusHidden: "Ausgeblendet",
+    errNameCategoryRequired: "Produkt-/Dienstleistungsname und Kategorie sind erforderlich.",
+    saveSuccess: "Datensatz erfolgreich aktualisiert! Datenbank und lokaler Speicher synchronisiert.",
+    createSuccess: "Datensatz erfolgreich erstellt! Datenbank und lokaler Speicher aktualisiert.",
+    errSave: "Beim Speichern des Produkts in der Datenbank oder im lokalen Speicher ist ein Fehler aufgetreten.",
+    barcodeGenerated: "Eindeutiger Barcode ({code}) wurde automatisch generiert.",
+    qrGenerated: "Eindeutiger QR-Code ({code}) wurde automatisch generiert.",
+    editCancelled: "Bearbeitung abgebrochen.",
+    alertValidQty: "Bitte geben Sie eine gültige Transfermenge ein.",
+    alertInsufficientStock: "Ungenügender Lagerbestand! Sie können maximal {qty} Einheiten übertragen.",
+    alertValidNum: "Bitte geben Sie eine gültige Nummer ein.",
+    restoreSuccess: "Gelöschtes Produkt wurde erfolgreich wiederhergestellt."
+  },
+  ru: {
+    scanAdded: "Запись камеры успешно добавлена!",
+    transferSuccess: '"{name}" успешно перенесен в {wh} ({shelf}).',
+    shelfUnassigned: "Не назначено",
+    excelDownloaded: "Шаблон продукта Excel (.xls) загружен с широкими столбцами, цветными заголовками, выпадающими списками выбора и пользовательским форматированием.",
+    errFileEmpty: "Ошибка: файл пуст или не содержит данных, кроме строки заголовка.",
+    importSuccess: "Успех! {count} продуктов/вариантов успешно импортированы в каталог.",
+    errNoValidRow: "Ошибка: в файле не найдено допустимой строки продукта для добавления.",
+    errReadCSV: "Ошибка при чтении файла CSV. Пожалуйста, проверьте формат.",
+    loadedForEdit: '"{name}" загружен в форму для редактирования. После внесения изменений нажмите кнопку внизу страницы, чтобы сохранить их.',
+    deletedMessage: '"{name}" удален. Вы можете использовать кнопку выше, чтобы отменить это действие.',
+    copiedMessage: '"{name}" успешно дублирован! Новая копия помещена в начало списка.',
+    visibilityUpdated: 'Видимость витрины для "{name}" обновлена на "{status}".',
+    statusOpen: "Видимый на витрине и торговой площадке",
+    statusHidden: "Скрытый",
+    errNameCategoryRequired: "Название товара/услуги и категория обязательны.",
+    saveSuccess: "Запись успешно обновлена! База данных и локальное хранилище синхронизированы.",
+    createSuccess: "Запись успешно создана! База данных и локальное хранилище обновлены.",
+    errSave: "Произошла ошибка при сохранении продукта в базе данных или локальном хранилище.",
+    barcodeGenerated: "Уникальный штрихкод ({code}) сгенерирован автоматически.",
+    qrGenerated: "Уникальный QR-код ({code}) сгенерирован автоматически.",
+    editCancelled: "Редактирование отменено.",
+    alertValidQty: "Пожалуйста, введите допустимое количество перевода.",
+    alertInsufficientStock: "Недостаточно запасов! Вы можете перевести не более {qty} единиц.",
+    alertValidNum: "Пожалуйста, введите корректное число.",
+    restoreSuccess: "Удаленный товар успешно восстановлен."
+  },
+  ka: {
+    scanAdded: "კამერის ჩანაწერი წარმატებით დაემატა!",
+    transferSuccess: '"{name}" წარმატებით გადაიტანა {wh} ({shelf}) მდებარეობაზე.',
+    shelfUnassigned: "გაუნაწილებელი",
+    excelDownloaded: "Excel პროდუქტის შაბლონი (.xls) ჩამოიტვირთა ფართო სვეტებით, ფერადი სათაურებით, ჩამოსაშლელი სიებით და მორგებული ფორმატირებით.",
+    errFileEmpty: "შეცდომა: ფაილი ცარიელია ან არ შეიცავს მონაცემებს სათაურის გარდა.",
+    importSuccess: "წარმატება! {count} პროდუქტი/ვარიანტი იმპორტირებულია კატალოგში.",
+    errNoValidRow: "შეცდომა: ფაილში დასამატებელი პროდუქტის ვალიდური რიგი ვერ მოიძებნა.",
+    errReadCSV: "შეცდომა CSV ფაილის წაკითხვისას. გთხოვთ შეამოწმოთ ფორმატი.",
+    loadedForEdit: '"{name}" ჩაიტვირთა ფორმაში რედაქტირებისთვის. ცვლილებების შეტანის შემდეგ დააჭირეთ გვერდის ბოლოში მდებარე ღილაკს შესანახად.',
+    deletedMessage: '"{name}" წაიშალა. გასაუქმებლად შეგიძლიათ გამოიყენოთ ზემოთ მდებარე ღილაკი.',
+    copiedMessage: '"{name}" წარმატებით დუბლირდა! ახალი დუბლიკატი მოთავსდა სიის სათავეში.',
+    visibilityUpdated: '"{name}" ვიტრინის ხილვადობა განახლდა როგორც "{status}".',
+    statusOpen: "ხილულია ვიტრინასა და ბაზარზე",
+    statusHidden: "ფარული",
+    errNameCategoryRequired: "პროდუქტის/სერვისის სახელი და კატეგორია სავალდებულოა.",
+    saveSuccess: "ჩანაწერი წარმატებით განახლდა! მონაცემთა ბაზა და ლოკალური მეხსიერება სინქრონიზებულია.",
+    createSuccess: "ჩანაწერი წარმატებით შეიქმნა! მონაცემთა ბაზა და ლოკალური მეხსიერება განახლდა.",
+    errSave: "შეცდომა პროდუქტის შენახვისას მონაცემთა ბაზაში ან ლოკალურ მეხსიერებაში.",
+    barcodeGenerated: "უნიკალური შტრიხკოდი ({code}) ავტომატურად გენერირდა.",
+    qrGenerated: "უნიკალური QR კოდი ({code}) ავტომატურად გენერირდა.",
+    editCancelled: "რედაქტირება გაუქმდა.",
+    alertValidQty: "გთხოვთ შეიყვანოთ გადასატანი რაოდენობის ვალიდური მნიშვნელობა.",
+    alertInsufficientStock: "არასაკმარისი მარაგი! შეგიძლიათ გადაიტანოთ მაქსიმუმ {qty} ერთეული.",
+    alertValidNum: "გთხოვთ შეიყვანოთ ვალიდური რიცხვი.",
+    restoreSuccess: "წაშლილი პროდუქტი წარმატებით აღდგა."
+  }
+};
+
 export default function ProductsPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
-  const t = translations[language || "tr"];
+  const activeLang = language || "tr";
+  const t = translations[activeLang] || translations.tr;
+  const sm = scanMessages[activeLang] || scanMessages.tr;
+  const tm = terminalMessages[activeLang] || terminalMessages.tr;
+  const um = uiMessages[activeLang] || uiMessages.tr;
   const [isSaving, setIsSaving] = useState(false);
   const [showCategorySuggestions, setShowCategorySuggestions] = useState(false);
 
@@ -693,10 +906,10 @@ export default function ProductsPage() {
         videoEl.setAttribute("playsinline", "true");
         
         if (mode === 'scan') {
-          setScanMessage("Tarayıcı yükleniyor... Lütfen bekleyin.");
+          setScanMessage(sm.loading);
           const ZXingClass = await loadZXing();
           if (!ZXingClass) {
-            setScanMessage("Tarayıcı kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.");
+            setScanMessage(sm.libFail);
             return;
           }
 
@@ -704,7 +917,7 @@ export default function ProductsPage() {
             zxingReaderRef.current = new (window as any).ZXing.BrowserMultiFormatReader();
           }
 
-          setScanMessage("Kamera hazır. Barkodu veya karekodu hizalayın...");
+          setScanMessage(sm.ready);
           zxingReaderRef.current.decodeFromVideoElement(videoEl, (result: any, err: any) => {
             if (result && result.text) {
               handleCodeDetected(result.text);
@@ -714,7 +927,7 @@ export default function ProductsPage() {
       }
     } catch (e) {
       console.error("Camera access failed:", e);
-      setScanMessage("Kamera başlatılamadı. İzinlerinizi kontrol edin veya manuel giriş yapın.");
+      setScanMessage(sm.fail);
     }
   };
 
@@ -827,7 +1040,7 @@ export default function ProductsPage() {
       const blob = new Blob(chunks, { type: 'video/webm' });
       const videoUrlStr = URL.createObjectURL(blob);
       setVideoUrl(videoUrlStr);
-      setMessage("Kamera kaydı başarıyla eklendi!");
+      setMessage(um.scanAdded);
     };
     recorder.start();
     setIsRecording(true);
@@ -846,10 +1059,10 @@ export default function ProductsPage() {
     playBeep();
     if (cameraTargetField === 'barcode') {
       setBarcode(code);
-      setScanMessage(`✓ Algılandı: ${code} (Barkod)`);
+      setScanMessage(sm.detectedBarcode.replace("{code}", code));
     } else if (cameraTargetField === 'qrCode') {
       setQrCode(code);
-      setScanMessage(`✓ Algılandı: ${code} (Karekod)`);
+      setScanMessage(sm.detectedQr.replace("{code}", code));
     }
     setTimeout(() => {
       stopCamera();
@@ -1118,12 +1331,12 @@ export default function ProductsPage() {
     const currentQty = parseInt(targetProd.quantity) || 0;
 
     if (qtyToTransfer <= 0) {
-      alert("Lütfen geçerli bir sevk miktarı girin.");
+      alert(um.alertValidQty);
       return;
     }
 
     if (qtyToTransfer > currentQty) {
-      alert(`Yetersiz stok! En fazla ${currentQty} adet transfer edebilirsiniz.`);
+      alert(um.alertInsufficientStock.replace("{qty}", String(currentQty)));
       return;
     }
 
@@ -1170,7 +1383,12 @@ export default function ProductsPage() {
 
     setProducts(updatedProducts);
     setIsTransferModalOpen(false);
-    setMessage(`"${targetProd.name}" başarıyla ${transferToWarehouse} (${transferToShelf || "Rafsız"}) konumuna sevk edildi.`);
+    setMessage(
+      um.transferSuccess
+        .replace("{name}", getLocalizedField(targetProd.name, activeLang))
+        .replace("{wh}", transferToWarehouse)
+        .replace("{shelf}", transferToShelf || um.shelfUnassigned)
+    );
   };
 
   function handleTerminalScan(code: string) {
@@ -1199,7 +1417,7 @@ export default function ProductsPage() {
     if (matchedShelf) {
       setTerminalScannedShelf(matchedShelf);
       setTerminalScannedProduct(null);
-      setTerminalMessage(`✓ Lokasyon okundu: Raf ${matchedShelf}`);
+      setTerminalMessage(tm.locationMatched.replace("{shelf}", matchedShelf));
       playBeep();
       return;
     }
@@ -1209,13 +1427,13 @@ export default function ProductsPage() {
       (p.barcode && p.barcode.toLowerCase() === cleanCode) ||
       (p.sku && p.sku.toLowerCase() === cleanCode) ||
       (p.oemCode && p.oemCode.toLowerCase() === cleanCode) ||
-      p.name.toLowerCase().includes(cleanCode)
+      getLocalizedField(p.name, activeLang).toLowerCase().includes(cleanCode)
     );
 
     if (matchedProd) {
       setTerminalScannedProduct(matchedProd);
       setTerminalScannedShelf(null);
-      setTerminalMessage(`✓ Ürün okundu: ${matchedProd.name}`);
+      setTerminalMessage(tm.matched.replace("{name}", getLocalizedField(matchedProd.name, activeLang)));
       playBeep();
       return;
     }
@@ -1223,7 +1441,7 @@ export default function ProductsPage() {
     // 3. Fallback
     setTerminalScannedProduct(null);
     setTerminalScannedShelf(null);
-    setTerminalMessage(`⚠️ "${code}" ile eşleşen raf veya ürün bulunamadı!`);
+    setTerminalMessage(tm.notFound.replace("{code}", code));
     playBeep();
   }
 
@@ -1426,7 +1644,7 @@ export default function ProductsPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    setMessage("Excel ürün şablonu (.xls) geniş sütunlar, renkli başlıklar, açılır seçim listeleri (dropdown) ve özel biçimlendirmelerle indirildi.");
+    setMessage(um.excelDownloaded);
   }
 
   function handleCSVImport(event: React.ChangeEvent<HTMLInputElement>) {
@@ -1455,7 +1673,7 @@ export default function ProductsPage() {
           rows.shift(); // Remove the Excel helper separator line
         }
         if (rows.length < 2) {
-          setMessage("Hata: Dosya boş veya başlık satırı dışında veri içermiyor.");
+          setMessage(um.errFileEmpty);
           return;
         }
         
@@ -1564,13 +1782,13 @@ export default function ProductsPage() {
         
         if (newProducts.length > 0) {
           setProducts((current) => [...newProducts, ...current]);
-          setMessage(`Başarılı! ${newProducts.length} adet ürün/varyant kataloğa toplu olarak aktarıldı.`);
+          setMessage(um.importSuccess.replace("{count}", String(newProducts.length)));
         } else {
-          setMessage("Hata: Dosyada eklenecek geçerli bir ürün satırı bulunamadı.");
+          setMessage(um.errNoValidRow);
         }
       } catch (e) {
         console.error("CSV import error:", e);
-        setMessage("CSV dosyası okunurken hata oluştu. Lütfen formatı kontrol edin.");
+        setMessage(um.errReadCSV);
       }
     };
     reader.readAsText(file);
@@ -1640,7 +1858,7 @@ export default function ProductsPage() {
     setVideoUrl(p.videoUrl || "");
     setVariants(p.variants || []);
     setGalleryUrls(p.galleryUrls || (p.imageUrl ? [p.imageUrl] : []));
-    setMessage(`"${p.name}" düzenleme için forma yüklendi. Değişiklikleri yaptıktan sonra sayfanın altındaki butona basarak kaydedebilirsiniz.`);
+    setMessage(um.loadedForEdit.replace("{name}", getLocalizedField(p.name, activeLang)));
   }
 
   const handleUndoDelete = async () => {
@@ -1667,8 +1885,8 @@ export default function ProductsPage() {
       setProducts((prev) => [lastDeletedProduct, ...prev]);
       setLastDeletedProduct(null);
       setShowUndoBanner(false);
-      setSuccessModalTitle("Geri Alındı!");
-      setSuccessModalDesc("Silinen ürün başarıyla geri yüklendi.");
+      setSuccessModalTitle(activeLang === "en" ? "Restored!" : activeLang === "de" ? "Wiederhergestellt!" : activeLang === "ru" ? "Восстановлено!" : activeLang === "ka" ? "აღდგა!" : "Geri Alındı!");
+      setSuccessModalDesc(um.restoreSuccess);
       setShowSuccessModal(true);
     } catch (err) {
       console.error(err);
@@ -1695,7 +1913,7 @@ export default function ProductsPage() {
     // 1. Update UI state immediately
     const updatedProducts = products.filter((p) => p.id !== id);
     setProducts(updatedProducts);
-    setMessage(`"${productName}" silindi. Geri almak için yukarıdaki butonu kullanabilirsiniz.`);
+    setMessage(um.deletedMessage.replace("{name}", productName));
     if (editingProductId === id) {
       setEditingProductId(null);
       resetForm();
@@ -1885,7 +2103,7 @@ export default function ProductsPage() {
     }
 
     setProducts((current) => [duplicated, ...current]);
-    setMessage(`"${p.name}" başarıyla kopyalandı! Yeni kopyalanan ürün listede en başa yerleştirildi.`);
+    setMessage(um.copiedMessage.replace("{name}", getLocalizedField(p.name, activeLang)));
   }
 
   async function toggleVisibility(id: string) {
@@ -1924,13 +2142,17 @@ export default function ProductsPage() {
     setProducts(updatedProducts);
     const targetProduct = products.find(p => p.id === id);
     const isNowVisible = targetProduct?.visibility !== "visible";
-    setMessage(`"${targetProduct?.name}" vitrin görünürlüğü "${isNowVisible ? "Vitrin ve Pazar Yerinde Açık" : "Gizli"}" olarak güncellendi.`);
+    setMessage(
+      um.visibilityUpdated
+        .replace("{name}", getLocalizedField(targetProduct?.name, activeLang))
+        .replace("{status}", isNowVisible ? um.statusOpen : um.statusHidden)
+    );
   }
 
   async function saveProduct() {
     if (isSaving) return;
     if (!name.trim() || !category.trim()) {
-      setMessage("Ürün/hizmet adı ve kategori zorunludur.");
+      setMessage(um.errNameCategoryRequired);
       return;
     }
     setIsSaving(true);
@@ -2058,11 +2280,11 @@ export default function ProductsPage() {
         }
 
         setProducts(updatedProducts);
-        setMessage("Kayıt başarıyla güncellendi! Veritabanı ve yerel hafıza senkronize edildi.");
+        setMessage(um.saveSuccess);
         setEditingProductId(null);
         resetForm();
-        setSuccessModalTitle("Değişiklikler Kaydedildi!");
-        setSuccessModalDesc(`"${name}" isimli ürün güncellemeleri kaydedildi.`);
+        setSuccessModalTitle(activeLang === "en" ? "Changes Saved!" : activeLang === "de" ? "Änderungen gespeichert!" : activeLang === "ru" ? "Изменения сохранены!" : activeLang === "ka" ? "ცვლილებები შენახულია!" : "Değişiklikler Kaydedildi!");
+        setSuccessModalDesc(activeLang === "en" ? `Updates for "${name}" saved.` : activeLang === "de" ? `Updates für "${name}" gespeichert.` : activeLang === "ru" ? `Обновления для "${name}" сохранены.` : activeLang === "ka" ? `ცვლილებები პროდუქტისთვის "${name}" შენახულია.` : `"${name}" isimli ürün güncellemeleri kaydedildi.`);
         setShowSuccessModal(true);
       } else {
         // CREATE MODE
@@ -2122,15 +2344,15 @@ export default function ProductsPage() {
         }
 
         setProducts((currentProducts) => [newProduct, ...currentProducts]);
-        setMessage("Kayıt başarıyla oluşturuldu! Veritabanı ve yerel hafıza güncellendi.");
+        setMessage(um.createSuccess);
         resetForm();
-        setSuccessModalTitle("Ürün Kaydedildi!");
-        setSuccessModalDesc(`"${name}" isimli ürün envantere eklendi.`);
+        setSuccessModalTitle(activeLang === "en" ? "Product Saved!" : activeLang === "de" ? "Produkt gespeichert!" : activeLang === "ru" ? "Товар сохранен!" : activeLang === "ka" ? "პროდუქტი შენახულია!" : "Ürün Kaydedildi!");
+        setSuccessModalDesc(activeLang === "en" ? `Product "${name}" added to inventory.` : activeLang === "de" ? `Produkt "${name}" zum Inventar hinzugefügt.` : activeLang === "ru" ? `Товар "${name}" добавлен в инвентарь.` : activeLang === "ka" ? `პროდუქტი "${name}" დაემატა ინვენტარში.` : `"${name}" isimli ürün envantere eklendi.`);
         setShowSuccessModal(true);
       }
     } catch (e) {
       console.error("Error saving product:", e);
-      setMessage("Ürün kaydedilirken veritabanı veya yerel sunucu hatası oluştu.");
+      setMessage(um.errSave);
     } finally {
       setIsSaving(false);
     }
@@ -2672,7 +2894,7 @@ export default function ProductsPage() {
                     type="button"
                     onClick={() => startCamera('scan', 'barcode')}
                     className="px-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-bold transition flex items-center justify-center shrink-0"
-                    title="Kamerayla Tara"
+                    title={activeLang === "en" ? "Scan with Camera" : activeLang === "de" ? "Mit Kamera scannen" : activeLang === "ru" ? "Сканировать камерой" : activeLang === "ka" ? "კამერით სკანირება" : "Kamerayla Tara"}
                   >
                     📷
                   </button>
@@ -2682,12 +2904,12 @@ export default function ProductsPage() {
                       const randBarcode = "869" + Math.floor(1000000000 + Math.random() * 9000000000);
                       setBarcode(randBarcode);
                       playBeep();
-                      setMessage(`Benzersiz barkod kodu (${randBarcode}) otomatik olarak üretildi.`);
+                      setMessage(um.barcodeGenerated.replace("{code}", randBarcode));
                     }}
                     className="px-2 bg-blue-50 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-100 text-[10px] font-black transition shrink-0"
-                    title="Otomatik Benzersiz Barkod Üret"
+                    title={activeLang === "en" ? "Generate Auto Unique Barcode" : activeLang === "de" ? "Automatischen eindeutigen Barcode generieren" : activeLang === "ru" ? "Сгенерировать автоматический уникальный штрихкод" : activeLang === "ka" ? "ავტომატური უნიკალური შტრიხკოდის გენერირება" : "Otomatik Benzersiz Barkod Üret"}
                   >
-                    Üret
+                    {activeLang === "en" ? "Gen" : activeLang === "de" ? "Gen" : activeLang === "ru" ? "Созд" : activeLang === "ka" ? "გენ" : "Üret"}
                   </button>
                 </div>
               </div>
@@ -2704,7 +2926,7 @@ export default function ProductsPage() {
                     type="button"
                     onClick={() => startCamera('scan', 'qrCode')}
                     className="px-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 text-xs font-bold transition flex items-center justify-center shrink-0"
-                    title="Kamerayla Tara"
+                    title={activeLang === "en" ? "Scan with Camera" : activeLang === "de" ? "Mit Kamera scannen" : activeLang === "ru" ? "Сканировать камерой" : activeLang === "ka" ? "კამერით სკანირება" : "Kamerayla Tara"}
                   >
                     📷
                   </button>
@@ -2714,12 +2936,12 @@ export default function ProductsPage() {
                       const randQr = "QR-" + (sku || "STOCK") + "-" + Math.floor(Math.random() * 9000 + 1000);
                       setQrCode(randQr);
                       playBeep();
-                      setMessage(`Benzersiz karekod verisi (${randQr}) otomatik olarak üretildi.`);
+                      setMessage(um.qrGenerated.replace("{code}", randQr));
                     }}
                     className="px-2 bg-blue-50 border border-blue-200 text-blue-600 rounded-xl hover:bg-blue-100 text-[10px] font-black transition shrink-0"
-                    title="Otomatik Benzersiz QR Üret"
+                    title={activeLang === "en" ? "Generate Auto Unique QR" : activeLang === "de" ? "Automatischen eindeutigen QR generieren" : activeLang === "ru" ? "Сгенерировать автоматический уникальный QR" : activeLang === "ka" ? "ავტომატური უნიკალური QR გენერირება" : "Otomatik Benzersiz QR Üret"}
                   >
-                    Üret
+                    {activeLang === "en" ? "Gen" : activeLang === "de" ? "Gen" : activeLang === "ru" ? "Созд" : activeLang === "ka" ? "გენ" : "Üret"}
                   </button>
                 </div>
               </div>
@@ -3129,11 +3351,11 @@ export default function ProductsPage() {
                   onClick={() => {
                     setEditingProductId(null);
                     resetForm();
-                    setMessage("Düzenleme iptal edildi.");
+                    setMessage(um.editCancelled);
                   }}
                   className="w-1/3 rounded-xl border border-slate-200 bg-white py-3 text-sm font-black text-slate-900 font-extrabold hover:bg-slate-50 transition cursor-pointer"
                 >
-                  Vazgeç
+                  {t.cancel}
                 </button>
               )}
               <button
@@ -3251,22 +3473,27 @@ export default function ProductsPage() {
                         <h3 className="font-black text-slate-800 truncate">{getLocalizedField(p.name, language || "tr")}</h3>
                       </div>
                       {p.dynamicPricingEnabled && (
-                        <span className="rounded-full px-2 py-0.5 text-[9px] font-extrabold bg-blue-600 text-white animate-pulse shrink-0 border border-blue-700">🤖 AI Fiyatı</span>
+                        <span className="rounded-full px-2 py-0.5 text-[9px] font-extrabold bg-blue-600 text-white animate-pulse shrink-0 border border-blue-700">
+                          🤖 {activeLang === "en" ? "AI Price" : activeLang === "de" ? "KI-Preis" : activeLang === "ru" ? "ИИ Цена" : activeLang === "ka" ? "AI ფასი" : "AI Fiyatı"}
+                        </span>
                       )}
                       <span className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold shrink-0 ${p.pricingMode === "fixed" ? "bg-emerald-100 text-emerald-800 border border-emerald-200" : p.pricingMode === "quote" ? "bg-amber-100 text-amber-800 border border-amber-200" : "bg-purple-100 text-purple-800 border border-purple-200"}`}>
-
-                        {p.pricingMode === "fixed" ? "Fiyat Göster" : p.pricingMode === "quote" ? "Teklif Alın" : "Teklif Verin"}
+                        {p.pricingMode === "fixed" 
+                          ? (activeLang === "en" ? "Show Price" : activeLang === "de" ? "Preis anzeigen" : activeLang === "ru" ? "Показать цену" : activeLang === "ka" ? "ფასის ჩვენება" : "Fiyat Göster") 
+                          : p.pricingMode === "quote" 
+                            ? (activeLang === "en" ? "Get Quote" : activeLang === "de" ? "Angebot anfordern" : activeLang === "ru" ? "Запросить цену" : activeLang === "ka" ? "ფასის მოთხოვნა" : "Teklif Alın") 
+                            : (activeLang === "en" ? "Place Bid" : activeLang === "de" ? "Gebot abgeben" : activeLang === "ru" ? "Сделать ставку" : activeLang === "ka" ? "ფასის შეთავაზება" : "Teklif Verin")}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-1 text-slate-600">
-                        <p><b>Kategori:</b> {p.category}</p>
-                        <p><b>Stok SKU:</b> {p.sku || "-"}</p>
-                        <p><b>Barkod:</b> {p.barcode || "-"}</p>
-                        <p><b>Fiyat:</b> {p.pricingMode === "fixed" ? getDynamicPrice(p) : "Gizli"}</p>
-                        <p><b>Konum:</b> {p.warehouse} · {p.shelf}</p>
-                        <p><b>Giriş:</b> {p.entryDate || "-"}</p>
+                        <p><b>{t.category}:</b> {getLocalizedField(p.category, activeLang)}</p>
+                        <p><b>{activeLang === "en" ? "Stock SKU" : activeLang === "de" ? "Lager-SKU" : activeLang === "ru" ? "SKU запаса" : activeLang === "ka" ? "მარაგის SKU" : "Stok SKU"}:</b> {p.sku || "-"}</p>
+                        <p><b>{t.barcode}:</b> {p.barcode || "-"}</p>
+                        <p><b>{activeLang === "en" ? "Price" : activeLang === "de" ? "Preis" : activeLang === "ru" ? "Цена" : activeLang === "ka" ? "ფასი" : "Fiyat"}:</b> {p.pricingMode === "fixed" ? getDynamicPrice(p) : (activeLang === "en" ? "Hidden" : activeLang === "de" ? "Versteckt" : activeLang === "ru" ? "Скрыто" : activeLang === "ka" ? "ფარული" : "Gizli")}</p>
+                        <p><b>{activeLang === "en" ? "Location" : activeLang === "de" ? "Standort" : activeLang === "ru" ? "Локация" : activeLang === "ka" ? "მდებარეობა" : "Konum"}:</b> {p.warehouse} · {p.shelf}</p>
+                        <p><b>{activeLang === "en" ? "Entry" : activeLang === "de" ? "Eingang" : activeLang === "ru" ? "Поступление" : activeLang === "ka" ? "შემოსვლა" : "Giriş"}:</b> {p.entryDate || "-"}</p>
                       </div>
 
                       <div className="w-16 h-16 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
