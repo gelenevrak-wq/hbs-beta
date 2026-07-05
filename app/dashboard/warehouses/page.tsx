@@ -1123,6 +1123,38 @@ export default function WarehousesRevampPage() {
     }
   };
 
+  const handlePointerDownDrag = (e: React.PointerEvent, id: string, name: string, qty: number) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setActiveDragProduct({ id, name, qty });
+    setDragCoords({ x: e.clientX, y: e.clientY });
+  };
+
+  const handlePointerMoveDrag = (e: React.PointerEvent) => {
+    if (!activeDragProduct) return;
+    setDragCoords({ x: e.clientX, y: e.clientY });
+  };
+
+  const handlePointerUpDrag = (e: React.PointerEvent) => {
+    if (!activeDragProduct) return;
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+
+    const element = document.elementFromPoint(e.clientX, e.clientY);
+    if (element) {
+      const shelfEl = element.closest("[data-shelf-code]");
+      if (shelfEl) {
+        const shelfCode = shelfEl.getAttribute("data-shelf-code");
+        if (shelfCode) {
+          executeDirectPlacement(activeDragProduct.id, shelfCode, activeDragProduct.qty);
+        }
+      }
+    }
+
+    setActiveDragProduct(null);
+    setDragCoords(null);
+  };
+
   // Resizable Panel layout states
   const [leftWidth, setLeftWidth] = useState(50); // 50% default width
   const [isResizing, setIsResizing] = useState(false);
@@ -1201,6 +1233,8 @@ export default function WarehousesRevampPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [showAiThumbsUp, setShowAiThumbsUp] = useState(false);
+  const [activeDragProduct, setActiveDragProduct] = useState<{ id: string, name: string, qty: number } | null>(null);
+  const [dragCoords, setDragCoords] = useState<{ x: number, y: number } | null>(null);
 
   // Add Warehouse States
   const [isNewWarehouseModalOpen, setIsNewWarehouseModalOpen] = useState(false);
@@ -4240,7 +4274,10 @@ ${sizeStr}
                               key={up.id} 
                               draggable="true"
                               onDragStart={(e) => handleProductDragStart(e, up.id, parseInt(up.quantity) || 1)}
-                              className={`flex justify-between items-center border p-2 rounded-xl transition-all cursor-grab active:cursor-grabbing ${
+                              onPointerDown={(e) => handlePointerDownDrag(e, up.id, getLocalizedField(up.name, language || "tr"), parseInt(up.quantity) || 1)}
+                              onPointerMove={handlePointerMoveDrag}
+                              onPointerUp={handlePointerUpDrag}
+                              className={`flex justify-between items-center border p-2 rounded-xl transition-all cursor-grab active:cursor-grabbing select-none ${
                                 isSelected 
                                   ? "border-blue-500 bg-blue-50 ring-2 ring-blue-300 shadow-md animate-pulse" 
                                   : "bg-white border-amber-200/50 hover:border-blue-300 hover:bg-slate-50"
@@ -5985,6 +6022,24 @@ ${sizeStr}
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Pointer Drag Preview Card */}
+      {activeDragProduct && dragCoords && (
+        <div 
+          className="fixed pointer-events-none z-[9999] rounded-xl border-2 border-blue-500 bg-white/90 p-3 shadow-2xl flex items-center gap-2 select-none animate-pulse"
+          style={{ 
+            left: `${dragCoords.x + 12}px`, 
+            top: `${dragCoords.y + 12}px`,
+            transform: "translate(0, -50%)"
+          }}
+        >
+          <span className="text-lg">📦</span>
+          <div className="text-[10px] leading-tight">
+            <p className="font-black text-slate-800">{activeDragProduct.name}</p>
+            <p className="font-bold text-blue-600">{activeDragProduct.qty} Adet</p>
           </div>
         </div>
       )}
