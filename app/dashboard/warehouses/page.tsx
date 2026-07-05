@@ -1113,6 +1113,10 @@ export default function WarehousesRevampPage() {
       const finalList = [...updatedList];
       let stateChanged = false;
 
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const updatesPayload: any[] = [];
+      const insertsPayload: any[] = [];
+
       for (let i = 0; i < finalList.length; i++) {
         const prod = finalList[i];
         const oldProd = products.find(p => p.id === prod.id);
@@ -1122,55 +1126,70 @@ export default function WarehousesRevampPage() {
           oldProd.shelf !== prod.shelf;
 
         if (hasChanged) {
-          try {
-            if (!oldProd) {
-              // Insert new product record
-              const { data, error } = await supabase
-                .from("offerable_items")
-                .insert({
-                  company_id: targetCompanyId,
-                  type: "product",
-                  name: prod.name,
-                  category: prod.category || "Genel",
-                  brand: prod.brand || "",
-                  code: prod.sku || `SKU-${Date.now()}`,
-                  barcode: prod.barcode || "",
-                  quantity: parseInt(prod.quantity) || 0,
-                  warehouse: prod.warehouse || null,
-                  shelf: prod.shelf || null,
-                  sale_price: parseFloat(prod.salePrice) || null,
-                  purchase_price: parseFloat(prod.purchasePrice) || null,
-                  description: prod.description || "",
-                  photo_urls: prod.imageUrl ? [prod.imageUrl] : []
-                })
-                .select()
-                .single();
-
-              if (error) {
-                console.error("Database insert failed for new product transfer:", error.message);
-              } else if (data) {
-                finalList[i] = {
-                  ...prod,
-                  id: data.id
-                };
-                stateChanged = true;
-              }
-            } else {
-              // Update existing product record
-              const { error } = await supabase
-                .from("offerable_items")
-                .update({
-                  quantity: parseInt(prod.quantity) || 0,
-                  warehouse: prod.warehouse || null,
-                  shelf: prod.shelf || null
-                })
-                .eq("id", prod.id);
-
-              if (error) console.error("Database sync failed for product ID:", prod.id, error.message);
-            }
-          } catch (e) {
-            console.error("Supabase request failed:", e);
+          const isUuid = uuidRegex.test(prod.id);
+          if (isUuid && oldProd) {
+            updatesPayload.push({
+              id: prod.id,
+              quantity: parseInt(prod.quantity) || 0,
+              warehouse: prod.warehouse || null,
+              shelf: prod.shelf || null
+            });
+          } else if (!oldProd) {
+            insertsPayload.push({ index: i, prod });
           }
+        }
+      }
+
+      // Execute bulk updates in parallel/single upsert call
+      if (updatesPayload.length > 0) {
+        try {
+          const { error } = await supabase
+            .from("offerable_items")
+            .upsert(updatesPayload);
+          if (error) {
+            console.error("Bulk Supabase update failed:", error.message);
+          }
+        } catch (e) {
+          console.error("Bulk Supabase request failed:", e);
+        }
+      }
+
+      // Execute sequential inserts for new products (usually just 1 item)
+      for (const item of insertsPayload) {
+        const { prod, index } = item;
+        try {
+          const { data, error } = await supabase
+            .from("offerable_items")
+            .insert({
+              company_id: targetCompanyId,
+              type: "product",
+              name: prod.name,
+              category: prod.category || "Genel",
+              brand: prod.brand || "",
+              code: prod.sku || `SKU-${Date.now()}`,
+              barcode: prod.barcode || "",
+              quantity: parseInt(prod.quantity) || 0,
+              warehouse: prod.warehouse || null,
+              shelf: prod.shelf || null,
+              sale_price: parseFloat(prod.salePrice) || null,
+              purchase_price: parseFloat(prod.purchasePrice) || null,
+              description: prod.description || "",
+              photo_urls: prod.imageUrl ? [prod.imageUrl] : []
+            })
+            .select()
+            .single();
+
+          if (error) {
+            console.error("Database insert failed for new product transfer:", error.message);
+          } else if (data) {
+            finalList[index] = {
+              ...prod,
+              id: data.id
+            };
+            stateChanged = true;
+          }
+        } catch (e) {
+          console.error("Supabase insert request failed:", e);
         }
       }
 
