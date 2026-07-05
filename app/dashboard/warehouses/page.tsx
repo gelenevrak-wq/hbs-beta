@@ -7,6 +7,8 @@ import { getLocalizedField } from "@/lib/translations";
 import VoiceAssistant from "@/components/VoiceAssistant";
 import CompactLanguageSwitcher, { LanguageCode, isLanguageCode } from "@/components/language/CompactLanguageSwitcher";
 
+const safeLower = (val: any) => String(val || "").toLowerCase();
+
 type CorridorConfig = {
   zone: string;
   name?: string; // Custom descriptive name
@@ -995,8 +997,8 @@ export default function WarehousesRevampPage() {
       // Calculate current occupied weight & volume on shelfCode
       const currentProductsOnShelf = products.filter(
         (p) =>
-          p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-          p.shelf.toLowerCase() === shelfCode.toLowerCase() &&
+          safeLower(p.warehouse) === safeLower(activeWh.name) &&
+          safeLower(p.shelf) === safeLower(shelfCode) &&
           p.id !== productId
       );
 
@@ -2237,8 +2239,8 @@ export default function WarehousesRevampPage() {
       // Calculate current occupied weight & volume on placeShelf
       const currentProductsOnShelf = products.filter(
         (p) =>
-          p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-          p.shelf.toLowerCase() === placeShelf.toLowerCase() &&
+          safeLower(p.warehouse) === safeLower(activeWh.name) &&
+          safeLower(p.shelf) === safeLower(placeShelf) &&
           p.id !== placeProductId
       );
 
