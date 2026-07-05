@@ -191,7 +191,7 @@ export default function AICopilotTooltip({ fieldKey, position = "top", className
       console.error("localStorage is disabled or secure:", e);
     }
     setLang(savedLang);
-  }, []);
+  }, [isOpen]);
 
   const data = EXPLANATIONS[fieldKey]?.[lang] || EXPLANATIONS[fieldKey]?.["tr"];
 
