@@ -161,7 +161,26 @@ const pageTranslations: Record<string, Record<string, string>> = {
     customerPortal: "Müşteri Portalı",
     storePanel: "Mağaza Paneli",
     hbsVitrin: "HBS Vitrin",
-    virtualStorefront: "🌍 Sanal Mağaza"
+    virtualStorefront: "🌍 Sanal Mağaza",
+    searchProductInStore: "Mağazada ürün ara...",
+    groupBuyBtnTitle: "Toptan indirim için ortak sipariş grubu oluşturun",
+    groupBuyBtnText: "👥 Birlikte Al",
+    groupBuyTitle: "B2B Ortak Satın Alma Grubu",
+    groupBuyCode: "Grup Kodu:",
+    jointDiscountLabel: "Ortak Alım İndirimi:",
+    wholesaleDiscountValue: "-%20 Toptan İskonto",
+    membersCountLabel: "Katılımcı Sayısı",
+    membersSuffix: "Üye",
+    groupPendingDesc: "Toptan iskonto oranının aktifleşmesi için 3 katılımcıya ulaşılamadı. Grubu paylaşarak diğer dükkanların katılımını sağlayın.",
+    groupSuccessDesc: "✓ Tebrikler! Grup tamamlandı. %20 indirim kuponunuz proforma faturanıza uygulandı: HBS-GROUP-20",
+    joinedText: "✓ Katıldınız",
+    joinGroupBtn: "👥 Gruba Katıl",
+    shareBtn: "🔗 Paylaş",
+    applyAndGoBtn: "Kuponu Uygula ve Siparişe Git",
+    joinedSuccessMsg: "Gruba başarıyla katıldınız!",
+    copiedShareMsg: "Grup bağlantısı panoya kopyalandı! Arkadaşlarınızla paylaşabilirsiniz.",
+    placeholderName: "Ahmet Yılmaz",
+    placeholderCity: "İstanbul"
   },
   en: {
     callStore: "Call Store:",
@@ -265,7 +284,26 @@ const pageTranslations: Record<string, Record<string, string>> = {
     customerPortal: "Customer Portal",
     storePanel: "Store Panel",
     hbsVitrin: "HBS Showcase",
-    virtualStorefront: "🌍 Virtual Store"
+    virtualStorefront: "🌍 Virtual Store",
+    searchProductInStore: "Search product in store...",
+    groupBuyBtnTitle: "Create a joint order group for wholesale discount",
+    groupBuyBtnText: "👥 Buy Together",
+    groupBuyTitle: "B2B Group Buy Pool",
+    groupBuyCode: "Group Code:",
+    jointDiscountLabel: "Joint Buy Discount:",
+    wholesaleDiscountValue: "-20% Wholesale Discount",
+    membersCountLabel: "Members Count",
+    membersSuffix: "Members",
+    groupPendingDesc: "Not enough members (3 required) to activate the wholesale discount. Share the group to invite other shops.",
+    groupSuccessDesc: "✓ Congratulations! The group is complete. Your 20% discount coupon has been applied to your proforma invoice: HBS-GROUP-20",
+    joinedText: "✓ Joined",
+    joinGroupBtn: "👥 Join Group",
+    shareBtn: "🔗 Share",
+    applyAndGoBtn: "Apply Coupon & Go to Order",
+    joinedSuccessMsg: "You have successfully joined the group!",
+    copiedShareMsg: "Group link copied to clipboard! You can share it with your friends.",
+    placeholderName: "John Doe",
+    placeholderCity: "London"
   },
   de: {
     callStore: "Shop anrufen:",
@@ -369,7 +407,24 @@ const pageTranslations: Record<string, Record<string, string>> = {
     customerPortal: "Kundenportal",
     storePanel: "Shop-Panel",
     hbsVitrin: "HBS Schaufenster",
-    virtualStorefront: "🌍 Virtueller Shop"
+    virtualStorefront: "🌍 Virtueller Shop",
+    searchProductInStore: "Produkt im Shop suchen...",
+    groupBuyBtnTitle: "Erstellen Sie eine Sammelbestellungsgruppe für Großhandelsrabatt",
+    groupBuyBtnText: "👥 Zusammen Kaufen",
+    groupBuyTitle: "B2B Sammelbestellungsgruppe",
+    groupBuyCode: "Gruppencode:",
+    jointDiscountLabel: "Sammelbestellungsrabatt:",
+    wholesaleDiscountValue: "-20% Großhandelsrabatt",
+    membersCountLabel: "Mitgliederanzahl",
+    membersSuffix: "Mitglieder",
+    groupPendingDesc: "Nicht genügend Mitglieder (3 erforderlich), um den Großhandelsrabatt zu aktivieren. Teilen Sie die Gruppe, um andere Shops einzuladen.",
+    groupSuccessDesc: "✓ Glückwunsch! Die Gruppe ist vollständig. Ihr Rabattgutschein von 20% wurde auf Ihre Proforma-Rechnung angewendet: HBS-GROUP-20",
+    joinedText: "✓ Beigetreten",
+    joinGroupBtn: "👥 Gruppe beitreten",
+    shareBtn: "🔗 Teilen",
+    applyAndGoBtn: "Gutschein anwenden & Zur Bestellung gehen",
+    joinedSuccessMsg: "Sie sind der Gruppe erfolgreich beigetreten!",
+    copiedShareMsg: "Gruppenlink in die Zwischenablage kopiert! Sie können ihn mit Ihren Freunden teilen."
   },
   ru: {
     callStore: "Позвонить в магазин:",
@@ -1315,7 +1370,7 @@ export default function StorePage() {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Mağazada ürün ara..."
+                  placeholder={getTxt("searchProductInStore")}
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-8 py-2 text-xs font-semibold outline-none focus:border-blue-500 focus:bg-white transition text-slate-800 shadow-inner" id="id-page-w-full-rounded-xl-border-border-slate-200-bg-slate-50-pl-8-pr-8-py-2-text-xs-font-semibold-outline-none-focus-border-blue-500-focus-bg-white-transition-text-slate-800-shadow-inner-302" aria-label="W full rounded xl border border slate 200 bg slate 50 pl 8 pr 8 py 2 text xs font semibold outline none focus border blue 500 focus bg white transition text slate 800 shadow inner" />
                 {search && (
                   <button
@@ -1487,7 +1542,7 @@ export default function StorePage() {
                                 });
                               }}
                               className="rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-800 font-extrabold text-[10px] px-2.5 py-1.5 transition active:scale-95 flex items-center gap-1 shrink-0"
-                              title="Toptan indirim için ortak sipariş grubu oluşturun"
+                              title={getTxt("groupBuyBtnTitle")}
                             >
                               👥 Birlikte Al
                             </button>
@@ -1631,7 +1686,7 @@ export default function StorePage() {
           <section className="space-y-4 animate-fadeIn">
             <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3">
               <span className="text-[11px] font-black uppercase text-blue-700 tracking-wider">{getTxt("salonStorefrontTitle")}</span>
-              <h1 className="text-3xl font-black">Trend Kuaför & Güzellik Merkezi</h1>
+              <h1 className="text-3xl font-black">{storeInfo?.name || "Trend Kuaför & Güzellik Merkezi"}</h1>
               <p className="text-xs text-slate-500 leading-relaxed max-w-4xl">
                 {getTxt("salonStoreDesc")}
               </p>
@@ -1836,7 +1891,7 @@ export default function StorePage() {
           <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4 animate-scaleIn">
             <div className="flex items-center justify-between">
               <span className="text-xl">👥</span>
-              <h3 className="text-base font-black text-slate-900">B2B Ortak Satın Alma Grubu</h3>
+              <h3 className="text-base font-black text-slate-900">{getTxt("groupBuyTitle")}</h3>
               <button
                 type="button"
                 onClick={() => setActiveGroupBuy(null)}
@@ -1848,18 +1903,18 @@ export default function StorePage() {
 
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-2">
               <p className="text-xs font-bold text-slate-800">📦 {activeGroupBuy.productName}</p>
-              <p className="text-[10px] text-slate-500 font-bold">Grup Kodu: <span className="font-mono text-blue-600">{activeGroupBuy.poolCode}</span></p>
+              <p className="text-[10px] text-slate-500 font-bold">{getTxt("groupBuyCode")} <span className="font-mono text-blue-600">{activeGroupBuy.poolCode}</span></p>
               <div className="border-t border-slate-200/60 pt-2 flex justify-between text-xs font-extrabold">
-                <span className="text-slate-600">Ortak Alım İndirimi:</span>
-                <span className="text-emerald-600">-%20 Toptan İskonto</span>
+                <span className="text-slate-600">{getTxt("jointDiscountLabel")}</span>
+                <span className="text-emerald-600">{getTxt("wholesaleDiscountValue")}</span>
               </div>
             </div>
 
             {/* Progress bar */}
             <div className="space-y-1.5">
               <div className="flex justify-between text-[10px] font-black text-slate-700 uppercase">
-                <span>Katılımcı Sayısı</span>
-                <span>{activeGroupBuy.count} / 3 Üye</span>
+                <span>{getTxt("membersCountLabel")}</span>
+                <span>{activeGroupBuy.count} / 3 {getTxt("membersSuffix")}</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
                 <div 
@@ -1883,17 +1938,17 @@ export default function StorePage() {
                     onClick={() => {
                       setActiveGroupBuy(prev => prev ? { ...prev, count: prev.count + 1 } : null);
                       setHasJoinedGroup(true);
-                      setMessage("Gruba başarıyla katıldınız!");
+                      setMessage(getTxt("joinedSuccessMsg"));
                     }}
                     className="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 py-2.5 text-xs font-black text-white transition active:scale-95 disabled:opacity-50"
                   >
-                    {hasJoinedGroup ? "✓ Katıldınız" : "👥 Gruba Katıl"}
+                    {hasJoinedGroup ? getTxt("joinedText") : getTxt("joinGroupBtn")}
                   </button>
                   <button
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(window.location.origin + window.location.pathname + "?pool=" + activeGroupBuy.poolCode);
-                      setMessage("Grup bağlantısı panoya kopyalandı! Arkadaşlarınızla paylaşabilirsiniz.");
+                      setMessage(getTxt("copiedShareMsg"));
                     }}
                     className="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-800 transition active:scale-95"
                   >
@@ -1938,7 +1993,7 @@ export default function StorePage() {
                   value={profileName}
                   onChange={(e) => setProfileName(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
-                  placeholder="Ahmet Yılmaz" id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-text-slate-900-dark-text-white-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-915" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm text slate 900 dark text white outline none focus border blue 500 dark focus border blue 400 transition" />
+                  placeholder={getTxt("placeholderName")} id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-text-slate-900-dark-text-white-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-915" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm text slate 900 dark text white outline none focus border blue 500 dark focus border blue 400 transition" />
               </div>
 
               <div className="space-y-1.5">
@@ -1960,7 +2015,7 @@ export default function StorePage() {
                   value={profileCity}
                   onChange={(e) => setProfileCity(e.target.value)}
                   className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-blue-500 dark:focus:border-blue-400 transition"
-                  placeholder="İstanbul" id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-text-slate-900-dark-text-white-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-907" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm text slate 900 dark text white outline none focus border blue 500 dark focus border blue 400 transition" />
+                  placeholder={getTxt("placeholderCity")} id="id-page-w-full-rounded-xl-border-border-slate-200-dark-border-slate-800-bg-white-50-dark-bg-slate-950-50-px-4-py-3-text-sm-text-slate-900-dark-text-white-outline-none-focus-border-blue-500-dark-focus-border-blue-400-transition-907" aria-label="W full rounded xl border border slate 200 dark border slate 800 bg white 50 dark bg slate 950 50 px 4 py 3 text sm text slate 900 dark text white outline none focus border blue 500 dark focus border blue 400 transition" />
               </div>
 
               <div className="flex gap-2 pt-2">

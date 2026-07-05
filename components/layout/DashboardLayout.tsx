@@ -525,7 +525,7 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
                     <h4 className="text-xs font-black text-slate-900 flex items-center gap-1">{t.guideProductsTitle}</h4>
                     <ul className="space-y-1.5 text-[11px] text-slate-650 font-bold leading-normal list-disc pl-3.5">
                       <li>{t.guideProductsLi1}</li>
-                      <li><b>Sanayi Modu</b> düğmesine basarak yazıları büyütebilirsiniz.</li>
+                      <li>{t.guideProductsLi2}</li>
                       <li>{t.guideProductsLi3}</li>
                       <li>{t.guideProductsLi4}</li>
                     </ul>
@@ -560,7 +560,7 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
                 rel="noopener noreferrer"
                 className="w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3 text-center flex items-center justify-center gap-2 shadow-md transition active:scale-95 cursor-pointer"
               >
-                <span>💬</span> Özgür Bey'e WhatsApp'tan Sor
+                <span>💬</span> {t.whatsappBtn}
               </a>
             </div>
           </div>

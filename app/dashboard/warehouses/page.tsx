@@ -195,7 +195,17 @@ const translations = {
     printClose: "Kapat",
     liveReaderPlaceholder: "Manuel raf girin (Örn: A-01, B-02)",
     scannerTitle: "DEPO BARKOD / KAREKOD TARAYICI",
-    liveShelfScan: "Canlı Raf Tarama"
+    liveShelfScan: "Canlı Raf Tarama",
+    shelfTransferHeader: "Raftan Hızlı Sevk / Transfer",
+    sourceShelf: "Kaynak Raf",
+    currentQty: "Mevcut Miktar",
+    dispatchWarehouse: "Sevk Edilecek Depo",
+    dispatchShelf: "Sevk Edilecek Raf / Hücre",
+    dispatchQty: "Sevk Miktarı",
+    noShelfOption: "-- Rafsız (Ortalıkta Dursun) --",
+    shelfSuffix: "Rafı",
+    dispatchBtn: "{t.dispatchBtn || "⚡ Sevk Et ve Güncelle"}",
+    cancelBtn: "{t.cancelBtn || "Vazgeç"}"
   },
   en: {
     header: "📦 HBS Smart Warehouse Management",
@@ -2589,7 +2599,7 @@ ${sizeStr}
             <div className="bg-white rounded-3xl max-w-md w-full border border-slate-200 p-6 shadow-2xl space-y-4 animate-scaleIn">
               <div className="flex items-center justify-between">
                 <span className="text-xl">🔄</span>
-                <h3 className="text-base font-black text-slate-900">Raftan Hızlı Sevk / Transfer</h3>
+                <h3 className="text-base font-black text-slate-900">{t.shelfTransferHeader || "Raftan Hızlı Sevk / Transfer"}</h3>
                 <button
                   onClick={() => setIsShelfTransferOpen(false)}
                   className="text-slate-400 hover:text-slate-600 transition font-black text-lg p-1"
@@ -2600,13 +2610,13 @@ ${sizeStr}
 
               <div className="bg-slate-50 border border-slate-200/60 p-3.5 rounded-2xl text-xs space-y-1">
                 <p className="font-bold text-slate-800">📦 {products.find(p => p.id === shelfTransferProductId)?.name}</p>
-                <p className="text-slate-500 font-semibold">Kaynak Raf: {shelfTransferFromShelf}</p>
-                <p className="text-slate-500 font-semibold">Mevcut Miktar: {products.find(p => p.id === shelfTransferProductId)?.quantity} Adet</p>
+                <p className="text-slate-500 font-semibold">{t.sourceShelf || "Kaynak Raf"}: {shelfTransferFromShelf}</p>
+                <p className="text-slate-500 font-semibold">{t.currentQty || "Mevcut Miktar"}: {products.find(p => p.id === shelfTransferProductId)?.quantity} {t.itemsUnit || "Adet"}</p>
               </div>
 
               <div className="space-y-3">
                 <label className="grid gap-1">
-                  <span className="text-xs font-black text-slate-700">Sevk Edilecek Depo</span>
+                  <span className="text-xs font-black text-slate-700">{t.dispatchWarehouse || "Sevk Edilecek Depo"}</span>
                   <select
                     value={shelfTransferToWarehouse}
                     onChange={(e) => {
@@ -2627,21 +2637,21 @@ ${sizeStr}
                 </label>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-black text-slate-700">Sevk Edilecek Raf / Hücre</span>
+                  <span className="text-xs font-black text-slate-700">{t.dispatchShelf || "Sevk Edilecek Raf / Hücre"}</span>
                   <select
                     value={shelfTransferToShelf}
                     onChange={(e) => setShelfTransferToShelf(e.target.value)}
                     className="rounded-xl border border-slate-355 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
                   >
-                    <option value="">-- Rafsız (Ortalıkta Dursun) --</option>
+                    <option value="">{t.noShelfOption || "-- Rafsız (Ortalıkta Dursun) --"}</option>
                     {warehouses.find(w => w.name === shelfTransferToWarehouse)?.shelves?.map((sh: any) => (
-                      <option key={sh} value={sh}>{sh} Rafı</option>
+                      <option key={sh} value={sh}>{sh} {t.shelfSuffix || "Rafı"}</option>
                     ))}
                   </select>
                 </label>
 
                 <label className="grid gap-1">
-                  <span className="text-xs font-black text-slate-700">Sevk Miktarı</span>
+                  <span className="text-xs font-black text-slate-700">{t.dispatchQty || "Sevk Miktarı"}</span>
                   <input
                     type="number"
                     id="shelf-transfer-qty-input"
