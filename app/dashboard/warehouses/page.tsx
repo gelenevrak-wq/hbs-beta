@@ -84,6 +84,24 @@ type StockTransfer = {
 const translations = {
   tr: {
     header: "📦 HBS Akıllı Depo Yönetimi",
+    layoutShaperNav: "Yerleşim & Raf Şekillendirici",
+    interWarehouseTransfer: "Depolar Arası Transfer",
+    blindStockCount: "Kör Stok Sayımı",
+    zplBarcodeLab: "ZPL Barkod Laboratuvarı",
+    smartOrderPicking: "Akıllı Sipariş Toplama",
+    designOptions: "Depo Tasarım Seçenekleri",
+    designOptionsDesc: "Tasarım stüdyosu veya basit liste görünümü arasında geçiş yapın.",
+    simpleListView: "Basit Liste Görünümü",
+    designStudio: "Depo Tasarım Beyaz Tahtası (Studio)",
+    newAisleCode: "Yeni Reyon Kodu (Örn: D, E, F)",
+    addAisle: "+ Reyon Ekle",
+    aisle: "Reyon",
+    totalShelves: "Toplam Raf",
+    remove: "Kaldır",
+    corridorDepth: "Reyon Derinliği (Slot / Genişlik)",
+    tierCount: "Raf Kat Sayısı (Yükseklik)",
+    aislePreviewMap: "REYON ÖNİZLEME HARİTASI",
+    level: "Kat",
     runWizard: "⚙️ Depoları Düzenle / Ekle",
     stockMovements: "Stok Hareketleri",
     dashboard: "Kontrol Paneli",
@@ -168,6 +186,24 @@ const translations = {
   },
   en: {
     header: "📦 HBS Smart Warehouse Management",
+    layoutShaperNav: "Layout & Shelf Configurator",
+    interWarehouseTransfer: "Inter-Warehouse Transfer",
+    blindStockCount: "Blind Stock Count",
+    zplBarcodeLab: "ZPL Barcode Lab",
+    smartOrderPicking: "Smart Order Picking",
+    designOptions: "Warehouse Design Options",
+    designOptionsDesc: "Switch between design studio or simple list view.",
+    simpleListView: "Simple List View",
+    designStudio: "Warehouse Design Whiteboard (Studio)",
+    newAisleCode: "New Aisle Code (e.g. D, E, F)",
+    addAisle: "+ Add Aisle",
+    aisle: "Aisle",
+    totalShelves: "Total Shelves",
+    remove: "Remove",
+    corridorDepth: "Aisle Depth (Slot / Width)",
+    tierCount: "Shelf Tier Count (Height)",
+    aislePreviewMap: "AISLE PREVIEW MAP",
+    level: "Level",
     runWizard: "⚙️ Edit / Add Warehouses",
     stockMovements: "Stock Movements",
     dashboard: "Dashboard",
@@ -252,6 +288,24 @@ const translations = {
   },
   de: {
     header: "📦 HBS Intelligentes Lagerverwaltungs-System",
+    layoutShaperNav: "Layout & Regal-Konfigurator",
+    interWarehouseTransfer: "Lagerübergreifender Transfer",
+    blindStockCount: "Blinde Lagerzählung",
+    zplBarcodeLab: "ZPL-Barcode-Labor",
+    smartOrderPicking: "Intelligente Auftragskommissionierung",
+    designOptions: "Lager-Designoptionen",
+    designOptionsDesc: "Wechseln Sie zwischen dem Design-Studio oder einer einfachen Listenansicht.",
+    simpleListView: "Einfache Listenansicht",
+    designStudio: "Lager-Design-Whiteboard (Studio)",
+    newAisleCode: "Neuer Gang-Code (z.B. D, E, F)",
+    addAisle: "+ Gang hinzufügen",
+    aisle: "Gang",
+    totalShelves: "Regale insgesamt",
+    remove: "Entfernen",
+    corridorDepth: "Gang-Tiefe (Slot / Breite)",
+    tierCount: "Regalebenen (Höhe)",
+    aislePreviewMap: "GANG-VORSCHAU-KARTE",
+    level: "Ebene",
     runWizard: "🧙 Einrichtungsassistenten ausführen",
     stockMovements: "Lagerbewegungen",
     dashboard: "Dashboard",
@@ -336,6 +390,24 @@ const translations = {
   },
   ru: {
     header: "📦 Умное управление складом HBS",
+    layoutShaperNav: "Планировка и конфигуратор полок",
+    interWarehouseTransfer: "Межскладской перевод",
+    blindStockCount: "Слепой подсчет запасов",
+    zplBarcodeLab: "ZPL лаборатория штрихкодов",
+    smartOrderPicking: "Умный подбор заказов",
+    designOptions: "Параметры дизайна склада",
+    designOptionsDesc: "Переключение между дизайн-студией или простым списком.",
+    simpleListView: "Простой список",
+    designStudio: "Дизайн-студия склада (Доска)",
+    newAisleCode: "Код нового прохода (напр. D, E, F)",
+    addAisle: "+ Добавить проход",
+    aisle: "Проход",
+    totalShelves: "Всего полок",
+    remove: "Удалить",
+    corridorDepth: "Глубина прохода (Ячейка / Ширина)",
+    tierCount: "Количество уровней полок (Высота)",
+    aislePreviewMap: "КАРТА ПРОХОДОВ СКЛАДА",
+    level: "Уровень",
     runWizard: "🧙 Запустить мастер настройки",
     stockMovements: "Движение запасов",
     dashboard: "Панель управления",
@@ -420,6 +492,24 @@ const translations = {
   },
   ka: {
     header: "📦 HBS საწყობის ჭკვიანი მართვა",
+    layoutShaperNav: "განლაგების და თაროების დამგეგმავი",
+    interWarehouseTransfer: "შიდა გადაცემა საწყობებს შორის",
+    blindStockCount: "ინვენტარიზაცია",
+    zplBarcodeLab: "ZPL ეტიკეტების ლაბორატორია",
+    smartOrderPicking: "შეკვეთის ჭკვიანი აკრეფა",
+    designOptions: "საწყობის დიზაინის პარამეტრები",
+    designOptionsDesc: "გადართეთ დიზაინ სტუდიასა და მარტივ სიას შორის.",
+    simpleListView: "მარტივი სიის ხედი",
+    designStudio: "საწყობის დიზაინის დაფა (სტუდია)",
+    newAisleCode: "ახალი დერეფნის კოდი (მაგ: D, E, F)",
+    addAisle: "+ დერეფნის დამატება",
+    aisle: "დერეფანი",
+    totalShelves: "სულ თარო",
+    remove: "წაშლა",
+    corridorDepth: "დერეფნის სიღრმე (სლოტი / სიგანე)",
+    tierCount: "თაროების სიმაღლე (რაოდენობა)",
+    aislePreviewMap: "დერეფნის წინასწარი ხედი",
+    level: "დონე",
     runWizard: "🧙 ოსტატის გაშვება",
     stockMovements: "მარაგების მოძრაობა",
     dashboard: "მართვის პანელი",
@@ -505,7 +595,90 @@ const translations = {
 };
 
 
+
+const translateWarehouseName = (name: string, lang: string) => {
+  if (!name) return "";
+  const lower = name.toLowerCase().trim();
+  if (lower === "ana depo") {
+    if (lang === "de") return "Hauptlager";
+    if (lang === "en") return "Main Warehouse";
+    if (lang === "ru") return "Главный склад";
+    if (lang === "ka") return "ცენტრალური საწყობი";
+  }
+  if (lower === "showroom alanı" || lower === "showroom alani") {
+    if (lang === "de") return "Showroom-Bereich";
+    if (lang === "en") return "Showroom Area";
+    if (lang === "ru") return "Выставочный зал";
+    if (lang === "ka") return "შოურუმის ზონა";
+  }
+  if (lower === "i̇ade / kontrol deposu" || lower === "iade / kontrol deposu" || lower === "iade deposu") {
+    if (lang === "de") return "Retouren- & Kontrolllager";
+    if (lang === "en") return "Returns & Inspection Warehouse";
+    if (lang === "ru") return "Склад возврата и контроля";
+    if (lang === "ka") return "დაბრუნებისა და კონტროლის საწყობი";
+  }
+  return name;
+};
+
+const translateWarehousePurpose = (purpose: string, lang: string) => {
+  if (!purpose) return "";
+  const lower = purpose.toLowerCase().trim();
+  if (lower.includes("satışa hazır ürün stoğu") || lower.includes("ready to sell") || lower.includes("satisa hazir")) {
+    if (lang === "de") return "Verkaufsfertiger Produktbestand";
+    if (lang === "en") return "Ready-to-sell product stock";
+    if (lang === "ru") return "Готовый к продаже запас продукции";
+    if (lang === "ka") return "გასაყიდად გამზადებული პროდუქციის მარაგი";
+  }
+  if (lower.includes("iade, arızalı veya kontrol bekleyen") || lower.includes("returned, damaged") || lower.includes("iade, arizali")) {
+    if (lang === "de") return "Retouren, defekte oder auf Prüfung wartende Produkte";
+    if (lang === "en") return "Returned, damaged or inspection-pending items";
+    if (lang === "ru") return "Возвращенные, поврежденные или ожидающие контроля товары";
+    if (lang === "ka") return "დაბრუნებული, დაზიანებული ან შემოწმების მოლოდინში მყოფი საქონელი";
+  }
+  if (lower.includes("müşterinin görebileceği örnek ürünler") || lower.includes("sample products") || lower.includes("musterinin gorebilecegi")) {
+    if (lang === "de") return "Musterprodukte für Kunden zur Ansicht";
+    if (lang === "en") return "Sample products visible to customers";
+    if (lang === "ru") return "Образцы товаров, видимые клиентам";
+    if (lang === "ka") return "მომხმარებლისთვის ხილვადი ნიმუშები";
+  }
+  return purpose;
+};
+
 export default function WarehousesRevampPage() {
+
+  // Resizable Panel layout states
+  const [leftWidth, setLeftWidth] = useState(50); // 50% default width
+  const [isResizing, setIsResizing] = useState(false);
+
+  const startResize = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      const container = document.getElementById("warehouse-resizable-container");
+      if (container) {
+        const rect = container.getBoundingClientRect();
+        const percent = ((e.clientX - rect.left) / rect.width) * 100;
+        setLeftWidth(Math.max(25, Math.min(75, percent)));
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
 
   // Language Selection
   const [language, setLanguage] = useState<LanguageCode>("tr");
@@ -2089,11 +2262,11 @@ ${sizeStr}
                               setEditingWarehouseName(w.name);
                             }}
                           >
-                            🏪 {w.name} <span className="text-[10px] text-slate-400 font-normal">✏️</span>
+                            🏪 {translateWarehouseName(w.name, language)} <span className="text-[10px] text-slate-400 font-normal">✏️</span>
                           </span>
                         )}
                       </h3>
-                      <p className="text-[10px] text-slate-600 font-bold mt-0.5">{w.city} · {w.purpose}</p>
+                      <p className="text-[10px] text-slate-600 font-bold mt-0.5">{w.city} · {translateWarehousePurpose(w.purpose, language)}</p>
                     </div>
                     <span className={`rounded-full px-2 py-0.5 text-[8px] font-black uppercase ${
                       isActive ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"
@@ -2123,7 +2296,7 @@ ${sizeStr}
                   : "text-slate-600 hover:text-slate-800"
               }`}
             >
-              📐 Yerleşim & Raf Şekillendirici
+              📐 {t.layoutShaperNav || "Yerleşim & Raf Şekillendirici"}
             </button>
             <button
               type="button"
@@ -2134,7 +2307,7 @@ ${sizeStr}
                   : "text-slate-600 hover:text-slate-800"
               }`}
             >
-              🔄 Depolar Arası Transfer
+              🔄 {t.interWarehouseTransfer || "Depolar Arası Transfer"}
             </button>
             <button
               type="button"
@@ -2145,7 +2318,7 @@ ${sizeStr}
                   : "text-slate-600 hover:text-slate-800"
               }`}
             >
-              📋 Kör Stok Sayımı
+              📋 {t.blindStockCount || "Kör Stok Sayımı"}
             </button>
             <button
               type="button"
@@ -2156,7 +2329,7 @@ ${sizeStr}
                   : "text-slate-600 hover:text-slate-800"
               }`}
             >
-              🏷️ ZPL Barkod Laboratuvarı
+              🏷️ {t.zplBarcodeLab || "ZPL Barkod Laboratuvarı"}
             </button>
             <button
               type="button"
@@ -2167,7 +2340,7 @@ ${sizeStr}
                   : "text-slate-600 hover:text-slate-800"
               }`}
             >
-              ⚡ Akıllı Sipariş Toplama
+              ⚡ {t.smartOrderPicking || "Akıllı Sipariş Toplama"}
             </button>
           </nav>
         )}
@@ -2176,8 +2349,8 @@ ${sizeStr}
         {activeWh && activeWorkspaceTab === 'placement' && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-3xl border border-slate-200 shadow-sm mb-4">
             <div>
-              <h3 className="text-sm font-black text-slate-800">Depo Tasarım Seçenekleri</h3>
-              <p className="text-[10px] text-slate-700 font-semibold">Tasarım stüdyosu veya basit liste görünümü arasında geçiş yapın.</p>
+              <h3 className="text-sm font-black text-slate-800">{t.designOptions || "Depo Tasarım Seçenekleri"}</h3>
+              <p className="text-[10px] text-slate-700 font-semibold">{t.designOptionsDesc || "Tasarım stüdyosu veya basit liste görünümü arasında geçiş yapın."}</p>
             </div>
             <div className="flex gap-2">
               <button
@@ -2189,7 +2362,7 @@ ${sizeStr}
                     : "bg-slate-100 text-slate-700 hover:text-slate-800"
                 }`}
               >
-                🗂️ Basit Liste Görünümü
+                🗂️ {t.simpleListView || "Basit Liste Görünümü"}
               </button>
               <button
                 type="button"
@@ -2200,7 +2373,7 @@ ${sizeStr}
                     : "bg-slate-100 text-slate-700 hover:text-slate-800"
                 }`}
               >
-                🎨 Depo Tasarım Beyaz Tahtası (Studio)
+                🎨 {t.designStudio || "Depo Tasarım Beyaz Tahtası (Studio)"}
               </button>
             </div>
           </div>
@@ -2208,10 +2381,15 @@ ${sizeStr}
 
         {/* MAIN Revamped Workspace */}
         {activeWh && activeWorkspaceTab === 'placement' && !isWhiteboardMode && (
-          <section className="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
-            
+          <div 
+            id="warehouse-resizable-container" 
+            className="flex flex-col lg:flex-row gap-0 items-start w-full relative"
+          >
             {/* Left Column: Layout Shaper and Placement Board */}
-            <div className="space-y-4">
+            <div 
+              style={{ width: typeof window !== "undefined" && window.innerWidth >= 1024 ? `${leftWidth}%` : '100%' }}
+              className="space-y-4 lg:pr-3 w-full transition-all duration-75"
+            >
               
               {/* 1. Depo Şekillendirici (Layout Shaper) */}
               <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
@@ -2227,7 +2405,7 @@ ${sizeStr}
                     <input
                       type="text"
                       id="new-corridor-input"
-                      placeholder="Yeni Reyon Kodu (Örn: D, E, F)"
+                      placeholder={t.newAisleCode || "Yeni Reyon Kodu (Örn: D, E, F)"}
                       maxLength={3}
                       className="flex-1 rounded-xl border border-slate-250 px-3 py-2 text-xs font-bold uppercase focus:outline-none focus:border-blue-500"
                       onKeyDown={(e) => {
@@ -2293,7 +2471,7 @@ ${sizeStr}
                               </span>
                             )}
                             <span className="text-[10px] bg-slate-200 text-slate-700 font-extrabold px-2 py-0.5 rounded-full">
-                              {c.depth * c.tiers} Toplam Raf
+                              {c.depth * c.tiers} {t.totalShelves || "Toplam Raf"}
                             </span>
                           </div>
                           <button
@@ -2301,7 +2479,7 @@ ${sizeStr}
                             onClick={() => setCorridors(corridors.filter(item => item.zone !== c.zone))}
                             className="text-xs text-rose-600 hover:text-rose-700 font-bold"
                           >
-                            Kaldır ✕
+                            {t.remove || "Kaldır"} ✕
                           </button>
                         </div>
 
@@ -2570,8 +2748,20 @@ ${sizeStr}
               </form>
             </div>
 
+            {/* Draggable Divider Handle */}
+            <div
+              onMouseDown={startResize}
+              className="hidden lg:flex w-2 bg-slate-200 hover:bg-blue-500 cursor-col-resize self-stretch transition-all duration-150 relative items-center justify-center select-none z-20"
+              title="Sürükleyerek Genişletin / Daraltın"
+            >
+              <div className="w-0.5 h-12 rounded-full bg-slate-400"></div>
+            </div>
+
             {/* Right Column: Visual Layout Map & Live Barcode Scan */}
-            <div className="space-y-4">
+            <div 
+              style={{ width: typeof window !== "undefined" && window.innerWidth >= 1024 ? `${100 - leftWidth}%` : '100%' }}
+              className="space-y-4 lg:pl-3 w-full transition-all duration-75"
+            >
               
               {/* 1. Barkod Okut & Canlı Sorgu (Live Scanner Box) */}
               <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-4">
@@ -2938,7 +3128,7 @@ ${sizeStr}
 
             </div>
 
-          </section>
+          </div>
         )}
 
         {/* INTERACTIVE WHITEBOARD DESIGN STUDIO */}
