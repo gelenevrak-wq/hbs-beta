@@ -79,7 +79,17 @@ const ui = {
     scanCameraTitle: "Kamera ile Fotoğraf, Barkod veya QR Kod Tara",
     tendersBoard: "İlan Panosu",
     aiAnalyzing: "🔍 Fotoğraf yüklendi. HBS Yapay Zeka analiz ediyor...",
-    aiCompleted: "✓ Yapay Zeka Barkod/Görsel Analizi Tamamlandı!\nEşleşen Parça Kodu: "
+    aiCompleted: "✓ Yapay Zeka Barkod/Görsel Analizi Tamamlandı!\nEşleşen Parça Kodu: ",
+    heroTitle: "Ürün Satın. Hizmet Sunun. Kiralayın. Açık Artırma Yapın.",
+    heroSubTitle: "Hepsini Tek Platformda Yönetin.",
+    heroDesc: "Shopify sadece mağaza açtırır, Amazon ürün sattırır, Airbnb ev kiralatır, eBay açık artırma yaptırır. HBS ise esnafa tüm bu iş modellerini tek bir çatı altında birleştirme gücü verir.",
+    openStoreBtn: "🏪 Kendi Mağazanı Aç (Ücretsiz)",
+    exploreMarketplaceBtn: "🛍️ Pazaryerini Keşfet",
+    activeStores: "Aktif Mağaza",
+    listedItems: "Kayıtlı Ürün & Hizmet",
+    countries: "Sınır Ötesi Ticaret Ülkesi",
+    completedOrders: "Tamamlanan Sipariş & Kiralama",
+    footerBranding: "HBS, esnaf için yeni nesil hibrit e-ticaret altyapısını inşa ediyor."
   },
   en: {
     login: "Login",
@@ -127,7 +137,17 @@ const ui = {
     scanCameraTitle: "Scan Photo, Barcode or QR Code with Camera",
     tendersBoard: "Tenders Board",
     aiAnalyzing: "🔍 Photo uploaded. HBS AI is analyzing...",
-    aiCompleted: "✓ AI Barcode/Image Analysis Completed!\nMatching Part Code: "
+    aiCompleted: "✓ AI Barcode/Image Analysis Completed!\nMatching Part Code: ",
+    heroTitle: "Sell Products. Offer Services. Rent. Auction.",
+    heroSubTitle: "Manage Everything in One Platform.",
+    heroDesc: "Shopify builds stores, Amazon sells products, Airbnb rents homes, eBay runs auctions. HBS combines all of these models under one unified storefront for local merchants.",
+    openStoreBtn: "🏪 Open Your Store (Free)",
+    exploreMarketplaceBtn: "🛍️ Explore Marketplace",
+    activeStores: "Active Stores",
+    listedItems: "Listed Products & Services",
+    countries: "Cross-Border Trade Countries",
+    completedOrders: "Completed Orders & Rentals",
+    footerBranding: "HBS is building the next generation hybrid commerce platform for local merchants."
   },
   de: {
     login: "Login",
@@ -175,7 +195,17 @@ const ui = {
     scanCameraTitle: "Foto, Barcode oder QR-Code mit der Kamera scannen",
     tendersBoard: "Ausschreibungen",
     aiAnalyzing: "🔍 Foto hochgeladen. HBS KI analysiert...",
-    aiCompleted: "✓ KI Barcode/Bildanalyse abgeschlossen!\nPassender Teilecode: "
+    aiCompleted: "✓ KI Barcode/Bildanalyse abgeschlossen!\nPassender Teilecode: ",
+    heroTitle: "Verkaufen. Dienstleistungen anbieten. Mieten. Versteigerungen.",
+    heroSubTitle: "Alles auf einer Plattform verwalten.",
+    heroDesc: "Shopify lässt Sie Shops erstellen, Amazon lässt Sie Produkte verkaufen, Airbnb vermietet Unterkünfte, eBay betreibt Auktionen. HBS vereint all diese Modelle unter einem Dach für lokale Händler.",
+    openStoreBtn: "🏪 Eigener Shop eröffnen (Kostenlos)",
+    exploreMarketplaceBtn: "🛍️ Marktplatz erkunden",
+    activeStores: "Aktive Shops",
+    listedItems: "Gelistete Produkte & Services",
+    countries: "Grenzüberschreitende Handelsländer",
+    completedOrders: "Abgeschlossene Bestellungen & Vermietungen",
+    footerBranding: "HBS baut die Hybrid-E-Commerce-Infrastruktur der nächsten Generation für Händler."
   },
   ru: {
     login: "Вход",
@@ -223,7 +253,17 @@ const ui = {
     scanCameraTitle: "Сканировать фото, штрихкод или QR-код камерой",
     tendersBoard: "Доска тендеров",
     aiAnalyzing: "🔍 Фотография загружена. ИИ HBS анализирует...",
-    aiCompleted: "✓ Анализ штрихкода/изображения ИИ завершен!\nСоответствующий код детали: "
+    aiCompleted: "✓ Анализ штрихкода/изображения ИИ завершен!\nСоответствующий код детали: ",
+    heroTitle: "Продавайте. Предоставляйте услуги. Арендуйте. Аукционы.",
+    heroSubTitle: "Управляйте всем на одной платформе.",
+    heroDesc: "Shopify создает магазины, Amazon продает товары, Airbnb сдает жилье, eBay проводит аукционы. HBS объединяет все эти бизнес-модели под одной крышей для местных предпринимателей.",
+    openStoreBtn: "🏪 Открыть свой магазин (Бесплатно)",
+    exploreMarketplaceBtn: "🛍️ Исследовать маркетплейс",
+    activeStores: "Активные магазины",
+    listedItems: "Зарегистрировано товаров и услуг",
+    countries: "Страны трансграничной торговли",
+    completedOrders: "Выполнено заказов и аренды",
+    footerBranding: "HBS строит гибридную инфраструктуру электронной коммерции нового поколения для бизнеса."
   },
   ka: {
     login: "შესვლა",
@@ -271,7 +311,17 @@ const ui = {
     scanCameraTitle: "სკანირება ფოტოთი, ბარკოდით ან QR კოდით კამერით",
     tendersBoard: "ტენდერების დაფა",
     aiAnalyzing: "🔍 ფოტო აიტვირთა. HBS AI აანალიზებს...",
-    aiCompleted: "✓ AI ბარკოდის/გამოსახულების ანალიზი დასრულდა!\nშესაბამისი ნაწილის კოდი: "
+    aiCompleted: "✓ AI ბარკოდის/გამოსახულების ანალიზი დასრულდა!\nშესაბამისი ნაწილის კოდი: ",
+    heroTitle: "ყიდვა. სერვისების შეთავაზება. გაქირავება. აუქციონები.",
+    heroSubTitle: "მართეთ ყველაფერი ერთ პლატფორმაზე.",
+    heroDesc: "Shopify ქმნის მაღაზიებს, Amazon ყიდის პროდუქტებს, Airbnb აქირავებს სახლებს, eBay ატარებს აუქციონებს. HBS აერთიანებს ყველა ამ მოდელს ერთ ჭერქვეშ ადგილობრივი მეწარმეებისთვის.",
+    openStoreBtn: "🏪 გახსენით თქვენი მაღაზია (უფასოდ)",
+    exploreMarketplaceBtn: "🛍️ ბაზრის შესწავლა",
+    activeStores: "აქტიური მაღაზიები",
+    listedItems: "რეგისტრირებული პროდუქტი და სერვისი",
+    countries: "ტრანსსასაზღვრო ვაჭრობის ქვეყნები",
+    completedOrders: "დასრულებული შეკვეთა და გაქირავება",
+    footerBranding: "HBS აშენებს შემდეგი თაობის ჰიბრიდულ ელექტრონულ კომერციას მეწარმეებისთვის."
   },
 };
 
@@ -746,25 +796,30 @@ export default function HomePage() {
 
 
   return (
-    <main className="min-h-screen bg-[#f6f7fb] text-slate-950">
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
-        <div className="mx-auto flex max-w-[1800px] items-center justify-between gap-2 px-2 py-1.5 sm:px-6">
-          <div className="flex items-center gap-1.5 sm:gap-3">
-            <Link href="/" className="shrink-0 text-base font-black tracking-tight text-blue-700 sm:text-xl">HBS</Link>
+    <main className="min-h-screen bg-[#f3f6fc] text-slate-950">
+      {/* Dynamic Ambient Background Glows */}
+      <div className="absolute top-0 left-[-10%] w-[40rem] h-[40rem] rounded-full bg-blue-400/5 blur-[130px] pointer-events-none select-none" />
+      <div className="absolute top-[25%] right-[-10%] w-[35rem] h-[35rem] rounded-full bg-indigo-300/5 blur-[120px] pointer-events-none select-none" />
+
+      {/* Slim Elegant Sticky Header */}
+      <header className="sticky top-0 z-40 border-b border-slate-200/60 bg-white/80 shadow-sm backdrop-blur-md">
+        <div className="mx-auto flex max-w-[1800px] items-center justify-between gap-4 px-4 py-2.5 sm:px-8">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="shrink-0 text-xl font-black tracking-tighter bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
+              HBS
+            </Link>
             <CompactLanguageSwitcher />
           </div>
-          <div className="flex items-center gap-1 sm:gap-1.5">
-            
+          <div className="flex items-center gap-2 sm:gap-3">
             {currentUser ? (
               <div className="flex items-center gap-2">
-                <span className="text-[10px] sm:text-xs font-black text-slate-700 flex items-center gap-1 bg-slate-100 px-2.5 py-1.5 rounded-full border border-slate-200 whitespace-nowrap shrink-0">
-                  👤 <span className="hidden sm:inline">{currentUser.displayName}</span>
-                  <span className="sm:hidden">{currentUser.displayName.split(" ")[0]}</span>
+                <span className="text-[10px] sm:text-xs font-black text-slate-700 flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200 whitespace-nowrap shrink-0">
+                  👤 {currentUser.displayName}
                 </span>
                 {(currentUser.role === "owner" || currentUser.role === "superadmin" || currentUser.role === "storeOwner") && (
                   <Link
                     href="/dashboard"
-                    className="rounded-full bg-blue-600 px-2.5 py-1.5 text-[10px] font-black text-white hover:bg-blue-700 sm:px-3 sm:text-xs"
+                    className="rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-3.5 py-1.5 text-[10px] font-black text-white hover:shadow-md transition active:scale-95 sm:px-4 sm:text-xs"
                   >
                     {label("Panelim", "Dashboard", "Mein Panel", "Мой кабинет", "ჩემი პანელი")}
                   </Link>
@@ -775,56 +830,151 @@ export default function HomePage() {
                     window.localStorage.removeItem("hbs-demo-user");
                     window.location.reload();
                   }}
-                  className="rounded-full border border-red-200 bg-red-50 px-2.5 py-1.5 text-[10px] font-black text-red-700 hover:bg-red-100 sm:px-3 sm:text-xs cursor-pointer active:scale-95 transition"
+                  className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-[10px] font-black text-red-700 hover:bg-red-100 sm:px-3.5 sm:text-xs cursor-pointer active:scale-95 transition"
                 >
                   {label("Çıkış", "Logout", "Abmelden", "Выход", "გასვლა")}
                 </button>
               </div>
             ) : (
               <>
-                <Link href="/login" className="rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-black text-slate-800 hover:bg-slate-50 flex items-center justify-center sm:px-3 sm:py-1.5 sm:text-xs">{t.login}</Link>
-                <Link href="/register" className="rounded-full bg-blue-600 px-2 py-1 text-[10px] font-black text-white hover:bg-blue-700 flex items-center justify-center sm:px-3 sm:py-1.5 sm:text-xs">{t.register}</Link>
+                <Link href="/login" className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[10px] font-black text-slate-800 hover:bg-slate-50 flex items-center justify-center sm:px-4 sm:py-2 sm:text-xs">{t.login}</Link>
+                <Link 
+                  href="/register" 
+                  className="rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 px-3.5 py-1.5 text-[10px] font-black text-white hover:shadow-md hover:shadow-indigo-500/10 transition active:scale-95 sm:px-5 sm:py-2 sm:text-xs flex items-center justify-center cursor-pointer shadow-sm relative overflow-hidden group"
+                >
+                  <span className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  {t.register}
+                </Link>
               </>
             )}
           </div>
         </div>
+      </header>
 
+      {/* 🚀 Premium HBS 2.0 Hero Section */}
+      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-12 sm:pb-16 px-4 bg-gradient-to-b from-white/70 via-slate-50/30 to-transparent">
+        <div className="mx-auto max-w-4xl text-center space-y-6 select-none relative z-10">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-extrabold px-3 py-1 text-[9px] uppercase tracking-wider shadow-sm animate-bounce">
+            🌟 HBS 2.0 YENİ NESİL TİCARET
+          </span>
+          <h1 className="text-3xl sm:text-4xl md:text-5.5xl font-black tracking-tight text-slate-900 leading-none space-y-2">
+            <span>{t.heroTitle}</span>
+            <br />
+            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              {t.heroSubTitle}
+            </span>
+          </h1>
+          <p className="text-xs sm:text-sm md:text-base text-slate-600 max-w-2xl mx-auto font-semibold leading-relaxed">
+            {t.heroDesc}
+          </p>
 
-        <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
-          <form className="flex w-full items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 shadow-inner transition focus-within:border-blue-400 focus-within:bg-white focus-within:shadow-md" onSubmit={handleSearchSubmit}>
-            <span className="text-slate-400 text-xs sm:text-sm select-none mr-1.5">🔍</span>
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t.search}
-              className="min-w-0 flex-1 bg-transparent px-1 text-[12px] font-semibold outline-none placeholder:text-slate-400 sm:text-sm text-slate-850"
-            />
-            
-            {/* Elegant Lens/Scanner native mobile camera trigger */}
-            <label
-              className="mx-1.5 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-blue-50 border border-blue-100 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition active:scale-90 cursor-pointer shadow-sm select-none shrink-0"
-              title={t.scanCameraTitle}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-3 pt-2">
+            <Link 
+              href="/register" 
+              className="w-full sm:w-auto rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-650 to-purple-600 hover:from-blue-700 hover:via-indigo-700 hover:to-purple-700 px-6 py-4 text-xs sm:text-sm font-black text-white hover:shadow-xl hover:shadow-indigo-500/20 active:scale-[0.97] transition-all duration-300 cursor-pointer text-center"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
-              </svg>
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleMobileCapture}
-                className="hidden"
-              />
-            </label>
-
-            <button type="submit" className="rounded-full bg-blue-600 px-3.5 py-1 text-[11px] font-black text-white sm:px-4 sm:text-xs hover:bg-blue-700 active:scale-95 transition shadow-sm">{t.searchButton}</button>
-          </form>
+              {t.openStoreBtn}
+            </Link>
+            <button 
+              onClick={() => {
+                document.getElementById("search-panel-anchor")?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="w-full sm:w-auto rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 px-6 py-4 text-xs sm:text-sm font-black text-slate-800 hover:shadow-md active:scale-[0.97] transition-all duration-300 cursor-pointer text-center"
+            >
+              {t.exploreMarketplaceBtn}
+            </button>
+          </div>
         </div>
 
-        <div className="mx-auto max-w-[1800px] px-2 pb-1.5 sm:px-6">
-          <div className="rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm">
-            <div className="relative grid grid-cols-[1fr_auto] gap-1.5">
+        {/* Brand visual grid representation */}
+        <div className="absolute top-10 right-5 w-40 h-40 bg-purple-400/5 rounded-full blur-2xl pointer-events-none select-none"></div>
+        <div className="absolute bottom-5 left-5 w-32 h-32 bg-blue-400/5 rounded-full blur-2xl pointer-events-none select-none"></div>
+      </section>
+
+      {/* 🟢 Live Activity Ticker (Akış Şeridi) */}
+      <section className="bg-slate-900 border-y border-slate-850 py-2.5 overflow-hidden relative select-none z-10 flex items-center">
+        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-slate-900 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-slate-900 to-transparent z-10 pointer-events-none"></div>
+        
+        <div className="flex gap-16 animate-marquee whitespace-nowrap text-[10px] sm:text-xs font-bold text-slate-300">
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            {label("Yeni Mağaza Açıldı: Özgür Motor (Batum, Gürcistan)", "New Store Opened: Ozgur Motor (Batumi, Georgia)", "Neuer Shop geöffnet: Ozgur Motor (Batumi, Georgien)", "Открыт новый магазин: Ozgur Motor (Батуми, Грузия)", "ახალი მაღაზია გაიხსნა: Ozgur Motor (ბათუმი, საქართველო)")}
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            {label("Son Stok Hareketi: OBDTR Diagnostics Autel MX808S yerleşimi tamamlandı", "Recent Stock Movement: OBDTR Diagnostics Autel MX808S placement completed", "Letzte Lagerbewegung: OBDTR Diagnostics Autel MX808S Platzierung abgeschlossen", "Движение запасов: Размещение OBDTR Diagnostics Autel MX808S выполнено", "მარაგის მოძრაობა: OBDTR Diagnostics Autel MX808S განთავსება დასრულდა")}
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            {label("Canlı B2B Pazarlık: Launch X431 ürünü için %15 iskonto teklifi verildi", "Live B2B Negotiation: 15% discount offered for Launch X431", "Live-B2B-Verhandlung: 15% Rabatt für Launch X431 angeboten", "B2B переговоры: Предложена скидка 15% на Launch X431", "ცოცხალი B2B მოლაპარაკება: Launch X431-ზე შემოთავაზებულია 15% ფასდაკლება")}
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            {label("Yeni Kiralama İlanı: Autoboss V30 Arıza Tespit Cihazı (Haftalık Kiralık)", "New Rental Listing: Autoboss V30 Scanner (Weekly Rental)", "Neues Mietangebot: Autoboss V30 Diagnosegerät (Wöchentliche Miete)", "Новое объявление аренды: Сканер Autoboss V30 (Недельная аренда)", "ახალი გაქირავება: Autoboss V30 სკანერი (ყოველკვირეული ქირაობა)")}
+          </span>
+        </div>
+      </section>
+
+      {/* 📊 Trust Statistics Counter Panel */}
+      <section className="mx-auto max-w-[1800px] px-4 pt-8 pb-4 sm:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 p-5 rounded-[2rem] bg-white border border-slate-200/80 shadow-md">
+          <div className="text-center p-3 border-r border-slate-100 last:border-0">
+            <p className="text-2xl sm:text-3.5xl font-black text-blue-650">120+</p>
+            <p className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider mt-1">{t.activeStores}</p>
+          </div>
+          <div className="text-center p-3 border-r border-slate-100 last:border-0">
+            <p className="text-2xl sm:text-3.5xl font-black text-indigo-650">45.000+</p>
+            <p className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider mt-1">{t.listedItems}</p>
+          </div>
+          <div className="text-center p-3 border-r border-slate-100 last:border-0 lg:border-r">
+            <p className="text-2xl sm:text-3.5xl font-black text-purple-650">5</p>
+            <p className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider mt-1">{t.countries}</p>
+          </div>
+          <div className="text-center p-3 last:border-0">
+            <p className="text-2xl sm:text-3.5xl font-black text-emerald-650">12.800+</p>
+            <p className="text-[10px] sm:text-xs font-extrabold text-slate-500 uppercase tracking-wider mt-1">{t.completedOrders}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* 🔍 Consolidated Glassmorphic Search & Filters Panel */}
+      <section id="search-panel-anchor" className="mx-auto max-w-[1800px] px-4 py-4 sm:px-8 scroll-mt-20">
+        <div className="rounded-[2.5rem] bg-white/70 backdrop-blur-lg border border-white/60 p-5 shadow-xl space-y-4 relative overflow-hidden">
+          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+            {/* Search Input */}
+            <form className="flex w-full items-center rounded-2xl border border-slate-200 bg-white/80 px-4 py-2.5 shadow-sm transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-500/10 focus-within:bg-white" onSubmit={handleSearchSubmit}>
+              <span className="text-slate-400 text-xs sm:text-sm select-none mr-2">🔍</span>
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t.search}
+                className="min-w-0 flex-1 bg-transparent px-1 text-[12px] font-semibold outline-none placeholder:text-slate-400 sm:text-sm text-slate-850"
+              />
+              
+              {/* Camera search */}
+              <label
+                className="mx-2 flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 border border-blue-100 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition active:scale-90 cursor-pointer shadow-sm select-none shrink-0"
+                title={t.scanCameraTitle}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                </svg>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleMobileCapture}
+                  className="hidden"
+                />
+              </label>
+
+              <button type="submit" className="rounded-xl bg-blue-600 px-4 py-1.5 text-xs font-black text-white hover:bg-blue-700 active:scale-95 transition shadow-sm">{t.searchButton}</button>
+            </form>
+
+            {/* City Location Select */}
+            <div className="relative grid grid-cols-[1fr_auto] gap-2">
               <div className="relative">
                 <input
                   type="text"
@@ -835,10 +985,10 @@ export default function HomePage() {
                   }}
                   onFocus={() => setShowSuggestions(true)}
                   placeholder={locationLabel || t.searchCityPlaceholder}
-                  className="h-8 w-full rounded-full border border-slate-200 bg-slate-50 px-3 text-[11px] font-black text-slate-800 outline-none focus:border-blue-500 focus:bg-white placeholder:text-slate-400"
+                  className="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-800 outline-none focus:border-blue-500 placeholder:text-slate-400"
                 />
                 {showSuggestions && filteredSuggestions.length > 0 && (
-                  <ul className="absolute left-0 right-0 top-9 z-50 max-h-48 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1 shadow-lg">
+                  <ul className="absolute left-0 right-0 top-12 z-50 max-h-48 overflow-y-auto rounded-2xl border border-slate-200 bg-white py-1 shadow-lg">
                     {filteredSuggestions.map((item) => (
                       <li key={item.label}>
                         <button
@@ -849,7 +999,7 @@ export default function HomePage() {
                             setLocationInput("");
                             setShowSuggestions(false);
                           }}
-                          className="w-full px-3 py-1.5 text-left text-[11px] font-bold text-slate-800 hover:bg-blue-50 transition"
+                          className="w-full px-3 py-2 text-left text-xs font-bold text-slate-800 hover:bg-blue-50 transition"
                         >
                           📍 {item.label}
                         </button>
@@ -861,86 +1011,99 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={detectLocation}
-                className="h-8 rounded-full border border-blue-200 bg-blue-50 px-3 text-[10px] font-black text-blue-700 flex items-center gap-1 hover:bg-blue-100 transition active:scale-95 shrink-0"
+                className="h-11 rounded-2xl border border-blue-200 bg-blue-50 px-4 text-xs font-black text-blue-750 flex items-center gap-1.5 hover:bg-blue-100 transition active:scale-95 shrink-0"
                 title={t.findMyLocation}
               >
                 🎯 {t.locateMe}
               </button>
             </div>
-            </div>
-            <div className="mt-2 flex items-center gap-3 px-1 pb-1">
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider shrink-0">📍 {t.searchRadius}:</span>
-              <input
-                type="range"
-                min="0"
-                max="10"
-                step="1"
-                value={radiusSteps.indexOf(radiusKm) !== -1 ? radiusSteps.indexOf(radiusKm) : 3}
-                onChange={(e) => setRadiusKm(radiusSteps[Number(e.target.value)])}
-                className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none"
-              />
-              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-blue-700 font-extrabold text-[10px] shadow-sm shrink-0">{radiusKm} km</span>
-            </div>
           </div>
 
+          {/* Search Radius Slider */}
+          <div className="flex items-center gap-3 bg-slate-50/50 p-3 rounded-2xl border border-slate-100">
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider shrink-0">📍 {t.searchRadius}:</span>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              step="1"
+              value={radiusSteps.indexOf(radiusKm) !== -1 ? radiusSteps.indexOf(radiusKm) : 3}
+              onChange={(e) => setRadiusKm(radiusSteps[Number(e.target.value)])}
+              className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600 focus:outline-none"
+            />
+            <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700 font-black text-[10px] shadow-sm shrink-0">{radiusLabel}</span>
+          </div>
 
+          {/* Categories Selector */}
+          <div className="pt-2">
+            <div className="sm:hidden">
+              <select
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
+                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-800 shadow-sm outline-none focus:border-blue-500"
+                aria-label={t.categories}
+              >
+                {quickCategories.map((item) => (
+                  <option key={item.key} value={item.key}>{item.label}</option>
+                ))}
+              </select>
+            </div>
 
-        <div className="mx-auto max-w-7xl px-2 pb-1.5 sm:hidden">
-          <select
-            value={category}
-            onChange={(event) => setCategory(event.target.value)}
-            className="h-8 w-full rounded-full border border-slate-200 bg-white px-3 text-[12px] font-black text-slate-800 shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            aria-label={t.categories}
-          >
-            {quickCategories.map((item) => (
-              <option key={item.key} value={item.key}>{item.label}</option>
-            ))}
-          </select>
+            <div className="hidden sm:flex gap-1.5 overflow-x-auto pb-1">
+              {quickCategories.map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => setCategory(item.key)}
+                  className={`shrink-0 rounded-full border px-4 py-2 text-xs font-black transition cursor-pointer hover:shadow-sm ${category === item.key ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"}`}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div className="mx-auto hidden max-w-[1800px] gap-1 overflow-x-auto px-2 pb-1.5 sm:flex sm:px-6">
-          {quickCategories.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => setCategory(item.key)}
-              className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-black sm:text-xs ${category === item.key ? "border-blue-600 bg-blue-600 text-white" : "border-slate-200 bg-white text-slate-700"}`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-[1800px] px-2 py-2 sm:px-6 sm:py-4">
-        <section className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm sm:p-3">
-          <div className="mb-2 flex items-center justify-between gap-2 px-1">
+      {/* 🛍️ Product Listing Section */}
+      <div className="mx-auto max-w-[1800px] px-4 py-2 sm:px-8">
+        <section className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-md sm:p-6">
+          <div className="mb-4 flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
             <div className="min-w-0">
               <p className="text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">HBS Marketplace</p>
-              <h1 className="truncate text-sm font-black sm:text-lg">{t.featured}</h1>
+              <h2 className="truncate text-base font-black sm:text-xl">{t.featured}</h2>
             </div>
-            <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-700">{filtered.length} {countLabel}</span>
+            <span className="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-700">{filtered.length} {countLabel}</span>
           </div>
-          <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {filtered.map((item) => (
-              <article key={item.slug} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg">
-                <Link href={`/product/${item.slug}`} className="block bg-white p-1.5">
-                  <div className="aspect-[1/1] overflow-hidden rounded-lg bg-slate-50">
-                    <img src={item.image} alt={l(item.name, language)} className="h-full w-full object-contain p-1.5" />
+          
+          {filtered.length === 0 ? (
+            <div className="text-center py-12 text-slate-500 font-semibold text-sm">
+              📭 Bu bölgede veya kategoride ürün bulunamadı. Yarıçapı artırarak tekrar deneyin.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              {filtered.map((item) => (
+                <article key={item.slug} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-blue-100 group flex flex-col justify-between">
+                  <div>
+                    <Link href={`/product/${item.slug}`} className="block bg-white p-2 relative overflow-hidden">
+                      <div className="aspect-[1/1] overflow-hidden rounded-xl bg-slate-50 flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
+                        <img src={item.image} alt={l(item.name, language)} className="max-h-full max-w-full object-contain" />
+                      </div>
+                    </Link>
+                    <div className="px-3 pt-2">
+                      <Link href={`/product/${item.slug}`} className="line-clamp-2 min-h-[2.2rem] text-xs font-black leading-4 hover:text-blue-700 sm:text-[13px] text-slate-800">
+                        {l(item.name, language)}
+                      </Link>
+                      <p className="mt-1 truncate text-[10px] font-bold text-indigo-500 bg-indigo-50/50 inline-block px-2 py-0.5 rounded-full">{l(item.category, language)}</p>
+                    </div>
                   </div>
-                </Link>
-                <div className="px-2 pb-2">
-                  <Link href={`/product/${item.slug}`} className="line-clamp-2 min-h-[2rem] text-[12px] font-black leading-4 hover:text-blue-700 sm:text-[13px]">
-                    {l(item.name, language)}
-                  </Link>
-                  <p className="mt-0.5 truncate text-[10px] font-bold text-slate-500">{l(item.category, language)}</p>
-                  <div className="mt-1 flex items-center justify-between gap-1">
-                    <span className="truncate text-[11px] font-black text-blue-700">{l(item.price, language)}</span>
-                    <Link href={`/product/${item.slug}`} className="rounded-md border border-slate-200 px-1.5 py-0.5 text-[10px] font-black hover:bg-slate-50">{t.view}</Link>
+                  <div className="px-3 pb-3 pt-2 border-t border-slate-50 mt-2 flex items-center justify-between gap-1.5">
+                    <span className="truncate text-xs font-black text-blue-700">{l(item.price, language)}</span>
+                    <Link href={`/product/${item.slug}`} className="rounded-lg border border-slate-200 px-2 py-1 text-[10px] font-black hover:bg-slate-50 hover:border-slate-300 transition shrink-0">{t.view}</Link>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
       </div>
 
@@ -1005,6 +1168,55 @@ export default function HomePage() {
           </section>
         </div>
       )}
+
+      {/* 🏢 Premium Footer with brand story and comparison table */}
+      <footer className="bg-slate-900 border-t border-slate-850 text-slate-400 py-12 px-4 mt-8 select-none z-10 relative pb-24">
+        <div className="mx-auto max-w-[1800px] grid gap-8 md:grid-cols-2 lg:grid-cols-4 px-4 sm:px-8">
+          <div className="space-y-3">
+            <h3 className="text-white font-black text-lg tracking-tighter">HBS</h3>
+            <p className="text-xs font-bold leading-relaxed text-slate-450">
+              {t.footerBranding}
+            </p>
+            <p className="text-[10px] text-slate-500 font-semibold">
+              © 2026 HBS Inc. Tüm hakları saklıdır.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="text-white font-black text-xs uppercase tracking-wider">HBS vs Diğerleri</h4>
+            <div className="grid grid-cols-[2fr_1fr] gap-1.5 text-[10px] font-bold">
+              <span className="text-slate-400 border-b border-slate-800 pb-1">Shopify</span>
+              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">Mağaza Açma</span>
+              <span className="text-slate-400 border-b border-slate-800 pb-1">Amazon / Trendyol</span>
+              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">Ürün Satış</span>
+              <span className="text-slate-400 border-b border-slate-800 pb-1">Airbnb / Booking</span>
+              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">Kiralama</span>
+              <span className="text-slate-400 border-b border-slate-800 pb-1">eBay</span>
+              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">Açık Artırma</span>
+              <span className="text-blue-400 font-extrabold">HBS Platform</span>
+              <span className="text-emerald-400 font-black text-right">✓ HEPSİ BİR ARADA</span>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="text-white font-black text-xs uppercase tracking-wider">Modüllerimiz</h4>
+            <ul className="space-y-1.5 text-xs font-bold">
+              <li>• Ürün Kataloğu & Satış</li>
+              <li>• Randevulu Yerinde Hizmetler</li>
+              <li>• Günlük / Haftalık Kiralama</li>
+              <li>• B2B Canlı İskonto Pazarlığı</li>
+              <li>• Zaman Ayarlı Açık Artırmalar</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="text-white font-black text-xs uppercase tracking-wider">Geliştirici Notu</h4>
+            <p className="text-[10px] font-semibold leading-relaxed text-slate-500">
+              HBS 2.0, esnafın karmaşık sınır ötesi e-ticaret süreçlerini, yapay zeka entegrasyonu ve sıfır bürokrasi ile yönetmesi için tasarlanmıştır.
+            </p>
+          </div>
+        </div>
+      </footer>
 
       {/* Premium B2B Open Bulletin / Requests Board Call-To-Action Floating Bar */}
       <Link
