@@ -1,5 +1,7 @@
 "use client";
 
+import { translations } from "@/lib/translations";
+
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
@@ -74,7 +76,17 @@ export default function LoginPage() {
     }
   }, []);
 
-  const currentText = texts[language];
+  const currentText = {
+    home: translations[language].common.home,
+    title: translations[language].auth.signIntoHbs,
+    description: translations[language].auth.pleaseAuthenticate,
+    username: translations[language].auth.usernameOrEmail,
+    password: translations[language].auth.password,
+    login: translations[language].auth.loginBtn,
+    forgot: translations[language].auth.forgotPassword,
+    register: translations[language].auth.registerLink,
+    error: translations[language].auth.invalidCredentials
+  };
 
   async function handleBiometricLogin() {
     setIsScanning(true);
@@ -346,17 +358,7 @@ export default function LoginPage() {
 
             <div className="space-y-4">
               <h1 className="text-3xl sm:text-4xl md:text-[2.6rem] font-black tracking-tight leading-none text-slate-900">
-                {language === "tr" ? (
-                  <>
-                    Tek HBS Hesabı,<br/>
-                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Tüm Güç Elinizde.</span>
-                  </>
-                ) : (
-                  <>
-                    One HBS Account,<br/>
-                    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Complete Control.</span>
-                  </>
-                )}
+                {translations[language].auth.oneAccountCompleteControl}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 font-semibold leading-relaxed max-w-md">
                 {currentText.description}
@@ -412,7 +414,7 @@ export default function LoginPage() {
             {/* Bottom mini teaser */}
             <div className="text-[11px] font-black tracking-wide text-indigo-500/80 uppercase select-none border-t border-slate-200/50 pt-4 flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              {language === "tr" ? "YILLIK ÜCRET YOK · AÇILIŞA ÖZEL LİSANS" : "NO ANNUAL FEE · OPENING LICENSE"}
+              {translations[language].auth.noAnnualFee}
             </div>
           </div>
 
@@ -421,7 +423,7 @@ export default function LoginPage() {
             <div className="space-y-6">
               <div className="text-center md:text-left">
                 <h2 className="text-2xl font-black text-slate-800 tracking-tight">{currentText.title}</h2>
-                <p className="text-xs font-semibold text-slate-400 mt-1">{language === "tr" ? "Lütfen kimlik bilgilerinizi doğrulayın." : "Please authenticate your identity."}</p>
+                <p className="text-xs font-semibold text-slate-400 mt-1">{translations[language].auth.pleaseAuthenticate}</p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -438,7 +440,7 @@ export default function LoginPage() {
                       value={username} 
                       onChange={(event) => setUsername(event.target.value)} 
                       className={`w-full rounded-2xl border ${activeDemoGlow ? 'border-blue-500 ring-4 ring-blue-500/20 bg-blue-50/10' : 'border-slate-200 bg-white'} pl-11 pr-4 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300 shadow-sm`}
-                      placeholder={language === "tr" ? "örn: MUSTERI veya e-posta" : "e.g. MUSTERI or email"} 
+                      placeholder={translations[language].auth.placeholderUsername} 
                       autoComplete="username" 
                     />
                   </div>
