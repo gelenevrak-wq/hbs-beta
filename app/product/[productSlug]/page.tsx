@@ -286,6 +286,26 @@ export default function ProductDetailPage() {
   const { t, language, isReady } = useHbsLanguage();
   const [message, setMessage] = useState("");
   const [product, setProduct] = useState<ProductData | null>(null);
+  const handleWhatsAppCheckout = () => {
+    const activeLang = language || "tr";
+    const nameText = activeProduct ? (activeProduct.name[activeLang] || activeProduct.name.tr) : "";
+    const priceText = activeProduct && activeProduct.priceValue 
+      ? `${activeProduct.priceValue} ${activeProduct.currency}` 
+      : (activeProduct ? txt(activeProduct.priceText, activeLang) : "");
+
+    const messageText = encodeURIComponent(
+      `Merhaba! HBS üzerinden sipariş vermek istiyorum:\n\n` +
+      `📦 Ürün: ${nameText}\n` +
+      `🏷️ Model: ${activeProduct ? txt(activeProduct.model, activeLang) : ""} / Marka: ${activeProduct ? activeProduct.brand : ""}\n` +
+      `💰 Fiyat: ${priceText}\n` +
+      `📍 Konum: ${activeProduct ? activeProduct.city : ""}, ${activeProduct ? activeProduct.country : ""}\n\n` +
+      `Bu ürün için sevkiyat ve ödeme detaylarını görüşebilir miyiz?`
+    );
+
+    const targetNumber = (activeProduct && activeProduct.storeWhatsapp) || "+905320000000";
+    const cleanNumber = targetNumber.replace(/\D/g, "");
+    window.open(`https://wa.me/${cleanNumber}?text=${messageText}`, "_blank");
+  };
   const [customLoaded, setCustomLoaded] = useState(false);
   const [similarProducts, setSimilarProducts] = useState<ProductData[]>([]);
   const [selectedGalleryImage, setSelectedGalleryImage] = useState<string | null>(null);
@@ -1278,6 +1298,13 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               </div>
 
               <div className="mt-5 grid gap-2 sm:mt-6 sm:gap-2.5 relative z-10">
+                <button 
+                  type="button" 
+                  onClick={handleWhatsAppCheckout} 
+                  className="w-full rounded-xl bg-[#25D366] hover:bg-[#20ba5a] py-3 text-xs font-black text-white shadow-md active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer font-extrabold"
+                >
+                  🟢 WhatsApp ile Hızlı Sipariş
+                </button>
                 <button 
                   type="button" 
                   onClick={addToCart} 

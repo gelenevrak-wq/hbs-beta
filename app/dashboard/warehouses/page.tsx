@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useMemo, useState, useRef } from "react";
+import VoiceAssistant from "@/components/VoiceAssistant";
 import CompactLanguageSwitcher, { LanguageCode, isLanguageCode } from "@/components/language/CompactLanguageSwitcher";
 
 type CorridorConfig = {
@@ -675,6 +676,14 @@ export default function WarehousesRevampPage() {
     setProducts(updated);
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
     showSuccess("Stok seviyesi güncellendi.");
+  };
+
+  const handleVoiceAdjustQuantity = (delta: number) => {
+    if (!placeProductId) {
+      showError(language === "tr" ? "Önce formdan bir ürün seçmelisiniz." : "Select a product from the form first.");
+      return;
+    }
+    handleAdjustQuantity(placeProductId, delta);
   };
 
   const handleShelfCardClick = (shelfCode: string) => {
@@ -2646,6 +2655,13 @@ ${sizeStr}
                   <h2 className="text-base font-black text-slate-900 mt-1">{t.lockLocationHeader}</h2>
                   <p className="text-xs text-slate-600">{t.lockLocationDesc}</p>
                 </div>
+
+                {/* 🎙️ Voice Assistant Entegrasyonu */}
+                <VoiceAssistant 
+                  onAdjustQuantity={handleVoiceAdjustQuantity}
+                  onSetShelf={setPlaceShelf}
+                  activeShelf={placeShelf}
+                />
 
                 <div className="space-y-3">
                   <label className="grid gap-1">
