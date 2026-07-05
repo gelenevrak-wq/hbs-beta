@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -12,7 +12,7 @@ type OrderStatus =
   | "completed"
   | "cancelled";
 
-type OrderType = "Teklif Talebi" | "Sipariş Talebi" | "Sepet Talebi";
+type OrderType = "Teklif Talebi" | "Sipariş Talebi" | "Sepet Talebi" | "Kiralama Talebi";
 
 type OrderItem = {
   id: string;
@@ -108,6 +108,27 @@ const initialOrders: CustomerOrder[] = [
       },
     ],
   },
+  {
+    id: "ord-004",
+    customerName: "Kutaisi Auto Hub",
+    customerPhone: "+995 555 999 888",
+    customerEmail: "kutaisi@hbs.ge",
+    orderType: "Kiralama Talebi",
+    status: "new",
+    createdAt: "Bugün 12:00",
+    city: "Kutaisi",
+    note: "Autel MaxiSys Ultra arıza tespit cihazını 1 haftalık kiralama talebi. Depozito bedeli bloke edilmelidir.",
+    items: [
+      {
+        id: "item-005",
+        productName: "Autel MaxiSys Ultra Arıza Tespit Cihazı",
+        productCode: "SKU-AUTEL-001",
+        quantity: 1,
+        unitPrice: "450 GEL",
+        stockStatus: "Stokta var",
+      },
+    ],
+  },
 ];
 
 function statusText(status: OrderStatus) {
@@ -121,9 +142,9 @@ function statusText(status: OrderStatus) {
     case "approved":
       return "Onaylandı";
     case "preparing":
-      return "Hazırlanıyor";
+      return "Hazırlanıyor / Sevkiyat";
     case "completed":
-      return "Tamamlandı";
+      return "Tamamlandı / Kiralama İade";
     case "cancelled":
       return "İptal";
   }
@@ -169,6 +190,7 @@ export default function OrdersPage() {
   const [search, setSearch] = useState("");
   const [replyText, setReplyText] = useState("");
   const [message, setMessage] = useState("");
+  const [escrowStates, setEscrowStates] = useState<Record<string, "pending" | "locked" | "released" | "charged">>({});
 
   const filteredOrders = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -455,6 +477,94 @@ export default function OrdersPage() {
                       {selectedOrder.note}
                     </p>
                   </div>
+
+                  {/* 🔒 Escrow Deposit Panel (Rental Protection) */}
+                  {selectedOrder.orderType === "Kiralama Talebi" && (
+                    <div className="rounded-3xl border border-blue-500/30 bg-blue-950/20 p-5 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">🔒</span>
+                          <div>
+                            <h4 className="text-sm font-black text-blue-200">Kiralama Güvence Bedeli (Escrow Deposit)</h4>
+                            <p className="text-[10px] text-blue-400 font-bold leading-relaxed">Airbnb tarzı otomatik hasar ve iade güvence sistemi aktiftir.</p>
+                          </div>
+                        </div>
+                        <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider border ${
+                          (escrowStates[selectedOrder.id] || "pending") === "locked"
+                            ? "bg-amber-500/20 text-amber-300 border-amber-500/30 animate-pulse"
+                            : (escrowStates[selectedOrder.id] || "pending") === "released"
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                            : (escrowStates[selectedOrder.id] || "pending") === "charged"
+                            ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
+                            : "bg-blue-500/20 text-blue-300 border-blue-500/30"
+                        }`}>
+                          {(escrowStates[selectedOrder.id] || "pending") === "locked"
+                            ? "Bloke Edildi 🔒"
+                            : (escrowStates[selectedOrder.id] || "pending") === "released"
+                            ? "Serbest Bırakıldı ✓"
+                            : (escrowStates[selectedOrder.id] || "pending") === "charged"
+                            ? "Tazmin Edildi ⚠️"
+                            : "Blokaj Bekleniyor"}
+                        </span>
+                      </div>
+
+                      <div className="grid gap-2 bg-slate-950/50 p-3.5 rounded-2xl border border-white/5 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Bloke Edilecek Depozito:</span>
+                          <span className="font-mono font-black text-white">900.00 GEL</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Kart Sahibi:</span>
+                          <span className="font-bold text-white">{selectedOrder.customerName}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">İşlem ID:</span>
+                          <span className="font-mono text-slate-500">ESC-LOCK-{selectedOrder.id.toUpperCase()}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 flex-wrap">
+                        {(escrowStates[selectedOrder.id] || "pending") === "pending" && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEscrowStates(prev => ({ ...prev, [selectedOrder.id]: "locked" }));
+                              setMessage("Güvence bedeli başarıyla müşterinin kartından bloke edildi.");
+                            }}
+                            className="rounded-xl bg-blue-600 hover:bg-blue-700 px-3 py-2 text-xs font-black text-white transition active:scale-95 shadow-lg select-none"
+                          >
+                            🔒 Kartı Yetkilendir ve 900 GEL Bloke Et
+                          </button>
+                        )}
+                        {(escrowStates[selectedOrder.id] || "pending") === "locked" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEscrowStates(prev => ({ ...prev, [selectedOrder.id]: "released" }));
+                                updateOrderStatus(selectedOrder.id, "completed");
+                                setMessage("Hasarsız iade onaylandı. Depozito blokesi kaldırıldı.");
+                              }}
+                              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-3 py-2 text-xs font-black text-white transition active:scale-95 shadow-lg select-none"
+                            >
+                              ✓ Hasarsız İade Alındı (Blokajı Çöz)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEscrowStates(prev => ({ ...prev, [selectedOrder.id]: "charged" }));
+                                updateOrderStatus(selectedOrder.id, "cancelled");
+                                setMessage("Hasarlı ürün raporlandı. 900 GEL depozito tahsil edildi.");
+                              }}
+                              className="rounded-xl bg-rose-600 hover:bg-rose-700 px-3 py-2 text-xs font-black text-white transition active:scale-95 shadow-lg select-none"
+                            >
+                              ⚠️ Hasarlı / Eksik İade (Depozitoyu Çek)
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div className="rounded-3xl border border-white/10 bg-slate-950/70 p-5">
                     <h3 className="mb-4 font-black">Ürünler</h3>

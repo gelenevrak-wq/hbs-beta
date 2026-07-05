@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import VisitorTracker from "@/components/VisitorTracker";
+import OfflinePOS from "@/components/OfflinePOS";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import DemoDataInitializer from "@/components/DemoDataInitializer";
 
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased" data-scroll-behavior="smooth">
       <body className="min-h-full flex flex-col">
         <VisitorTracker />
+        <OfflinePOS />
         <PWAInstallPrompt />
         <DemoDataInitializer />
         {children}
