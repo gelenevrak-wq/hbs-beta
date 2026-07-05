@@ -991,15 +991,18 @@ export default function WarehousesRevampPage() {
     if (!activeWh) return;
 
     try {
-      const targetProd = products.find((p) => p.id === productId);
-      if (!targetProd) return;
+      const targetProd = products.find((p) => String(p.id) === String(productId));
+      if (!targetProd) {
+        showError(activeLang === "en" ? "Product not found!" : "Yerleştirilmek istenen ürün bulunamadı!");
+        return;
+      }
 
       // Calculate current occupied weight & volume on shelfCode
       const currentProductsOnShelf = products.filter(
         (p) =>
           safeLower(p.warehouse) === safeLower(activeWh.name) &&
           safeLower(p.shelf) === safeLower(shelfCode) &&
-          p.id !== productId
+          String(p.id) !== String(productId)
       );
 
       let occupiedWeight = 0;
@@ -2233,15 +2236,18 @@ export default function WarehousesRevampPage() {
     }
 
     try {
-      const targetProd = products.find((p) => p.id === placeProductId);
-      if (!targetProd) return;
+      const targetProd = products.find((p) => String(p.id) === String(placeProductId));
+      if (!targetProd) {
+        showError(activeLang === "en" ? "Product not found!" : "Yerleştirilmek istenen ürün bulunamadı!");
+        return;
+      }
 
       // Calculate current occupied weight & volume on placeShelf
       const currentProductsOnShelf = products.filter(
         (p) =>
           safeLower(p.warehouse) === safeLower(activeWh.name) &&
           safeLower(p.shelf) === safeLower(placeShelf) &&
-          p.id !== placeProductId
+          String(p.id) !== String(placeProductId)
       );
 
       let occupiedWeight = 0;
