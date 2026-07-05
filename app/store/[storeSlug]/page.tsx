@@ -1309,40 +1309,6 @@ export default function StorePage() {
           </div>
         </header>
 
-        {/* Dynamic Sector Showcase Simulator Bar - Wow Factor! */}
-        <section className="mb-3 rounded-2xl border border-blue-200 bg-blue-50 p-3 shadow-sm flex flex-col md:flex-row justify-between items-center gap-3">
-          <div>
-            <span className="text-[10px] font-black text-blue-700 uppercase tracking-widest block">{getTxt("simulatorTitle")}</span>
-            <p className="text-xs text-blue-900 leading-relaxed font-bold">{getTxt("simulatorSubtitle")}</p>
-          </div>
-          <div className="flex flex-wrap gap-1.5 shrink-0">
-            <button
-              onClick={() => { setStoreType("products"); setMessage(""); }}
-              className={`rounded-lg px-3 py-1.5 text-xs font-black transition ${storeType === "products" ? "bg-blue-600 text-white shadow-sm" : "bg-white border border-blue-200 text-blue-800 hover:bg-blue-100"}`}
-            >
-              {getTxt("sectorProducts")}
-            </button>
-            <button
-              onClick={() => { setStoreType("realEstate"); setMessage(""); }}
-              className={`rounded-lg px-3 py-1.5 text-xs font-black transition ${storeType === "realEstate" ? "bg-blue-600 text-white shadow-sm" : "bg-white border border-blue-200 text-blue-800 hover:bg-blue-100"}`}
-            >
-              {getTxt("sectorRealEstate")}
-            </button>
-            <button
-              onClick={() => { setStoreType("salon"); setMessage(""); }}
-              className={`rounded-lg px-3 py-1.5 text-xs font-black transition ${storeType === "salon" ? "bg-blue-600 text-white shadow-sm" : "bg-white border border-blue-200 text-blue-800 hover:bg-blue-100"}`}
-            >
-              {getTxt("sectorSalon")}
-            </button>
-            <button
-              onClick={() => { setStoreType("autoRepair"); setMessage(""); }}
-              className={`rounded-lg px-3 py-1.5 text-xs font-black transition ${storeType === "autoRepair" ? "bg-blue-600 text-white shadow-sm" : "bg-white border border-blue-200 text-blue-800 hover:bg-blue-100"}`}
-            >
-              {getTxt("sectorAutoRepair")}
-            </button>
-          </div>
-        </section>
-
         {message && (
           <div className="mb-3 rounded-xl border border-blue-200 bg-blue-50/50 p-3.5 text-xs font-black text-blue-950">
             ✓ {message}
@@ -1384,39 +1350,6 @@ export default function StorePage() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm space-y-3 relative overflow-hidden">
-              {isVirtualDelivery && (
-                <div className="absolute right-0 top-0 bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-bl-2xl uppercase tracking-wider shadow-md">
-                  {getTxt("virtualStorefront")}
-                </div>
-              )}
-              <span className="text-[11px] font-black uppercase text-blue-700 tracking-wider">{getTxt("partsStorefrontTitle")}</span>
-              <h1 className="text-3xl font-black">{storeInfo?.name || "OBDTR Diagnostics"}</h1>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-4xl">
-                {isVirtualDelivery 
-                  ? getTxt("virtualStoreDesc")
-                  : getTxt("physicalStoreDesc")
-                }
-              </p>
-              {isVirtualDelivery && (
-                <div className="flex flex-wrap gap-2 pt-1.5">
-                  <span className="rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-extrabold text-[10px] px-3 py-1 flex items-center gap-1 shadow-sm">
-                    {getTxt("shippingLabel")}
-                  </span>
-                  <span className="rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-extrabold text-[10px] px-3 py-1 flex items-center gap-1 shadow-sm">
-                    {getTxt("trainingLabel")}
-                  </span>
-                  <span className="rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-extrabold text-[10px] px-3 py-1 flex items-center gap-1 shadow-sm">
-                    🇹🇷 {getTxt("turkey")}
-                  </span>
-                  <span className="rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-extrabold text-[10px] px-3 py-1 flex items-center gap-1 shadow-sm">
-                    🇬🇪 {getTxt("georgia")}
-                  </span>
-                </div>
-              )}
-              {contactButtons}
-            </div>
-
             {filteredCatalogProducts.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-8 text-center max-w-lg mx-auto shadow-sm my-6">
                 <div className="text-4xl">🛍️</div>
@@ -1429,7 +1362,7 @@ export default function StorePage() {
                 </p>
               </div>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
                 {filteredCatalogProducts.map((p) => {
                   const hasVariants = p.variants && p.variants.length > 0;
                   const selectedVarId = selectedVariants[p.id];
@@ -1452,55 +1385,73 @@ export default function StorePage() {
                   const finalDescription = translateProductField(p.description, "description", language);
 
                   return (
-                    <article key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm space-y-3 flex flex-col justify-between relative group">
+                    <article key={p.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-md shadow-slate-100/50 hover:shadow-xl hover:border-slate-350 transition-all duration-300 flex flex-col justify-between relative group">
                       {isOwner && (
                         <Link
                           href={"/dashboard/products?edit=" + p.id}
-                          className="absolute top-6 left-6 z-10 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-[10px] px-2.5 py-1.5 flex items-center gap-1 shadow-md transition active:scale-95"
+                          className="absolute top-8 left-8 z-10 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-extrabold text-xs px-3.5 py-2.5 flex items-center gap-1.5 shadow-lg transition active:scale-95"
                         >
                           ✏️ Düzenle
                         </Link>
                       )}
-                      <div className="space-y-3">
-                        <Link href={`/product/${p.id}`} className="block aspect-[4/3] rounded-xl bg-slate-50 border border-slate-100 overflow-hidden hover:opacity-90 transition">
+                      <div className="space-y-4">
+                        <Link href={`/product/${p.id}`} className="block aspect-[16/10] w-full rounded-2xl bg-slate-50 border border-slate-100 overflow-hidden hover:scale-[1.01] hover:shadow-inner transition-all duration-300">
                           {p.imageUrl ? (
-                            <img src={p.imageUrl} alt={finalName} className="object-contain h-full w-full p-2" />
+                            <img src={p.imageUrl} alt={finalName} className="object-contain h-full w-full p-4" />
                           ) : (
-                            <span className="text-3xl">⚙️</span>
+                            <div className="h-full w-full flex items-center justify-center bg-slate-100 text-slate-400 text-5xl">⚙️</div>
                           )}
                         </Link>
                         
                         <div>
-                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[9px] font-black text-blue-800 uppercase">
+                          <span className="rounded-full bg-blue-50 border border-blue-150 px-3 py-1 text-[10px] sm:text-xs font-black text-blue-800 uppercase tracking-wide">
                             {finalCategory}
                           </span>
-                          <h3 className="font-black text-sm text-slate-800 mt-1 hover:text-blue-600 transition">
+                          <h3 className="font-black text-base sm:text-lg text-slate-800 mt-2.5 hover:text-blue-600 transition leading-snug">
                             <Link href={`/product/${p.id}`}>{finalName}</Link>
                           </h3>
                           {p.description && (
-                            <p className="text-[10px] text-slate-500 mt-1 line-clamp-2">{finalDescription}</p>
+                            <p className="text-xs sm:text-sm text-slate-500 mt-2 line-clamp-3 leading-relaxed font-medium">{finalDescription}</p>
                           )}
                           
-                          <div className="text-[10px] text-slate-400 mt-2 space-y-0.5 border-t border-slate-50 pt-2 font-medium">
-                            <p>{getTxt("skuLabel")} <b className="text-slate-700">{displaySku || "-"}</b></p>
-                            <p>{getTxt("barcodeLabel")} <span className="text-slate-700">{displayBarcode || "-"}</span></p>
+                          <div className="text-xs text-slate-500 mt-4 space-y-2 border-t border-slate-100 pt-3.5 font-semibold">
+                            <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
+                              <span className="text-slate-400 font-medium">{getTxt("skuLabel")}</span>
+                              <span className="text-slate-800 font-extrabold">{displaySku || "-"}</span>
+                            </div>
+                            <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
+                              <span className="text-slate-400 font-medium">{getTxt("barcodeLabel")}</span>
+                              <span className="text-slate-800 font-extrabold">{displayBarcode || "-"}</span>
+                            </div>
                             {isVirtualDelivery ? (
                               <>
-                                <p>{getTxt("deliveryTypeLabel")} <span className="text-blue-700 font-bold">{getTxt("deliveryTypeValue")}</span></p>
-                                <p>{getTxt("extraServiceLabel")} <span className="text-emerald-700 font-bold">{getTxt("extraServiceValue")}</span></p>
+                                <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
+                                  <span className="text-slate-400 font-medium">{getTxt("deliveryTypeLabel")}</span>
+                                  <span className="text-blue-700 font-black">{getTxt("deliveryTypeValue")}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
+                                  <span className="text-slate-400 font-medium">{getTxt("extraServiceLabel")}</span>
+                                  <span className="text-emerald-700 font-black">{getTxt("extraServiceValue")}</span>
+                                </div>
                               </>
                             ) : (
                               <>
-                                <p>{getTxt("shelfAddressLabel")} <span className="text-blue-700 font-bold">{displayWarehouse} · {displayShelf || "-"}</span></p>
-                                <p>{getTxt("stockStatusLabel")} <span className="text-emerald-700 font-extrabold">{displayQuantity ? `${displayQuantity} ${getTxt("pieces")}` : "Stokta Var"}</span></p>
+                                <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
+                                  <span className="text-slate-400 font-medium">{getTxt("shelfAddressLabel")}</span>
+                                  <span className="text-blue-700 font-black">{displayWarehouse} · {displayShelf || "-"}</span>
+                                </div>
+                                <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
+                                  <span className="text-slate-400 font-medium">{getTxt("stockStatusLabel")}</span>
+                                  <span className="text-emerald-700 font-black">{displayQuantity ? `${displayQuantity} ${getTxt("pieces")}` : "Stokta Var"}</span>
+                                </div>
                               </>
                             )}
                           </div>
 
                           {/* Variants Select Box */}
                           {hasVariants && (
-                            <div className="mt-2.5 space-y-1">
-                              <label className="text-[9px] font-black text-slate-500 block uppercase tracking-wider">
+                            <div className="mt-4 space-y-1.5">
+                              <label className="text-[10px] sm:text-xs font-black text-slate-400 block uppercase tracking-wider">
                                 {getTxt("selectVariant")}
                               </label>
                               <select
@@ -1511,7 +1462,7 @@ export default function StorePage() {
                                     [p.id]: e.target.value
                                   });
                                 }}
-                                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-black outline-none focus:border-blue-500 transition"
+                                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs sm:text-sm font-black outline-none focus:border-blue-500 transition shadow-inner"
                               >
                                 {p.variants?.map((v) => (
                                   <option key={v.id} value={v.id}>
@@ -1524,9 +1475,9 @@ export default function StorePage() {
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center pt-2.5 border-t border-slate-100 mt-2">
-                        <span className="font-black text-xs text-slate-900">{displayPrice}</span>
-                        <div className="flex gap-1.5">
+                      <div className="flex justify-between items-center pt-4 border-t border-slate-100 mt-4">
+                        <span className="font-black text-base sm:text-lg text-slate-950">{displayPrice}</span>
+                        <div className="flex gap-2">
                           {isPricingFixed && (
                             <button
                               type="button"
@@ -1541,7 +1492,7 @@ export default function StorePage() {
                                   setHasJoinedGroup(false);
                                 });
                               }}
-                              className="rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-800 font-extrabold text-[10px] px-2.5 py-1.5 transition active:scale-95 flex items-center gap-1 shrink-0"
+                              className="rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-800 font-black text-xs px-3 py-2.5 transition active:scale-95 flex items-center gap-1.5 shrink-0"
                               title={getTxt("groupBuyBtnTitle")}
                             >
                               👥 Birlikte Al
@@ -1556,7 +1507,7 @@ export default function StorePage() {
                                   setMessage(`${finalName}${variantName} ${getTxt("addedToCartMsg")}`);
                                 });
                               }}
-                              className="rounded-lg bg-slate-900 px-3 py-1.5 text-[10px] font-black text-white hover:bg-slate-800 transition"
+                              className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-black text-white hover:bg-slate-800 active:scale-95 transition-all duration-200"
                             >
                               {getTxt("addToCart")}
                             </button>
@@ -1571,7 +1522,7 @@ export default function StorePage() {
                                   setMessage(`${finalProductName} ${getTxt("quoteSentMsg")}`);
                                 });
                               }}
-                              className="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-3.5 py-1.5 text-[10px] font-black text-white shadow-md shadow-blue-500/10 hover:from-blue-500 hover:to-indigo-500 hover:shadow-lg active:scale-95 transition-all duration-300"
+                              className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4.5 py-2.5 text-xs font-black text-white shadow-md shadow-blue-500/10 hover:from-blue-500 hover:to-indigo-500 hover:shadow-lg active:scale-95 transition-all duration-300"
                             >
                               {getTxt("requestQuote")}
                             </button>
