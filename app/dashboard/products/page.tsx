@@ -298,6 +298,17 @@ export default function ProductsPage() {
   const [productsLoaded, setProductsLoaded] = useState(false);
   const [products, setProducts] = useState<ProductRecord[]>(INITIAL_PRODUCTS);
 
+  // Custom date picker refs and helpers
+  const entryDateInputRef = useRef<HTMLInputElement>(null);
+  const exitDateInputRef = useRef<HTMLInputElement>(null);
+
+  const formatToTurkishDate = (isoString: string) => {
+    if (!isoString) return "";
+    const parts = isoString.split("-");
+    if (parts.length !== 3) return isoString;
+    return parts[2] + "." + parts[1] + "." + parts[0];
+  };
+
   const uniqueCategories = useMemo(() => {
     const cats = products
       .map(p => p.category?.trim())
@@ -2398,26 +2409,92 @@ export default function ProductsPage() {
                 </label>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-900 font-extrabold">Depoya Giriş Tarihi</span>
-                  <input
-                    type="date"
-                    value={entryDate}
-                    onChange={(e) => setEntryDate(e.target.value)}
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                  />
-                </label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-1">
+                  <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1">
+                    Depoya Giriş Tarihi <span className="text-blue-600 text-sm">➔➔➔ 📅</span>
+                  </span>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      readOnly
+                      value={formatToTurkishDate(entryDate)}
+                      onClick={() => {
+                        try {
+                          entryDateInputRef.current?.showPicker();
+                        } catch (e) {
+                          entryDateInputRef.current?.focus();
+                        }
+                      }}
+                      placeholder="Depoya giriş tarihi seçin..."
+                      className="w-full rounded-xl border border-slate-300 bg-white pl-3.5 pr-12 py-2.5 text-sm text-slate-900 placeholder-slate-500 font-bold outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm h-11 cursor-pointer"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try {
+                          entryDateInputRef.current?.showPicker();
+                        } catch (e) {
+                          entryDateInputRef.current?.focus();
+                        }
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition active:scale-90 text-lg shadow-sm"
+                      title="Takvimi Aç"
+                    >
+                      📅
+                    </button>
+                    <input
+                      ref={entryDateInputRef}
+                      type="date"
+                      value={entryDate}
+                      onChange={(e) => setEntryDate(e.target.value)}
+                      className="absolute inset-0 opacity-0 w-0 h-0 pointer-events-none"
+                    />
+                  </div>
+                </div>
 
-                <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-900 font-extrabold">Depodan Çıkış Tarihi</span>
-                  <input
-                    type="date"
-                    value={exitDate}
-                    onChange={(e) => setExitDate(e.target.value)}
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
-                  />
-                </label>
+                <div className="grid gap-1">
+                  <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1">
+                    Depodan Çıkış Tarihi <span className="text-blue-600 text-sm">➔➔➔ 📅</span>
+                  </span>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      readOnly
+                      value={formatToTurkishDate(exitDate)}
+                      onClick={() => {
+                        try {
+                          exitDateInputRef.current?.showPicker();
+                        } catch (e) {
+                          exitDateInputRef.current?.focus();
+                        }
+                      }}
+                      placeholder="Depodan çıkış tarihi seçin..."
+                      className="w-full rounded-xl border border-slate-300 bg-white pl-3.5 pr-12 py-2.5 text-sm text-slate-900 placeholder-slate-500 font-bold outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm h-11 cursor-pointer"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try {
+                          exitDateInputRef.current?.showPicker();
+                        } catch (e) {
+                          exitDateInputRef.current?.focus();
+                        }
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 hover:text-blue-800 transition active:scale-90 text-lg shadow-sm"
+                      title="Takvimi Aç"
+                    >
+                      📅
+                    </button>
+                    <input
+                      ref={exitDateInputRef}
+                      type="date"
+                      value={exitDate}
+                      onChange={(e) => setExitDate(e.target.value)}
+                      className="absolute inset-0 opacity-0 w-0 h-0 pointer-events-none"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="border-t border-slate-200/60 pt-3 space-y-3">
