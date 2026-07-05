@@ -98,6 +98,9 @@ export default function LoginPage() {
         
         setTimeout(() => {
           // Log in the biometric user
+          document.cookie = `hbs-user-role=${biometricUser.role}; path=/; max-age=86400; SameSite=Lax`;
+          document.cookie = `hbs-user-email=${biometricUser.username}; path=/; max-age=86400; SameSite=Lax`;
+
           window.localStorage.setItem(
             "hbs-current-user",
             JSON.stringify(biometricUser)
@@ -165,6 +168,9 @@ export default function LoginPage() {
         if (role === "owner" || role === "top_manager" || role === "store_manager" || role === "superadmin") {
           redirectTo = "/dashboard";
         }
+
+        document.cookie = `hbs-user-role=${role}; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-email=${data.user.email}; path=/; max-age=86400; SameSite=Lax`;
 
         window.localStorage.setItem(
           "hbs-current-user",
@@ -293,6 +299,9 @@ export default function LoginPage() {
         setError(currentText.error);
         return;
       }
+
+      document.cookie = `hbs-user-role=${activeUser.role}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-email=${activeUser.username}; path=/; max-age=86400; SameSite=Lax`;
 
       window.localStorage.setItem(
         "hbs-current-user",

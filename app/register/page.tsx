@@ -241,6 +241,9 @@ export default function RegisterPage() {
         });
 
         // Local storage'a kaydet (uyumluluk için)
+        document.cookie = `hbs-user-role=customer; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-email=${email}; path=/; max-age=86400; SameSite=Lax`;
+
         window.localStorage.setItem(
           "hbs-current-user",
           JSON.stringify({
@@ -254,6 +257,9 @@ export default function RegisterPage() {
       }
     } else {
       // Offline fallback için local storage'a kaydet
+      document.cookie = `hbs-user-role=customer; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-email=${email}; path=/; max-age=86400; SameSite=Lax`;
+
       window.localStorage.setItem(
         "hbs-current-user",
         JSON.stringify({
@@ -346,6 +352,9 @@ export default function RegisterPage() {
         }
 
         // Local storage'a kaydet (uyumluluk için)
+        document.cookie = `hbs-user-role=owner; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-email=${email}; path=/; max-age=86400; SameSite=Lax`;
+
         window.localStorage.setItem(
           "hbs-current-user",
           JSON.stringify({
@@ -360,6 +369,9 @@ export default function RegisterPage() {
     } else {
       // Offline fallback
       const companyCode = company.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      document.cookie = `hbs-user-role=owner; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-email=${email}; path=/; max-age=86400; SameSite=Lax`;
+
       window.localStorage.setItem(
         "hbs-current-user",
         JSON.stringify({

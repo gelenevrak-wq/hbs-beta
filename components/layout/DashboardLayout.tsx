@@ -320,6 +320,8 @@ export default function DashboardLayout({ children, activeMenu }: DashboardLayou
             const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
             const matchingStore = localStores.find((s: any) => s.code === storeCode);
             if (matchingStore && matchingStore.isActive === false) {
+              document.cookie = "hbs-user-role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+              document.cookie = "hbs-user-email=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
               window.localStorage.removeItem("hbs-current-user");
               window.localStorage.removeItem("hbs-demo-user");
               alert("Bağlı olduğunuz mağaza pasife alınmıştır. Oturumunuz kapatılıyor.");

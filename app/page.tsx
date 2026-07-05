@@ -869,6 +869,8 @@ export default function HomePage() {
                 )}
                 <button
                   onClick={() => {
+                    document.cookie = "hbs-user-role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                    document.cookie = "hbs-user-email=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
                     window.localStorage.removeItem("hbs-current-user");
                     window.localStorage.removeItem("hbs-demo-user");
                     window.location.reload();
