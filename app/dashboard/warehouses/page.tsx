@@ -4296,14 +4296,21 @@ ${sizeStr}
                   onPointerMove={handlePointerMove}
                   onPointerUp={handlePointerUp}
                   onPointerLeave={handlePointerUp}
-                  style={{
+                  style={placeProductId ? {} : {
                     backgroundImage: "radial-gradient(#cbd5e1 1.5px, transparent 1.5px)",
                     backgroundSize: "16px 16px",
                     cursor: "grab"
                   }}
-                  className="rounded-3xl border border-slate-200 bg-slate-50/50 p-6 max-h-[35rem] overflow-auto select-none active:cursor-grabbing"
+                  className={`rounded-3xl border border-slate-200 p-6 select-none transition-all duration-300 ${
+                    placeProductId 
+                      ? "bg-slate-50 border-solid max-h-none overflow-y-auto" 
+                      : "bg-slate-50/50 max-h-[35rem] overflow-auto active:cursor-grabbing"
+                  }`}
                 >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 min-w-[1000px]">
+                  <div className={placeProductId 
+                    ? "flex flex-wrap gap-2.5 justify-center min-w-0" 
+                    : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 min-w-[1000px]"
+                  }>
                   {activeWh.shelves && activeWh.shelves.length > 0 ? (
                     activeWh.shelves.map((sh) => {
                       const shelfProducts = products.filter(
@@ -4312,6 +4319,33 @@ ${sizeStr}
                           p.shelf.toLowerCase() === sh.toLowerCase()
                       );
                       const containsProduct = shelfProducts.length > 0;
+
+                      if (placeProductId) {
+                        const isTargeted = placeShelf === sh;
+                        return (
+                          <div
+                            key={sh}
+                            onClick={() => {
+                              if (isTargeted) {
+                                executeDirectPlacement(placeProductId, sh, placeQty || 1);
+                              } else {
+                                setPlaceShelf(sh);
+                              }
+                            }}
+                            className={`rounded-xl border px-3 py-2 flex items-center justify-center gap-1.5 transition cursor-pointer select-none active:scale-95 text-xs font-mono font-black ${
+                              isTargeted
+                                ? "bg-yellow-100 border-yellow-500 text-yellow-950 ring-2 ring-yellow-300 animate-pulse"
+                                : containsProduct
+                                  ? "bg-indigo-50 border-indigo-200 text-indigo-750 hover:bg-indigo-100"
+                                  : "bg-emerald-50 border-emerald-250 border-dashed text-emerald-700 hover:bg-emerald-100"
+                            }`}
+                          >
+                            <span>{isTargeted ? (activeLang === "en" ? "CONFIRM 👍" : "ONAY 👍") : sh}</span>
+                            {containsProduct && !isTargeted && <span className="text-[10px]">📦</span>}
+                          </div>
+                        );
+                      }
+
                       return (
                         <div
                           key={sh}
