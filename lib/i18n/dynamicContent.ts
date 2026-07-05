@@ -618,6 +618,11 @@ export function translateProductField(
 ): string {
   if (!text) return "";
 
+  const isWarning = (val: string) => {
+    const l = val.toLowerCase();
+    return l.includes("exceeded") || l.includes("limit") || l.includes("mymemory") || l.includes("warning");
+  };
+
   // 1. Eğer veri nesneyse veya JSON formatında bir string ise çözüp dile göre metni çıkaralım
   let parsedTextObj: any = null;
   if (typeof text === "string") {
@@ -626,7 +631,24 @@ export function translateProductField(
       try {
         parsedTextObj = JSON.parse(trimmed);
       } catch (e) {
-        // Not valid JSON
+        try {
+          let val = "";
+          const regex = new RegExp(`"${language}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, "i");
+          const match = trimmed.match(regex);
+          if (match && match[1] !== undefined && !isWarning(match[1])) {
+            val = match[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+          } else {
+            for (const fallback of ["tr", "en"]) {
+              const fallbackRegex = new RegExp(`"${fallback}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, "i");
+              const fallbackMatch = trimmed.match(fallbackRegex);
+              if (fallbackMatch && fallbackMatch[1] !== undefined && !isWarning(fallbackMatch[1])) {
+                val = fallbackMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+                break;
+              }
+            }
+          }
+          if (val) return val;
+        } catch (err) {}
       }
     }
   } else if (typeof text === "object" && text !== null) {
@@ -634,11 +656,17 @@ export function translateProductField(
   }
 
   if (parsedTextObj) {
-    return parsedTextObj[language] || parsedTextObj["tr"] || parsedTextObj["en"] || "";
+    let val = parsedTextObj[language];
+    if (val === undefined || val === null || isWarning(String(val))) {
+      val = parsedTextObj["tr"];
+    }
+    if (val === undefined || val === null || isWarning(String(val))) {
+      val = parsedTextObj["en"];
+    }
+    if (val !== undefined && val !== null) return String(val);
   }
 
   let rawText = typeof text === "string" ? text : "";
-
   const trimmed = rawText.trim();
   if (!trimmed) return "";
 
