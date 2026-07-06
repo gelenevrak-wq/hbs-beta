@@ -448,121 +448,121 @@ export default function DashboardPage() {
                 };
                 window.localStorage.setItem("hbs-company-settings", JSON.stringify(settingsData));
               }
-            }
-          });
 
-        // B) Recover/Sync Warehouses from Supabase
-        supabase
-          .from("warehouses")
-          .select("id, name, address, is_visible_to_customers")
-          .eq("company_id", companyData.id)
-          .then(async ({ data: dbWhs, error: whErr }) => {
-            if (dbWhs && dbWhs.length > 0 && !whErr) {
-              const whIds = dbWhs.map(w => w.id);
-              const { data: dbLocs } = await supabase
-                .from("warehouse_locations")
-                .select("*")
-                .in("warehouse_id", whIds);
+              // B) Recover/Sync Warehouses from Supabase
+              supabase
+                .from("warehouses")
+                .select("id, name, address, is_visible_to_customers")
+                .eq("company_id", companyData.id)
+                .then(async ({ data: dbWhs, error: whErr }) => {
+                  if (dbWhs && dbWhs.length > 0 && !whErr) {
+                    const whIds = dbWhs.map(w => w.id);
+                    const { data: dbLocs } = await supabase
+                      .from("warehouse_locations")
+                      .select("*")
+                      .in("warehouse_id", whIds);
 
-              const mapped = dbWhs.map(w => {
-                const shelves = dbLocs
-                  ? dbLocs.filter(l => l.warehouse_id === w.id).map(l => l.name)
-                  : [];
-                return {
-                  id: w.id,
-                  name: w.name,
-                  purpose: w.address || "Depo Açıklaması",
-                  customerVisible: w.is_visible_to_customers || false,
-                  city: w.address || "Türkiye",
-                  zones: Array.from(new Set(shelves.map(s => s.split("-")[0]))).filter(Boolean),
-                  shelves: shelves,
-                  capacity: 1000,
-                  used: 0
-                };
-              });
+                    const mapped = dbWhs.map(w => {
+                      const shelves = dbLocs
+                        ? dbLocs.filter(l => l.warehouse_id === w.id).map(l => l.name)
+                        : [];
+                      return {
+                        id: w.id,
+                        name: w.name,
+                        purpose: w.address || "Depo Açıklaması",
+                        customerVisible: w.is_visible_to_customers || false,
+                        city: w.address || "Türkiye",
+                        zones: Array.from(new Set(shelves.map(s => s.split("-")[0]))).filter(Boolean),
+                        shelves: shelves,
+                        capacity: 1000,
+                        used: 0
+                      };
+                    });
 
-              let stores = [];
-              try {
-                stores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
-              } catch (e) {}
+                    let stores = [];
+                    try {
+                      stores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
+                    } catch (e) {}
 
-              const updatedStores = stores.map((s: any) => {
-                if (s.code === storeSlug) {
-                  return { ...s, name: companyData.name, warehouses: mapped };
-                }
-                return s;
-              });
+                    const updatedStores = stores.map((s: any) => {
+                      if (s.code === storeSlug) {
+                        return { ...s, name: companyData.name, warehouses: mapped };
+                      }
+                      return s;
+                    });
 
-              if (!stores.some((s: any) => s.code === storeSlug)) {
-                updatedStores.push({ code: storeSlug, name: companyData.name, warehouses: mapped });
-              }
+                    if (!stores.some((s: any) => s.code === storeSlug)) {
+                      updatedStores.push({ code: storeSlug, name: companyData.name, warehouses: mapped });
+                    }
 
-              window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
-              setIsWarehouseDone(true);
-            }
-          });
+                    window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+                    setIsWarehouseDone(true);
+                  }
+                });
 
-        // C) Recover/Sync Products from Supabase
-        supabase
-          .from("offerable_items")
-          .select(`
-            *,
-            companies!inner(code),
-            product_stocks(
-              quantity,
-              warehouses(name),
-              warehouse_locations(name)
-            )
-          `)
-          .eq("companies.code", storeSlug)
-          .then(({ data: itemsData, error: itemsError }) => {
-            if (itemsData && !itemsError) {
-              if (itemsData.length > 0) {
-                setIsProductsDone(true);
-                
-                const mappedProducts = itemsData
-                  .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
-                  .map((item: any) => {
-                    const stockRecord = item.product_stocks?.[0];
-                    return {
-                      id: item.id,
-                      itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
-                      name: item.name,
-                      category: item.category || "Genel",
-                      brand: item.brand || "",
-                      model: "",
-                      description: item.description || "",
-                      salePrice: item.sale_price ? String(item.sale_price) : "",
-                      purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
-                      currency: item.currency || "GEL",
-                      barcode: item.barcode || "",
-                      qrCode: item.qr_code || "",
-                      sku: item.code || "",
-                      oemCode: "",
-                      manufacturerCode: "",
-                      stockTracking: true,
-                      quantity: stockRecord ? String(stockRecord.quantity) : "0",
-                      warehouse: (stockRecord && stockRecord.warehouses) ? stockRecord.warehouses.name : "Ana Depo",
-                      shelf: (stockRecord && stockRecord.warehouse_locations) ? stockRecord.warehouse_locations.name : "",
-                      entryDate: "",
-                      exitDate: "",
-                      pricingMode: item.sale_price ? "fixed" : "quote",
-                      visibility: item.is_visible_in_storefront ? "visible" : "hidden",
-                      imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
-                      videoUrl: item.video_urls?.[0] || "",
-                      variants: [],
-                      galleryUrls: item.photo_urls || []
-                    };
-                  });
+              // C) Recover/Sync Products from Supabase
+              supabase
+                .from("offerable_items")
+                .select(`
+                  *,
+                  companies!inner(code),
+                  product_stocks(
+                    quantity,
+                    warehouses(name),
+                    warehouse_locations(name)
+                  )
+                `)
+                .eq("companies.code", storeSlug)
+                .then(({ data: itemsData, error: itemsError }) => {
+                  if (itemsData && !itemsError) {
+                    if (itemsData.length > 0) {
+                      setIsProductsDone(true);
+                      
+                      const mappedProducts = itemsData
+                        .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
+                        .map((item: any) => {
+                          const stockRecord = item.product_stocks?.[0];
+                          return {
+                            id: item.id,
+                            itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+                            name: item.name,
+                            category: item.category || "Genel",
+                            brand: item.brand || "",
+                            model: "",
+                            description: item.description || "",
+                            salePrice: item.sale_price ? String(item.sale_price) : "",
+                            purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+                            currency: item.currency || "GEL",
+                            barcode: item.barcode || "",
+                            qrCode: item.qr_code || "",
+                            sku: item.code || "",
+                            oemCode: "",
+                            manufacturerCode: "",
+                            stockTracking: true,
+                            quantity: stockRecord ? String(stockRecord.quantity) : "0",
+                            warehouse: (stockRecord && stockRecord.warehouses) ? stockRecord.warehouses.name : "Ana Depo",
+                            shelf: (stockRecord && stockRecord.warehouse_locations) ? stockRecord.warehouse_locations.name : "",
+                            entryDate: "",
+                            exitDate: "",
+                            pricingMode: item.sale_price ? "fixed" : "quote",
+                            visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+                            imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                            videoUrl: item.video_urls?.[0] || "",
+                            variants: [],
+                            galleryUrls: item.photo_urls || []
+                          };
+                        });
 
-                // Update state
-                setActiveProducts(mappedProducts.length);
-                const lowStock = mappedProducts.filter((p: any) => p.stockTracking && Number(p.quantity) <= 2).length;
-                setStockAlerts(lowStock);
-                
-                // Save cache
-                window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(mappedProducts));
-              }
+                      // Update state
+                      setActiveProducts(mappedProducts.length);
+                      const lowStock = mappedProducts.filter((p: any) => p.stockTracking && Number(p.quantity) <= 2).length;
+                      setStockAlerts(lowStock);
+                      
+                      // Save cache
+                      window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(mappedProducts));
+                    }
+                  }
+                });
             }
           });
       }

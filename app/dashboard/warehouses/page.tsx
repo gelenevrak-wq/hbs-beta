@@ -1726,7 +1726,7 @@ export default function WarehousesRevampPage() {
                 const productShelvesForWh = Array.from(
                   new Set(
                     loadedProductsList
-                      .filter(p => p.warehouse.toLowerCase() === w.name.toLowerCase() && p.shelf && p.shelf.trim() !== "")
+                      .filter(p => safeLower(p.warehouse) === safeLower(w.name) && p.shelf && p.shelf.trim() !== "")
                       .map(p => p.shelf)
                   )
                 );
@@ -2121,7 +2121,7 @@ export default function WarehousesRevampPage() {
   };
 
   const handleDeleteWarehouse = async (warehouseId: string, warehouseName: string) => {
-    const itemsCount = products.filter((p) => p.warehouse.toLowerCase() === warehouseName.toLowerCase()).length;
+    const itemsCount = products.filter((p) => safeLower(p.warehouse) === safeLower(warehouseName)).length;
     if (itemsCount > 0) {
       alert(wm.errHasInventory.replace("{count}", itemsCount.toString()));
       return;
@@ -2189,8 +2189,8 @@ export default function WarehousesRevampPage() {
 
     const emptyShelves = activeWh.shelves.filter(sh => 
       !products.some(p => 
-        p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && 
-        p.shelf.toLowerCase() === sh.toLowerCase()
+        safeLower(p.warehouse) === safeLower(activeWh.name) && 
+        safeLower(p.shelf) === safeLower(sh)
       )
     );
 
@@ -2201,7 +2201,7 @@ export default function WarehousesRevampPage() {
 
     let shelfIndex = 0;
     const updatedProducts = products.map(p => {
-      if (p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && (!p.shelf || p.shelf.trim() === "")) {
+      if (safeLower(p.warehouse) === safeLower(activeWh.name) && (!p.shelf || p.shelf.trim() === "")) {
         const targetShelf = emptyShelves[shelfIndex % emptyShelves.length];
         shelfIndex++;
         return { ...p, shelf: targetShelf };
@@ -2249,8 +2249,8 @@ export default function WarehousesRevampPage() {
       const existingAtDest = products.find(p => 
         p.name === targetProd.name && 
         p.sku === targetProd.sku && 
-        p.warehouse.toLowerCase() === shelfTransferToWarehouse.toLowerCase() && 
-        p.shelf.toLowerCase() === shelfTransferToShelf.toLowerCase()
+        safeLower(p.warehouse) === safeLower(shelfTransferToWarehouse) && 
+        safeLower(p.shelf) === safeLower(shelfTransferToShelf)
       );
 
       if (existingAtDest) {
@@ -2464,7 +2464,7 @@ export default function WarehousesRevampPage() {
     const productShelvesForWh = Array.from(
       new Set(
         products
-          .filter(p => p.warehouse.toLowerCase() === wh.name.toLowerCase() && p.shelf && p.shelf.trim() !== "")
+          .filter(p => safeLower(p.warehouse) === safeLower(wh.name) && p.shelf && p.shelf.trim() !== "")
           .map(p => p.shelf)
       )
     );
@@ -2758,8 +2758,8 @@ export default function WarehousesRevampPage() {
     const destShelfCap = shelfCapacities[transferDestShelf] || { maxWeight: 100, maxVolume: 1.0 };
     const currentProductsOnDestShelf = products.filter(
       (p) =>
-        p.warehouse.toLowerCase() === destWh.name.toLowerCase() &&
-        p.shelf.toLowerCase() === transferDestShelf.toLowerCase()
+        safeLower(p.warehouse) === safeLower(destWh.name) &&
+        safeLower(p.shelf) === safeLower(transferDestShelf)
     );
 
     let occupiedWeight = 0;
@@ -2854,8 +2854,8 @@ export default function WarehousesRevampPage() {
     const updatedProducts = products.map(p => {
       if (
         p.sku === trans.sku &&
-        p.warehouse.toLowerCase() === trans.destWh.toLowerCase() &&
-        p.shelf.toLowerCase() === trans.destShelf.toLowerCase()
+        safeLower(p.warehouse) === safeLower(trans.destWh) &&
+        safeLower(p.shelf) === safeLower(trans.destShelf)
       ) {
         productExistsInTarget = true;
         return {
@@ -3046,8 +3046,8 @@ ${sizeStr}
 
     const auditedProducts = products.filter(
       p =>
-        p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-        auditShelfSelections.some(sh => sh.toLowerCase() === p.shelf.toLowerCase())
+        safeLower(p.warehouse) === safeLower(activeWh.name) &&
+        auditShelfSelections.some(sh => safeLower(sh) === safeLower(p.shelf))
     );
 
     let correctionsCount = 0;
@@ -3111,7 +3111,7 @@ ${sizeStr}
         .filter(
           p =>
             p.sku === item.sku &&
-            p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+            safeLower(p.warehouse) === safeLower(activeWh.name) &&
             Number(p.quantity) > 0
         )
         .sort((a, b) => {
@@ -3180,8 +3180,8 @@ ${sizeStr}
         updatedProducts = updatedProducts.map(p => {
           if (
             p.sku === step.sku &&
-            p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-            p.shelf.toLowerCase() === step.shelf.toLowerCase()
+            safeLower(p.warehouse) === safeLower(activeWh.name) &&
+            safeLower(p.shelf) === safeLower(step.shelf)
           ) {
             const currentQty = Number(p.quantity) || 0;
             return {
@@ -3312,8 +3312,8 @@ ${sizeStr}
     if (!scannedShelfCode || !activeWh) return [];
     return products.filter(
       (p) =>
-        p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-        p.shelf.toLowerCase() === scannedShelfCode.toLowerCase()
+        safeLower(p.warehouse) === safeLower(activeWh.name) &&
+        safeLower(p.shelf) === safeLower(scannedShelfCode)
     );
   }, [products, scannedShelfCode, activeWh]);
 
@@ -3322,15 +3322,15 @@ ${sizeStr}
     if (!scannedShelfCode || !activeWh) return [];
     return movements.filter(
       (m) =>
-        m.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-        m.shelf.toLowerCase() === scannedShelfCode.toLowerCase()
+        safeLower(m.warehouse) === safeLower(activeWh.name) &&
+        safeLower(m.shelf) === safeLower(scannedShelfCode)
     );
   }, [movements, scannedShelfCode, activeWh]);
 
   // General inventory lists for the active warehouse
   const activeWhInventory = useMemo(() => {
     if (!activeWh) return [];
-    return products.filter((p) => p.warehouse.toLowerCase() === activeWh.name.toLowerCase());
+    return products.filter((p) => safeLower(p.warehouse) === safeLower(activeWh.name));
   }, [products, activeWh]);
 
   const filteredInventory = useMemo(() => {
@@ -3340,7 +3340,7 @@ ${sizeStr}
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.sku.toLowerCase().includes(q) ||
-        p.shelf.toLowerCase().includes(q)
+        safeLower(p.shelf).includes(q)
     );
   }, [activeWhInventory, searchQuery]);
 
@@ -3699,7 +3699,7 @@ ${sizeStr}
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {warehouses.map((w) => {
               const isActive = w.id === activeWarehouseId;
-              const itemsCount = products.filter((p) => p.warehouse.toLowerCase() === w.name.toLowerCase()).length;
+              const itemsCount = products.filter((p) => safeLower(p.warehouse) === safeLower(w.name)).length;
               return (
                 <article
                   key={w.id}
@@ -4060,7 +4060,7 @@ ${sizeStr}
                                         const code = `${c.zone}-${slot < 10 ? `0${slot}` : `${slot}`}-${level < 10 ? `0${level}` : `${level}`}`;
                                         const hasProduct = products.some(
                                           (p) =>
-                                            p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
+                                            safeLower(p.warehouse) === safeLower(activeWh.name) &&
                                             p.shelf === code
                                         );
                                         return (
@@ -4574,7 +4574,7 @@ ${sizeStr}
                 {/* 📦 Rafsız / Ortalıktaki Ürünler Paneli */}
                 {(() => {
                   const unplacedProducts = products.filter(p => 
-                    p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && 
+                    safeLower(p.warehouse) === safeLower(activeWh.name) && 
                     (!p.shelf || p.shelf.trim() === "")
                   );
                   if (unplacedProducts.length === 0) return null;
@@ -4674,8 +4674,8 @@ ${sizeStr}
                     activeWh.shelves.map((sh) => {
                       const shelfProducts = products.filter(
                         (p) =>
-                          p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-                          p.shelf.toLowerCase() === sh.toLowerCase()
+                          safeLower(p.warehouse) === safeLower(activeWh.name) &&
+                          safeLower(p.shelf) === safeLower(sh)
                       );
                       const containsProduct = shelfProducts.length > 0;
 
@@ -4827,7 +4827,7 @@ ${sizeStr}
                     </h3>
                     <div className="space-y-1.5">
                       {movements
-                        .filter(m => m.warehouse.toLowerCase() === activeWh.name.toLowerCase())
+                        .filter(m => safeLower(m.warehouse) === safeLower(activeWh.name))
                         .slice(0, 5)
                         .map((m) => (
                           <div key={m.id} className="bg-slate-50 rounded-xl p-2.5 text-[10px] leading-normal font-semibold text-slate-700 flex justify-between items-center">
@@ -4844,7 +4844,7 @@ ${sizeStr}
                             </div>
                           </div>
                         ))}
-                      {movements.filter(m => m.warehouse.toLowerCase() === activeWh.name.toLowerCase()).length === 0 && (
+                      {movements.filter(m => safeLower(m.warehouse) === safeLower(activeWh.name)).length === 0 && (
                         <p className="text-[10px] text-slate-400 italic text-center py-2">
                           {language === "tr" ? "Henüz bir raf hareketi yapılmadı." : "No shelf movements recorded yet."}
                         </p>
@@ -5269,7 +5269,7 @@ ${sizeStr}
                 };
 
                 const unassignedProducts = products.filter(
-                  (p) => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && 
+                  (p) => safeLower(p.warehouse) === safeLower(activeWh.name) && 
                          (!p.shelf || !isShelfCodeValidInLayout(p.shelf))
                 );
 
@@ -5510,9 +5510,9 @@ ${sizeStr}
                   {activeLang === "en" ? "Current Products in Slot" : activeLang === "de" ? "Aktuelle Produkte im Fach" : activeLang === "ru" ? "Товары в ячейке" : activeLang === "ka" ? "პროდუქტები სლოტში" : "Hücredeki Mevcut Ürünler"}
                 </span>
                 <div className="max-h-36 overflow-y-auto space-y-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200 pr-1">
-                  {products.filter(p => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && p.shelf.toLowerCase() === selectedWhiteboardShelfCode.toLowerCase()).length > 0 ? (
+                  {products.filter(p => safeLower(p.warehouse) === safeLower(activeWh.name) && safeLower(p.shelf) === safeLower(selectedWhiteboardShelfCode)).length > 0 ? (
                     products
-                      .filter(p => p.warehouse.toLowerCase() === activeWh.name.toLowerCase() && p.shelf.toLowerCase() === selectedWhiteboardShelfCode.toLowerCase())
+                      .filter(p => safeLower(p.warehouse) === safeLower(activeWh.name) && safeLower(p.shelf) === safeLower(selectedWhiteboardShelfCode))
                       .map(p => (
                         <div key={p.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1.5 flex items-center justify-between gap-2">
                            <div className="flex items-center gap-2 min-w-0">
@@ -5995,8 +5995,8 @@ ${sizeStr}
                         {products
                           .filter(
                             p =>
-                              p.warehouse.toLowerCase() === activeWh.name.toLowerCase() &&
-                              auditShelfSelections.some(sh => sh.toLowerCase() === p.shelf.toLowerCase())
+                              safeLower(p.warehouse) === safeLower(activeWh.name) &&
+                              auditShelfSelections.some(sh => safeLower(sh) === safeLower(p.shelf))
                           )
                           .map((p) => {
                             const key = `${p.shelf}_${p.sku}`;
