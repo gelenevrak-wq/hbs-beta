@@ -1,4 +1,4 @@
-﻿import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/layout/DashboardLayout";
 
 type Stat = {
   label: string;
@@ -26,7 +26,7 @@ type ModulePageProps = {
   items: Item[];
   sideTitle: string;
   sideItems: string[];
-  note: string;
+  note?: string;
 };
 
 function toneClass(tone: Stat["tone"]) {
@@ -178,9 +178,11 @@ export default function ModulePage({
                 </div>
               ))}
 
-              <div className="rounded-xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-xs leading-5 text-emerald-100">
-                {note}
-              </div>
+              {note && (
+                <div className="rounded-xl border border-emerald-400/25 bg-emerald-400/10 p-3 text-xs leading-5 text-emerald-100">
+                  {note}
+                </div>
+              )}
             </div>
           </aside>
         </section>

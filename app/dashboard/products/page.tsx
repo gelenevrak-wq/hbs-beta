@@ -1103,43 +1103,93 @@ export default function ProductsPage() {
           const currentUser = JSON.parse(currentUserStr);
           const storeSlug = currentUser.storeSlugs?.[0];
           if (storeSlug) {
+            // Fetch warehouses first
+            supabase
+              .from("companies")
+              .select("id")
+              .eq("code", storeSlug)
+              .single()
+              .then(async ({ data: compData }) => {
+                if (compData) {
+                  const { data: dbWhs } = await supabase
+                    .from("warehouses")
+                    .select("*")
+                    .eq("company_id", compData.id);
+
+                  if (dbWhs && dbWhs.length > 0) {
+                    const whIds = dbWhs.map(w => w.id);
+                    const { data: dbLocs } = await supabase
+                      .from("warehouse_locations")
+                      .select("*")
+                      .in("warehouse_id", whIds);
+
+                    const mappedWhs = dbWhs.map(w => {
+                      const shelves = dbLocs
+                        ? dbLocs.filter(l => l.warehouse_id === w.id).map(l => l.name)
+                        : [];
+                      return {
+                        id: w.id,
+                        name: w.name,
+                        purpose: w.address || "Depo Açıklaması",
+                        customerVisible: w.is_visible_to_customers || false,
+                        city: w.address || "Türkiye",
+                        zones: Array.from(new Set(shelves.map(s => s.split("-")[0]))).filter(Boolean),
+                        shelves: shelves
+                      };
+                    });
+                    setAvailableWarehouses(mappedWhs);
+                  }
+                }
+              });
+
             supabase
               .from("offerable_items")
-              .select("*, companies!inner(code)")
+              .select(`
+                *,
+                companies!inner(code),
+                product_stocks(
+                  quantity,
+                  warehouses(name),
+                  warehouse_locations(name)
+                )
+              `)
               .eq("companies.code", storeSlug)
               .then(({ data, error }) => {
                 if (data && !error) {
                   const mapped: ProductRecord[] = data
                     .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
-                    .map((item: any) => ({
-                    id: item.id,
-                    itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
-                    name: item.name,
-                    category: item.category || "Genel",
-                    brand: item.brand || "",
-                    model: "",
-                    description: item.description || "",
-                    salePrice: item.sale_price ? String(item.sale_price) : "",
-                    purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
-                    currency: item.currency || "GEL",
-                    barcode: item.barcode || "",
-                    qrCode: item.qr_code || "",
-                    sku: item.code || "",
-                    oemCode: "",
-                    manufacturerCode: "",
-                    stockTracking: true,
-                    quantity: "10",
-                    warehouse: "Ana Depo",
-                    shelf: "",
-                    entryDate: "",
-                    exitDate: "",
-                    pricingMode: item.sale_price ? "fixed" : "quote",
-                    visibility: item.is_visible_in_storefront ? "visible" : "hidden",
-                    imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
-                    videoUrl: item.video_urls?.[0] || "",
-                    variants: [],
-                    galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
-                  }));
+                    .map((item: any) => {
+                      const stockRecord = item.product_stocks?.[0];
+                      return {
+                        id: item.id,
+                        itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+                        name: item.name,
+                        category: item.category || "Genel",
+                        brand: item.brand || "",
+                        model: "",
+                        description: item.description || "",
+                        salePrice: item.sale_price ? String(item.sale_price) : "",
+                        purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+                        currency: item.currency || "GEL",
+                        barcode: item.barcode || "",
+                        qrCode: item.qr_code || "",
+                        sku: item.code || "",
+                        oemCode: "",
+                        manufacturerCode: "",
+                        stockTracking: true,
+                        quantity: stockRecord ? String(stockRecord.quantity) : "0",
+                        warehouse: (stockRecord && stockRecord.warehouses) ? stockRecord.warehouses.name : "Ana Depo",
+                        shelf: (stockRecord && stockRecord.warehouse_locations) ? stockRecord.warehouse_locations.name : "",
+                        entryDate: "",
+                        exitDate: "",
+                        pricingMode: item.sale_price ? "fixed" : "quote",
+                        visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+                        imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                        videoUrl: item.video_urls?.[0] || "",
+                        variants: [],
+                        galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
+                      };
+                    });
                   setProducts(mapped);
                   setProductsLoaded(true);
                 } else {
@@ -1389,6 +1439,78 @@ export default function ProductsPage() {
         .replace("{wh}", transferToWarehouse)
         .replace("{shelf}", transferToShelf || um.shelfUnassigned)
     );
+  };
+
+  const saveTerminalProductChange = async (productId: string, updatedFields: Partial<ProductRecord>) => {
+    const updated = products.map(p => {
+      if (p.id === productId) {
+        return { ...p, ...updatedFields };
+      }
+      return p;
+    });
+    setProducts(updated);
+    safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
+
+    const isSupabaseConfigured = 
+      process.env.NEXT_PUBLIC_SUPABASE_URL && 
+      process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+
+    if (isSupabaseConfigured) {
+      try {
+        const { data: existingStock } = await supabase
+          .from("product_stocks")
+          .select("id, warehouse_id, location_id")
+          .eq("product_id", productId)
+          .maybeSingle();
+
+        const payload: any = {};
+        
+        if (updatedFields.quantity !== undefined) {
+          payload.quantity = parseFloat(updatedFields.quantity) || 0;
+        }
+
+        if (updatedFields.shelf !== undefined) {
+          const { data: loc } = await supabase
+            .from("warehouse_locations")
+            .select("id, warehouse_id")
+            .ilike("name", updatedFields.shelf.trim())
+            .limit(1)
+            .maybeSingle();
+
+          if (loc) {
+            payload.location_id = loc.id;
+            payload.warehouse_id = loc.warehouse_id;
+            
+            // Also update the warehouse name locally in products list if found
+            const matchedWh = availableWarehouses.find(w => w.id === loc.warehouse_id);
+            if (matchedWh) {
+              const withWh = products.map(p => p.id === productId ? { ...p, ...updatedFields, warehouse: matchedWh.name } : p);
+              setProducts(withWh);
+              safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(withWh));
+            }
+          }
+        }
+
+        if (existingStock) {
+          await supabase
+            .from("product_stocks")
+            .update(payload)
+            .eq("id", existingStock.id);
+        } else {
+          await supabase
+            .from("product_stocks")
+            .insert({
+              product_id: productId,
+              warehouse_id: payload.warehouse_id || (availableWarehouses[0]?.id || null),
+              location_id: payload.location_id || null,
+              quantity: payload.quantity || 0,
+              status: "available"
+            });
+        }
+      } catch (e) {
+        console.error("Terminal sync error:", e);
+      }
+    }
   };
 
   function handleTerminalScan(code: string) {
@@ -4259,18 +4381,8 @@ export default function ProductsPage() {
                             onClick={() => {
                               const currentQty = parseInt(terminalScannedProduct.quantity || "0");
                               const nextQty = Math.max(0, currentQty - 1);
-                              
-                              // Mutate global products state
-                              const updated = products.map(p => {
-                                if (p.id === terminalScannedProduct.id) {
-                                  const updatedProd = { ...p, quantity: String(nextQty) };
-                                  setTerminalScannedProduct(updatedProd);
-                                  return updatedProd;
-                                }
-                                return p;
-                              });
-                              setProducts(updated);
-                              safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
+                              saveTerminalProductChange(terminalScannedProduct.id, { quantity: String(nextQty) });
+                              setTerminalScannedProduct(prev => prev ? { ...prev, quantity: String(nextQty) } : null);
                               setTerminalMessage("Stok miktarı -1 azaltıldı.");
                             }}
                             className="w-8 h-8 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 font-black border border-rose-600/30 flex items-center justify-center transition active:scale-95 text-sm"
@@ -4282,18 +4394,8 @@ export default function ProductsPage() {
                             onClick={() => {
                               const currentQty = parseInt(terminalScannedProduct.quantity || "0");
                               const nextQty = currentQty + 1;
-                              
-                              // Mutate global products state
-                              const updated = products.map(p => {
-                                if (p.id === terminalScannedProduct.id) {
-                                  const updatedProd = { ...p, quantity: String(nextQty) };
-                                  setTerminalScannedProduct(updatedProd);
-                                  return updatedProd;
-                                }
-                                return p;
-                              });
-                              setProducts(updated);
-                              safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
+                              saveTerminalProductChange(terminalScannedProduct.id, { quantity: String(nextQty) });
+                              setTerminalScannedProduct(prev => prev ? { ...prev, quantity: String(nextQty) } : null);
                               setTerminalMessage("Stok miktarı +1 artırıldı.");
                             }}
                             className="w-8 h-8 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 font-black border border-emerald-600/30 flex items-center justify-center transition active:scale-95 text-sm"
@@ -4313,16 +4415,8 @@ export default function ProductsPage() {
                           value={terminalScannedProduct.shelf || ""}
                           onChange={(e) => {
                             const newShelf = e.target.value;
-                            const updated = products.map(p => {
-                              if (p.id === terminalScannedProduct.id) {
-                                const updatedProd = { ...p, shelf: newShelf };
-                                setTerminalScannedProduct(updatedProd);
-                                return updatedProd;
-                              }
-                              return p;
-                            });
-                            setProducts(updated);
-                            safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
+                            saveTerminalProductChange(terminalScannedProduct.id, { shelf: newShelf });
+                            setTerminalScannedProduct(prev => prev ? { ...prev, shelf: newShelf } : null);
                           }}
                           placeholder="Raf Konumu örn: A-01, B-12"
                           className="w-full rounded-lg bg-[#0c1224] border border-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-100 outline-none focus:border-blue-500 font-mono" id="id-page-w-full-rounded-lg-bg---0c1224--border-border-slate-800-px-3-py-1-5-text-xs-font-semibold-text-slate-100-outline-none-focus-border-blue-500-font-mono-265" aria-label="W full rounded lg bg   0c1224  border border slate 800 px 3 py 1 5 text xs font semibold text slate 100 outline none focus border blue 500 font mono" />
@@ -4341,8 +4435,9 @@ export default function ProductsPage() {
                         </div>
                         <button
                           type="button"
-                          onClick={() => {
+                          onClick={async () => {
                             if (window.confirm(`${terminalScannedShelf} konumundaki tüm ürün bağlarını kaldırmak istediğinize emin misiniz?`)) {
+                              const targets = products.filter(p => p.shelf && p.shelf.toLowerCase() === terminalScannedShelf.toLowerCase());
                               const updated = products.map(p => {
                                 if (p.shelf && p.shelf.toLowerCase() === terminalScannedShelf.toLowerCase()) {
                                   return { ...p, shelf: "" };
@@ -4351,6 +4446,22 @@ export default function ProductsPage() {
                               });
                               setProducts(updated);
                               safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
+                              
+                              const isSupabaseConfigured = 
+                                process.env.NEXT_PUBLIC_SUPABASE_URL && 
+                                process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+                              
+                              if (isSupabaseConfigured) {
+                                try {
+                                  const ids = targets.map(t => t.id);
+                                  await supabase
+                                    .from("offerable_items")
+                                    .update({ shelf: "" })
+                                    .in("id", ids);
+                                } catch (e) {
+                                  console.error("Terminal clear shelf sync error:", e);
+                                }
+                              }
                               setTerminalMessage(`✓ Raf ${terminalScannedShelf} boşaltıldı.`);
                             }
                           }}
@@ -4375,9 +4486,7 @@ export default function ProductsPage() {
                                   type="button"
                                   onClick={() => {
                                     const nextQty = Math.max(0, parseInt(p.quantity || "0") - 1);
-                                    const updated = products.map(prod => prod.id === p.id ? { ...prod, quantity: String(nextQty) } : prod);
-                                    setProducts(updated);
-                                    safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
+                                    saveTerminalProductChange(p.id, { quantity: String(nextQty) });
                                   }}
                                   className="w-5 h-5 rounded bg-rose-600/20 text-rose-400 flex items-center justify-center font-bold"
                                 >
@@ -4387,9 +4496,7 @@ export default function ProductsPage() {
                                   type="button"
                                   onClick={() => {
                                     const nextQty = parseInt(p.quantity || "0") + 1;
-                                    const updated = products.map(prod => prod.id === p.id ? { ...prod, quantity: String(nextQty) } : prod);
-                                    setProducts(updated);
-                                    safeSetLocalStorage(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
+                                    saveTerminalProductChange(p.id, { quantity: String(nextQty) });
                                   }}
                                   className="w-5 h-5 rounded bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold"
                                 >

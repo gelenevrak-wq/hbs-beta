@@ -718,30 +718,18 @@ export default function DashboardPage() {
         </header>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
-          <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">
-                {currentText.eyebrow}
-              </p>
+          <div className="space-y-2">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">
+              {currentText.eyebrow}
+            </p>
 
-              <h1 className="mt-2 text-xl font-black sm:text-3xl">
-                {currentText.title}
-              </h1>
+            <h1 className="mt-2 text-xl font-black sm:text-3xl">
+              {currentText.title}
+            </h1>
 
-              <p className="mt-2 max-w-3xl text-sm leading-5 text-slate-600">
-                {currentText.description}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-3">
-              <h2 className="text-base font-black text-amber-900">
-                {currentText.cleanNoticeTitle}
-              </h2>
-
-              <p className="mt-2 text-xs leading-5 text-amber-900/90">
-                {currentText.cleanNotice}
-              </p>
-            </div>
+            <p className="mt-2 max-w-4xl text-sm leading-5 text-slate-600">
+              {currentText.description}
+            </p>
           </div>
         </section>
 

@@ -1,37 +1,11 @@
-// Dedicated module to handle Özgür Motor demo data generation and store states
-// Prevents race conditions by providing a single source of truth for initialization
+const { createClient } = require('@supabase/supabase-js');
 
-export type ProductRecord = {
-  id: string;
-  itemType: string;
-  name: string;
-  category: string;
-  brand: string;
-  model: string;
-  description: string;
-  salePrice: string;
-  purchasePrice: string;
-  currency: string;
-  barcode: string;
-  qrCode: string;
-  sku: string;
-  oemCode: string;
-  manufacturerCode: string;
-  stockTracking: boolean;
-  quantity: string;
-  warehouse: string;
-  shelf: string;
-  entryDate: string;
-  exitDate: string;
-  pricingMode: string;
-  visibility: string;
-  imageUrl: string;
-  videoUrl: string;
-  variants: any[];
-  galleryUrls: string[];
-};
+const supabaseUrl = 'https://rxihusojlhtmbohdxmju.supabase.co';
+const supabaseAnonKey = 'sb_publishable_L1xdyrJQI4Zkg6k6B1cBbg_XThTkPbP';
 
-export const OZGUR_MOTOR_STORE = {
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+const OZGUR_MOTOR_STORE = {
   code: "ozgur-motor",
   name: "Özgür Motor",
   representative: "Özgür Özdemir",
@@ -50,16 +24,7 @@ export const OZGUR_MOTOR_STORE = {
   ]
 };
 
-export const OZGUR_MOTOR_STAFF = {
-  id: "staff-ozgurmotor",
-  username: "OZGURMOTOR",
-  displayName: "Özgür Motor",
-  role: "owner",
-  storeSlugs: ["ozgur-motor"],
-  password: "MOTOR61"
-};
-
-export const generateOzgurMotorProducts = (): ProductRecord[] => {
+function generateOzgurMotorProducts() {
   const brands = [
     { name: "Toyota", zone: "T", models: ["Prius 1.8", "Land Cruiser Prado", "Yaris 1.33", "Corolla 1.6", "Camry 2.5", "RAV4 2.0"] },
     { name: "Mercedes-Benz", zone: "M", models: ["E-Class W213", "C-Class W205", "A-Class W177", "Sprinter 906", "GLE Coupe", "CLA 200"] },
@@ -84,7 +49,7 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
     { category: "Fren Sistemi", tr: "Arka Fren Balatası", en: "Rear Brake Pads", de: "Bremsbeläge hinten", ru: "Задние тормозные колодки", ka: "უკანა სამუხრუჭე ხუნდები", prefix: "BAL-ARK" },
     { category: "Fren Sistemi", tr: "Fren Diski Takımı", en: "Brake Disc Set", de: "Bremsscheiben-Satz", ru: "Комплект тормозных дисков", ka: "სამუხრუჭე დისკების კომპლექტი", prefix: "DISK" },
     { category: "Motor Parçaları", tr: "Silindir Kapak Contası", en: "Cylinder Head Gasket", de: "Zylinderkopfdichtung", ru: "Прокладка головки блока цилиндров", ka: "ცილინდრის თავის შუასადები", prefix: "CONTA" },
-    { category: "Motor Parçaları", tr: "Triger Kayış Seti", prefix: "TRIGER", en: "Timing Belt Set", de: "Zahnriemensatz", ru: "Комплект реμня ГРМ", ka: "კბილანა ღვედის კომპლექტი" },
+    { category: "Motor Parçaları", tr: "Triger Kayış Seti", prefix: "TRIGER", en: "Timing Belt Set", de: "Zahnriemensatz", ru: "Комплект ремня ГРМ", ka: "კბილანა ღვედის კომპლექტი" },
     { category: "Ateşleme Sistemi", tr: "Ateşleme Bobini", prefix: "BOBIN", en: "Ignition Coil", de: "Zündspule", ru: "Катушка зажигания", ka: "აალების კოჭა" },
     { category: "Ateşleme Sistemi", tr: "Buji Seti", prefix: "BUJI", en: "Spark Plug Set", de: "Zündkerzen-Set", ru: "Комплект свечей зажигания", ka: "სანთლების კომპლექტი" },
     { category: "Bakım Malzemeleri", tr: "Yağ Filtresi", prefix: "FILT-YAG", en: "Oil Filter", de: "Ölfilter", ru: "Масляный фильтр", ka: "ზეთის ფილტრი" },
@@ -105,15 +70,13 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
 
   const shelves = ["A-01-01", "A-01-02", "A-02-01", "B-01-01", "B-01-02", "C-01-01"];
 
-  const products: ProductRecord[] = [];
+  const products = [];
 
   brands.forEach(b => {
-    // Generate exactly 100 products per brand
     for (let i = 1; i <= 100; i++) {
       const part = partPool[(i - 1) % partPool.length];
       const model = b.models[(i - 1) % b.models.length];
       
-      // Build clean JSON string names & descriptions for all 5 languages to prevent translation leaks
       const nameJson = JSON.stringify({
         tr: `${b.name} ${model} ${part.tr}`,
         en: `${b.name} ${model} ${part.en}`,
@@ -138,7 +101,7 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
 
       const purchaseVal = Math.floor(20 + ((i * 7) % 300));
       const saleVal = Math.floor(purchaseVal * 1.8);
-      const quantityVal = Math.floor(15 + ((i * 3) % 85)); // realistic stock levels
+      const quantityVal = Math.floor(15 + ((i * 3) % 85));
 
       const warehouse = warehouses[(i - 1) % warehouses.length];
       const shelf = shelves[(i - 1) % shelves.length];
@@ -177,4 +140,190 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
   });
 
   return products;
-};
+}
+
+async function run() {
+  console.log("=== STARTING SUPABASE SEED FOR OZGUR MOTOR ===");
+
+  // 1. Ensure Company 'ozgur-motor' exists
+  let { data: company, error: compErr } = await supabase
+    .from('companies')
+    .select('id')
+    .eq('code', 'ozgur-motor')
+    .single();
+
+  if (compErr || !company) {
+    console.log("Company 'ozgur-motor' not found. Creating it...");
+    const { data: newComp, error: createCompErr } = await supabase
+      .from('companies')
+      .insert({
+        name: OZGUR_MOTOR_STORE.name,
+        code: OZGUR_MOTOR_STORE.code,
+        default_language: 'tr',
+        main_currency: 'GEL',
+        phone: OZGUR_MOTOR_STORE.phone,
+        whatsapp: OZGUR_MOTOR_STORE.phone,
+        email: OZGUR_MOTOR_STORE.email,
+        address: OZGUR_MOTOR_STORE.address,
+        is_customer_portal_active: true,
+        is_public_search_enabled: true
+      })
+      .select('id')
+      .single();
+
+    if (createCompErr || !newComp) {
+      console.error("Failed to create company without city:", createCompErr);
+      return;
+    }
+    company = newComp;
+    console.log("Company 'ozgur-motor' created successfully with ID:", company.id);
+  } else {
+    console.log("Company 'ozgur-motor' already exists with ID:", company.id);
+  }
+
+  // 2. Clear old warehouses & locations & stocks for this company to prevent duplicates
+  const { data: existingWhs } = await supabase
+    .from('warehouses')
+    .select('id')
+    .eq('company_id', company.id);
+
+  if (existingWhs && existingWhs.length > 0) {
+    const whIds = existingWhs.map(w => w.id);
+    console.log(`Clearing warehouse locations for existing warehouses: ${whIds.join(', ')}`);
+    await supabase.from('warehouse_locations').delete().in('warehouse_id', whIds);
+    await supabase.from('warehouses').delete().eq('company_id', company.id);
+  }
+
+  // 3. Create Warehouses & Locations
+  console.log("Creating warehouses & shelves...");
+  const whMap = {}; // mapping from warehouse name to DB id
+  const shelfMap = {}; // mapping from "warehouseName|shelfName" to DB id
+  for (const wh of OZGUR_MOTOR_STORE.warehouses) {
+    const { data: whData, error: whCreateErr } = await supabase
+      .from('warehouses')
+      .insert({
+        company_id: company.id,
+        name: wh.name,
+        type: 'store',
+        address: wh.city,
+        is_sales_enabled: true,
+        is_transfer_enabled: true
+      })
+      .select('id')
+      .single();
+
+    if (whCreateErr || !whData) {
+      console.error(`Failed to create warehouse ${wh.name}:`, whCreateErr);
+      continue;
+    }
+
+    whMap[wh.name] = whData.id;
+    console.log(`Created warehouse: ${wh.name} -> ID: ${whData.id}`);
+
+    // Insert shelves
+    const locationsToInsert = wh.shelves.map(sh => ({
+      warehouse_id: whData.id,
+      name: sh,
+      sort_order: 10
+    }));
+
+    const { data: locData, error: locErr } = await supabase
+      .from('warehouse_locations')
+      .insert(locationsToInsert)
+      .select('id, name');
+
+    if (locErr || !locData) {
+      console.error(`Failed to create shelves for ${wh.name}:`, locErr);
+    } else {
+      console.log(`Created ${locData.length} shelves for ${wh.name}`);
+      locData.forEach(loc => {
+        shelfMap[`${wh.name}|${loc.name}`] = loc.id;
+      });
+    }
+  }
+
+  // 4. Delete existing products for this company
+  // Find products to delete them and their stocks first
+  const { data: existingProds } = await supabase
+    .from('offerable_items')
+    .select('id')
+    .eq('company_id', company.id);
+
+  if (existingProds && existingProds.length > 0) {
+    const prodIds = existingProds.map(p => p.id);
+    console.log(`Clearing product stocks for existing products...`);
+    await supabase.from('product_stocks').delete().in('product_id', prodIds);
+    await supabase.from('offerable_items').delete().eq('company_id', company.id);
+  }
+
+  // 5. Seed 800 products and their stocks
+  console.log("Generating products...");
+  const rawProducts = generateOzgurMotorProducts();
+  console.log(`Generating ${rawProducts.length} products to seed...`);
+
+  const batchSize = 50;
+  for (let i = 0; i < rawProducts.length; i += batchSize) {
+    const batch = rawProducts.slice(i, i + batchSize);
+    const dbPayload = batch.map(p => ({
+      company_id: company.id,
+      type: 'product',
+      name: p.name,
+      category: p.category,
+      brand: p.brand,
+      description: p.description,
+      sale_price: parseFloat(p.salePrice) || 0,
+      purchase_price: parseFloat(p.purchasePrice) || 0,
+      currency: p.currency,
+      barcode: p.barcode,
+      qr_code: p.qrCode,
+      code: p.sku,
+      photo_urls: [p.imageUrl],
+      is_visible_in_storefront: true
+    }));
+
+    const { data: insertedProds, error: insertErr } = await supabase
+      .from('offerable_items')
+      .insert(dbPayload)
+      .select('id, code');
+
+    if (insertErr || !insertedProds) {
+      console.error(`Error seeding batch ${i / batchSize + 1}:`, insertErr);
+    } else {
+      console.log(`Seeded batch ${i / batchSize + 1} (${dbPayload.length} products)`);
+      
+      // Insert product_stocks for the inserted products
+      const stockPayload = [];
+      insertedProds.forEach(dbProd => {
+        const rawProd = batch.find(p => p.sku === dbProd.code);
+        if (rawProd) {
+          const whId = whMap[rawProd.warehouse];
+          const shelfId = shelfMap[`${rawProd.warehouse}|${rawProd.shelf}`];
+          if (whId) {
+            stockPayload.push({
+              product_id: dbProd.id,
+              warehouse_id: whId,
+              location_id: shelfId || null,
+              status: 'available',
+              quantity: parseFloat(rawProd.quantity) || 0
+            });
+          }
+        }
+      });
+
+      if (stockPayload.length > 0) {
+        const { error: stockErr } = await supabase
+          .from('product_stocks')
+          .insert(stockPayload);
+        if (stockErr) {
+          console.error("Error seeding stock levels:", stockErr);
+        } else {
+          console.log(`Seeded ${stockPayload.length} stock levels`);
+        }
+      }
+    }
+  }
+
+  console.log("=== SUPABASE SEED COMPLETED SUCCESSFULLY ===");
+}
+
+run();

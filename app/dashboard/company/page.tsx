@@ -15,7 +15,7 @@ export default function Page() {
         { label: "Portal", value: "Aktif", tone: "good" }
       ]}
       sectionTitle="Temel Firma Ayarları"
-      sectionDescription="Firma ayarları ileride gerçek veritabanına bağlanacak."
+      sectionDescription="Firma bilgilerini ve vitrin yapılandırma parametrelerini güncelleyin."
       items={[
         { title: "Firma Adı", subtitle: "OBDTR Diagnostics", meta1: "Firma kodu", meta2: "OBDTR", meta3: "Aktif" },
         { title: "Müşteri Portalı", subtitle: "Herkese açık / onaylı seçilebilir", meta1: "Fiyat gösterimi", meta2: "Yetkiye bağlı", meta3: "Aktif" },

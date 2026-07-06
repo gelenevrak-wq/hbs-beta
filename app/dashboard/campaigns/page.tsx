@@ -23,7 +23,6 @@ export default function Page() {
       ]}
       sideTitle="Reklam Alanları"
       sideItems={["Ana sayfa öne çıkarma", "Kategori reklamı", "Şehir / bölge bazlı reklam", "Sponsorlu arama sonucu", "Story / kısa kampanya"]}
-      note="Sahte stok, yanıltıcı fiyat, gerçek olmayan indirim ve rakibi kötüleyen reklam yayınlanmaz."
     />
   );
 }

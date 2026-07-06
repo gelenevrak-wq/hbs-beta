@@ -960,11 +960,49 @@ export default function WarehousesRevampPage() {
           process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
         if (isSupabaseConfigured) {
           supabase
-            .from("offerable_items")
-            .update({ quantity: String(newQty) })
-            .eq("id", productId)
-            .then(({ error }) => {
-              if (error) console.error("Supabase qty adjust error", error);
+            .from("product_stocks")
+            .select("id")
+            .eq("product_id", productId)
+            .maybeSingle()
+            .then(async ({ data: existingStock }) => {
+              if (existingStock) {
+                await supabase
+                  .from("product_stocks")
+                  .update({ quantity: newQty })
+                  .eq("id", existingStock.id);
+              } else {
+                let whId = null;
+                if (p.warehouse) {
+                  const { data: wh } = await supabase
+                    .from("warehouses")
+                    .select("id")
+                    .ilike("name", p.warehouse.trim())
+                    .limit(1)
+                    .maybeSingle();
+                  if (wh) whId = wh.id;
+                }
+                
+                let locId = null;
+                if (p.shelf) {
+                  const { data: loc } = await supabase
+                    .from("warehouse_locations")
+                    .select("id")
+                    .ilike("name", p.shelf.trim())
+                    .limit(1)
+                    .maybeSingle();
+                  if (loc) locId = loc.id;
+                }
+
+                await supabase
+                  .from("product_stocks")
+                  .insert({
+                    product_id: productId,
+                    warehouse_id: whId,
+                    location_id: locId,
+                    quantity: newQty,
+                    status: "available"
+                  });
+              }
             });
         }
 
@@ -1224,11 +1262,9 @@ export default function WarehousesRevampPage() {
       }
 
       const finalList = [...updatedList];
-      let stateChanged = false;
-
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      const updatesPayload: any[] = [];
       const insertsPayload: any[] = [];
+      const stockUpdates: any[] = [];
 
       for (let i = 0; i < finalList.length; i++) {
         const prod = finalList[i];
@@ -1241,33 +1277,78 @@ export default function WarehousesRevampPage() {
         if (hasChanged) {
           const isUuid = uuidRegex.test(prod.id);
           if (isUuid && oldProd) {
-            updatesPayload.push({
-              id: prod.id,
-              quantity: parseInt(prod.quantity) || 0,
-              warehouse: prod.warehouse || null,
-              shelf: prod.shelf || null
-            });
+            stockUpdates.push(prod);
           } else if (!oldProd) {
             insertsPayload.push({ index: i, prod });
           }
         }
       }
 
-      // Execute bulk updates in parallel/single upsert call
-      if (updatesPayload.length > 0) {
+      // 1. Update existing products' stocks
+      for (const prod of stockUpdates) {
         try {
-          const { error } = await supabase
-            .from("offerable_items")
-            .upsert(updatesPayload);
-          if (error) {
-            console.error("Bulk Supabase update failed:", error.message);
+          let locId = null;
+          let whId = null;
+          
+          if (prod.shelf) {
+            const { data: loc } = await supabase
+              .from("warehouse_locations")
+              .select("id, warehouse_id")
+              .ilike("name", prod.shelf.trim())
+              .limit(1)
+              .maybeSingle();
+            if (loc) {
+              locId = loc.id;
+              whId = loc.warehouse_id;
+            }
+          }
+
+          if (!whId && prod.warehouse) {
+            const { data: wh } = await supabase
+              .from("warehouses")
+              .select("id")
+              .eq("company_id", targetCompanyId)
+              .ilike("name", prod.warehouse.trim())
+              .limit(1)
+              .maybeSingle();
+            if (wh) whId = wh.id;
+          }
+
+          const { data: existingStock } = await supabase
+            .from("product_stocks")
+            .select("id")
+            .eq("product_id", prod.id)
+            .maybeSingle();
+
+          const qtyVal = parseFloat(prod.quantity) || 0;
+
+          if (existingStock) {
+            await supabase
+              .from("product_stocks")
+              .update({
+                quantity: qtyVal,
+                warehouse_id: whId || undefined,
+                location_id: locId
+              })
+              .eq("id", existingStock.id);
+          } else {
+            await supabase
+              .from("product_stocks")
+              .insert({
+                product_id: prod.id,
+                warehouse_id: whId || null,
+                location_id: locId || null,
+                quantity: qtyVal,
+                status: "available"
+              });
           }
         } catch (e) {
-          console.error("Bulk Supabase request failed:", e);
+          console.error("Error updating stock levels inside loop:", e);
         }
       }
 
-      // Execute sequential inserts for new products (usually just 1 item)
+      // 2. Insert new products and then create their stocks
+      let stateChanged = false;
       for (const item of insertsPayload) {
         const { prod, index } = item;
         try {
@@ -1281,9 +1362,6 @@ export default function WarehousesRevampPage() {
               brand: prod.brand || "",
               code: prod.sku || `SKU-${Date.now()}`,
               barcode: prod.barcode || "",
-              quantity: parseInt(prod.quantity) || 0,
-              warehouse: prod.warehouse || null,
-              shelf: prod.shelf || null,
               sale_price: parseFloat(prod.salePrice) || null,
               purchase_price: parseFloat(prod.purchasePrice) || null,
               description: prod.description || "",
@@ -1300,9 +1378,46 @@ export default function WarehousesRevampPage() {
               id: data.id
             };
             stateChanged = true;
+            
+            let locId = null;
+            let whId = null;
+            
+            if (prod.shelf) {
+              const { data: loc } = await supabase
+                .from("warehouse_locations")
+                .select("id, warehouse_id")
+                .ilike("name", prod.shelf.trim())
+                .limit(1)
+                .maybeSingle();
+              if (loc) {
+                locId = loc.id;
+                whId = loc.warehouse_id;
+              }
+            }
+
+            if (!whId && prod.warehouse) {
+              const { data: wh } = await supabase
+                .from("warehouses")
+                .select("id")
+                .eq("company_id", targetCompanyId)
+                .ilike("name", prod.warehouse.trim())
+                .limit(1)
+                .maybeSingle();
+              if (wh) whId = wh.id;
+            }
+
+            await supabase
+              .from("product_stocks")
+              .insert({
+                product_id: data.id,
+                warehouse_id: whId || null,
+                location_id: locId || null,
+                quantity: parseFloat(prod.quantity) || 0,
+                status: "available"
+              });
           }
         } catch (e) {
-          console.error("Supabase insert request failed:", e);
+          console.error("Database insert check error:", e);
         }
       }
 
@@ -1722,41 +1837,52 @@ export default function WarehousesRevampPage() {
       if (isSupabaseConfigured && slug) {
         supabase
           .from("offerable_items")
-          .select("*, companies!inner(code)")
+          .select(`
+            *,
+            companies!inner(code),
+            product_stocks(
+              quantity,
+              warehouses(name),
+              warehouse_locations(name)
+            )
+          `)
           .eq("companies.code", slug)
           .then(({ data, error }) => {
             if (data && !error) {
               const mapped: ProductRecord[] = data
                 .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
-                .map((item: any) => ({
-                  id: item.id,
-                  itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
-                  name: item.name,
-                  category: item.category || "Genel",
-                  brand: item.brand || "",
-                  model: "",
-                  description: item.description || "",
-                  salePrice: item.sale_price ? String(item.sale_price) : "",
-                  purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
-                  currency: item.currency || "GEL",
-                  barcode: item.barcode || "",
-                  qrCode: item.qr_code || "",
-                  sku: item.code || "",
-                  oemCode: "",
-                  manufacturerCode: "",
-                  stockTracking: true,
-                  quantity: item.quantity ? String(item.quantity) : "10",
-                  warehouse: item.warehouse || "Ana Depo",
-                  shelf: item.shelf || "",
-                  entryDate: "",
-                  exitDate: "",
-                  pricingMode: item.sale_price ? "fixed" : "quote",
-                  visibility: item.is_visible_in_storefront ? "visible" : "hidden",
-                  imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
-                  videoUrl: item.video_urls?.[0] || "",
-                  variants: [],
-                  galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
-                }));
+                .map((item: any) => {
+                  const stockRecord = item.product_stocks?.[0];
+                  return {
+                    id: item.id,
+                    itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
+                    name: item.name,
+                    category: item.category || "Genel",
+                    brand: item.brand || "",
+                    model: "",
+                    description: item.description || "",
+                    salePrice: item.sale_price ? String(item.sale_price) : "",
+                    purchasePrice: item.purchase_price ? String(item.purchase_price) : "",
+                    currency: item.currency || "GEL",
+                    barcode: item.barcode || "",
+                    qrCode: item.qr_code || "",
+                    sku: item.code || "",
+                    oemCode: "",
+                    manufacturerCode: "",
+                    stockTracking: true,
+                    quantity: stockRecord ? String(stockRecord.quantity) : "0",
+                    warehouse: (stockRecord && stockRecord.warehouses) ? stockRecord.warehouses.name : "Ana Depo",
+                    shelf: (stockRecord && stockRecord.warehouse_locations) ? stockRecord.warehouse_locations.name : "",
+                    entryDate: "",
+                    exitDate: "",
+                    pricingMode: item.sale_price ? "fixed" : "quote",
+                    visibility: item.is_visible_in_storefront ? "visible" : "hidden",
+                    imageUrl: item.photo_urls?.[0] || "/product-images/diagnostic-scanner.svg",
+                    videoUrl: item.video_urls?.[0] || "",
+                    variants: [],
+                    galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
+                  };
+                });
               setProducts(mapped);
               window.localStorage.setItem(`hbs-store-products-${slug}`, JSON.stringify(mapped));
               loadSyncWarehouses(mapped);
@@ -1794,9 +1920,9 @@ export default function WarehousesRevampPage() {
       if (isSupabaseConfigured) {
         try {
           await supabase
-            .from("offerable_items")
-            .update({ shelf: "" })
-            .eq("id", productId);
+            .from("product_stocks")
+            .update({ location_id: null })
+            .eq("product_id", productId);
         } catch (e) {
           console.error("Supabase remove shelf error", e);
         }
