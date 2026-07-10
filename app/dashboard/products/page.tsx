@@ -2667,58 +2667,58 @@ export default function ProductsPage() {
         </div>
       )}
       <div className="mx-auto max-w-[1850px]">
-        <header className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
-          <div className="flex items-baseline gap-2 flex-wrap">
-            <Link href="/dashboard" className="text-lg font-black sm:text-2xl text-blue-600">HBS Ürün</Link>
-            <span className="text-slate-400 font-extrabold text-xs hidden sm:inline">| Premium Ürün ve Depo Konumlandırma</span>
+        <header className="mb-3 flex items-center justify-between gap-1 rounded-2xl border border-slate-200 bg-white px-2 py-1.5 sm:px-3 sm:py-2 shadow-sm">
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <Link href="/dashboard" className="text-base font-black sm:text-2xl text-blue-600 tracking-tight">HBS Ürün</Link>
+            <span className="text-slate-400 font-extrabold text-[10px] hidden sm:inline">| Premium Ürün ve Depo Konumlandırma</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Sanayi Modu (Büyük Yazı) Toggle */}
             <button
               type="button"
               onClick={() => setSanayiMode(!sanayiMode)}
-              className={"rounded-lg border px-3 py-2 text-xs font-black transition cursor-pointer select-none active:scale-95 " + (sanayiMode ? "bg-orange-600 border-orange-700 text-white shadow-md font-extrabold" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50")}
+              className={"rounded-lg border px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-black transition cursor-pointer select-none active:scale-95 " + (sanayiMode ? "bg-orange-600 border-orange-700 text-white shadow-md font-extrabold" : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50")}
             >
-              ⚙️ {sanayiMode ? "Sanayi Modu: AÇIK" : "Sanayi Modu (Büyük Yazı)"}
+              ⚙️ <span className="hidden sm:inline">{sanayiMode ? "Sanayi Modu: AÇIK" : "Sanayi Modu"}</span><span className="sm:hidden">{sanayiMode ? "Sanayi" : "Büyük"}</span>
             </button>
             {storeSlug && (
               <a
                 href={"https://wa.me/?text=D%C3%BCkkan%C4%B1m%C4%B1n%20katalo%C4%9Funu%20buradan%20inceleyebilirsiniz%3A%20" + encodeURIComponent(typeof window !== "undefined" ? window.location.origin + "/store/" + storeSlug : "")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-black text-white hover:bg-emerald-700 transition cursor-pointer select-none active:scale-95 flex items-center gap-1 shadow-sm font-extrabold"
+                className="rounded-lg bg-emerald-600 px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-black text-white hover:bg-emerald-700 transition cursor-pointer select-none active:scale-95 flex items-center gap-1 shadow-sm font-extrabold"
               >
-                💬 Vitrini Paylaş
+                💬 <span className="hidden sm:inline">Vitrini Paylaş</span><span className="sm:hidden">Paylaş</span>
               </a>
             )}
             <CompactLanguageSwitcher />
             <Link
               href="/dashboard"
-              className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black"
+              className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 sm:px-3 sm:py-2 text-[10px] sm:text-xs font-black text-slate-700 hover:bg-slate-50 active:scale-95 transition"
             >
-              Paneli Aç
+              <span className="hidden sm:inline">Paneli Aç</span><span className="sm:hidden">Panel</span>
             </Link>
           </div>
         </header>
 
         {/* 🏪 Depo Durum Kartları ve Hızlı Filtreleme */}
-        <section className="mb-4 flex flex-wrap items-center gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2">📍 DEPO:</span>
+        <section className="mb-4 flex flex-wrap items-center gap-1 bg-slate-100/70 border border-slate-200/50 p-1.5 rounded-2xl shadow-sm">
+          <span className="text-[9px] font-black text-slate-450 uppercase tracking-widest px-2.5">📍 DEPO:</span>
           
           <button
             type="button"
             onClick={() => setSelectedWarehouseFilter("all")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-2 border select-none cursor-pointer ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-2 select-none cursor-pointer ${
               selectedWarehouseFilter === "all"
-                ? "bg-blue-600 border-blue-600 text-white shadow-sm font-extrabold"
-                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                ? "bg-white text-blue-600 shadow-sm font-extrabold border border-slate-200/40"
+                : "text-slate-650 hover:bg-white/50 border border-transparent font-semibold"
             }`}
           >
             <span>Tüm Depolar</span>
-            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-mono ${
-              selectedWarehouseFilter === "all" ? "bg-blue-500 text-blue-100" : "bg-slate-100 text-slate-500"
+            <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono ${
+              selectedWarehouseFilter === "all" ? "bg-blue-50 text-blue-650" : "bg-slate-200/60 text-slate-600"
             }`}>
-              {products.length} Tanımlı / {products.filter(p => (parseInt(p.quantity) || 0) > 0).length} Stoklu / {products.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0)} Adet
+              {products.length} / {products.filter(p => (parseInt(p.quantity) || 0) > 0).length} / {products.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0)} Adet
             </span>
           </button>
 
@@ -2732,15 +2732,15 @@ export default function ProductsPage() {
                 key={wh.id}
                 type="button"
                 onClick={() => setSelectedWarehouseFilter(wh.name)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-2 border select-none cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-2 select-none cursor-pointer ${
                   isSelected
-                    ? "bg-blue-600 border-blue-600 text-white shadow-sm font-extrabold"
-                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+                    ? "bg-white text-blue-600 shadow-sm font-extrabold border border-slate-200/40"
+                    : "text-slate-650 hover:bg-white/50 border border-transparent font-semibold"
                 }`}
               >
                 <span>{wh.name}</span>
-                <span className={`px-2 py-0.5 rounded-lg text-[9px] font-mono ${
-                  isSelected ? "bg-blue-500 text-blue-100" : "bg-slate-100 text-slate-500"
+                <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono ${
+                  isSelected ? "bg-blue-50 text-blue-650" : "bg-slate-200/60 text-slate-600"
                 }`}>
                   {whProducts.length} Çeşit / {totalQty} Adet
                 </span>
@@ -2750,7 +2750,7 @@ export default function ProductsPage() {
 
           <Link
             href="/dashboard/warehouses"
-            className="px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-1.5 border border-dashed border-slate-350 bg-white hover:bg-slate-50 text-slate-650 select-none ml-auto"
+            className="px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-1.5 border border-dashed border-slate-300 bg-white hover:bg-slate-50 text-slate-650 select-none ml-auto"
           >
             <span>🏪</span>
             <span>Depoları Yönet</span>
@@ -2764,7 +2764,7 @@ export default function ProductsPage() {
         )}
 
         {/* Toplu Ürün İşlemleri (Excel / CSV) - Premium Panel */}
-        <section className="mb-3 rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-800">
+        <section className="mb-4 bg-transparent py-1 border-b border-slate-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-800">
           <div className="flex items-center gap-2">
             <span className="shrink-0 rounded bg-blue-50 px-1.5 py-0.5 text-[8px] font-black text-blue-700 uppercase border border-blue-100">
               ⚡ HIZLI YÜKLEME
@@ -2773,7 +2773,7 @@ export default function ProductsPage() {
             <span className="text-[10px] text-slate-500 font-semibold hidden md:inline">
               Şablon indirip doldurarak tek seferde yükleyin.
             </span>
-            <span className="text-[9px] text-slate-400 font-medium hidden lg:inline border-l border-slate-200 pl-2">
+            <span className="text-[9px] text-slate-450 font-medium hidden lg:inline border-l border-slate-200 pl-2">
               (İpucu: Varyantlar için <code>Model|SKU|Barkod|Fiyat...</code> formatında <code>;</code> ile ayırın)
             </span>
           </div>
@@ -2782,12 +2782,12 @@ export default function ProductsPage() {
             <button
               type="button"
               onClick={downloadCSVTemplate}
-              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-black text-slate-800 hover:bg-slate-50 transition flex items-center gap-1 cursor-pointer select-none"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-700 hover:bg-slate-50 transition flex items-center gap-1 cursor-pointer select-none"
             >
               <span>📥</span> Şablon İndir
             </button>
             
-            <label className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-[10px] font-black text-white hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 select-none">
+            <label className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-black text-white hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 select-none">
               <span>📤</span> Dosya Yükle
               <input
                 type="file"
@@ -3624,7 +3624,7 @@ export default function ProductsPage() {
 
           {/* Product list preview */}
           <aside className="space-y-3">
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-2.5">
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-black">{t.availableProductsHeader} ({filteredProducts.length})</h2>
@@ -3722,7 +3722,7 @@ export default function ProductsPage() {
                 </div>
               </div>
 
-              <div className="mt-4 space-y-3 max-h-[600px] overflow-y-auto pr-1">
+              <div className="mt-4 space-y-3 pr-1">
                 {paginatedProducts.map((p) => (
                   <article key={p.id} className="rounded-2xl border border-slate-200 bg-white p-4 text-xs space-y-2.5 relative group hover:border-blue-500 hover:shadow-md transition duration-200 shadow-sm">
                     <div className="flex justify-between items-start gap-2">
@@ -3749,13 +3749,13 @@ export default function ProductsPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-1 text-slate-600">
-                        <p><b>{t.category}:</b> {getLocalizedField(p.category, activeLang)}</p>
-                        <p><b>{activeLang === "en" ? "Stock SKU" : activeLang === "de" ? "Lager-SKU" : activeLang === "ru" ? "SKU запаса" : activeLang === "ka" ? "მარაგის SKU" : "Stok SKU"}:</b> {p.sku || "-"}</p>
-                        <p><b>{t.barcode}:</b> {p.barcode || "-"}</p>
-                        <p><b>{activeLang === "en" ? "Price" : activeLang === "de" ? "Preis" : activeLang === "ru" ? "Цена" : activeLang === "ka" ? "ფასი" : "Fiyat"}:</b> {p.pricingMode === "fixed" ? getDynamicPrice(p) : (activeLang === "en" ? "Hidden" : activeLang === "de" ? "Versteckt" : activeLang === "ru" ? "Скрыто" : activeLang === "ka" ? "ფარული" : "Gizli")}</p>
-                        <p><b>{activeLang === "en" ? "Location" : activeLang === "de" ? "Standort" : activeLang === "ru" ? "Локация" : activeLang === "ka" ? "მდებარეობა" : "Konum"}:</b> {p.warehouse} · {p.shelf}</p>
-                        <p><b>{activeLang === "en" ? "Entry" : activeLang === "de" ? "Eingang" : activeLang === "ru" ? "Поступление" : activeLang === "ka" ? "შემოსვლა" : "Giriş"}:</b> {p.entryDate || "-"}</p>
+                      <div className="flex-1 flex flex-wrap gap-1.5 text-[10px] text-slate-500 font-semibold">
+                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📁 {getLocalizedField(p.category, activeLang)}</span>
+                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-mono">🏷️ SKU: {p.sku || "-"}</span>
+                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-mono">🧬 {t.barcode}: {p.barcode || "-"}</span>
+                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📍 {p.warehouse || "Ortalık"} · {p.shelf || "Rafsız"}</span>
+                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-bold text-slate-700">💰 {p.pricingMode === "fixed" ? getDynamicPrice(p) : (activeLang === "en" ? "Hidden" : activeLang === "de" ? "Versteckt" : activeLang === "ru" ? "Скрыто" : activeLang === "ka" ? "ფარული" : "Gizli")}</span>
+                        {p.entryDate && <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📅 {p.entryDate}</span>}
                       </div>
 
                       <div className="w-16 h-16 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
@@ -3789,7 +3789,7 @@ export default function ProductsPage() {
                     )}
 
                     {/* Action buttons with rich premium styling */}
-                    <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between gap-1.5">
+                    <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between gap-1.5 flex-wrap">
                       {/* Left: Quick Visibility Toggle */}
                       <button
                         type="button"
@@ -3801,7 +3801,7 @@ export default function ProductsPage() {
                       </button>
 
                       {/* Right: Edit & Delete actions */}
-                      <div className="flex gap-1.5 flex-wrap justify-end">
+                      <div className="flex gap-1 items-center flex-wrap justify-end">
                         <button
                           type="button"
                           onClick={() => {
@@ -3809,10 +3809,10 @@ export default function ProductsPage() {
                             setIsPrintModalOpen(true);
                             setActivePrintTab('card');
                           }}
-                          className="rounded-lg bg-slate-50 border border-slate-200 text-slate-900 font-extrabold hover:bg-slate-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          className="rounded-lg bg-slate-50 border border-slate-250 text-slate-700 hover:bg-slate-100 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Etiket & Barkod Yazdır"
                         >
-                          <span>{t.printLabelBtn}</span>
+                          🖨️ Yazdır
                         </button>
                         <button
                           type="button"
@@ -3823,34 +3823,34 @@ export default function ProductsPage() {
                             setTransferQty("1");
                             setIsTransferModalOpen(true);
                           }}
-                          className="rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          className="rounded-lg bg-indigo-50 border border-indigo-200/60 text-indigo-700 hover:bg-indigo-100 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Depolar Arası Stok Sevk/Transfer Et"
                         >
-                          <span>{t.transferBtn}</span>
+                          🔄 Sevk
                         </button>
                         <button
                           type="button"
                           onClick={() => startEditProduct(p)}
-                          className="rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          className="rounded-lg bg-blue-50 border border-blue-200/60 text-blue-700 hover:bg-blue-100 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Ürünü Düzenle"
                         >
-                          <span>{t.editBtn}</span>
+                          ✏️ Düzenle
                         </button>
                         <button
                           type="button"
                           onClick={() => duplicateProduct(p)}
-                          className="rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
-                          title="Ürünün Kopyasını Üret (Çoğalt)"
+                          className="rounded-lg bg-emerald-50 border border-emerald-200/60 text-emerald-700 hover:bg-emerald-100 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          title="Kopyasını Üret (Çoğalt)"
                         >
-                          <span>{t.duplicateBtn}</span>
+                          👥 Çoğalt
                         </button>
                         <button
                           type="button"
                           onClick={() => deleteProduct(p.id, getLocalizedField(p.name, language || "tr"), p.sku)}
-                          className="rounded-lg bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition px-2.5 py-1.5 text-[10px] font-black cursor-pointer active:scale-95 flex items-center gap-0.5"
+                          className="rounded-lg bg-rose-50 border border-rose-200/60 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
                           title="Ürünü Sil"
                         >
-                          <span>{t.deleteBtn}</span>
+                          🗑️ Sil
                         </button>
                       </div>
                     </div>
