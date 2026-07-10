@@ -5,6 +5,7 @@ import VisitorTracker from "@/components/VisitorTracker";
 import OfflinePOS from "@/components/OfflinePOS";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import DemoDataInitializer from "@/components/DemoDataInitializer";
+import DemoModeBanner from "@/components/common/DemoModeBanner";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${plusJakartaSans.variable} h-full antialiased`} data-scroll-behavior="smooth">
       <body className="min-h-full flex flex-col font-sans">
+        <DemoModeBanner />
         <VisitorTracker />
         <OfflinePOS />
         <PWAInstallPrompt />
