@@ -6,6 +6,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
+import { signCookieValue } from "@/lib/security";
 
 type DemoUser = {
   username: string;
@@ -145,10 +146,10 @@ export default function LoginPage() {
       if (biometricUser) {
         setScanMessage(b.success);
         
-        setTimeout(() => {
+        setTimeout(async () => {
           // Log in the biometric user
-          document.cookie = `hbs-user-role=${biometricUser.role}; path=/; max-age=86400; SameSite=Lax`;
-          document.cookie = `hbs-user-email=${biometricUser.username}; path=/; max-age=86400; SameSite=Lax`;
+          document.cookie = `hbs-user-role=${await signCookieValue(biometricUser.role)}; path=/; max-age=86400; SameSite=Lax`;
+          document.cookie = `hbs-user-email=${await signCookieValue(biometricUser.username)}; path=/; max-age=86400; SameSite=Lax`;
 
           window.localStorage.setItem(
             "hbs-current-user",
@@ -218,8 +219,8 @@ export default function LoginPage() {
           redirectTo = "/dashboard";
         }
 
-        document.cookie = `hbs-user-role=${role}; path=/; max-age=86400; SameSite=Lax`;
-        document.cookie = `hbs-user-email=${data.user.email}; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-role=${await signCookieValue(role)}; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-email=${await signCookieValue(data.user.email || "")}; path=/; max-age=86400; SameSite=Lax`;
 
         window.localStorage.setItem(
           "hbs-current-user",
@@ -340,8 +341,8 @@ export default function LoginPage() {
         return;
       }
 
-      document.cookie = `hbs-user-role=${activeUser.role}; path=/; max-age=86400; SameSite=Lax`;
-      document.cookie = `hbs-user-email=${activeUser.username}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-role=${await signCookieValue(activeUser.role)}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-email=${await signCookieValue(activeUser.username)}; path=/; max-age=86400; SameSite=Lax`;
 
       window.localStorage.setItem(
         "hbs-current-user",

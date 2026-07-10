@@ -5,6 +5,7 @@ import { FormEvent, useEffect, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
 import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
+import { signCookieValue } from "@/lib/security";
 
 type RegisterMode = "select" | "customer" | "store" | "done";
 type DoneKind = "customer" | "store";
@@ -246,8 +247,8 @@ export default function RegisterPage() {
         });
 
         // Local storage'a kaydet (uyumluluk için)
-        document.cookie = `hbs-user-role=customer; path=/; max-age=86400; SameSite=Lax`;
-        document.cookie = `hbs-user-email=${email}; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-role=${await signCookieValue("customer")}; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-email=${await signCookieValue(email)}; path=/; max-age=86400; SameSite=Lax`;
 
         window.localStorage.setItem(
           "hbs-current-user",
@@ -262,8 +263,8 @@ export default function RegisterPage() {
       }
     } else {
       // Offline fallback için local storage'a kaydet
-      document.cookie = `hbs-user-role=customer; path=/; max-age=86400; SameSite=Lax`;
-      document.cookie = `hbs-user-email=${email}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-role=${await signCookieValue("customer")}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-email=${await signCookieValue(email)}; path=/; max-age=86400; SameSite=Lax`;
 
       window.localStorage.setItem(
         "hbs-current-user",
@@ -357,8 +358,8 @@ export default function RegisterPage() {
         }
 
         // Local storage'a kaydet (uyumluluk için)
-        document.cookie = `hbs-user-role=owner; path=/; max-age=86400; SameSite=Lax`;
-        document.cookie = `hbs-user-email=${email}; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-role=${await signCookieValue("owner")}; path=/; max-age=86400; SameSite=Lax`;
+        document.cookie = `hbs-user-email=${await signCookieValue(email)}; path=/; max-age=86400; SameSite=Lax`;
 
         window.localStorage.setItem(
           "hbs-current-user",
@@ -374,8 +375,8 @@ export default function RegisterPage() {
     } else {
       // Offline fallback
       const companyCode = company.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      document.cookie = `hbs-user-role=owner; path=/; max-age=86400; SameSite=Lax`;
-      document.cookie = `hbs-user-email=${email}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-role=${await signCookieValue("owner")}; path=/; max-age=86400; SameSite=Lax`;
+      document.cookie = `hbs-user-email=${await signCookieValue(email)}; path=/; max-age=86400; SameSite=Lax`;
 
       window.localStorage.setItem(
         "hbs-current-user",

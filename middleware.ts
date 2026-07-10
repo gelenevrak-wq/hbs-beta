@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verifyCookieValue } from "./lib/security";
 
-export function middleware(request: NextRequest) {
-  const role = request.cookies.get("hbs-user-role")?.value;
-  const email = request.cookies.get("hbs-user-email")?.value;
+export async function middleware(request: NextRequest) {
+  const signedRole = request.cookies.get("hbs-user-role")?.value;
+  const signedEmail = request.cookies.get("hbs-user-email")?.value;
+
+  const role = await verifyCookieValue(signedRole);
+  const email = await verifyCookieValue(signedEmail);
   const { pathname } = request.nextUrl;
 
   // 1. Guard all dashboard subroutes
