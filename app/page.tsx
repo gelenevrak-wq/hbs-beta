@@ -380,6 +380,18 @@ export default function HomePage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
   const [aiTranslations, setAiTranslations] = useState<Record<string, { name: string; category: string }>>({});
   const [translatingSlug, setTranslatingSlug] = useState<string | null>(null);
+  const [translationVersion, setTranslationVersion] = useState(0);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleTranslationUpdate = () => {
+      setTranslationVersion((v) => v + 1);
+    };
+    window.addEventListener("hbs-translation-updated", handleTranslationUpdate);
+    return () => {
+      window.removeEventListener("hbs-translation-updated", handleTranslationUpdate);
+    };
+  }, []);
 
   const handleAiTranslate = (itemSlug: string, originalName: any, originalCategory: any) => {
     setTranslatingSlug(itemSlug);

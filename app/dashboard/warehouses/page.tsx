@@ -1328,6 +1328,9 @@ export default function WarehousesRevampPage() {
   const [shelfTransferToWarehouse, setShelfTransferToWarehouse] = useState<string>("");
   const [shelfTransferToShelf, setShelfTransferToShelf] = useState<string>("");
   const [shelfTransferQty, setShelfTransferQty] = useState<string>("1");
+  const [shelfTransferToZone, setShelfTransferToZone] = useState<string>("");
+  const [shelfTransferToSlot, setShelfTransferToSlot] = useState<number | null>(null);
+  const [shelfTransferToLevel, setShelfTransferToLevel] = useState<number | null>(null);
 
   // Drag scroll whiteboard states
   const whiteboardRef = useRef<HTMLDivElement>(null);
@@ -2378,12 +2381,49 @@ export default function WarehousesRevampPage() {
       return;
     }
 
+    let targetShelf = shelfTransferToShelf;
+    if (!targetShelf) {
+      const matchedWh = warehouses.find(w => w.name === shelfTransferToWarehouse);
+      const whShelves = matchedWh?.shelves || [];
+      const availableZones = Array.from(new Set(whShelves.map(sh => parseShelfCode(sh).zone))).filter(Boolean).sort();
+      const activeZone = shelfTransferToZone && availableZones.includes(shelfTransferToZone)
+        ? shelfTransferToZone
+        : availableZones[0] || "";
+
+      const availableSlots = Array.from(new Set(
+        whShelves
+          .filter(sh => parseShelfCode(sh).zone === activeZone)
+          .map(sh => parseShelfCode(sh).slot)
+      )).sort((a, b) => a - b);
+      const activeSlot = shelfTransferToSlot !== null && availableSlots.includes(shelfTransferToSlot)
+        ? shelfTransferToSlot
+        : availableSlots[0] || 1;
+
+      const availableLevels = Array.from(new Set(
+        whShelves
+          .filter(sh => {
+            const parsed = parseShelfCode(sh);
+            return parsed.zone === activeZone && parsed.slot === activeSlot;
+          })
+          .map(sh => parseShelfCode(sh).level)
+      )).sort((a, b) => a - b);
+      const activeLevel = shelfTransferToLevel !== null && availableLevels.includes(shelfTransferToLevel)
+        ? shelfTransferToLevel
+        : availableLevels[0] || 1;
+
+      const matchingShelves = whShelves.filter(sh => {
+        const parsed = parseShelfCode(sh);
+        return parsed.zone === activeZone && parsed.slot === activeSlot && parsed.level === activeLevel;
+      });
+      targetShelf = matchingShelves[0] || "";
+    }
+
     let updatedProducts = [...products];
 
     if (qtyVal === currentQty) {
       updatedProducts = products.map(p => 
         p.id === shelfTransferProductId 
-          ? { ...p, warehouse: shelfTransferToWarehouse, shelf: shelfTransferToShelf } 
+          ? { ...p, warehouse: shelfTransferToWarehouse, shelf: targetShelf } 
           : p
       );
     } else {
@@ -2396,7 +2436,7 @@ export default function WarehousesRevampPage() {
         p.name === targetProd.name && 
         p.sku === targetProd.sku && 
         safeLower(p.warehouse) === safeLower(shelfTransferToWarehouse) && 
-        safeLower(p.shelf) === safeLower(shelfTransferToShelf)
+        safeLower(p.shelf) === safeLower(targetShelf)
       );
 
       if (existingAtDest) {
@@ -2411,7 +2451,7 @@ export default function WarehousesRevampPage() {
           id: typeof window !== "undefined" && window.crypto?.randomUUID ? window.crypto.randomUUID() : `prod-copy-${Date.now()}`,
           quantity: String(qtyVal),
           warehouse: shelfTransferToWarehouse,
-          shelf: shelfTransferToShelf
+          shelf: targetShelf
         };
         updatedProducts.push(copy);
       }
@@ -2421,6 +2461,7 @@ export default function WarehousesRevampPage() {
     window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
     setIsShelfTransferOpen(false);
     showSuccess(wm.dispatchSuccess.replace("{name}", getLocalizedField(targetProd.name, activeLang)));
+    playBeep();
   };
 
   const handleAddNewWarehouse = async (e: React.FormEvent) => {
@@ -3601,14 +3642,12 @@ ${sizeStr}
                     value={shelfTransferToWarehouse}
                     onChange={(e) => {
                       setShelfTransferToWarehouse(e.target.value);
-                      const matched = warehouses.find(w => w.name === e.target.value);
-                      if (matched && matched.shelves && matched.shelves.length > 0) {
-                        setShelfTransferToShelf(matched.shelves[0]);
-                      } else {
-                        setShelfTransferToShelf("");
-                      }
+                      setShelfTransferToZone("");
+                      setShelfTransferToSlot(null);
+                      setShelfTransferToLevel(null);
+                      setShelfTransferToShelf("");
                     }}
-                    className="rounded-xl border border-slate-350 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800 transition focus:border-blue-500"
                   >
                     {warehouses.map(w => (
                       <option key={w.id} value={w.name}>{w.name}</option>
@@ -3616,19 +3655,132 @@ ${sizeStr}
                   </select>
                 </label>
 
-                <label className="grid gap-1">
-                  <span className="text-xs font-black text-slate-700">{t.dispatchShelf || "Sevk Edilecek Raf / Hücre"}</span>
-                  <select
-                    value={shelfTransferToShelf}
-                    onChange={(e) => setShelfTransferToShelf(e.target.value)}
-                    className="rounded-xl border border-slate-355 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
-                  >
-                    <option value="">{t.noShelfOption || "-- Rafsız (Ortalıkta Dursun) --"}</option>
-                    {warehouses.find(w => w.name === shelfTransferToWarehouse)?.shelves?.map((sh: any) => (
-                      <option key={sh} value={sh}>{sh} {t.shelfSuffix || "Rafı"}</option>
-                    ))}
-                  </select>
-                </label>
+                {(() => {
+                  const matchedWh = warehouses.find(w => w.name === shelfTransferToWarehouse);
+                  const whShelves = matchedWh?.shelves || [];
+
+                  if (whShelves.length === 0) {
+                    return (
+                      <div className="bg-amber-50 border border-amber-200 p-3 rounded-2xl text-[11px] font-bold text-amber-800">
+                        ⚠️ {language === "en" ? "No shelf layout is defined for this warehouse." : "Bu depo için henüz bir raf düzeni tanımlanmamış."}
+                      </div>
+                    );
+                  }
+
+                  // 1. Zones
+                  const availableZones = Array.from(new Set(whShelves.map(sh => parseShelfCode(sh).zone))).filter(Boolean).sort();
+                  const activeZone = shelfTransferToZone && availableZones.includes(shelfTransferToZone)
+                    ? shelfTransferToZone
+                    : availableZones[0] || "";
+
+                  // 2. Slots
+                  const availableSlots = Array.from(new Set(
+                    whShelves
+                      .filter(sh => parseShelfCode(sh).zone === activeZone)
+                      .map(sh => parseShelfCode(sh).slot)
+                  )).sort((a, b) => a - b);
+                  const activeSlot = shelfTransferToSlot !== null && availableSlots.includes(shelfTransferToSlot)
+                    ? shelfTransferToSlot
+                    : availableSlots[0] || 1;
+
+                  // 3. Levels
+                  const availableLevels = Array.from(new Set(
+                    whShelves
+                      .filter(sh => {
+                        const parsed = parseShelfCode(sh);
+                        return parsed.zone === activeZone && parsed.slot === activeSlot;
+                      })
+                      .map(sh => parseShelfCode(sh).level)
+                  )).sort((a, b) => a - b);
+                  const activeLevel = shelfTransferToLevel !== null && availableLevels.includes(shelfTransferToLevel)
+                    ? shelfTransferToLevel
+                    : availableLevels[0] || 1;
+
+                  // 4. Matching Shelves (for compartments, sides)
+                  const matchingShelves = whShelves.filter(sh => {
+                    const parsed = parseShelfCode(sh);
+                    return parsed.zone === activeZone && parsed.slot === activeSlot && parsed.level === activeLevel;
+                  });
+                  const finalTargetShelf = shelfTransferToShelf && matchingShelves.includes(shelfTransferToShelf)
+                    ? shelfTransferToShelf
+                    : matchingShelves[0] || "";
+
+                  return (
+                    <div className="grid grid-cols-2 gap-2.5 bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                      {/* Reyon / Koridor */}
+                      <label className="grid gap-1">
+                        <span className="text-[10px] font-black text-slate-650">{language === "en" ? "Zone / Corridor" : "Reyon / Koridor"}</span>
+                        <select
+                          value={activeZone}
+                          onChange={(e) => {
+                            setShelfTransferToZone(e.target.value);
+                            setShelfTransferToSlot(null);
+                            setShelfTransferToLevel(null);
+                            setShelfTransferToShelf("");
+                          }}
+                          className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs font-semibold text-slate-800"
+                        >
+                          {availableZones.map(z => (
+                            <option key={z} value={z}>{z} {language === "en" ? "Zone" : "Reyonu"}</option>
+                          ))}
+                        </select>
+                      </label>
+
+                      {/* Raf / Slot */}
+                      <label className="grid gap-1">
+                        <span className="text-[10px] font-black text-slate-650">{language === "en" ? "Shelf / Slot" : "Raf / Bölüm (Slot)"}</span>
+                        <select
+                          value={activeSlot}
+                          onChange={(e) => {
+                            setShelfTransferToSlot(Number(e.target.value));
+                            setShelfTransferToLevel(null);
+                            setShelfTransferToShelf("");
+                          }}
+                          className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs font-semibold text-slate-800"
+                        >
+                          {availableSlots.map(sl => (
+                            <option key={sl} value={sl}>{sl}. {language === "en" ? "Slot" : "Sıra"}</option>
+                          ))}
+                        </select>
+                      </label>
+
+                      {/* Kat / Level */}
+                      <label className="grid gap-1">
+                        <span className="text-[10px] font-black text-slate-650">{language === "en" ? "Level / Tier" : "Kat (Tier)"}</span>
+                        <select
+                          value={activeLevel}
+                          onChange={(e) => {
+                            setShelfTransferToLevel(Number(e.target.value));
+                            setShelfTransferToShelf("");
+                          }}
+                          className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs font-semibold text-slate-800"
+                        >
+                          {availableLevels.map(lv => (
+                            <option key={lv} value={lv}>{lv}. {language === "en" ? "Level" : "Kat"}</option>
+                          ))}
+                        </select>
+                      </label>
+
+                      {/* Göz / Bölme (Bin/Side) */}
+                      <label className="grid gap-1">
+                        <span className="text-[10px] font-black text-slate-650">{language === "en" ? "Cell / Compartment" : "Hücre / Yan Göz"}</span>
+                        <select
+                          value={finalTargetShelf}
+                          onChange={(e) => setShelfTransferToShelf(e.target.value)}
+                          className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs font-semibold text-slate-800"
+                        >
+                          {matchingShelves.map(sh => {
+                            const parsed = parseShelfCode(sh);
+                            const label = parsed.side || parsed.level ? sh : `${sh} (Genel)`;
+                            return (
+                              <option key={sh} value={sh}>{label}</option>
+                            );
+                          })}
+                        </select>
+                      </label>
+                    </div>
+                  );
+                })()}
 
                 <label className="grid gap-1">
                   <span className="text-xs font-black text-slate-700">{t.dispatchQty || "Sevk Miktarı"}</span>
@@ -3638,7 +3790,7 @@ ${sizeStr}
                     aria-label="Raf sevk miktarı"
                     value={shelfTransferQty}
                     onChange={(e) => setShelfTransferQty(e.target.value)}
-                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800"
+                    className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold outline-none text-slate-800 focus:border-blue-500"
                     min="1"
                     max={products.find(p => p.id === shelfTransferProductId)?.quantity || "1"}
                   />
@@ -4803,15 +4955,15 @@ ${sizeStr}
                     backgroundSize: "16px 16px",
                     cursor: "grab"
                   }}
-                  className={`rounded-3xl border border-slate-200 p-6 select-none transition-all duration-300 ${
+                  className={`rounded-3xl border border-slate-200 p-3 md:p-6 select-none transition-all duration-300 ${
                     placeProductId 
                       ? "bg-slate-50 border-solid max-h-none overflow-y-auto" 
-                      : "bg-slate-50/50 max-h-[35rem] overflow-auto active:cursor-grabbing"
+                      : "bg-slate-50/50 max-h-[35rem] overflow-auto"
                   }`}
                 >
                   <div className={placeProductId 
                     ? "flex flex-wrap gap-2.5 justify-center min-w-0" 
-                    : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 min-w-[1000px]"
+                    : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full"
                   }>
                   {activeWh.shelves && activeWh.shelves.length > 0 ? (
                     activeWh.shelves.map((sh) => {

@@ -13,6 +13,7 @@ import {
 export function useHbsLanguage() {
   const [language, setLanguageState] = useState<HbsLanguageCode>("tr");
   const [isReady, setIsReady] = useState(false);
+  const [translationVersion, setTranslationVersion] = useState(0);
 
   useEffect(() => {
     const initialLanguage = getInitialLanguage();
@@ -22,6 +23,17 @@ export function useHbsLanguage() {
 
     document.documentElement.lang = initialLanguage;
     document.documentElement.dir = getLanguageDirection(initialLanguage);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleTranslationUpdate = () => {
+      setTranslationVersion((v) => v + 1);
+    };
+    window.addEventListener("hbs-translation-updated", handleTranslationUpdate);
+    return () => {
+      window.removeEventListener("hbs-translation-updated", handleTranslationUpdate);
+    };
   }, []);
 
   function setLanguage(nextLanguage: HbsLanguageCode) {

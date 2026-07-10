@@ -343,7 +343,7 @@ export default function ProductDetailPage() {
 
   const handleWhatsAppCheckout = () => {
     const activeLang = language || "tr";
-    const nameText = activeProduct ? (activeProduct.name[activeLang] || activeProduct.name.tr) : "";
+    const nameText = activeProduct ? txt(activeProduct.name, activeLang) : "";
     const priceText = activeProduct && activeProduct.priceValue 
       ? `${activeProduct.priceValue} ${activeProduct.currency}` 
       : (activeProduct ? txt(activeProduct.priceText, activeLang) : "");

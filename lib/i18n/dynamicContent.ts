@@ -611,6 +611,69 @@ function getNormalizedDictionary(): Record<string, any> {
   return cache;
 }
 
+// --- DYNAMIC TRANSLATION CACHE & BACKGROUND SERVICE ---
+const apiTranslationCache: Record<string, string> = {};
+const ongoingTranslations = new Set<string>();
+
+function getApiCacheKey(text: string, to: string, from = "tr"): string {
+  return `${from}_${to}_${text}`;
+}
+
+export function getCachedApiTranslation(text: string, to: string, from = "tr"): string | null {
+  if (typeof window === "undefined") return null;
+  const key = getApiCacheKey(text, to, from);
+  if (apiTranslationCache[key]) return apiTranslationCache[key];
+  try {
+    const cached = window.localStorage.getItem(`hbs_api_trans_${key}`);
+    if (cached) {
+      apiTranslationCache[key] = cached;
+      return cached;
+    }
+  } catch (e) {}
+  return null;
+}
+
+export function saveCachedApiTranslation(text: string, to: string, translation: string, from = "tr") {
+  const key = getApiCacheKey(text, to, from);
+  apiTranslationCache[key] = translation;
+  if (typeof window !== "undefined") {
+    try {
+      window.localStorage.setItem(`hbs_api_trans_${key}`, translation);
+    } catch (e) {}
+  }
+}
+
+export function triggerBackgroundTranslation(text: string, toLang: string, fromLang = "tr") {
+  if (typeof window === "undefined" || !text.trim() || toLang === "tr") return;
+  const key = `${fromLang}_${toLang}_${text}`;
+  if (ongoingTranslations.has(key)) return;
+
+  ongoingTranslations.add(key);
+
+  fetch("/api/translate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text, from: fromLang, to: toLang }),
+  })
+    .then((res) => {
+      if (res.ok) return res.json();
+      throw new Error("Translation failed");
+    })
+    .then((data) => {
+      if (data && data.success && data.translatedText) {
+        saveCachedApiTranslation(text, toLang, data.translatedText, fromLang);
+        // Dispatch event to force re-render in listeners
+        window.dispatchEvent(new CustomEvent("hbs-translation-updated"));
+      }
+    })
+    .catch((err) => {
+      console.error("Background translation error:", err);
+    })
+    .finally(() => {
+      ongoingTranslations.delete(key);
+    });
+}
+
 export function translateProductField(
   text: string | LocalizedText | undefined | null,
   fieldType: 'name' | 'category' | 'description',
@@ -668,18 +731,23 @@ export function translateProductField(
   }
 
   let rawText = "";
+  let sourceLang = "tr";
   if (parsedTextObj) {
     let val = parsedTextObj[language];
     if (val !== undefined && val !== null && !isWarning(String(val))) {
       return String(val);
     }
     // Eşleşme yoksa Türkçe veya İngilizce'yi temel metin olarak alıp sözlük/akıllı çeviriye sokalım
-    const fallbackText = parsedTextObj["tr"] || parsedTextObj["en"];
-    if (fallbackText !== undefined && fallbackText !== null) {
-      rawText = String(fallbackText);
+    if (parsedTextObj["tr"] !== undefined && parsedTextObj["tr"] !== null) {
+      rawText = String(parsedTextObj["tr"]);
+      sourceLang = "tr";
+    } else if (parsedTextObj["en"] !== undefined && parsedTextObj["en"] !== null) {
+      rawText = String(parsedTextObj["en"]);
+      sourceLang = "en";
     }
   } else {
     rawText = typeof text === "string" ? text : "";
+    sourceLang = "tr";
   }
   const trimmed = rawText.trim();
   if (!trimmed) return "";
@@ -699,6 +767,17 @@ export function translateProductField(
 
   // 3. Türkçe dışında bir dil seçildiyse ve tam metin bulunamadıysa, akıllı parçalı çeviriciyi tetikle
   if (language === "tr") return trimmed;
+
+  // 3.5 Dynamic API cache lookup
+  const cachedTranslation = getCachedApiTranslation(trimmed, language, sourceLang);
+  if (cachedTranslation) {
+    return cachedTranslation;
+  }
+
+  // Trigger background translation from API proxy
+  if (typeof window !== "undefined") {
+    triggerBackgroundTranslation(trimmed, language, sourceLang);
+  }
 
   // Paragraf veya yeni satırlara göre koruyarak bölelim (böylece listeler ve markdown bozulmaz)
   const lines = trimmed.split("\n");
