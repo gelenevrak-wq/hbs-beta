@@ -1,6 +1,7 @@
 "use client";
 
 import { getLocalizedField, translateAllFields } from "@/lib/translations";
+import { translateProductField } from "@/lib/i18n/dynamicContent";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -330,7 +331,14 @@ const translations = {
     footwearModel: "Seri / Koleksiyon",
     groceryModel: "Özellik / Çeşit",
     noWarehouse: "Deposuz",
-    hiddenLabel: "Gizli"
+    hiddenLabel: "Gizli",
+    showcaseOpen: "👁️ Vitrinde Açık",
+    showcaseHidden: "🙈 Vitrinde Gizli",
+    videoLinkAdded: "🎥 Video tanıtım linki eklendi",
+    definedVariants: "📦 Tanımlı Varyantlar",
+    quoteLabel: "Teklif Al",
+    stockText: "Stok",
+    offerText: "Teklif"
   },
   en: {
     header: "HBS Product & Stock Catalog",
@@ -415,7 +423,14 @@ const translations = {
     footwearModel: "Series / Collection",
     groceryModel: "Feature / Variant",
     noWarehouse: "No Warehouse",
-    hiddenLabel: "Hidden"
+    hiddenLabel: "Hidden",
+    showcaseOpen: "👁️ Showcase Open",
+    showcaseHidden: "🙈 Showcase Hidden",
+    videoLinkAdded: "🎥 Video presentation link added",
+    definedVariants: "📦 Defined Variants",
+    quoteLabel: "Get Quote",
+    stockText: "Stock",
+    offerText: "Quote"
   },
   de: {
     header: "HBS Produkt- & Lagerkatalog",
@@ -500,7 +515,14 @@ const translations = {
     footwearModel: "Serie / Kollektion",
     groceryModel: "Eigenschaft / Variante",
     noWarehouse: "Kein Lager",
-    hiddenLabel: "Versteckt"
+    hiddenLabel: "Versteckt",
+    showcaseOpen: "👁️ Im Schaufenster",
+    showcaseHidden: "🙈 Versteckt",
+    videoLinkAdded: "🎥 Video-Link hinzugefügt",
+    definedVariants: "📦 Definierte Varianten",
+    quoteLabel: "Angebot anfordern",
+    stockText: "Bestand",
+    offerText: "Angebot"
   },
   ru: {
     header: "Каталог товаров и запасов HBS",
@@ -585,7 +607,14 @@ const translations = {
     footwearModel: "Серия / Коллекция",
     groceryModel: "Характеристика / Вариант",
     noWarehouse: "Нет склада",
-    hiddenLabel: "Скрыто"
+    hiddenLabel: "Скрыто",
+    showcaseOpen: "👁️ На витрине",
+    showcaseHidden: "🙈 Скрыто",
+    videoLinkAdded: "🎥 Ссылка на видео добавлена",
+    definedVariants: "📦 Варианты",
+    quoteLabel: "Запросить цену",
+    stockText: "Запас",
+    offerText: "Запрос"
   },
   ka: {
     header: "HBS პროდუქტების და მარაგების კატალოგი",
@@ -670,7 +699,14 @@ const translations = {
     footwearModel: "სერია / კოლექცია",
     groceryModel: "თვისება / ვარიანტი",
     noWarehouse: "საწყობის გარეშე",
-    hiddenLabel: "ფარული"
+    hiddenLabel: "ფარული",
+    showcaseOpen: "👁️ ვიტრინაშია",
+    showcaseHidden: "🙈 დამალულია",
+    videoLinkAdded: "🎥 ვიდეო ლინკი დამატებულია",
+    definedVariants: "📦 ვარიანტები",
+    quoteLabel: "ფასის მოთხოვნა",
+    stockText: "მარაგი",
+    offerText: "ფასი"
   }
 };
 
@@ -3838,7 +3874,7 @@ export default function ProductsPage() {
                     href="/dashboard/warehouses"
                     className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-50 border border-indigo-150 text-[10px] font-black text-indigo-750 hover:bg-indigo-100 transition active:scale-95 select-none"
                   >
-                    <span>🏪</span> Depoları Yönet
+                    <span>🏪</span> {t.manageWarehouses}
                   </Link>
                 </div>
                 {filteredProducts.length > 0 && (
@@ -3938,7 +3974,7 @@ export default function ProductsPage() {
                           checked={selectedProductIds.includes(p.id)}
                           onChange={() => toggleSelectProduct(p.id)}
                           className="h-4 w-4 rounded border-slate-350 text-blue-650 cursor-pointer shrink-0" id="id-page-h-4-w-4-rounded-border-slate-350-text-blue-650-cursor-pointer-shrink-0-478" aria-label="H 4 w 4 rounded border slate 350 text blue 650 cursor pointer shrink 0" />
-                        <h3 className="font-black text-slate-800 truncate">{getLocalizedField(p.name, language || "tr")}</h3>
+                        <h3 className="font-black text-slate-800 truncate">{translateProductField(p.name, 'name', activeLang)}</h3>
                       </div>
                       {p.dynamicPricingEnabled && (
                         <span className="rounded-full px-2 py-0.5 text-[9px] font-extrabold bg-blue-600 text-white animate-pulse shrink-0 border border-blue-700">
@@ -3956,7 +3992,7 @@ export default function ProductsPage() {
 
                     <div className="flex items-center gap-3">
                       <div className="flex-1 flex flex-wrap gap-1.5 text-[10px] text-slate-500 font-semibold">
-                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📁 {getLocalizedField(p.category, activeLang)}</span>
+                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📁 {translateProductField(p.category, 'category', activeLang)}</span>
                         <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-mono">🏷️ SKU: {p.sku || "-"}</span>
                         <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-mono">🧬 {t.barcode}: {p.barcode || "-"}</span>
                         <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📍 {p.warehouse || t.noWarehouse} · {p.shelf || um.shelfUnassigned}</span>
@@ -3966,7 +4002,7 @@ export default function ProductsPage() {
 
                       <div className="w-16 h-16 rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
                         {p.imageUrl ? (
-                          <img src={p.imageUrl} alt={getLocalizedField(p.name, language || "tr")} className="w-full h-full object-cover" />
+                          <img src={p.imageUrl} alt={translateProductField(p.name, 'name', activeLang)} className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-xl text-slate-400">📦</span>
                         )}
@@ -3975,19 +4011,19 @@ export default function ProductsPage() {
 
                     {p.videoUrl && (
                       <div className="text-[10px] text-blue-600 font-bold">
-                        🎥 Video tanıtım linki eklendi
+                        {t.videoLinkAdded || "🎥 Video presentation link added"}
                       </div>
                     )}
 
                     {p.variants && p.variants.length > 0 && (
                       <div className="mt-2 border-t border-slate-200/60 pt-1.5 space-y-1">
                         <span className="font-black text-[9px] text-blue-600 uppercase tracking-wide">
-                          📦 Tanımlı Varyantlar ({p.variants.length})
+                          {t.definedVariants || "📦 Defined Variants"} ({p.variants.length})
                         </span>
                         <div className="flex flex-wrap gap-1">
                           {p.variants.map((v) => (
                             <span key={v.id} className="rounded bg-white border border-slate-200 px-1 py-0.5 text-[8px] font-bold text-slate-600">
-                              {v.name} ({v.salePrice ? `${v.salePrice} ${p.currency}` : "Teklif"}) - Stok: {v.quantity || "0"}
+                              {v.name} ({v.salePrice ? `${v.salePrice} ${p.currency}` : (t.offerText || "Quote")}) - {t.stockText || "Stock"}: {v.quantity || "0"}
                             </span>
                           ))}
                         </div>
@@ -4001,9 +4037,9 @@ export default function ProductsPage() {
                         type="button"
                         onClick={() => toggleVisibility(p.id)}
                         className={`rounded-lg px-2.5 py-1.5 text-[10px] font-black border transition flex items-center gap-1 cursor-pointer select-none active:scale-95 ${p.visibility === "visible" ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100" : "bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100"}`}
-                        title="Vitrinde Gösterimi Aç/Kapat"
+                        title={activeLang === "en" ? "Toggle Showcase Visibility" : "Vitrinde Gösterimi Aç/Kapat"}
                       >
-                        <span>{p.visibility === "visible" ? "👁️ Vitrinde Açık" : "🙈 Vitrinde Gizli"}</span>
+                        <span>{p.visibility === "visible" ? t.showcaseOpen : t.showcaseHidden}</span>
                       </button>
 
                       {/* Right: Edit & Delete actions */}
@@ -4016,9 +4052,9 @@ export default function ProductsPage() {
                             setActivePrintTab('card');
                           }}
                           className="rounded-lg bg-slate-50 border border-slate-250 text-slate-700 hover:bg-slate-100 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
-                          title="Etiket & Barkod Yazdır"
+                          title={t.printLabelBtn}
                         >
-                          🖨️ Yazdır
+                          {t.printLabelBtn}
                         </button>
                         <button
                           type="button"
@@ -4030,33 +4066,33 @@ export default function ProductsPage() {
                             setIsTransferModalOpen(true);
                           }}
                           className="rounded-lg bg-indigo-50 border border-indigo-200/60 text-indigo-700 hover:bg-indigo-100 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
-                          title="Depolar Arası Stok Sevk/Transfer Et"
+                          title={t.transferBtn}
                         >
-                          🔄 Sevk
+                          {t.transferBtn}
                         </button>
                         <button
                           type="button"
                           onClick={() => startEditProduct(p)}
                           className="rounded-lg bg-blue-50 border border-blue-200/60 text-blue-700 hover:bg-blue-100 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
-                          title="Ürünü Düzenle"
+                          title={t.editProduct || t.editBtn}
                         >
-                          ✏️ Düzenle
+                          {t.editBtn}
                         </button>
                         <button
                           type="button"
                           onClick={() => duplicateProduct(p)}
                           className="rounded-lg bg-emerald-50 border border-emerald-200/60 text-emerald-700 hover:bg-emerald-100 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
-                          title="Kopyasını Üret (Çoğalt)"
+                          title={t.duplicateBtn}
                         >
-                          👥 Çoğalt
+                          {t.duplicateBtn}
                         </button>
                         <button
                           type="button"
-                          onClick={() => deleteProduct(p.id, getLocalizedField(p.name, language || "tr"), p.sku)}
+                          onClick={() => deleteProduct(p.id, translateProductField(p.name, 'name', activeLang), p.sku)}
                           className="rounded-lg bg-rose-50 border border-rose-200/60 text-rose-600 hover:bg-rose-100 hover:text-rose-700 transition px-2.5 py-1 text-[10px] font-bold cursor-pointer active:scale-95 flex items-center gap-0.5"
-                          title="Ürünü Sil"
+                          title={t.deleteBtn}
                         >
-                          🗑️ Sil
+                          {t.deleteBtn}
                         </button>
                       </div>
                     </div>
@@ -4849,7 +4885,7 @@ export default function ProductsPage() {
                           products.filter(p => p.shelf && p.shelf.toLowerCase() === terminalScannedShelf.toLowerCase()).map(p => (
                             <div key={p.id} className="bg-[#0b1122] border border-slate-800/80 rounded-xl p-2 flex justify-between items-center text-xs">
                               <div className="truncate pr-2">
-                                <span className="font-bold text-slate-200 block truncate">{getLocalizedField(p.name, language || "tr")}</span>
+                                <span className="font-bold text-slate-200 block truncate">{translateProductField(p.name, 'name', activeLang)}</span>
                                 <span className="text-[9px] text-slate-900 font-extrabold font-mono">SKU: {p.sku || "—"}</span>
                               </div>
                               <div className="flex items-center gap-1.5 shrink-0">
