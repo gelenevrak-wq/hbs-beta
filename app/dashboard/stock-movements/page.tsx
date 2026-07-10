@@ -112,7 +112,7 @@ function movementBadgeClass(type: MovementType) {
 
 const translations = {
   tr: {
-    createMovementHeader: "Stok İşlemi Oluştur",
+    createMovementHeader: "Stok Giriş & Çıkışları",
     scanPlaceholder: "Okuyucu ile okutun veya elle yazın",
     movementTypeLabel: "İşlem Türü",
     stockIn: "Stok Girişi",
@@ -159,7 +159,7 @@ const translations = {
     navHome: "Ana Sayfa"
   },
   en: {
-    createMovementHeader: "Create Stock Transaction",
+    createMovementHeader: "Stock In & Out Transactions",
     scanPlaceholder: "Scan with reader or type manually",
     movementTypeLabel: "Transaction Type",
     stockIn: "Stock In",
@@ -206,7 +206,7 @@ const translations = {
     navHome: "Homepage"
   },
   de: {
-    createMovementHeader: "Lagerbewegung erstellen",
+    createMovementHeader: "Bestandsein- & Ausgänge",
     scanPlaceholder: "Mit Lesegerät scannen oder manuell eingeben",
     movementTypeLabel: "Transaktionsart",
     stockIn: "Wareneingang",
@@ -253,7 +253,7 @@ const translations = {
     navHome: "Startseite"
   },
   ru: {
-    createMovementHeader: "Создать складскую операцию",
+    createMovementHeader: "Приход & Расход Запасов",
     scanPlaceholder: "Отсканируйте сканером или введите вручную",
     movementTypeLabel: "Тип операции",
     stockIn: "Поступление товара",
@@ -300,7 +300,7 @@ const translations = {
     navHome: "Главная страница"
   },
   ka: {
-    createMovementHeader: "მარაგის ოპერაციის შექმნა",
+    createMovementHeader: "მარაგის მიღება & გაცემა",
     scanPlaceholder: "დაასკანირეთ მკითხველით ან შეიყვანეთ ხელით",
     movementTypeLabel: "ოპერაციის ტიპი",
     stockIn: "მარაგის მიღება",
@@ -1024,64 +1024,45 @@ export default function StockMovementsPage() {
           </div>
         </header>
 
-        <section className="mb-3 rounded-2xl border border-slate-200/50 bg-white p-4 shadow-sm text-slate-850">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <p className="text-[9px] font-black uppercase tracking-[0.18em] text-indigo-600">
-                {language === "en" ? "STOCK IN / OUT" : language === "de" ? "BESTANDSEINGANG / AUSHANG" : language === "ru" ? "ПРИХОД / РАСХОД" : language === "ka" ? "მარაგის მიღება / გაცემა" : "STOK GİRİŞ / ÇIKIŞ"}
-              </p>
-
-              <h1 className="mt-1 text-2xl font-black text-slate-900">
-                {t.title}
-              </h1>
-
-              <p className="mt-1 leading-relaxed text-slate-550 text-xs max-w-2xl">
-                {t.desc}
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-3 max-w-sm">
-              <h2 className="text-xs font-black text-blue-900 flex items-center gap-1.5">
-                <span>🔌</span> {t.barcodeCompatibilityTitle}
-              </h2>
-              <p className="mt-1 text-[10px] leading-relaxed text-blue-700 font-semibold">
-                {t.barcodeCompatibility}
-              </p>
-            </div>
-          </div>
-        </section>
-
         {message && (
           <div className="mb-3 rounded-xl border border-blue-100 bg-blue-50/40 p-3.5 text-xs leading-relaxed text-blue-800 font-semibold shadow-sm">
             {message}
           </div>
         )}
 
-        <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-2xl border border-slate-200/50 bg-white p-4 shadow-sm">
-            <h2 className="text-lg font-black text-slate-900">{t.createMovementHeader}</h2>
+        <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="rounded-3xl border border-indigo-150 bg-gradient-to-br from-indigo-50/30 via-indigo-50/20 to-indigo-100/10 p-5 shadow-md space-y-4">
+            <div className="pb-3 border-b border-indigo-100/50">
+              <h2 className="text-xl font-black text-indigo-950 flex items-center gap-2">
+                <span>🔄</span> {t.createMovementHeader}
+              </h2>
+              <p className="text-[10px] text-slate-500 font-semibold mt-1">
+                {t.desc}
+              </p>
+            </div>
 
-            <div className="mt-4 grid gap-3.5">
-              <label className="grid gap-1.5 relative">
-                <span className="text-[10px] font-black text-slate-650 uppercase tracking-wider">
+            <div className="grid gap-3.5">
+              <label className="grid gap-1.5">
+                <span className="text-[10px] font-black text-indigo-900/80 uppercase tracking-wider">
                   {t.barcodePlaceholder}
                 </span>
-                <div className="relative">
+                <div className="flex gap-2">
                   <input
                     value={codeInput}
                     onChange={(event) => setCodeInput(event.target.value)}
                     onKeyDown={handleCodeKeyDown}
                     placeholder={t.scanPlaceholder}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-3.5 pr-10 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
+                    className="flex-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:border-indigo-500 transition shadow-inner" 
                     aria-label="Product Scan Code Input" 
                   />
                   <button
                     type="button"
                     onClick={startCamera}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-200/50 transition active:scale-90"
+                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-extrabold text-xs transition active:scale-95 flex items-center gap-1.5 shadow-md shadow-indigo-600/10 cursor-pointer"
                     title={language === "tr" ? "Kamera ile Tara" : "Scan with Camera"}
                   >
-                    📷
+                    <span>📷</span>
+                    <span>{language === "tr" ? "Kamera ile Okut" : "Scan with Camera"}</span>
                   </button>
                 </div>
               </label>
