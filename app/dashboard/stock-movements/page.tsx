@@ -38,7 +38,6 @@ type StockMovement = {
 };
 
 const demoProducts: Product[] = [];
-
 const initialMovements: StockMovement[] = [];
 
 function movementTypeText(type: MovementType, lang: string) {
@@ -111,7 +110,6 @@ function movementBadgeClass(type: MovementType) {
   }
 }
 
-// Translations Dictionary
 const translations = {
   tr: {
     createMovementHeader: "Stok İşlemi Oluştur",
@@ -125,12 +123,12 @@ const translations = {
     transfer: "Depo Transferi",
     manualAdjustment: "Manuel Düzeltme",
     qtyPlaceholder: "Örn: 5",
-    descPlaceholder: "İşlem açıklaması, tedarikçi, müşteri veya düzeltme nedeni",
+    descPlaceholder: "İşlem açıklaması, tedarikçi veya müşteri",
     searchPlaceholder: "Ürün, kod, depo, raf veya not ara",
     title: "Depo ve Stok Hareketleri",
-    desc: "Mağaza ürünlerinde stok girişi, satış çıkışı, iade, fire, depo transferi ve manuel düzeltme işlemlerini yönetin. Barkod, QR, SKU veya OEM kodu ile ürün hızlıca bulunabilir.",
-    barcodeCompatibility: "Harici USB/Bluetooth barkod okuyucular genellikle klavye gibi çalışır. Barkod alanı aktifken kodu yazar ve Enter gönderir. Bu ekran bu mantığa uygun tasarlanmıştır.",
-    barcodeCompatibilityTitle: "Barkod okuyucu uyumu",
+    desc: "Ürünlerin stok girişi, satış çıkışı, iade, fire, depo transferi ve manuel düzeltme işlemlerini yönetin.",
+    barcodeCompatibilityTitle: "Barkod Uyumu",
+    barcodeCompatibility: "Barkod alanında kodu yazar ve enter gönderir. Bu ekran bu mantığa uygun tasarlanmıştır.",
     findProductBtn: "Ürünü Bul",
     barcodeLabel: "Barkod",
     skuLabel: "SKU",
@@ -143,13 +141,11 @@ const translations = {
     noteLabel: "Not",
     saveBtn: "Stok İşlemini Kaydet",
     movementsHeader: "Stok Hareketleri",
-    noMovementFound: "Bu aramaya uygun stok hareketi bulunamadı.",
-    realDataConn: "Gerçek veri bağlantısı",
-    realDataConnDesc: "Bu ekran şimdilik demo ürünlerle çalışır. Veritabanı bağlandığında stok hareketleri ürün kaydına, depo konumuna, kullanıcıya, siparişe ve cari hesaba bağlanacaktır.",
+    noMovementFound: "Uygun stok hareketi bulunamadı.",
     biometricAuth: "Biyometrik Yetkilendirme",
     barcodePlaceholder: "Barkod / QR / SKU / OEM / Ürün Adı",
     errEmptyCode: "Lütfen barkod, SKU, OEM kodu veya ürün adı girin.",
-    errProductNotFound: "Bu kodla eşleşen ürün bulunamadı. Gerçek sistemde buradan yeni ürün kaydı başlatılabilir.",
+    errProductNotFound: "Bu kodla eşleşen ürün bulunamadı.",
     msgProductFound: "{name} bulundu. Stok işlemi yapılabilir.",
     errEmptyProduct: "Önce ürün seçin veya barkod/SKU/OEM kodu ile ürün bulun.",
     errInvalidQty: "Geçerli bir miktar girin.",
@@ -177,9 +173,9 @@ const translations = {
     descPlaceholder: "Transaction description, supplier, customer or reason",
     searchPlaceholder: "Search product, code, warehouse, shelf or note",
     title: "Warehouse & Stock Movements",
-    desc: "Manage stock in, sales out, returns, waste, warehouse transfer and manual adjustments on store products. Search products by barcode, QR, SKU, or OEM codes.",
-    barcodeCompatibility: "External USB/Bluetooth barcode scanners usually act like keyboards. They type the code and send Enter when the barcode field is active. This screen is designed accordingly.",
+    desc: "Manage stock in, sales out, returns, waste, warehouse transfer and manual adjustments on store products.",
     barcodeCompatibilityTitle: "Barcode Scanner Compatibility",
+    barcodeCompatibility: "External scanners act like keyboards, typing the code and sending Enter. This page supports this sequence.",
     findProductBtn: "Find Product",
     barcodeLabel: "Barcode",
     skuLabel: "SKU",
@@ -193,12 +189,10 @@ const translations = {
     saveBtn: "Save Stock Transaction",
     movementsHeader: "Stock Movements",
     noMovementFound: "No stock movements found matching this search.",
-    realDataConn: "Real Data Connection",
-    realDataConnDesc: "This screen currently operates with demo products. Once connected to database, stock movements will link to product records, warehouse locations, users, orders and current accounts.",
     biometricAuth: "Biometric Authorization",
     barcodePlaceholder: "Barcode / QR / SKU / OEM / Product Name",
     errEmptyCode: "Please enter barcode, SKU, OEM code or product name.",
-    errProductNotFound: "No product matching this code found. A new product record can be initiated here in the real system.",
+    errProductNotFound: "No product matching this code found.",
     msgProductFound: "{name} found. Stock operation can be performed.",
     errEmptyProduct: "Select a product first or search using barcode/SKU/OEM.",
     errInvalidQty: "Please enter a valid quantity.",
@@ -226,9 +220,9 @@ const translations = {
     descPlaceholder: "Transaktionsbeschreibung, Lieferant, Kunde oder Grund",
     searchPlaceholder: "Produkt, Code, Lager, Regal oder Notiz suchen",
     title: "Lager- & Bestandsbewegungen",
-    desc: "Verwalten Sie Wareneingänge, Verkäufe, Retouren, Ausschuss, Lagerübertragungen und manuelle Anpassungen für Ladenprodukte. Suchen Sie Produkte nach Barcode, QR, SKU oder OEM.",
-    barcodeCompatibility: "Externe USB/Bluetooth-Barcodescanner verhalten sich meist wie Tastaturen. Sie schreiben den Code und senden Enter, wenn das Barcodefeld aktiv ist. Dieser Bildschirm ist entsprechend konzipiert.",
+    desc: "Verwalten Sie Wareneingände, Verkäufe, Retouren, Ausschuss, Lagerübertragungen und manuelle Anpassungen.",
     barcodeCompatibilityTitle: "Barcodescanner-Kompatibilität",
+    barcodeCompatibility: "Scanner schreiben den Code und senden Enter, wenn das Feld aktiv ist.",
     findProductBtn: "Produkt finden",
     barcodeLabel: "Barcode",
     skuLabel: "SKU",
@@ -241,13 +235,11 @@ const translations = {
     noteLabel: "Notiz",
     saveBtn: "Lagerbewegung speichern",
     movementsHeader: "Lagerbewegungen",
-    noMovementFound: "Keine Lagerbewegungen für diese Suche gefunden.",
-    realDataConn: "Echte Datenverbindung",
-    realDataConnDesc: "Dieser Bildschirm arbeitet derzeit mit Demoprodukten. Sobald die Datenbank verbunden ist, werden Bestandsbewegungen mit Produktakten, Lagerorten, Benutzern, Bestellungen und laufenden Konten verknüpft.",
+    noMovementFound: "Keine Lagerbewegungen gefunden.",
     biometricAuth: "Biometrische Autorisierung",
     barcodePlaceholder: "Barcode / QR / SKU / OEM / Produktname",
     errEmptyCode: "Bitte geben Sie einen Barcode, eine SKU, einen OEM-Code oder einen Produktnamen ein.",
-    errProductNotFound: "Kein Produkt mit diesem Code gefunden. Im echten System kann hier ein neuer Produktdatensatz angelegt werden.",
+    errProductNotFound: "Kein Produkt mit diesem Code gefunden.",
     msgProductFound: "{name} gefunden. Bestandsbuchung möglich.",
     errEmptyProduct: "Wählen Sie zuerst ein Produkt aus oder suchen Sie per Barcode/SKU/OEM.",
     errInvalidQty: "Bitte geben Sie eine gültige Menge ein.",
@@ -275,9 +267,9 @@ const translations = {
     descPlaceholder: "Описание операции, поставщик, клиент или причина",
     searchPlaceholder: "Поиск товара, кода, склада, полки или примечания",
     title: "Движение запасов",
-    desc: "Управляйте приходами, расходами, продажами, возвратами, браком, межскладскими переводами и ручными корректировками товаров. Быстрый поиск по штрихкоду, QR, SKU или OEM.",
-    barcodeCompatibility: "Внешние USB/Bluetooth-сканеры штрихкодов обычно работают как клавиатура. Они вводят код и отправляют Enter, когда поле штрихкода активно. Экран разработан с учетом этого.",
-    barcodeCompatibilityTitle: "Совместимость со сканером штрихкодов",
+    desc: "Управляйте приходами, расходами, продажами, возвратами, браком, межскладскими переводами и ручными корректировками.",
+    barcodeCompatibilityTitle: "Совместимость со сканером",
+    barcodeCompatibility: "Сканеры вводят код и отправляют Enter в активном поле.",
     findProductBtn: "Найти товар",
     barcodeLabel: "Штрихкод",
     skuLabel: "SKU",
@@ -290,14 +282,12 @@ const translations = {
     noteLabel: "Примечание",
     saveBtn: "Сохранить операцию",
     movementsHeader: "Складские операции",
-    noMovementFound: "Складских операций по этому запросу не найдено.",
-    realDataConn: "Реальное подключение данных",
-    realDataConnDesc: "Этот экран работает с демо-товарами. После подключения БД движения запасов будут привязаны к записям товаров, складам, пользователям, заказам и счетам.",
+    noMovementFound: "Складских операций не найдено.",
     biometricAuth: "Биометрическая авторизация",
     barcodePlaceholder: "Штрихкод / QR / SKU / OEM / Название товара",
     errEmptyCode: "Пожалуйста, введите штрихкод, SKU, OEM-код или название товара.",
-    errProductNotFound: "Товар с таким кодом не найден. В реальной системе здесь можно создать новый товар.",
-    msgProductFound: "Товар {name} найден. Можно выполнить складскую операцию.",
+    errProductNotFound: "Товар с таким кодом не найден.",
+    msgProductFound: "Товар {name} найден. Можно выполнить операцию.",
     errEmptyProduct: "Сначала выберите товар или найдите по штрихкоду/SKU/OEM.",
     errInvalidQty: "Пожалуйста, введите корректное количество.",
     errNegStock: "Количество запаса не может быть отрицательным. Операция отменена.",
@@ -324,9 +314,9 @@ const translations = {
     descPlaceholder: "ოპერაციის აღწერა, მომწოდებელი, კლიენტი ან მიზეზი",
     searchPlaceholder: "ძებნა პროდუქტის, კოდის, საწყობის, თაროს ან შენიშვნის მიხედვით",
     title: "საწყობისა და მარაგების მოძრაობები",
-    desc: "მართეთ მარაგის მიღება, გაყიდვა, დაბრუნება, წუნი, შიდა გადაცემა და მანუალური კორექტირება. სწრაფი ძებნა შტრიხკოდით, QR, SKU ან OEM კოდით.",
-    barcodeCompatibility: "გარე USB/Bluetooth შტრიხკოდების სკანერები ჩვეულებრივ მუშაობენ როგორც კლავიატურა. ისინი წერენ კოდს და აგზავნიან Enter-ს, როდესაც კოდის ველი აქტიურია. ეს ეკრანი შექმნილია ამ პრინციპით.",
-    barcodeCompatibilityTitle: "შტრიხკოდების სკანერის თავსებადობა",
+    desc: "მართეთ მარაგის მიღება, გაყიდვა, დაბრუნება, წუნი, შიდა გადაცემა და მანუალური კორექტირება.",
+    barcodeCompatibilityTitle: "შტრიხკოდების სკანერი",
+    barcodeCompatibility: "სკანერები წერენ კოდს და აგზავნიან Enter-ს, როდესაც კოდის ველი აქტიურია.",
     findProductBtn: "პროდუქტის მოძებნა",
     barcodeLabel: "შტრიხკოდი",
     skuLabel: "SKU",
@@ -339,19 +329,17 @@ const translations = {
     noteLabel: "შენიშვნა",
     saveBtn: "მარაგის ოპერაციის შენახვა",
     movementsHeader: "მარაგის მოძრაობები",
-    noMovementFound: "ამ ძებნის შესაბამისი მარაგის მოძრაობა ვერ მოიძებნა.",
-    realDataConn: "რეალური მონაცემების კავშირი",
-    realDataConnDesc: "ეს ეკრანი ამჟამად მუშაობს დემო პროდუქტებით. მონაცემთა ბაზის დაკავშირების შემდეგ, მოძრაობები მიებმება პროდუქტებს, საწყობებს, მომხმარებლებს, შეკვეთებსა და ანგარიშებს.",
+    noMovementFound: "მარაგის მოძრაობა ვერ მოიძებნა.",
     biometricAuth: "ბიომეტრიული ავტორიზაცია",
-    barcodePlaceholder: "შტრიხკოდი / QR / SKU / OEM / პროდუქტის სახელი",
+    barcodePlaceholder: "შტრიხკოდი / QR / SKU / OEM / პროდუქტი",
     errEmptyCode: "გთხოვთ შეიყვანოთ შტრიხკოდი, SKU, OEM კოდი ან პროდუქტის სახელი.",
-    errProductNotFound: "პროდუქტი ამ კოდით ვერ მოიძებნა. რეალურ სისტემაში აქედან შესაძლებელია ახალი პროდუქტის რეგისტრაცია.",
-    msgProductFound: "{name} მოიძებნა. მარაგის ოპერაცია შესაძლებელია.",
+    errProductNotFound: "პროდუქტი ამ კოდით ვერ მოიძებნა.",
+    msgProductFound: "{name} მოიძებნა. ოპერაცია შესაძლებელია.",
     errEmptyProduct: "ჯერ აირჩიეთ პროდუქტი ან მოძებნეთ შტრიხკოდით/SKU/OEM კოდით.",
     errInvalidQty: "გთხოვთ შეიყვანოთ რაოდენობის ვალიდური მნიშვნელობა.",
     errNegStock: "მარაგის რაოდენობა ვერ გახდება უარყოფითი. ოპერაცია გაუქმდა.",
     msgSaveSuccess: "მარაგის ოპერაცია შენახულია {name}-ისთვის. ახალი მარაგი: {stock}",
-    biometricRequired: "საწყობის მფლობელის მიერ თანამშრომლებისთვის მოთხოვნილია ბიომეტრიული დადასტურება. გთხოვთ გაიაროთ Touch ID / Face ID ავტორიზაცია.",
+    biometricRequired: "საწყობის მფლობელის მიერ მოთხოვნილია ბიომეტრიული დადასტურება. გთხოვთ გაიაროთ Touch ID / Face ID ავტორიზაცია.",
     biometricSuccess: "ბიომეტრიული ავტორიზაცია წარმატებულია! ოპერაცია ინახება...",
     codeLabel: "კოდი",
     navProducts: "პროდუქტების მართვა",
@@ -374,6 +362,17 @@ export default function StockMovementsPage() {
   const [message, setMessage] = useState("");
   const [language, setLanguage] = useState("tr");
   const [storeSlug, setStoreSlug] = useState("obdtr");
+  const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
+  const [productsLoaded, setProductsLoaded] = useState(false);
+  const [isVerifyingBiometric, setIsVerifyingBiometric] = useState(false);
+  const [biometricMessage, setBiometricMessage] = useState("");
+  const [showTransferAnim, setShowTransferAnim] = useState(false);
+  const [transferDetails, setTransferDetails] = useState({
+    productName: "",
+    sourceWh: "",
+    targetWh: "",
+    qty: 0
+  });
 
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
@@ -383,13 +382,8 @@ export default function StockMovementsPage() {
   }, []);
 
   const t = translations[language as keyof typeof translations] || translations.tr;
-  const [availableWarehouses, setAvailableWarehouses] = useState<any[]>([]);
-  const [productsLoaded, setProductsLoaded] = useState(false);
-  const [isVerifyingBiometric, setIsVerifyingBiometric] = useState(false);
-  const [biometricMessage, setBiometricMessage] = useState("");
 
   useEffect(() => {
-    // 1. Get current store slug
     let activeSlug = "obdtr";
     try {
       const currentUserStr = window.localStorage.getItem("hbs-current-user");
@@ -402,7 +396,6 @@ export default function StockMovementsPage() {
       }
     } catch (e) {}
 
-    // 2. Load warehouses map
     try {
       const registeredStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
       const myStore = registeredStores.find((s: any) => s.code === activeSlug);
@@ -419,7 +412,6 @@ export default function StockMovementsPage() {
       console.error("Error loading warehouse maps for stock movements", e);
     }
 
-    // 3. Load products (Supabase & fallback)
     const isSupabaseConfigured = 
       process.env.NEXT_PUBLIC_SUPABASE_URL && 
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
@@ -504,7 +496,6 @@ export default function StockMovementsPage() {
       loadLocalFallback();
     }
 
-    // 4. Load movements
     const savedMovements = window.localStorage.getItem(`hbs-store-stock-movements-${activeSlug}`);
     if (savedMovements) {
       try {
@@ -601,7 +592,6 @@ export default function StockMovementsPage() {
       return;
     }
 
-    // Biyometrik zorunluluk kontrolü
     let requireBiometric = false;
     try {
       const companySettingsStr = window.localStorage.getItem("hbs-company-settings");
@@ -609,7 +599,6 @@ export default function StockMovementsPage() {
       if (companySettingsStr && currentUserStr) {
         const settings = JSON.parse(companySettingsStr);
         const user = JSON.parse(currentUserStr);
-        // Eğer elemanlar için biyometrik girişi zorunlu kılındıysa ve giriş yapan kişi Owner/Superadmin değilse
         if (settings.requireEmployeeBiometrics && user.role !== "owner" && user.role !== "superadmin") {
           requireBiometric = true;
         }
@@ -631,6 +620,10 @@ export default function StockMovementsPage() {
 
       if (movementType === "manual_adjustment") {
         newStock = parsedQuantity;
+      }
+
+      if (movementType === "transfer") {
+        newStock -= parsedQuantity;
       }
 
       if (newStock < 0) {
@@ -667,7 +660,6 @@ export default function StockMovementsPage() {
 
       setMovements((currentMovements) => [movement, ...currentMovements]);
 
-      // Update quantity in hbs-store-products-${storeSlug} local storage
       try {
         const savedProducts = window.localStorage.getItem(`hbs-store-products-${storeSlug}`);
         if (savedProducts) {
@@ -691,7 +683,6 @@ export default function StockMovementsPage() {
         console.error("Error updating product quantity in localStorage", e);
       }
 
-      // Sync to database
       const isSupabaseConfigured = 
         process.env.NEXT_PUBLIC_SUPABASE_URL && 
         process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
@@ -717,6 +708,24 @@ export default function StockMovementsPage() {
       );
     };
 
+    const startSavingProcess = () => {
+      if (movementType === "transfer") {
+        setTransferDetails({
+          productName: getLocalizedField(selectedProduct.name, language),
+          sourceWh: selectedProduct.warehouse || (language === "en" ? "Source" : "Kaynak"),
+          targetWh: warehouse || (language === "en" ? "Destination" : "Hedef"),
+          qty: parsedQuantity
+        });
+        setShowTransferAnim(true);
+        setTimeout(() => {
+          setShowTransferAnim(false);
+          executeSave();
+        }, 2800);
+      } else {
+        executeSave();
+      }
+    };
+
     if (requireBiometric) {
       setIsVerifyingBiometric(true);
       setBiometricMessage(t.biometricRequired);
@@ -725,68 +734,67 @@ export default function StockMovementsPage() {
         setBiometricMessage(t.biometricSuccess);
         setTimeout(() => {
           setIsVerifyingBiometric(false);
-          executeSave();
+          startSavingProcess();
         }, 800);
       }, 1800);
     } else {
-      executeSave();
+      startSavingProcess();
     }
   }
 
   return (
-    <main className="min-h-screen bg-slate-50/50 px-6 py-8 text-slate-800">
+    <main className="min-h-screen bg-slate-50/50 p-2 sm:p-4 text-slate-850">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-8 flex items-center justify-between">
-          <Link href="/dashboard" className="text-2xl font-black tracking-wide text-slate-900">
+        <header className="mb-3 flex items-center justify-between">
+          <Link href="/dashboard" className="text-xl font-black tracking-wide text-slate-900">
             HBS
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/dashboard/products"
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
             >
               {t.navProducts}
             </Link>
 
             <Link
               href="/dashboard"
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
             >
               {t.navDashboard}
             </Link>
 
             <Link
               href="/"
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
             >
               {t.navHome}
             </Link>
           </div>
         </header>
 
-        <section className="mb-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8 text-slate-800">
-          <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+        <section className="mb-3 rounded-2xl border border-slate-200/50 bg-white p-4 shadow-sm text-slate-850">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">
+              <p className="text-[9px] font-black uppercase tracking-[0.18em] text-indigo-600">
                 {language === "en" ? "STOCK IN / OUT" : language === "de" ? "BESTANDSEINGANG / AUSHANG" : language === "ru" ? "ПРИХОД / РАСХОД" : language === "ka" ? "მარაგის მიღება / გაცემა" : "STOK GİRİŞ / ÇIKIŞ"}
               </p>
 
-              <h1 className="mt-4 text-3xl font-black sm:text-4xl text-slate-900">
+              <h1 className="mt-1 text-2xl font-black text-slate-900">
                 {t.title}
               </h1>
 
-              <p className="mt-4 max-w-3xl leading-relaxed text-slate-650 text-sm">
+              <p className="mt-1 leading-relaxed text-slate-550 text-xs max-w-2xl">
                 {t.desc}
               </p>
             </div>
 
-            <div className="rounded-3xl border border-blue-150 bg-blue-50/50 p-5">
-              <h2 className="text-sm font-black text-blue-900">
-                {t.barcodeCompatibilityTitle}
+            <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-3 max-w-sm">
+              <h2 className="text-xs font-black text-blue-900 flex items-center gap-1.5">
+                <span>🔌</span> {t.barcodeCompatibilityTitle}
               </h2>
-
-              <p className="mt-2.5 text-xs leading-relaxed text-blue-700 font-semibold">
+              <p className="mt-1 text-[10px] leading-relaxed text-blue-700 font-semibold">
                 {t.barcodeCompatibility}
               </p>
             </div>
@@ -794,18 +802,18 @@ export default function StockMovementsPage() {
         </section>
 
         {message && (
-          <div className="mb-6 rounded-3xl border border-blue-150 bg-blue-50/50 p-5 text-sm leading-relaxed text-blue-800 font-semibold shadow-sm">
+          <div className="mb-3 rounded-xl border border-blue-100 bg-blue-50/40 p-3.5 text-xs leading-relaxed text-blue-800 font-semibold shadow-sm">
             {message}
           </div>
         )}
 
-        <section className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-2xl font-black text-slate-900">{t.createMovementHeader}</h2>
+        <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="rounded-2xl border border-slate-200/50 bg-white p-4 shadow-sm">
+            <h2 className="text-lg font-black text-slate-900">{t.createMovementHeader}</h2>
 
-            <div className="mt-6 grid gap-5">
-              <label className="grid gap-2">
-                <span className="text-xs font-black text-slate-700 uppercase tracking-wider">
+            <div className="mt-4 grid gap-3.5">
+              <label className="grid gap-1.5">
+                <span className="text-[10px] font-black text-slate-650 uppercase tracking-wider">
                   {t.barcodePlaceholder}
                 </span>
                 <input
@@ -813,24 +821,26 @@ export default function StockMovementsPage() {
                   onChange={(event) => setCodeInput(event.target.value)}
                   onKeyDown={handleCodeKeyDown}
                   placeholder={t.scanPlaceholder}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-524" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
+                  aria-label="Product Scan Code Input" 
+                />
               </label>
 
               <button
                 type="button"
                 onClick={handleCodeSearch}
-                className="rounded-2xl bg-slate-900 hover:bg-slate-800 text-white px-6 py-4 font-black text-xs transition shadow-sm active:scale-98 cursor-pointer"
+                className="w-full rounded-xl bg-slate-900 hover:bg-slate-800 text-white py-3.5 font-black text-xs transition shadow-sm active:scale-98 cursor-pointer"
               >
                 {t.findProductBtn}
               </button>
 
               {selectedProduct && (
-                <div className="rounded-3xl border border-emerald-150 bg-emerald-50/50 p-5">
-                  <h3 className="text-base font-black text-emerald-900">
+                <div className="rounded-xl border border-emerald-100 bg-emerald-50/30 p-3.5">
+                  <h3 className="text-sm font-black text-emerald-900">
                     {getLocalizedField(selectedProduct.name, language)}
                   </h3>
 
-                  <div className="mt-3 grid gap-2 text-xs text-emerald-800 font-semibold">
+                  <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] text-emerald-800 font-semibold">
                     <p>
                       <span className="font-extrabold text-emerald-950">{t.barcodeLabel}:</span>{" "}
                       {selectedProduct.barcode}
@@ -847,7 +857,7 @@ export default function StockMovementsPage() {
                       <span className="font-extrabold text-emerald-950">{t.currentStockLabel}:</span>{" "}
                       {selectedProduct.currentStock}
                     </p>
-                    <p>
+                    <p className="col-span-2">
                       <span className="font-extrabold text-emerald-950">{t.warehouseShelfLabel}:</span>{" "}
                       {selectedProduct.warehouse} / {selectedProduct.shelf}
                     </p>
@@ -855,14 +865,14 @@ export default function StockMovementsPage() {
                 </div>
               )}
 
-              <label className="grid gap-2">
-                <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.movementTypeLabel}</span>
+              <label className="grid gap-1.5">
+                <span className="text-[10px] font-black text-slate-650 uppercase tracking-wider">{t.movementTypeLabel}</span>
                 <select
                   value={movementType}
                   onChange={(event) =>
                     setMovementType(event.target.value as MovementType)
                   }
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
                 >
                   <option value="stock_in">{t.stockIn}</option>
                   <option value="stock_out">{t.stockOut}</option>
@@ -874,19 +884,21 @@ export default function StockMovementsPage() {
                 </select>
               </label>
 
-              <div className="grid gap-5 md:grid-cols-3">
-                <label className="grid gap-2">
-                  <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.qtyLabel}</span>
+              <div className="grid gap-3 grid-cols-3">
+                <label className="grid gap-1.5">
+                  <span className="text-[10px] font-black text-slate-650 uppercase tracking-wider">{t.qtyLabel}</span>
                   <input
                     value={quantity}
                     onChange={(event) => setQuantity(event.target.value)}
                     type="number"
                     placeholder={t.qtyPlaceholder}
-                    className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-978" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
+                    aria-label="Stock Movement Quantity" 
+                  />
                 </label>
 
-                <label className="grid gap-2">
-                  <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.warehouseLabel}</span>
+                <label className="grid gap-1.5">
+                  <span className="text-[10px] font-black text-slate-650 uppercase tracking-wider">{t.warehouseLabel}</span>
                   {availableWarehouses.length > 0 ? (
                     <select
                       value={warehouse}
@@ -900,7 +912,7 @@ export default function StockMovementsPage() {
                           setShelf("");
                         }
                       }}
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
                     >
                       {availableWarehouses.map((wh) => (
                         <option key={wh.name} value={wh.name}>{wh.name}</option>
@@ -911,24 +923,26 @@ export default function StockMovementsPage() {
                       value={warehouse}
                       onChange={(event) => setWarehouse(event.target.value)}
                       placeholder={language === "en" ? "Main Warehouse" : language === "de" ? "Hauptlager" : language === "ru" ? "Основной склад" : language === "ka" ? "მთავარი საწყობი" : "Ana Depo"}
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-522" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
+                      aria-label="Warehouse Location" 
+                    />
                   )}
                 </label>
 
-                <label className="grid gap-2">
-                  <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.shelfLabel}</span>
+                <label className="grid gap-1.5">
+                  <span className="text-[10px] font-black text-slate-650 uppercase tracking-wider">{t.shelfLabel}</span>
                   {availableWarehouses.length > 0 ? (
                     <select
                       value={shelf}
                       onChange={(event) => setShelf(event.target.value)}
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 focus:bg-white focus:border-indigo-500 transition shadow-inner"
                     >
                       {(availableWarehouses.find(wh => wh.name === warehouse)?.shelves || []).map((sh: string) => (
                         <option key={sh} value={sh}>{sh}</option>
                       ))}
                       {(!availableWarehouses.find(wh => wh.name === warehouse)?.shelves || 
                         availableWarehouses.find(wh => wh.name === warehouse)?.shelves.length === 0) && (
-                        <option value="">{language === "en" ? "No Shelf Position" : language === "de" ? "Keine Regalposition" : language === "ru" ? "Нет положения полки" : language === "ka" ? "თაროს მდებარეობა არ არის" : "Raf Konumu Yok"}</option>
+                        <option value="">{language === "en" ? "No Shelf" : language === "de" ? "Kein Regal" : language === "ru" ? "Нет полки" : language === "ka" ? "თარო არ არის" : "Raf Yok"}</option>
                       )}
                     </select>
                   ) : (
@@ -936,102 +950,183 @@ export default function StockMovementsPage() {
                       value={shelf}
                       onChange={(event) => setShelf(event.target.value)}
                       placeholder="A-01"
-                      className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-808" aria-label="W full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
+                      aria-label="Shelf Location" 
+                    />
                   )}
                 </label>
               </div>
 
-              <label className="grid gap-2">
-                <span className="text-xs font-black text-slate-700 uppercase tracking-wider">{t.noteLabel}</span>
+              <label className="grid gap-1.5">
+                <span className="text-[10px] font-black text-slate-650 uppercase tracking-wider">{t.noteLabel}</span>
                 <textarea
                   value={note}
                   onChange={(event) => setNote(event.target.value)}
-                  rows={4}
+                  rows={2}
                   placeholder={t.descPlaceholder}
-                  className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner resize-none animate-fadeIn"
                 />
               </label>
 
               <button
                 type="button"
                 onClick={createMovement}
-                className="rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-4 font-black text-xs transition shadow-sm active:scale-98 cursor-pointer"
+                className="w-full rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 font-black text-xs transition shadow-sm active:scale-98 cursor-pointer"
               >
                 {t.saveBtn}
               </button>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-2xl font-black text-slate-900">{t.movementsHeader}</h2>
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-slate-200/50 bg-white p-4 shadow-sm">
+              <h2 className="text-lg font-black text-slate-900">{t.movementsHeader}</h2>
 
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={t.searchPlaceholder}
-                className="mt-5 w-full rounded-2xl border border-slate-200 bg-slate-50/50 px-4 py-3 outline-none text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" id="id-page-mt-5-w-full-rounded-2xl-border-border-white-10-bg-slate-950-px-4-py-3-outline-none-placeholder-text-slate-600-focus-border-white-627" aria-label="Mt 5 w full rounded 2xl border border white 10 bg slate 950 px 4 py 3 outline none placeholder text slate 600 focus border white" />
+                className="mt-3.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
+                aria-label="Search Movements Input" 
+              />
 
-              <div className="mt-5 grid gap-4">
+              <div className="mt-3.5 grid gap-3 max-h-[500px] overflow-y-auto pr-1">
                 {filteredMovements.map((movement) => (
                   <article
                     key={movement.id}
-                    className="rounded-3xl border border-slate-150 bg-slate-50/40 p-5 shadow-sm"
+                    className="rounded-2xl border border-slate-100 bg-slate-500/[0.02] p-3.5 shadow-sm hover:bg-slate-50 transition"
                   >
-                    <div className="mb-3 flex flex-wrap gap-2">
+                    <div className="mb-2 flex items-center justify-between gap-2">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-bold ${movementBadgeClass(
+                        className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${movementBadgeClass(
                           movement.movementType
                         )}`}
                       >
                         {movementTypeText(movement.movementType, language)}
                       </span>
 
-                      <span className="rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs text-slate-500 font-extrabold font-mono">
+                      <span className="text-[10px] text-slate-450 font-extrabold font-mono">
                         {movement.createdAt}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-black text-slate-900">
+                    <h3 className="text-sm font-black text-slate-900">
                       {getLocalizedField(movement.productName, language)}
                     </h3>
 
-                    <div className="mt-4 grid gap-2 text-sm text-slate-650 font-medium">
+                    <div className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-1 text-[11px] text-slate-650 font-semibold border-t border-slate-100/60 pt-2">
                       <p>
-                        <span className="font-extrabold text-slate-800">{t.codeLabel}:</span>{" "}
+                        <span className="font-extrabold text-slate-700">{t.codeLabel}:</span>{" "}
                         {movement.productCode}
                       </p>
 
                       <p>
-                        <span className="font-extrabold text-slate-800">{t.qtyLabel}:</span>{" "}
+                        <span className="font-extrabold text-slate-700">{t.qtyLabel}:</span>{" "}
                         {movement.quantity}
                       </p>
 
-                      <p>
-                        <span className="font-extrabold text-slate-800">{t.warehouseShelfLabel}:</span>{" "}
+                      <p className="col-span-2">
+                        <span className="font-extrabold text-slate-700">{t.warehouseShelfLabel}:</span>{" "}
                         {movement.warehouse} / {movement.shelf}
                       </p>
 
-                      <p>
-                        <span className="font-extrabold text-slate-800">{t.noteLabel}:</span>{" "}
-                        {movement.note || "-"}
-                      </p>
+                      {movement.note && (
+                        <p className="col-span-2 text-slate-550 italic mt-0.5 font-normal">
+                          💬 {movement.note}
+                        </p>
+                      )}
                     </div>
                   </article>
                 ))}
 
                 {filteredMovements.length === 0 && (
-                  <div className="rounded-3xl border border-slate-200 bg-slate-50/50 p-5 text-sm text-slate-500 text-center">
+                  <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-6 text-xs text-slate-500 text-center">
                     {t.noMovementFound}
                   </div>
                 )}
               </div>
             </div>
-
-
           </div>
         </section>
       </div>
+
+      {/* GORGEOUS WAREHOUSE TRANSFER ANIMATION OVERLAY */}
+      {showTransferAnim && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/90 p-4 backdrop-blur-md select-none text-white animate-fadeIn">
+          <style>{`
+            @keyframes transferLine {
+              0% { stroke-dashoffset: 24; }
+              100% { stroke-dashoffset: 0; }
+            }
+            @keyframes glideBox {
+              0% { left: 15%; transform: translateX(-50%) scale(1); }
+              10% { transform: translateX(-50%) scale(1.3) translateY(-10px); }
+              90% { transform: translateX(-50%) scale(1.3) translateY(-10px); }
+              100% { left: 85%; transform: translateX(-50%) scale(1); }
+            }
+            @keyframes ripple {
+              0% { transform: scale(0.8); opacity: 0.8; }
+              100% { transform: scale(2.5); opacity: 0; }
+            }
+            .animate-transferLine {
+              stroke-dasharray: 8, 4;
+              animation: transferLine 1.5s linear infinite;
+            }
+            .animate-glideBox {
+              animation: glideBox 2.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            }
+            .animate-ripple {
+              animation: ripple 1.6s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+            }
+          `}</style>
+
+          <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-2xl relative text-center">
+            <span className="text-[9px] font-black uppercase text-indigo-400 tracking-widest bg-indigo-950/50 border border-indigo-500/20 px-3 py-1 rounded-full">
+              {language === "en" ? "Live Stock Transfer" : language === "de" ? "Live-Lagerübertragung" : language === "ru" ? "Перевод запасов" : language === "ka" ? "მარაგის გადაცემა" : "Canlı Depo Transferi"}
+            </span>
+            <h3 className="text-base font-black mt-4 tracking-tight leading-snug">
+              {transferDetails.qty} x {transferDetails.productName}
+            </h3>
+            
+            <div className="relative h-28 my-5 flex items-center justify-between px-6">
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-12 pointer-events-none">
+                <svg className="w-full h-2" fill="none">
+                  <line x1="0" y1="1" x2="100%" y2="1" stroke="#4f46e5" strokeWidth="2.5" className="animate-transferLine" />
+                </svg>
+              </div>
+
+              <div className="z-10 flex flex-col items-center gap-1 relative w-16">
+                <div className="w-10 h-10 rounded-xl bg-indigo-950 border border-indigo-500/40 flex items-center justify-center text-lg shadow-lg">
+                  🏪
+                </div>
+                <span className="text-[9px] font-bold text-slate-400 truncate max-w-full text-center">
+                  {transferDetails.sourceWh}
+                </span>
+              </div>
+
+              <div className="absolute top-1/2 -translate-y-1/2 z-20 animate-glideBox flex flex-col items-center justify-center w-10 h-10">
+                <div className="text-2xl animate-bounce duration-700">
+                  📦
+                </div>
+              </div>
+
+              <div className="z-10 flex flex-col items-center gap-1 relative w-16">
+                <div className="absolute w-10 h-10 rounded-xl border border-indigo-500/30 animate-ripple pointer-events-none"></div>
+                <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-lg shadow-lg">
+                  🏬
+                </div>
+                <span className="text-[9px] font-bold text-slate-400 truncate max-w-full text-center">
+                  {transferDetails.targetWh}
+                </span>
+              </div>
+            </div>
+
+            <p className="text-[10px] text-slate-400 font-semibold leading-relaxed">
+              {language === "en" ? "Moving cargo and updating ledger entries..." : language === "de" ? "Fracht wird bewegt und Buchungen aktualisiert..." : language === "ru" ? "Перемещение груза и обновление данных..." : language === "ka" ? "ტვირთის გადატანა და მონაცემების განახლება..." : "Kargo taşınıyor ve kayıtlar işleniyor..."}
+            </p>
+          </div>
+        </div>
+      )}
 
       {isVerifyingBiometric && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-fadeIn">

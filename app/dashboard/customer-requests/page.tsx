@@ -154,53 +154,53 @@ export default function StoreCustomerRequestsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
-      <div className="mx-auto w-full max-w-7xl px-6 py-8">
-        <header className="mb-8 flex items-center justify-between">
-          <Link href="/" className="text-sm font-semibold tracking-wide text-white">
+    <main className="min-h-screen bg-slate-950 p-2 sm:p-4 text-white">
+      <div className="mx-auto max-w-7xl">
+        <header className="mb-3 flex items-center justify-between">
+          <Link href="/dashboard" className="text-xl font-black tracking-wide text-white">
             HBS
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/store/obdtr"
-              className="rounded-xl border border-slate-700 px-4 py-2 text-sm hover:bg-slate-900"
+              className="rounded-xl border border-slate-700 px-3 py-1.5 text-xs hover:bg-slate-900"
             >
               Mağaza Vitrini
             </Link>
 
             <Link
               href="/dashboard"
-              className="rounded-xl border border-slate-700 px-4 py-2 text-sm hover:bg-slate-900"
+              className="rounded-xl border border-slate-700 px-3 py-1.5 text-xs hover:bg-slate-900"
             >
               Dashboard
             </Link>
           </div>
         </header>
 
-        <section className="mb-6 rounded-3xl border border-slate-800 bg-slate-900/70 p-7 shadow-2xl">
-          <p className="mb-3 text-base font-bold uppercase tracking-[0.18em] text-blue-300">
+        <section className="mb-3 rounded-2xl border border-slate-800 bg-slate-900/40 p-4 shadow-xl">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-300">
             Mağaza Paneli
           </p>
 
-          <h1 className="text-3xl font-black tracking-tight md:text-4xl">
+          <h1 className="mt-1 text-2xl font-black tracking-tight">
             Müşteri Talepleri
           </h1>
 
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+          <p className="mt-2 max-w-3xl text-xs leading-relaxed text-slate-300">
             Mağaza vitrini üzerinden gelen ürün soruları, teklif talepleri,
             sipariş istekleri ve genel müşteri mesajları burada takip edilir.
           </p>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <aside className="rounded-3xl border border-slate-800 bg-slate-900/70 p-6">
-            <div className="mb-5">
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-blue-300">
+        <section className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <aside className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4">
+            <div className="mb-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-300">
                 Gelen Talepler
               </p>
 
-              <h2 className="mt-2 text-2xl font-black">
+              <h2 className="mt-1 text-xl font-black">
                 {filteredRequests.length} kayıt
               </h2>
             </div>

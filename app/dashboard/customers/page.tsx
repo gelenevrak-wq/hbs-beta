@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -214,49 +214,49 @@ export default function CustomersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-8 text-white">
+    <main className="min-h-screen bg-slate-950 p-2 sm:p-4 text-white">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-8 flex items-center justify-between">
-          <Link href="/dashboard" className="text-2xl font-black tracking-wide">
+        <header className="mb-3 flex items-center justify-between">
+          <Link href="/dashboard" className="text-xl font-black tracking-wide">
             HBS
           </Link>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/dashboard/customer-requests"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+              className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10"
             >
               Müşteri Talepleri
             </Link>
 
             <Link
               href="/dashboard/orders"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+              className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10"
             >
               Siparişler
             </Link>
 
             <Link
               href="/dashboard"
-              className="rounded-xl border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+              className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10"
             >
               Panel
             </Link>
           </div>
         </header>
 
-        <section className="mb-6 rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 shadow-2xl sm:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
+        <section className="mb-3 rounded-2xl border border-white/5 bg-white/[0.02] p-4 shadow-xl">
+          <div className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-200/80">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-200/80">
                 MÜŞTERİ İLİŞKİLERİ
               </p>
 
-              <h1 className="mt-4 text-4xl font-black sm:text-5xl">
+              <h1 className="mt-1 text-2xl font-black">
                 Mağaza Müşteri Yönetimi
               </h1>
 
-              <p className="mt-5 max-w-3xl leading-7 text-slate-300">
+              <p className="mt-2 max-w-3xl leading-relaxed text-slate-300 text-xs">
                 HBS müşterileri genel platform kullanıcısıdır. Bu ekran yalnızca
                 müşterinin bu mağaza ile olan ilişki, sipariş, teklif ve yetki
                 durumunu yönetir.
