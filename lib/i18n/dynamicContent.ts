@@ -667,18 +667,20 @@ export function translateProductField(
     parsedTextObj = text;
   }
 
+  let rawText = "";
   if (parsedTextObj) {
     let val = parsedTextObj[language];
-    if (val === undefined || val === null || isWarning(String(val))) {
-      val = parsedTextObj["tr"];
+    if (val !== undefined && val !== null && !isWarning(String(val))) {
+      return String(val);
     }
-    if (val === undefined || val === null || isWarning(String(val))) {
-      val = parsedTextObj["en"];
+    // Eşleşme yoksa Türkçe veya İngilizce'yi temel metin olarak alıp sözlük/akıllı çeviriye sokalım
+    const fallbackText = parsedTextObj["tr"] || parsedTextObj["en"];
+    if (fallbackText !== undefined && fallbackText !== null) {
+      rawText = String(fallbackText);
     }
-    if (val !== undefined && val !== null) return String(val);
+  } else {
+    rawText = typeof text === "string" ? text : "";
   }
-
-  let rawText = typeof text === "string" ? text : "";
   const trimmed = rawText.trim();
   if (!trimmed) return "";
 

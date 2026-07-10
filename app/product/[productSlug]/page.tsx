@@ -286,6 +286,61 @@ export default function ProductDetailPage() {
   const { t, language, isReady } = useHbsLanguage();
   const [message, setMessage] = useState("");
   const [product, setProduct] = useState<ProductData | null>(null);
+
+  // Dynamic client-side Google Translation Fallback via Server Proxy API
+  useEffect(() => {
+    if (!product || !language || language === "tr") return;
+
+    const hasNameTranslation = !!product.name[language];
+    const hasDescTranslation = !!product.description[language];
+
+    // If either name or description is missing translation, trigger live translation
+    if (!hasNameTranslation || !hasDescTranslation) {
+      const sourceName = product.name.tr || product.name.en || "";
+      const sourceDesc = product.description.tr || product.description.en || "";
+
+      Promise.all([
+        !hasNameTranslation && sourceName
+          ? fetch("/api/translate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: sourceName, from: "tr", to: language }),
+            })
+              .then((res) => (res.ok ? res.json() : null))
+              .then((data) => data?.translatedText || "")
+          : Promise.resolve(""),
+        !hasDescTranslation && sourceDesc
+          ? fetch("/api/translate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ text: sourceDesc, from: "tr", to: language }),
+            })
+              .then((res) => (res.ok ? res.json() : null))
+              .then((data) => data?.translatedText || "")
+          : Promise.resolve(""),
+      ])
+        .then(([translatedName, translatedDesc]) => {
+          setProduct((prev) => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              name: {
+                ...prev.name,
+                [language]: translatedName || prev.name[language] || prev.name.tr || "",
+              },
+              description: {
+                ...prev.description,
+                [language]: translatedDesc || prev.description[language] || prev.description.tr || "",
+              },
+            };
+          });
+        })
+        .catch((err) => {
+          console.error("Live translation error:", err);
+        });
+    }
+  }, [product, language]);
+
   const handleWhatsAppCheckout = () => {
     const activeLang = language || "tr";
     const nameText = activeProduct ? (activeProduct.name[activeLang] || activeProduct.name.tr) : "";
