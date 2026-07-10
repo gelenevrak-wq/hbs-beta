@@ -286,7 +286,51 @@ const translations = {
     newProduct: "Yeni Ürün Ekle",
     saving: "Kaydediliyor...",
     saveChanges: "Değişiklikleri Kaydet",
-    completeRegistration: "Kaydı Tamamla"
+    completeRegistration: "Kaydı Tamamla",
+    allWarehouses: "Tüm Depolar",
+    manageWarehouses: "Depoları Yönet",
+    types: "Çeşit",
+    units: "Adet",
+    defined: "Tanımlı",
+    inStock: "Stoklu",
+    filterByCodeBrandName: "Kod, marka veya isimle filtrele...",
+    showcaseStatus: "Vitrin Durumu",
+    allShowcase: "Tümü (Vitrin & Gizli)",
+    onlyVisible: "👁️ Sadece Vitrinde Görünür",
+    onlyHidden: "🙈 Sadece Vitrinde Gizli",
+    priceRange: "Satış Fiyatı Aralığı",
+    stockRange: "Stok Miktarı Aralığı",
+    fastUpload: "⚡ HIZLI YÜKLEME",
+    bulkImport: "Toplu Ürün Aktarımı (Excel/CSV):",
+    templateDescription: "Şablon indirip doldurarak tek seferde yükleyin.",
+    templateTip: "(İpucu: Varyantlar için Model|SKU|Barkod|Fiyat... formatında ; ile ayırın)",
+    downloadTemplate: "Şablon İndir",
+    uploadFile: "Dosya Yükle",
+    recordTypeLabel: "Kayıt Türü",
+    physicalProduct: "Fiziksel Ürün",
+    serviceSale: "Hizmet satışı",
+    rentalSale: "Kiralama",
+    appointmentSale: "Randevulu İşlem",
+    visibilityLabel: "Görünürlük",
+    visibleInStorefront: "Vitrin ve Pazar Yerinde Açık",
+    hiddenInStorefront: "Gizli",
+    productOrServiceName: "Ürün / Hizmet Adı *",
+    categoryOrSector: "Kategori / Sektör *",
+    brandLabel: "Marka",
+    compatibleModel: "Uyumlu Model",
+    productDescription: "Ürün Açıklaması",
+    pricingSettings: "Fiyat & Teklif Ayarları",
+    salePriceLabel: "Satış Fiyatı",
+    hidePriceLabel: "Fiyatı Gizle (Ziyaretçiden Teklif İste)",
+    aiPricingLabel: "🤖 AI Dinamik Fiyatlandırma Aktif",
+    placeholderCategory: "Örn: Oto yedek parçası",
+    placeholderProduct: "Örn: NGK Buji Seti",
+    placeholderDescription: "Özellikler, uyumluluk bilgileri...",
+    editModeLabel: "DÜZENLEME MODU",
+    footwearModel: "Seri / Koleksiyon",
+    groceryModel: "Özellik / Çeşit",
+    noWarehouse: "Deposuz",
+    hiddenLabel: "Gizli"
   },
   en: {
     header: "HBS Product & Stock Catalog",
@@ -327,7 +371,51 @@ const translations = {
     newProduct: "New Product",
     saving: "Saving...",
     saveChanges: "Save Changes",
-    completeRegistration: "Complete Registration"
+    completeRegistration: "Complete Registration",
+    allWarehouses: "All Warehouses",
+    manageWarehouses: "Manage Warehouses",
+    types: "Types",
+    units: "Units",
+    defined: "Defined",
+    inStock: "In Stock",
+    filterByCodeBrandName: "Filter by code, brand or name...",
+    showcaseStatus: "Showcase Status",
+    allShowcase: "All (Showcase & Hidden)",
+    onlyVisible: "👁️ Visible in Storefront",
+    onlyHidden: "🙈 Hidden in Storefront",
+    priceRange: "Sale Price Range",
+    stockRange: "Stock Qty Range",
+    fastUpload: "⚡ BULK LOAD",
+    bulkImport: "Bulk Product Import (Excel/CSV):",
+    templateDescription: "Download the template, fill it out, and upload all at once.",
+    templateTip: "(Tip: For variants, separate with ; in the format Model|SKU|Barcode|Price...)",
+    downloadTemplate: "Download Template",
+    uploadFile: "Upload File",
+    recordTypeLabel: "Record Type",
+    physicalProduct: "Physical Product",
+    serviceSale: "Service Sale",
+    rentalSale: "Rental",
+    appointmentSale: "Appointment-based",
+    visibilityLabel: "Visibility",
+    visibleInStorefront: "Visible in Storefront & Marketplace",
+    hiddenInStorefront: "Hidden",
+    productOrServiceName: "Product / Service Name *",
+    categoryOrSector: "Category / Sector *",
+    brandLabel: "Brand",
+    compatibleModel: "Compatible Model",
+    productDescription: "Product Description",
+    pricingSettings: "Price & Bid Settings",
+    salePriceLabel: "Sale Price",
+    hidePriceLabel: "Hide Price (Request quote from visitor)",
+    aiPricingLabel: "🤖 AI Dynamic Pricing Active",
+    placeholderCategory: "e.g., Car spare parts",
+    placeholderProduct: "e.g., NGK Spark Plug Set",
+    placeholderDescription: "Features, compatibility details...",
+    editModeLabel: "EDITING MODE",
+    footwearModel: "Series / Collection",
+    groceryModel: "Feature / Variant",
+    noWarehouse: "No Warehouse",
+    hiddenLabel: "Hidden"
   },
   de: {
     header: "HBS Produkt- & Lagerkatalog",
@@ -368,7 +456,51 @@ const translations = {
     newProduct: "Neues Produkt hinzufügen",
     saving: "Wird gespeichert...",
     saveChanges: "Änderungen speichern",
-    completeRegistration: "Registrierung abschließen"
+    completeRegistration: "Registrierung abschließen",
+    allWarehouses: "Alle Lager",
+    manageWarehouses: "Lager verwalten",
+    types: "Typen",
+    units: "Stück",
+    defined: "Definiert",
+    inStock: "Auf Lager",
+    filterByCodeBrandName: "Nach Code, Marke oder Name filtern...",
+    showcaseStatus: "Schaufenster-Status",
+    allShowcase: "Alle (Schaufenster & Versteckt)",
+    onlyVisible: "👁️ Sichtbar im Schaufenster",
+    onlyHidden: "🙈 Versteckt im Schaufenster",
+    priceRange: "Verkaufspreisspanne",
+    stockRange: "Lagerbestandsspanne",
+    fastUpload: "⚡ SCHNELL-LADUNG",
+    bulkImport: "Massenimport (Excel/CSV):",
+    templateDescription: "Vorlage herunterladen, ausfüllen und auf einmal hochladen.",
+    templateTip: "(Tipp: Für Varianten mit ; im Format Modell|SKU|Barcode|Preis... trennen)",
+    downloadTemplate: "Vorlage laden",
+    uploadFile: "Datei hochladen",
+    recordTypeLabel: "Registrierungsart",
+    physicalProduct: "Physisches Produkt",
+    serviceSale: "Dienstleistung",
+    rentalSale: "Vermietung",
+    appointmentSale: "Terminbasiert",
+    visibilityLabel: "Sichtbarkeit",
+    visibleInStorefront: "Sichtbar in Schaufenster & Marktplatz",
+    hiddenInStorefront: "Ausgeblendet",
+    productOrServiceName: "Produkt- / Dienstleistungsname *",
+    categoryOrSector: "Kategorie / Sektor *",
+    brandLabel: "Marke",
+    compatibleModel: "Kompatibles Modell",
+    productDescription: "Produktbeschreibung",
+    pricingSettings: "Preis- und Angebotseinstellungen",
+    salePriceLabel: "Verkaufspreis",
+    hidePriceLabel: "Preis ausblenden (Angebot anfordern)",
+    aiPricingLabel: "🤖 AI Dynamische Preisgestaltung aktiv",
+    placeholderCategory: "z.B., Autoteile",
+    placeholderProduct: "z.B., NGK Zündkerzensatz",
+    placeholderDescription: "Merkmale, Kompatibilitätsdetails...",
+    editModeLabel: "BEARBEITUNGSMODUS",
+    footwearModel: "Serie / Kollektion",
+    groceryModel: "Eigenschaft / Variante",
+    noWarehouse: "Kein Lager",
+    hiddenLabel: "Versteckt"
   },
   ru: {
     header: "Каталог товаров и запасов HBS",
@@ -409,7 +541,51 @@ const translations = {
     newProduct: "Добавить товар",
     saving: "Сохранение...",
     saveChanges: "Сохранить изменения",
-    completeRegistration: "Завершить регистрацию"
+    completeRegistration: "Завершить регистрацию",
+    allWarehouses: "Все склады",
+    manageWarehouses: "Управление складами",
+    types: "Типы",
+    units: "Шт.",
+    defined: "Определено",
+    inStock: "В наличии",
+    filterByCodeBrandName: "Фильтр по коду, бренду или имени...",
+    showcaseStatus: "Статус витрины",
+    allShowcase: "Все (Витрина и Скрытые)",
+    onlyVisible: "👁️ Видимо на витрине",
+    onlyHidden: "🙈 Скрыто на витрине",
+    priceRange: "Диапазон цен продажи",
+    stockRange: "Диапазон количества запасов",
+    fastUpload: "⚡ БЫСТРАЯ ЗАГРУЗКА",
+    bulkImport: "Импорт товаров (Excel/CSV):",
+    templateDescription: "Скачайте шаблон, заполните его и загрузите целиком.",
+    templateTip: "(Совет: для вариантов разделяйте с помощью ; в формате Модель|SKU|Штрихкод|Цена...)",
+    downloadTemplate: "Скачать шаблон",
+    uploadFile: "Загрузить файл",
+    recordTypeLabel: "Тип записи",
+    physicalProduct: "Физический товар",
+    serviceSale: "Продажа услуг",
+    rentalSale: "Аренда",
+    appointmentSale: "По записи",
+    visibilityLabel: "Видимость",
+    visibleInStorefront: "Видимый на витрине и торговой площадке",
+    hiddenInStorefront: "Скрытый",
+    productOrServiceName: "Название товара / услуги *",
+    categoryOrSector: "Категория / Сектор *",
+    brandLabel: "Бренд",
+    compatibleModel: "Совместимая модель",
+    productDescription: "Описание товара",
+    pricingSettings: "Настройки цены и предложений",
+    salePriceLabel: "Цена продажи",
+    hidePriceLabel: "Скрыть цену (Запросить цену у посетителя)",
+    aiPricingLabel: "🤖 Активное динамическое ценообразование ИИ",
+    placeholderCategory: "например, автозапчасти",
+    placeholderProduct: "например, комплект свечей зажигания NGK",
+    placeholderDescription: "Характеристики, детали совместимости...",
+    editModeLabel: "РЕЖИМ РЕДАКТИРОВАНИЯ",
+    footwearModel: "Серия / Коллекция",
+    groceryModel: "Характеристика / Вариант",
+    noWarehouse: "Нет склада",
+    hiddenLabel: "Скрыто"
   },
   ka: {
     header: "HBS პროდუქტების და მარაგების კატალოგი",
@@ -447,10 +623,54 @@ const translations = {
     save: "შენახვა",
     cancel: "გაუქმება",
     editProduct: "პროდუქტის რედაქტირება",
-    newProduct: "ახალი პროდუქტის დამატება",
+    newProduct: "ახალი პროდუქტი",
     saving: "ინახება...",
     saveChanges: "ცვლილებების შენახვა",
-    completeRegistration: "რეგისტრაციის დასრულება"
+    completeRegistration: "რეგისტრაციის დასრულება",
+    allWarehouses: "ყველა საწყობი",
+    manageWarehouses: "საწყობების მართვა",
+    types: "სახეობა",
+    units: "ცალი",
+    defined: "განსაზღვრული",
+    inStock: "მარაგში",
+    filterByCodeBrandName: "ფილტრი კოდით, ბრენდით ან სახელით...",
+    showcaseStatus: "ვიტრინის სტატუსი",
+    allShowcase: "ყველა (ვიტრინა და ფარული)",
+    onlyVisible: "👁️ მხოლოდ ვიტრინაზე ხილული",
+    onlyHidden: "🙈 მხოლოდ ვიტრინაზე ფარული",
+    priceRange: "გასაყიდი ფასის დიაპაზონი",
+    stockRange: "მარაგის რაოდენობის დიაპაზონი",
+    fastUpload: "⚡ სწრაფი ატვირთვა",
+    bulkImport: "პროდუქტის იმპორტი (Excel/CSV):",
+    templateDescription: "ჩამოტვირთეთ შაბლონი, შეავსეთ და ატვირთეთ ერთიანად.",
+    templateTip: "(რჩევა: ვარიანტებისთვის გამოყავით ; სიმბოლოთი ფორმატში მოდელი|SKU|შტრიხკოდი|ფასი...)",
+    downloadTemplate: "შაბლონის ჩამოტვირთვა",
+    uploadFile: "ფაილის ატვირთვა",
+    recordTypeLabel: "ჩანაწერის ტიპი",
+    physicalProduct: "ფიზიკური პროდუქტი",
+    serviceSale: "მომსახურების გაყიდვა",
+    rentalSale: "ქირავდება",
+    appointmentSale: "დაჯავშნით",
+    visibilityLabel: "ხილვადობა",
+    visibleInStorefront: "ხილულია ვიტრინასა და ბაზარზე",
+    hiddenInStorefront: "ფარული",
+    productOrServiceName: "პროდუქტის / მომსახურების სახელი *",
+    categoryOrSector: "კატეგორია / სექტორი *",
+    brandLabel: "ბრენდი",
+    compatibleModel: "თავსებადი მოდელი",
+    productDescription: "პროდუქტის აღწერა",
+    pricingSettings: "ფასის და შემოთავაზების პარამეტრები",
+    salePriceLabel: "გასაყიდი ფასი",
+    hidePriceLabel: "ფასის დამალვა (ფასის მოთხოვნა ვიზიტორისგან)",
+    aiPricingLabel: "🤖 AI დინამიური ფასწარმოქმნა აქტიურია",
+    placeholderCategory: "მაგ: ავტონაწილები",
+    placeholderProduct: "მაგ: NGK სანთლების კომპლექტი",
+    placeholderDescription: "მახასიათებებლები, თავსებადობის დეტალები...",
+    editModeLabel: "რედაქტირების რეჟიმი",
+    footwearModel: "სერია / კოლექცია",
+    groceryModel: "თვისება / ვარიანტი",
+    noWarehouse: "საწყობის გარეშე",
+    hiddenLabel: "ფარული"
   }
 };
 
@@ -2714,11 +2934,11 @@ export default function ProductsPage() {
                 : "text-slate-650 hover:bg-white/50 border border-transparent font-semibold"
             }`}
           >
-            <span>Tüm Depolar</span>
+            <span>{t.allWarehouses}</span>
             <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono ${
               selectedWarehouseFilter === "all" ? "bg-blue-50 text-blue-650" : "bg-slate-200/60 text-slate-600"
             }`}>
-              {products.length} / {products.filter(p => (parseInt(p.quantity) || 0) > 0).length} / {products.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0)} Adet
+              {products.length} / {products.filter(p => (parseInt(p.quantity) || 0) > 0).length} / {products.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0)} {t.units}
             </span>
           </button>
 
@@ -2742,7 +2962,7 @@ export default function ProductsPage() {
                 <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-mono ${
                   isSelected ? "bg-blue-50 text-blue-650" : "bg-slate-200/60 text-slate-600"
                 }`}>
-                  {whProducts.length} Çeşit / {totalQty} Adet
+                  {whProducts.length} {t.types} / {totalQty} {t.units}
                 </span>
               </button>
             );
@@ -2753,7 +2973,7 @@ export default function ProductsPage() {
             className="px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-1.5 border border-dashed border-slate-300 bg-white hover:bg-slate-50 text-slate-650 select-none ml-auto"
           >
             <span>🏪</span>
-            <span>Depoları Yönet</span>
+            <span>{t.manageWarehouses}</span>
           </Link>
         </section>
 
@@ -2766,13 +2986,9 @@ export default function ProductsPage() {
         {/* Toplu Ürün İşlemleri (Excel / CSV) - Premium Panel */}
         <section className="mb-4 bg-transparent py-1 border-b border-slate-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-800">
           <div className="flex items-center gap-2">
-            <span className="shrink-0 rounded bg-blue-50 px-1.5 py-0.5 text-[8px] font-black text-blue-700 uppercase border border-blue-100">
-              ⚡ HIZLI YÜKLEME
-            </span>
-            <span className="text-xs font-black">Toplu Ürün Aktarımı (Excel/CSV):</span>
-            <span className="text-[10px] text-slate-500 font-semibold hidden md:inline">
-              Şablon indirip doldurarak tek seferde yükleyin.
-            </span>
+            <span className="shrink-0 rounded bg-blue-50 px-1.5 py-0.5 text-[8px] font-black text-blue-700 uppercase border border-blue-100">{t.fastUpload}</span>
+            <span className="text-xs font-black">{t.bulkImport}</span>
+            <span className="text-[10px] text-slate-500 font-semibold hidden md:inline">{t.templateDescription}</span>
             <span className="text-[9px] text-slate-450 font-medium hidden lg:inline border-l border-slate-200 pl-2">
               (İpucu: Varyantlar için <code>Model|SKU|Barkod|Fiyat...</code> formatında <code>;</code> ile ayırın)
             </span>
@@ -2784,11 +3000,11 @@ export default function ProductsPage() {
               onClick={downloadCSVTemplate}
               className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-700 hover:bg-slate-50 transition flex items-center gap-1 cursor-pointer select-none"
             >
-              <span>📥</span> Şablon İndir
+              <span>📥</span> {t.downloadTemplate}
             </button>
             
             <label className="rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-black text-white hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 select-none">
-              <span>📤</span> Dosya Yükle
+              <span>📤</span> {t.uploadFile}
               <input
                 type="file"
                 accept=".csv"
@@ -2812,56 +3028,52 @@ export default function ProductsPage() {
             <h2 className="text-lg font-black border-b border-slate-100 pb-2 flex items-center justify-between">
               <span>{editingProductId ? t.editProduct : t.newProduct}</span>
               {editingProductId && (
-                <span className="text-[10px] bg-blue-100 text-blue-800 font-extrabold px-2.5 py-0.5 rounded-full uppercase">
-                  DÜZENLEME MODU
-                </span>
+                <span className="text-[10px] bg-blue-100 text-blue-800 font-extrabold px-2.5 py-0.5 rounded-full uppercase">{t.editModeLabel}</span>
               )}
             </h2>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-900 font-extrabold flex items-center gap-1.5">
-                  Kayıt Türü
-                  <AICopilotTooltip fieldKey="itemType" position="right" />
+                <span className="text-xs font-bold text-slate-900 font-extrabold flex items-center gap-1.5">{t.recordTypeLabel} <AICopilotTooltip fieldKey="itemType" position="right" />
                 </span>
                 <select
                   value={itemType}
                   onChange={(e) => setItemType(e.target.value as ItemType)}
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 >
-                  <option value="product">Fiziksel Ürün</option>
-                  <option value="service">Hizmet satışı</option>
-                  <option value="rental">Kiralama</option>
-                  <option value="appointment">Randevulu İşlem</option>
+                  <option value="product">{t.physicalProduct}</option>
+                  <option value="service">{t.serviceSale}</option>
+                  <option value="rental">{t.rentalSale}</option>
+                  <option value="appointment">{t.appointmentSale}</option>
                 </select>
               </label>
 
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-900 font-extrabold">Görünürlük</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">{t.visibilityLabel}</span>
                 <select
                   value={visibility}
                   onChange={(e) => setVisibility(e.target.value as Visibility)}
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
                 >
-                  <option value="visible">Vitrin ve Pazar Yerinde Açık</option>
-                  <option value="hidden">Gizli</option>
+                  <option value="visible">{t.visibleInStorefront}</option>
+                  <option value="hidden">{t.hiddenInStorefront}</option>
                 </select>
               </label>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-900 font-extrabold">Ürün / Hizmet Adı *</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">{t.productOrServiceName}</span>
                 <input
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Örn: NGK Buji Seti"
+                  placeholder={t.placeholderProduct}
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-89" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
               </label>
 
               <label className="grid gap-1 relative">
-                <span className="text-xs font-bold text-slate-900 font-extrabold">Kategori / Sektör *</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">{t.categoryOrSector}</span>
                 <input
                   required
                   value={category}
@@ -2873,7 +3085,7 @@ export default function ProductsPage() {
                   onBlur={() => {
                     setTimeout(() => setShowCategorySuggestions(false), 200);
                   }}
-                  placeholder="Örn: Oto yedek parçası"
+                  placeholder={t.placeholderCategory}
                   className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium" id="id-page-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-text-sm-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-medium-946" aria-label="Rounded xl border border slate 300 bg white px 3 py 2 text sm text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font medium" />
                 {showCategorySuggestions && filteredCategorySuggestions.length > 0 && (
                   <ul className="absolute left-0 right-0 top-[100%] mt-1 max-h-48 overflow-y-auto rounded-xl border border-slate-250 bg-white py-1 shadow-lg z-50">
@@ -2896,7 +3108,7 @@ export default function ProductsPage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-900 font-extrabold">Marka</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">{t.brandLabel}</span>
                 <input
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
@@ -2923,7 +3135,7 @@ export default function ProductsPage() {
 
               <label className="grid gap-1">
                 <span className="text-xs font-bold text-slate-900 font-extrabold">
-                  {sector === "footwear" ? "Seri / Koleksiyon" : sector === "grocery" ? "Özellik / Çeşit" : "Uyumlu Model"}
+                  {sector === "footwear" ? t.footwearModel : sector === "grocery" ? t.groceryModel : t.compatibleModel}
                 </span>
                 <input
                   value={model}
@@ -2934,11 +3146,11 @@ export default function ProductsPage() {
             </div>
 
             <label className="grid gap-1">
-              <span className="text-xs font-bold text-slate-900 font-extrabold">Ürün Açıklaması</span>
+              <span className="text-xs font-bold text-slate-900 font-extrabold">{t.productDescription}</span>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Özellikler, uyumluluk bilgileri..."
+                placeholder={t.placeholderDescription}
                 rows={2}
                 className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-medium"
               />
@@ -2946,13 +3158,11 @@ export default function ProductsPage() {
 
             {/* Esnaf-Dostu Fiyat & Teklif Ayarları */}
             <div className="rounded-2xl border border-slate-200 bg-slate-50/30 p-4 space-y-3 shadow-sm">
-              <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1.5">
-                Fiyat & Teklif Ayarları
-                <AICopilotTooltip fieldKey="pricingMode" position="right" />
+              <span className="text-xs font-black text-slate-900 font-extrabold flex items-center gap-1.5">{t.pricingSettings} <AICopilotTooltip fieldKey="pricingMode" position="right" />
               </span>
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className="grid gap-1">
-                  <span className="text-xs font-bold text-slate-900 font-extrabold">Satış Fiyatı</span>
+                  <span className="text-xs font-bold text-slate-900 font-extrabold">{t.salePriceLabel}</span>
                   <input
                     value={salePrice}
                     onChange={(e) => {
@@ -2975,9 +3185,7 @@ export default function ProductsPage() {
                       }}
                       className="h-4 w-4 rounded border-slate-300 text-blue-600 cursor-pointer"
                     />
-                    <label htmlFor="hide-price-checkbox" className="text-xs font-black text-slate-800 cursor-pointer">
-                      Fiyatı Gizle (Ziyaretçiden Teklif İste)
-                    </label>
+                    <label htmlFor="hide-price-checkbox" className="text-xs font-black text-slate-800 cursor-pointer">{t.hidePriceLabel}</label>
                   </div>
                   
                   <div className="flex items-center gap-2 cursor-pointer bg-blue-50/50 px-3 py-1.5 rounded-xl border border-blue-100">
@@ -2990,9 +3198,7 @@ export default function ProductsPage() {
                       }}
                       className="h-4 w-4 rounded border-blue-300 text-blue-600 cursor-pointer"
                     />
-                    <label htmlFor="ai-pricing-checkbox" className="text-xs font-black text-blue-900 cursor-pointer flex items-center gap-1.5">
-                      🤖 AI Dinamik Fiyatlandırma Aktif
-                    </label>
+                    <label htmlFor="ai-pricing-checkbox" className="text-xs font-black text-blue-900 cursor-pointer flex items-center gap-1.5">{t.aiPricingLabel}</label>
                   </div>
                 </div>
               </div>
@@ -3001,7 +3207,7 @@ export default function ProductsPage() {
             <div className="grid gap-3 sm:grid-cols-3">
 
               <label className="grid gap-1">
-                <span className="text-xs font-bold text-slate-900 font-extrabold">Maliyet Fiyatı</span>
+                <span className="text-xs font-bold text-slate-900 font-extrabold">{t.purchasePrice}</span>
                 <input
                   value={purchasePrice}
                   onChange={(e) => setPurchasePrice(e.target.value)}
@@ -3662,27 +3868,27 @@ export default function ProductsPage() {
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Kod, marka veya isimle filtrele..."
+                  placeholder={t.filterByCodeBrandName}
                   className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 shadow-sm font-semibold" id="id-page-w-full-rounded-xl-border-border-slate-300-bg-white-px-3-py-2-5-text-xs-text-slate-900-placeholder-slate-400-outline-none-focus-border-blue-600-focus-ring-1-focus-ring-blue-600-shadow-sm-font-semibold-67" aria-label="W full rounded xl border border slate 300 bg white px 3 py 2 5 text xs text slate 900 placeholder slate 400 outline none focus border blue 600 focus ring 1 focus ring blue 600 shadow sm font semibold" />
                 
                 <div className="grid gap-3 grid-cols-1 sm:grid-cols-3 bg-slate-50/40 border border-slate-350 p-4 rounded-2xl shadow-sm">
                   {/* Showcase Visibility */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">Vitrin Durumu</span>
+                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">{t.showcaseStatus}</span>
                     <select
                       value={filterVisibility}
                       onChange={(e) => setFilterVisibility(e.target.value as any)}
                       className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs outline-none focus:border-blue-500 font-semibold text-slate-900 font-extrabold"
                     >
-                      <option value="all">Tümü (Vitrin & Gizli)</option>
-                      <option value="visible">👁️ Sadece Vitrinde Görünür</option>
-                      <option value="hidden">🙈 Sadece Vitrinde Gizli</option>
+                      <option value="all">{t.allShowcase}</option>
+                      <option value="visible">{t.onlyVisible}</option>
+                      <option value="hidden">{t.onlyHidden}</option>
                     </select>
                   </div>
 
                   {/* Price Range */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">Satış Fiyatı Aralığı</span>
+                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">{t.priceRange}</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -3702,7 +3908,7 @@ export default function ProductsPage() {
 
                   {/* Stock Qty Range */}
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">Stok Miktarı Aralığı</span>
+                    <span className="text-[10px] font-bold text-slate-900 font-extrabold">{t.stockRange}</span>
                     <div className="flex items-center gap-1">
                       <input
                         type="number"
@@ -3753,8 +3959,8 @@ export default function ProductsPage() {
                         <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📁 {getLocalizedField(p.category, activeLang)}</span>
                         <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-mono">🏷️ SKU: {p.sku || "-"}</span>
                         <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-mono">🧬 {t.barcode}: {p.barcode || "-"}</span>
-                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📍 {p.warehouse || "Ortalık"} · {p.shelf || "Rafsız"}</span>
-                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-bold text-slate-700">💰 {p.pricingMode === "fixed" ? getDynamicPrice(p) : (activeLang === "en" ? "Hidden" : activeLang === "de" ? "Versteckt" : activeLang === "ru" ? "Скрыто" : activeLang === "ka" ? "ფარული" : "Gizli")}</span>
+                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📍 {p.warehouse || t.noWarehouse} · {p.shelf || um.shelfUnassigned}</span>
+                        <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40 font-bold text-slate-700">💰 {p.pricingMode === "fixed" ? getDynamicPrice(p) : t.hiddenLabel}</span>
                         {p.entryDate && <span className="bg-slate-100/80 px-2 py-0.5 rounded-lg border border-slate-200/40">📅 {p.entryDate}</span>}
                       </div>
 
