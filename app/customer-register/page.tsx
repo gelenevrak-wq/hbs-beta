@@ -195,7 +195,6 @@ export default function CustomerRegisterPage() {
   
     try {
       if (isSupabaseConfigured) {
-        // Supabase Auth signup
         const { data, error: authError } = await supabase.auth.signUp({
           email,
           password,
@@ -216,7 +215,6 @@ export default function CustomerRegisterPage() {
         }
  
         if (data.user) {
-          // Save customer data in customers table
           const { error: dbError } = await supabase.from("customers").insert({
             id: data.user.id,
             full_name: fullName || email.split("@")[0],
@@ -232,7 +230,6 @@ export default function CustomerRegisterPage() {
         }
       }
  
-      // Offline / LocalStorage fallback
       const customerUser = {
         username: email,
         displayName: fullName || email.split("@")[0],
@@ -244,12 +241,10 @@ export default function CustomerRegisterPage() {
       
       window.localStorage.setItem("hbs-current-user", JSON.stringify(customerUser));
       
-      // Update registration list
       const customersList = JSON.parse(window.localStorage.getItem("hbs-customers-list") || "[]");
       customersList.push(customerUser);
       window.localStorage.setItem("hbs-customers-list", JSON.stringify(customersList));
  
-      // Save biometric credentials if registered
       if (biometricsRegistered) {
         window.localStorage.setItem("hbs-biometric-user", JSON.stringify(customerUser));
       }
@@ -264,22 +259,22 @@ export default function CustomerRegisterPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-955 text-white flex flex-col justify-between">
-      <div className="mx-auto flex w-full max-w-md flex-col px-3 py-6 justify-center flex-1">
-        <header className="mb-4 flex flex-col items-center">
+    <main className="min-h-screen bg-slate-950 text-white flex flex-col justify-between">
+      <div className="mx-auto flex w-full max-w-md flex-col px-3.5 py-4 justify-center flex-1">
+        <header className="mb-2.5 flex flex-col items-center">
           <Link
             href="/"
-            className="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500"
+            className="text-xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500"
           >
             HBS
           </Link>
-          <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-500">{t.subtitle}</p>
-          <div className="mt-3">
+          <p className="mt-0.5 text-[9px] uppercase tracking-[0.2em] text-slate-500">{t.subtitle}</p>
+          <div className="mt-2">
             <CompactLanguageSwitcher />
           </div>
         </header>
 
-        <section className="rounded-xl bg-slate-900/40 p-4 shadow-sm border border-white/5">
+        <section className="rounded-2xl bg-slate-900/40 p-3.5 sm:p-5 shadow-sm border border-white/5">
           {isSuccess ? (
             <div className="text-center">
               <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-950/50 border border-emerald-500/20 text-emerald-400 text-2xl">
@@ -292,7 +287,7 @@ export default function CustomerRegisterPage() {
               <div className="mt-4 space-y-2">
                 <Link
                   href="/"
-                  className="block w-full rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-3 py-2 text-xs font-bold hover:from-blue-650 hover:to-indigo-650 transition active:scale-95 shadow-sm"
+                  className="block w-full rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-3 py-2 text-xs font-bold hover:from-blue-650 hover:to-indigo-655 transition active:scale-95 shadow-sm"
                 >
                   {t.exploreBtn}
                 </Link>
@@ -306,14 +301,14 @@ export default function CustomerRegisterPage() {
             </div>
           ) : (
             <>
-              <div className="mb-4">
+              <div className="mb-3">
                 <h1 className="text-lg font-bold tracking-tight">{t.title}</h1>
-                <p className="mt-1 text-[11px] text-slate-400 leading-relaxed">
+                <p className="mt-0.5 text-[11px] text-slate-400 leading-relaxed">
                   {t.description}
                 </p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-3">
+              <form onSubmit={handleSubmit} className="space-y-2.5">
                 <div className="space-y-1">
                   <label className="text-[11px] font-semibold text-slate-400 block">{t.emailLabel}</label>
                   <input
@@ -369,7 +364,7 @@ export default function CustomerRegisterPage() {
                 </div>
 
                 {/* WebAuthn Passkey */}
-                <div className="mt-1.5 rounded-lg bg-slate-950/40 p-2.5 space-y-2 border border-white/5">
+                <div className="mt-1 rounded-xl bg-slate-950/40 p-2 space-y-1.5 border border-white/5">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-[11px] font-black text-slate-350">{t.passkeyTitle}</h4>
@@ -380,7 +375,7 @@ export default function CustomerRegisterPage() {
                     type="button"
                     onClick={handleRegisterBiometrics}
                     disabled={isRegisteringBiometrics || biometricsRegistered}
-                    className={`w-full rounded-lg py-2 text-[11px] font-bold transition flex items-center justify-center gap-1.5 ${biometricsRegistered ? "bg-emerald-950/40 text-emerald-400" : "bg-slate-800 hover:bg-slate-700 text-slate-200"}`}
+                    className={`w-full rounded-lg py-1.5 text-[11px] font-bold transition flex items-center justify-center gap-1.5 ${biometricsRegistered ? "bg-emerald-950/40 text-emerald-400" : "bg-slate-800 hover:bg-slate-700 text-slate-200"}`}
                   >
                     {isRegisteringBiometrics ? (
                       <span>{t.passkeyRegistering}</span>
@@ -393,7 +388,7 @@ export default function CustomerRegisterPage() {
                 </div>
 
                 {message && (
-                  <div className="rounded-lg bg-red-950/20 p-2.5 text-xs text-red-400">
+                  <div className="rounded-lg bg-red-955/20 p-2 text-xs text-red-400">
                     ⚠️ {message}
                   </div>
                 )}
@@ -401,13 +396,13 @@ export default function CustomerRegisterPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-lg bg-white px-3 py-2.5 text-xs font-black text-slate-950 hover:bg-slate-200 transition active:scale-95 disabled:opacity-50 disabled:pointer-events-none mt-1 shadow-md cursor-pointer"
+                  className="w-full rounded-lg bg-white px-3 py-2 text-xs font-black text-slate-950 hover:bg-slate-200 transition active:scale-95 disabled:opacity-50 disabled:pointer-events-none mt-1 shadow-md cursor-pointer"
                 >
                   {loading ? t.savingBtn : t.submitBtn}
                 </button>
               </form>
 
-              <div className="mt-4 text-center text-xs text-slate-550 border-t border-slate-800/40 pt-3 flex justify-between items-center select-none">
+              <div className="mt-3.5 text-center text-xs text-slate-550 border-t border-slate-800/40 pt-2.5 flex justify-between items-center select-none">
                 <span>{t.alreadyHaveAccount}</span>
                 <Link href="/login" className="font-bold text-blue-400 hover:underline">{t.loginBtn}</Link>
               </div>
@@ -416,7 +411,7 @@ export default function CustomerRegisterPage() {
         </section>
       </div>
       
-      <footer className="text-center py-4 text-[10px] text-slate-600 border-t border-slate-950/30">
+      <footer className="text-center py-2.5 text-[9px] text-slate-600 border-t border-slate-950/30">
         HBS Cloud Discovery Platform © 2026. All rights reserved.
       </footer>
     </main>
