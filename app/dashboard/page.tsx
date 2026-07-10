@@ -648,64 +648,104 @@ export default function DashboardPage() {
 
   const modules = [
     {
+      title: currentText.moduleWarehouse,
+      description: currentText.moduleWarehouseDesc,
+      href: "/dashboard/stock-movements",
+      tag: currentText.tagPlanned,
+      bgClass: "bg-sky-50/60 border-sky-200 hover:border-sky-400 hover:bg-sky-100/80",
+      titleClass: "text-sky-950",
+      descClass: "text-sky-900/80",
+      tagClass: "bg-sky-100 text-sky-800 border border-sky-200/60",
+    },
+    {
       title: currentText.moduleRequests,
       description: currentText.moduleRequestsDesc,
       href: "/dashboard/customer-requests",
       tag: currentText.tagNew,
+      bgClass: "bg-violet-50/60 border-violet-200 hover:border-violet-400 hover:bg-violet-100/80",
+      titleClass: "text-violet-950",
+      descClass: "text-violet-900/80",
+      tagClass: "bg-violet-100 text-violet-800 border border-violet-200/60",
     },
     {
       title: currentText.moduleProducts,
       description: currentText.moduleProductsDesc,
       href: "/dashboard/products",
       tag: currentText.tagNext,
+      bgClass: "bg-amber-50/60 border-amber-200 hover:border-amber-400 hover:bg-amber-100/80",
+      titleClass: "text-amber-950",
+      descClass: "text-amber-900/80",
+      tagClass: "bg-amber-100 text-amber-800 border border-amber-200/60",
     },
     {
       title: currentText.moduleServices,
       description: currentText.moduleServicesDesc,
       href: "/dashboard/services",
       tag: currentText.tagNew,
-    },
-    {
-      title: currentText.moduleWarehouse,
-      description: currentText.moduleWarehouseDesc,
-      href: "/dashboard/stock-movements",
-      tag: currentText.tagPlanned,
+      bgClass: "bg-emerald-50/60 border-emerald-200 hover:border-emerald-400 hover:bg-emerald-100/80",
+      titleClass: "text-emerald-950",
+      descClass: "text-emerald-900/80",
+      tagClass: "bg-emerald-100 text-emerald-850 border border-emerald-200/60",
     },
     {
       title: currentText.moduleStorefront,
       description: currentText.moduleStorefrontDesc,
       href: `/store/${currentUser?.storeSlugs?.[0] || "obdtr"}`,
       tag: currentText.tagLive,
+      bgClass: "bg-indigo-50/60 border-indigo-200 hover:border-indigo-400 hover:bg-indigo-100/80",
+      titleClass: "text-indigo-950",
+      descClass: "text-indigo-900/80",
+      tagClass: "bg-indigo-100 text-indigo-800 border border-indigo-200/60",
     },
     {
       title: currentText.moduleCustomers,
       description: currentText.moduleCustomersDesc,
       href: "/dashboard/customers",
       tag: currentText.tagPlanned,
+      bgClass: "bg-teal-50/60 border-teal-200 hover:border-teal-400 hover:bg-teal-100/80",
+      titleClass: "text-teal-950",
+      descClass: "text-teal-900/80",
+      tagClass: "bg-teal-100 text-teal-800 border border-teal-200/60",
     },
     {
       title: currentText.moduleUsers,
       description: currentText.moduleUsersDesc,
       href: "/dashboard/users",
       tag: currentText.tagNew,
+      bgClass: "bg-rose-50/60 border-rose-200 hover:border-rose-400 hover:bg-rose-100/80",
+      titleClass: "text-rose-950",
+      descClass: "text-rose-900/80",
+      tagClass: "bg-rose-100 text-rose-800 border border-rose-200/60",
     },
     {
       title: currentText.moduleOrders,
       description: currentText.moduleOrdersDesc,
       href: "/dashboard/orders",
       tag: currentText.tagPlanned,
+      bgClass: "bg-fuchsia-50/60 border-fuchsia-200 hover:border-fuchsia-400 hover:bg-fuchsia-100/80",
+      titleClass: "text-fuchsia-950",
+      descClass: "text-fuchsia-900/80",
+      tagClass: "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200/60",
     },
     {
       title: currentText.moduleReports,
       description: currentText.moduleReportsDesc,
       href: "/dashboard/reports",
       tag: currentText.tagPlanned,
+      bgClass: "bg-lime-50/60 border-lime-200 hover:border-lime-400 hover:bg-lime-100/80",
+      titleClass: "text-lime-950",
+      descClass: "text-lime-900/80",
+      tagClass: "bg-lime-100 text-lime-800 border border-lime-200/60",
     },
     {
       title: currentText.moduleSettings,
       description: currentText.moduleSettingsDesc,
       href: "/dashboard/settings",
-      tag: currentText.tagPlanned,
+      tag: currentText.tagLive,
+      bgClass: "bg-slate-50 border-slate-200 hover:border-slate-400 hover:bg-slate-100/80",
+      titleClass: "text-slate-900",
+      descClass: "text-slate-700/80",
+      tagClass: "bg-slate-250 text-slate-700 border border-slate-300/60",
     },
   ];
 
@@ -879,17 +919,17 @@ export default function DashboardPage() {
                 <Link
                   key={moduleItem.title}
                   href={moduleItem.href}
-                  className="rounded-2xl border border-slate-200 bg-slate-50 p-3 transition hover:border-blue-400 hover:bg-slate-100"
+                  className={`rounded-2xl border p-3.5 transition shadow-sm hover:shadow-md ${moduleItem.bgClass || "border-slate-200 bg-slate-50 hover:border-slate-400 hover:bg-slate-100"}`}
                 >
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <div className="font-black">{moduleItem.title}</div>
+                  <div className="mb-1.5 flex items-center justify-between gap-2">
+                    <div className={`font-black text-sm ${moduleItem.titleClass || "text-slate-800"}`}>{moduleItem.title}</div>
 
-                    <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700">
+                    <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold ${moduleItem.tagClass || "bg-blue-50 text-blue-700 border border-blue-200/50"}`}>
                       {moduleItem.tag}
                     </span>
                   </div>
 
-                  <p className="text-xs leading-5 text-slate-500">
+                  <p className={`text-xs leading-5 ${moduleItem.descClass || "text-slate-500"}`}>
                     {moduleItem.description}
                   </p>
                 </Link>
