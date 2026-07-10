@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { getLocalizedField } from "@/lib/translations";
 import { supabase } from "@/lib/supabaseClient";
+import CompactLanguageSwitcher from "@/components/language/CompactLanguageSwitcher";
 
 type MovementType =
   | "stock_in"
@@ -1021,6 +1022,8 @@ export default function StockMovementsPage() {
             >
               {t.navHome}
             </Link>
+
+            <CompactLanguageSwitcher />
           </div>
         </header>
 
