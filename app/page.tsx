@@ -741,7 +741,7 @@ export default function HomePage() {
 
   const allProducts = useMemo(() => [...uploadedProducts, ...products], [uploadedProducts]);
 
-  const activeUiLanguage = (language && language in ui ? language : "en") as keyof typeof ui;
+  const activeUiLanguage = (language && language in ui ? language : "tr") as keyof typeof ui;
   const t = ui[activeUiLanguage];
 
   const quickCategories = useMemo(() => {
@@ -900,7 +900,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden pt-8 pb-12 sm:pt-12 sm:pb-16 px-4 bg-gradient-to-b from-white/70 via-slate-50/30 to-transparent">
         <div className="mx-auto max-w-4xl text-center space-y-6 select-none relative z-10">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-extrabold px-3 py-1 text-[9px] uppercase tracking-wider shadow-sm animate-bounce">
-            🌟 HBS 2.0 YENİ NESİL TİCARET
+            {label("🌟 YENİ NESİL TİCARET PLATFORMU", "🌟 NEXT-GENERATION COMMERCE PLATFORM", "🌟 HANDELSPLATFORM DER NÄCHSTEN GENERATION", "🌟 ТОРГОВАЯ ПЛАТФОРМА НОВОГО ПОКОЛЕНИЯ", "🌟 ახალი თაობის სავაჭრო პლატფორმა")}
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5.5xl font-black tracking-tight text-slate-900 leading-none space-y-2">
             <span>{t.heroTitle}</span>
@@ -1128,7 +1128,7 @@ export default function HomePage() {
                             disabled={translatingSlug === item.slug}
                             onClick={() => handleAiTranslate(item.slug, item.name, item.category)}
                             className="text-[9px] font-bold bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg px-1.5 py-0.5 border border-blue-200 transition shrink-0 active:scale-95 disabled:opacity-50 select-none"
-                            title="Yapay Zeka ile Kendi Diline Çevir"
+                            title={label("Yapay Zeka ile Kendi Diline Çevir", "Translate to your language with AI", "Mit KI in Ihre Sprache übersetzen", "Перевести на ваш язык с помощью ИИ", "თარგმნეთ თქვენს ენაზე ხელოვნური ინტელექტით")}
                           >
                             {translatingSlug === item.slug ? "⏳..." : aiTranslations[item.slug] ? "✨ AI" : "🤖"}
                           </button>
@@ -1139,7 +1139,7 @@ export default function HomePage() {
                           {aiTranslations[item.slug] ? aiTranslations[item.slug].category : l(item.category, language)}
                         </p>
                         {aiTranslations[item.slug] && (
-                          <span className="text-[8px] font-black text-blue-600 uppercase tracking-wider">✓ Translated</span>
+                          <span className="text-[8px] font-black text-blue-600 uppercase tracking-wider">{label("✓ Çevrildi", "✓ Translated", "✓ Übersetzt", "✓ Переведено", "✓ თარგმნილია")}</span>
                         )}
                       </div>
                     </div>
@@ -1226,41 +1226,63 @@ export default function HomePage() {
               {t.footerBranding}
             </p>
             <p className="text-[10px] text-slate-500 font-semibold">
-              © 2026 HBS Inc. Tüm hakları saklıdır.
+              {label("© 2026 HBS Inc. Tüm hakları saklıdır.", "© 2026 HBS Inc. All rights reserved.", "© 2026 HBS Inc. Alle Rechte vorbehalten.", "© 2026 HBS Inc. Все права защищены.", "© 2026 HBS Inc. ყველა უფლება დაცულია.")}
             </p>
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-white font-black text-xs uppercase tracking-wider">HBS vs Diğerleri</h4>
+            <h4 className="text-white font-black text-xs uppercase tracking-wider">
+              {label("HBS vs Diğerleri", "HBS vs Others", "HBS vs Andere", "HBS против других", "HBS სხვების წინააღმდეგ")}
+            </h4>
             <div className="grid grid-cols-[2fr_1fr] gap-1.5 text-[10px] font-bold">
               <span className="text-slate-400 border-b border-slate-800 pb-1">Shopify</span>
-              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">Mağaza Açma</span>
+              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">
+                {label("Mağaza Açma", "Store Setup", "Shop-Erstellung", "Создание магазина", "მაღაზიის გახსნა")}
+              </span>
               <span className="text-slate-400 border-b border-slate-800 pb-1">Amazon / Trendyol</span>
-              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">Ürün Satış</span>
+              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">
+                {label("Ürün Satış", "Product Sales", "Produktverkauf", "Продажа товаров", "პროდუქციის გაყიდვა")}
+              </span>
               <span className="text-slate-400 border-b border-slate-800 pb-1">Airbnb / Booking</span>
-              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">Kiralama</span>
+              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">
+                {label("Kiralama", "Rental", "Vermietung", "Аренда", "ქირაობა")}
+              </span>
               <span className="text-slate-400 border-b border-slate-800 pb-1">eBay</span>
-              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">Açık Artırma</span>
+              <span className="text-slate-500 border-b border-slate-800 pb-1 text-right">
+                {label("Açık Artırma", "Auction", "Auktion", "Аукцион", "აუქციონი")}
+              </span>
               <span className="text-blue-400 font-extrabold">HBS Platform</span>
-              <span className="text-emerald-400 font-black text-right">✓ HEPSİ BİR ARADA</span>
+              <span className="text-emerald-400 font-black text-right">
+                {label("✓ HEPSİ BİR ARADA", "✓ ALL IN ONE", "✓ ALLES IN EINEM", "✓ ВСЕ В ОДНОМ", "✓ ყველაფერი ერთში")}
+              </span>
             </div>
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-white font-black text-xs uppercase tracking-wider">Modüllerimiz</h4>
+            <h4 className="text-white font-black text-xs uppercase tracking-wider">
+              {label("Modüllerimiz", "Our Modules", "Unsere Module", "Наши moduli", "ჩვენი მოდულები")}
+            </h4>
             <ul className="space-y-1.5 text-xs font-bold">
-              <li>• Ürün Kataloğu & Satış</li>
-              <li>• Randevulu Yerinde Hizmetler</li>
-              <li>• Günlük / Haftalık Kiralama</li>
-              <li>• B2B Canlı İskonto Pazarlığı</li>
-              <li>• Zaman Ayarlı Açık Artırmalar</li>
+              <li>• {label("Ürün Kataloğu & Satış", "Product Catalog & Sales", "Produktkatalog & Verkauf", "Каталог товаров и продажи", "პროდუქციის კატალოგი და გაყიდვები")}</li>
+              <li>• {label("Randevulu Yerinde Hizmetler", "On-site Services by Appointment", "Vor-Ort-Services nach Termin", "Услуги на месте по записи", "ადგილზე მომსახურება დაჯავშნით")}</li>
+              <li>• {label("Günlük / Haftalık Kiralama", "Daily / Weekly Rental", "Tägliche / Wöchentliche Vermietung", "Ежедневная / еженедельная аренда", "დღიური / ყოველკვირეული ქირაობა")}</li>
+              <li>• {label("B2B Canlı İskonto Pazarlığı", "B2B Live Discount Negotiation", "B2B Live-Rabattverhandlung", "Живые B2B-переговоры о скидках", "B2B ცოცხალი ფასდაკლების მოლაპარაკება")}</li>
+              <li>• {label("Zaman Ayarlı Açık Artırmalar", "Timed Auctions", "Zeitgesteuerte Auktionen", "Временные аукционы", "დროითი აუქციონები")}</li>
             </ul>
           </div>
 
           <div className="space-y-3">
-            <h4 className="text-white font-black text-xs uppercase tracking-wider">Geliştirici Notu</h4>
+            <h4 className="text-white font-black text-xs uppercase tracking-wider">
+              {label("Geliştirici Notu", "Developer Note", "Entwickler-Hinweis", "Заметка разработчика", "დეველოპერის შენიშვნა")}
+            </h4>
             <p className="text-[10px] font-semibold leading-relaxed text-slate-500">
-              HBS 2.0, esnafın karmaşık sınır ötesi e-ticaret süreçlerini, yapay zeka entegrasyonu ve sıfır bürokrasi ile yönetmesi için tasarlanmıştır.
+              {label(
+                "HBS 2.0, esnafın karmaşık sınır ötesi e-ticaret süreçlerini, yapay zeka entegrasyonu ve sıfır bürokrasi ile yönetmesi için tasarlanmıştır.",
+                "HBS 2.0 is designed for merchants to manage complex cross-border e-commerce processes with AI integration and zero bureaucracy.",
+                "HBS 2.0 wurde entwickelt, damit Händler komplexe grenzüberschreitende E-Commerce-Prozesse mit KI-Integration und ohne Bürokratie verwalten können.",
+                "HBS 2.0 разработан для того, чтобы предприниматели могли управлять сложными трансграничными процессами электронной коммерции с интеграцией ИИ и нулевой бюрократией.",
+                "HBS 2.0 შექმნილია იმისთვის, რომ მეწარმეებმა მართონ რთული ტრანსსასაზღვრო ელექტრონული კომერციის პროცესები ხელოვნური ინტელექტის ინტეგრაციითა dan ნულოვანი ბიუროკრატიით."
+              )}
             </p>
           </div>
         </div>

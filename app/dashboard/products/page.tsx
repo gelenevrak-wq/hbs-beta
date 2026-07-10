@@ -59,7 +59,7 @@ function compressBase64Image(base64Str: string, maxWidth = 800, maxHeight = 800,
 function safeSetLocalStorage(key: string, value: string) {
   try {
     if (typeof window !== "undefined") {
-      safeSetLocalStorage(key, value);
+      window.localStorage.setItem(key, value);
     }
   } catch (e) {
     console.error("Local storage write failed (likely quota exceeded):", e);
@@ -852,9 +852,14 @@ export default function ProductsPage() {
   const [terminalMessage, setTerminalMessage] = useState("");
   const [terminalScannedShelf, setTerminalScannedShelf] = useState<string | null>(null);
   const [terminalInputVal, setTerminalInputVal] = useState("");
+  const [terminalCameraMessage, setTerminalCameraMessage] = useState("");
+  const [terminalCameraStream, setTerminalCameraStream] = useState<MediaStream | null>(null);
+  const [terminalDevices, setTerminalDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedTerminalDeviceId, setSelectedTerminalDeviceId] = useState<string>("");
 
   // Refs
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const terminalVideoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const zxingReaderRef = useRef<any>(null);
 
@@ -876,6 +881,89 @@ export default function ProductsPage() {
       document.head.appendChild(script);
     });
   };
+
+  // Start/Stop Terminal Camera based on isTerminalOpen
+  const handleTerminalScanRef = useRef(handleTerminalScan);
+  useEffect(() => {
+    handleTerminalScanRef.current = handleTerminalScan;
+  }, [handleTerminalScan]);
+
+  useEffect(() => {
+    let activeStream: MediaStream | null = null;
+    let activeReader: any = null;
+
+    const startTerminalCamera = async () => {
+      setTerminalCameraMessage("Kamera yükleniyor...");
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevs = devices.filter(d => d.kind === 'videoinput');
+        setTerminalDevices(videoDevs);
+
+        // Prefer environment-facing (back) camera for scanners on mobile devices
+        const backCamera = videoDevs.find(d => 
+          d.label.toLowerCase().includes("back") || 
+          d.label.toLowerCase().includes("environment") || 
+          d.label.toLowerCase().includes("arka")
+        );
+        const deviceId = selectedTerminalDeviceId || (backCamera ? backCamera.deviceId : (videoDevs[0]?.deviceId || ""));
+        if (deviceId && deviceId !== selectedTerminalDeviceId) {
+          setSelectedTerminalDeviceId(deviceId);
+        }
+
+        const constraints: MediaStreamConstraints = {
+          video: deviceId ? { deviceId: { exact: deviceId } } : { facingMode: "environment" }
+        };
+
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        activeStream = stream;
+        setTerminalCameraStream(stream);
+
+        const videoEl = terminalVideoRef.current;
+        if (videoEl) {
+          videoEl.srcObject = stream;
+          videoEl.setAttribute("playsinline", "true");
+
+          setTerminalCameraMessage("Kütüphane yükleniyor...");
+          const ZXingClass = await loadZXing();
+          if (!ZXingClass) {
+            setTerminalCameraMessage("Karekod tarayıcı kütüphanesi yüklenemedi.");
+            return;
+          }
+
+          const reader = new (window as any).ZXing.BrowserMultiFormatReader();
+          activeReader = reader;
+          setTerminalCameraMessage("Barkod Tarayıcı Hazır");
+
+          reader.decodeFromVideoElement(videoEl, (result: any, err: any) => {
+            if (result && result.text) {
+              handleTerminalScanRef.current(result.text);
+            }
+          });
+        }
+      } catch (err) {
+        console.error("Terminal camera start failed:", err);
+        setTerminalCameraMessage("Kamera erişim hatası! Kamera iznini kontrol edin.");
+      }
+    };
+
+    if (isTerminalOpen) {
+      startTerminalCamera();
+    } else {
+      setTerminalCameraMessage("");
+    }
+
+    return () => {
+      if (activeReader) {
+        try {
+          activeReader.reset();
+        } catch (e) {}
+      }
+      if (activeStream) {
+        activeStream.getTracks().forEach(track => track.stop());
+      }
+      setTerminalCameraStream(null);
+    };
+  }, [isTerminalOpen, selectedTerminalDeviceId]);
 
   // Start Camera Function
   const startCamera = async (mode: 'photo' | 'video' | 'scan', target: 'photo' | 'video' | 'barcode' | 'qrCode') => {
@@ -1125,7 +1213,7 @@ export default function ProductsPage() {
 
                     const mappedWhs = dbWhs.map(w => {
                       const shelves = dbLocs
-                        ? dbLocs.filter(l => l.warehouse_id === w.id).map(l => l.name)
+                        ? dbLocs.filter(l => l.warehouse_id === w.id && l.name !== "__CONFIG__").map(l => l.name)
                         : [];
                       return {
                         id: w.id,
@@ -1133,11 +1221,21 @@ export default function ProductsPage() {
                         purpose: w.address || "Depo Açıklaması",
                         customerVisible: w.is_visible_to_customers || false,
                         city: w.address || "Türkiye",
-                        zones: Array.from(new Set(shelves.map(s => s.split("-")[0]))).filter(Boolean),
+                        zones: Array.from(new Set(shelves.map(s => s.includes("-") ? s.split("-")[0] : s.charAt(0)))).filter(Boolean),
                         shelves: shelves
                       };
                     });
-                    setAvailableWarehouses(mappedWhs);
+
+                    const uniqueWhs: any[] = [];
+                    const seenNames = new Set<string>();
+                    mappedWhs.forEach(w => {
+                      const nameLower = String(w.name || "").trim().toLowerCase();
+                      if (!seenNames.has(nameLower)) {
+                        seenNames.add(nameLower);
+                        uniqueWhs.push(w);
+                      }
+                    });
+                    setAvailableWarehouses(uniqueWhs);
                   }
                 }
               });
@@ -1160,6 +1258,7 @@ export default function ProductsPage() {
                     .filter((item: any) => item.brand !== "DELETED" && item.category !== "DELETED")
                     .map((item: any) => {
                       const stockRecord = item.product_stocks?.[0];
+                      const totalQty = item.product_stocks ? item.product_stocks.reduce((acc: number, s: any) => acc + (parseFloat(s.quantity) || 0), 0) : 0;
                       return {
                         id: item.id,
                         itemType: item.type === "product" ? "product" : item.type === "service" ? "service" : "rental",
@@ -1177,7 +1276,7 @@ export default function ProductsPage() {
                         oemCode: "",
                         manufacturerCode: "",
                         stockTracking: true,
-                        quantity: stockRecord ? String(stockRecord.quantity) : "0",
+                        quantity: String(totalQty),
                         warehouse: (stockRecord && stockRecord.warehouses) ? stockRecord.warehouses.name : "Ana Depo",
                         shelf: (stockRecord && stockRecord.warehouse_locations) ? stockRecord.warehouse_locations.name : "",
                         entryDate: "",
@@ -1297,12 +1396,21 @@ export default function ProductsPage() {
           const registeredStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
           const myStore = registeredStores.find((s: any) => s.code === storeSlug);
           if (myStore && myStore.warehouses) {
-            setAvailableWarehouses(myStore.warehouses);
+            const uniqueWhs: any[] = [];
+            const seenNames = new Set<string>();
+            myStore.warehouses.forEach((w: any) => {
+              const nameLower = String(w.name || "").trim().toLowerCase();
+              if (!seenNames.has(nameLower)) {
+                seenNames.add(nameLower);
+                uniqueWhs.push(w);
+              }
+            });
+            setAvailableWarehouses(uniqueWhs);
             // Default select the first warehouse and its first shelf
-            if (myStore.warehouses.length > 0) {
-              setWarehouse(myStore.warehouses[0].name);
-              if (myStore.warehouses[0].shelves && myStore.warehouses[0].shelves.length > 0) {
-                setShelf(myStore.warehouses[0].shelves[0]);
+            if (uniqueWhs.length > 0) {
+              setWarehouse(uniqueWhs[0].name);
+              if (uniqueWhs[0].shelves && uniqueWhs[0].shelves.length > 0) {
+                setShelf(uniqueWhs[0].shelves[0]);
               }
             }
           }
@@ -1333,7 +1441,8 @@ export default function ProductsPage() {
         product.oemCode.toLowerCase().includes(q);
 
       // Warehouse filtering
-      const matchesWarehouse = selectedWarehouseFilter === "all" || product.warehouse === selectedWarehouseFilter;
+      const matchesWarehouse = selectedWarehouseFilter === "all" || 
+        String(product.warehouse || "").trim().toLowerCase() === String(selectedWarehouseFilter || "").trim().toLowerCase();
 
       // 2. Showcase Visibility Filter
       let matchesVisibility = true;
@@ -1470,12 +1579,36 @@ export default function ProductsPage() {
         }
 
         if (updatedFields.shelf !== undefined) {
-          const { data: loc } = await supabase
-            .from("warehouse_locations")
-            .select("id, warehouse_id")
-            .ilike("name", updatedFields.shelf.trim())
-            .limit(1)
-            .maybeSingle();
+          const prod = products.find(p => p.id === productId);
+          const whName = prod?.warehouse || updatedFields.warehouse;
+          
+          let whId = null;
+          if (whName) {
+            const matchedWh = availableWarehouses.find(
+              w => String(w.name || "").toLowerCase() === String(whName || "").toLowerCase()
+            );
+            if (matchedWh) whId = matchedWh.id;
+          }
+
+          let loc = null;
+          if (whId) {
+            const { data } = await supabase
+              .from("warehouse_locations")
+              .select("id, warehouse_id")
+              .eq("warehouse_id", whId)
+              .ilike("name", updatedFields.shelf.trim())
+              .limit(1)
+              .maybeSingle();
+            loc = data;
+          } else {
+            const { data } = await supabase
+              .from("warehouse_locations")
+              .select("id, warehouse_id")
+              .ilike("name", updatedFields.shelf.trim())
+              .limit(1)
+              .maybeSingle();
+            loc = data;
+          }
 
           if (loc) {
             payload.location_id = loc.id;
@@ -2569,55 +2702,58 @@ export default function ProductsPage() {
         </header>
 
         {/* 🏪 Depo Durum Kartları ve Hızlı Filtreleme */}
-        <section className="mb-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-          <div
+        <section className="mb-4 flex flex-wrap items-center gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-200 shadow-sm">
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-2">📍 DEPO:</span>
+          
+          <button
+            type="button"
             onClick={() => setSelectedWarehouseFilter("all")}
-            className={`p-4 rounded-2xl border cursor-pointer transition select-none flex flex-col justify-between h-24 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-2 border select-none cursor-pointer ${
               selectedWarehouseFilter === "all"
-                ? "border-blue-400 bg-blue-50/50 shadow-sm"
-                : "border-slate-200 bg-white hover:bg-slate-50"
+                ? "bg-blue-600 border-blue-600 text-white shadow-sm font-extrabold"
+                : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
             }`}
           >
-            <div>
-              <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">GENEL ENVANTER</span>
-              <span className="text-sm font-black text-slate-800 mt-1 block">Tüm Depolar</span>
-            </div>
-            <span className="text-xs font-bold text-slate-500 font-semibold">{products.length} Çeşit Ürün</span>
-          </div>
+            <span>Tüm Depolar</span>
+            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-mono ${
+              selectedWarehouseFilter === "all" ? "bg-blue-500 text-blue-100" : "bg-slate-100 text-slate-500"
+            }`}>
+              {products.length} Tanımlı / {products.filter(p => (parseInt(p.quantity) || 0) > 0).length} Stoklu / {products.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0)} Adet
+            </span>
+          </button>
 
           {availableWarehouses.map((wh) => {
-            const whProducts = products.filter(p => p.warehouse === wh.name);
+            const whProducts = products.filter(p => String(p.warehouse || "").trim().toLowerCase() === String(wh.name || "").trim().toLowerCase());
             const totalQty = whProducts.reduce((sum, p) => sum + (parseInt(p.quantity) || 0), 0);
-            const isSelected = selectedWarehouseFilter === wh.name;
+            const isSelected = String(selectedWarehouseFilter || "").trim().toLowerCase() === String(wh.name || "").trim().toLowerCase();
 
             return (
-              <div
+              <button
                 key={wh.id}
+                type="button"
                 onClick={() => setSelectedWarehouseFilter(wh.name)}
-                className={`p-4 rounded-2xl border cursor-pointer transition select-none flex flex-col justify-between h-24 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-2 border select-none cursor-pointer ${
                   isSelected
-                    ? "border-blue-400 bg-blue-50/50 shadow-sm"
-                    : "border-slate-200 bg-white hover:bg-slate-50"
+                    ? "bg-blue-600 border-blue-600 text-white shadow-sm font-extrabold"
+                    : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                 }`}
               >
-                <div>
-                  <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">DEPO HESABI</span>
-                  <span className="text-sm font-black text-slate-800 mt-0.5 block truncate">{wh.name}</span>
-                </div>
-                <div className="flex justify-between items-center text-[10px] font-bold text-slate-500">
-                  <span>{whProducts.length} Çeşit</span>
-                  <span>{totalQty} Adet Stok</span>
-                </div>
-              </div>
+                <span>{wh.name}</span>
+                <span className={`px-2 py-0.5 rounded-lg text-[9px] font-mono ${
+                  isSelected ? "bg-blue-500 text-blue-100" : "bg-slate-100 text-slate-500"
+                }`}>
+                  {whProducts.length} Çeşit / {totalQty} Adet
+                </span>
+              </button>
             );
           })}
 
           <Link
             href="/dashboard/warehouses"
-            className="p-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 hover:bg-slate-100/70 transition flex flex-col items-center justify-center text-center h-24 text-slate-700 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl text-xs font-black transition-all duration-200 active:scale-95 flex items-center gap-1.5 border border-dashed border-slate-350 bg-white hover:bg-slate-50 text-slate-650 select-none ml-auto"
           >
-            <span className="text-xl">🏪</span>
-            <span className="text-xs font-black mt-1">Depoları Yönet & Düzenle</span>
+            <span>🏪</span>
+            <span>Depoları Yönet</span>
           </Link>
         </section>
 
@@ -2628,44 +2764,40 @@ export default function ProductsPage() {
         )}
 
         {/* Toplu Ürün İşlemleri (Excel / CSV) - Premium Panel */}
-        <section className="mb-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-black text-blue-700 uppercase border border-blue-100">
-                ⚡ HIZLI YÜKLEME SİSTEMİ
-              </span>
-              <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
-                Toplu Ürün Aktarımı (Excel / CSV)
-                <AICopilotTooltip fieldKey="batchImport" position="right" />
-              </h2>
-              <p className="text-xs text-slate-900 font-extrabold max-w-2xl leading-relaxed">
-                Mağazanıza yüzlerce ürünü ve bunlara ait varyantları (örneğin OBDTR Autel cihazları veya tekstil bedenleri) tek bir hamlede ekleyin. Hazırladığımız şablonu indirin, doldurup geri yükleyin!
-              </p>
-            </div>
-            
-            <div className="flex flex-wrap gap-2.5 items-center shrink-0">
-              <button
-                type="button"
-                onClick={downloadCSVTemplate}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-slate-900 font-extrabold hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5 animate-pulse"
-              >
-                <span>📥</span> Şablon İndir (Excel / CSV)
-              </button>
-              
-              <label className="rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-black text-white hover:bg-slate-800 transition shadow-sm cursor-pointer flex items-center gap-1.5">
-                <span>📤</span> Dosyayı Geri Yükle
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleCSVImport}
-                  className="hidden" id="id-page-hidden-838" aria-label="Hidden" />
-              </label>
-            </div>
+        <section className="mb-3 rounded-xl border border-slate-200 bg-white p-2.5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-slate-800">
+          <div className="flex items-center gap-2">
+            <span className="shrink-0 rounded bg-blue-50 px-1.5 py-0.5 text-[8px] font-black text-blue-700 uppercase border border-blue-100">
+              ⚡ HIZLI YÜKLEME
+            </span>
+            <span className="text-xs font-black">Toplu Ürün Aktarımı (Excel/CSV):</span>
+            <span className="text-[10px] text-slate-500 font-semibold hidden md:inline">
+              Şablon indirip doldurarak tek seferde yükleyin.
+            </span>
+            <span className="text-[9px] text-slate-400 font-medium hidden lg:inline border-l border-slate-200 pl-2">
+              (İpucu: Varyantlar için <code>Model|SKU|Barkod|Fiyat...</code> formatında <code>;</code> ile ayırın)
+            </span>
           </div>
           
-          <div className="mt-3.5 border-t border-slate-100 pt-3 flex gap-2 text-[10px] text-slate-700 font-bold font-bold leading-relaxed">
-            <span className="text-blue-600 font-black">ℹ Varyant İpucu:</span>
-            <span>Şablondaki en son "Varyantlar" sütununu kullanarak aynı ürüne ait birden fazla çeşidi (örneğin <code>Model|SKU|Barkod|AlışFiyatı|SatışFiyatı|Adet|Depo|Raf</code> formatında ve <code>;</code> ile ayırarak) tek satırda yükleyebilirsiniz.</span>
+          <div className="flex gap-2 items-center shrink-0">
+            <button
+              type="button"
+              onClick={downloadCSVTemplate}
+              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-black text-slate-800 hover:bg-slate-50 transition flex items-center gap-1 cursor-pointer select-none"
+            >
+              <span>📥</span> Şablon İndir
+            </button>
+            
+            <label className="rounded-lg bg-slate-900 px-2.5 py-1.5 text-[10px] font-black text-white hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 select-none">
+              <span>📤</span> Dosya Yükle
+              <input
+                type="file"
+                accept=".csv"
+                onChange={handleCSVImport}
+                className="hidden"
+                id="id-page-hidden-838"
+                aria-label="Hidden"
+              />
+            </label>
           </div>
         </section>
 
@@ -3494,7 +3626,15 @@ export default function ProductsPage() {
           <aside className="space-y-3">
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-2.5">
-                <h2 className="text-lg font-black">{t.availableProductsHeader} ({filteredProducts.length})</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-black">{t.availableProductsHeader} ({filteredProducts.length})</h2>
+                  <Link
+                    href="/dashboard/warehouses"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-50 border border-indigo-150 text-[10px] font-black text-indigo-750 hover:bg-indigo-100 transition active:scale-95 select-none"
+                  >
+                    <span>🏪</span> Depoları Yönet
+                  </Link>
+                </div>
                 {filteredProducts.length > 0 && (
                   <div className="flex items-center gap-2">
                     <label className="flex items-center gap-1.5 text-xs font-black text-slate-900 font-extrabold cursor-pointer select-none bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 hover:bg-slate-100">
@@ -4263,23 +4403,49 @@ export default function ProductsPage() {
 
                   {/* Laser Sweeper Simulator (Visual Scan Window) */}
                   <div className="relative h-32 rounded-2xl bg-black border border-slate-800 overflow-hidden flex items-center justify-center group shadow-inner">
+                    {/* Live Video Feed */}
+                    <video
+                      ref={terminalVideoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+
                     {/* Laser lines */}
-                    <div className="absolute inset-x-0 top-1/2 h-0.5 bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.9)] z-10 animate-scanLine" />
+                    <div className="absolute inset-x-0 top-1/2 h-0.5 bg-[#ff4d00] shadow-[0_0_8px_rgba(255,77,0,0.9)] z-10 animate-scanLine" />
                     
                     {/* Glowing corner brackets */}
-                    <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-orange-500 rounded-tl" />
-                    <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-orange-500 rounded-tr" />
-                    <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-orange-500 rounded-bl" />
-                    <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-orange-500 rounded-br" />
+                    <div className="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-orange-500 rounded-tl z-10" />
+                    <div className="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-orange-500 rounded-tr z-10" />
+                    <div className="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-orange-500 rounded-bl z-10" />
+                    <div className="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-orange-500 rounded-br z-10" />
 
-                    {/* Scan indicator overlay */}
-                    <div className="text-center space-y-1.5 z-10 px-4">
-                      <span className="text-[10px] font-black bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2 py-0.5 rounded-full tracking-wider block animate-pulse uppercase">
-                        Sistem Barkod Tarayıcı Hazır
-                      </span>
-                      <p className="text-[9px] text-slate-600 font-bold">Barkod simüle etmek için aşağıdaki listeden seçin veya okutun.</p>
-                    </div>
+                    {/* Scan status/error overlay */}
+                    {terminalCameraMessage && (
+                      <div className="absolute inset-x-0 bottom-2 text-center z-10 px-3">
+                        <span className="inline-block text-[8px] font-black bg-[#0d1527]/90 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full tracking-wider uppercase backdrop-blur-sm">
+                          {terminalCameraMessage}
+                        </span>
+                      </div>
+                    )}
                   </div>
+
+                  {/* Camera selector for devices with multiple cameras */}
+                  {terminalDevices.length > 1 && (
+                    <div className="flex items-center justify-between gap-2 bg-[#121c35] p-2.5 rounded-xl border border-slate-800">
+                      <span className="text-[9px] font-black text-slate-400 block uppercase tracking-wider">Kamera Değiştir</span>
+                      <select
+                        value={selectedTerminalDeviceId}
+                        onChange={(e) => setSelectedTerminalDeviceId(e.target.value)}
+                        className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-[10px] text-white outline-none focus:border-orange-500 font-bold"
+                      >
+                        {terminalDevices.map((d, i) => (
+                          <option key={d.deviceId} value={d.deviceId}>{d.label || `Kamera ${i + 1}`}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   {/* Unified Barcode / Shelf Scanner Input */}
                   <div className="space-y-1.5">

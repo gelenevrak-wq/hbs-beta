@@ -11,7 +11,7 @@ import {
 } from "./translations";
 
 export function useHbsLanguage() {
-  const [language, setLanguageState] = useState<HbsLanguageCode>("en");
+  const [language, setLanguageState] = useState<HbsLanguageCode>("tr");
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {

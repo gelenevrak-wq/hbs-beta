@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import VisitorTracker from "@/components/VisitorTracker";
 import OfflinePOS from "@/components/OfflinePOS";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 import DemoDataInitializer from "@/components/DemoDataInitializer";
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta-sans",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "HBS | Hybrid Business System",
@@ -22,8 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased" data-scroll-behavior="smooth">
-      <body className="min-h-full flex flex-col">
+    <html lang="en" className={`${plusJakartaSans.variable} h-full antialiased`} data-scroll-behavior="smooth">
+      <body className="min-h-full flex flex-col font-sans">
         <VisitorTracker />
         <OfflinePOS />
         <PWAInstallPrompt />

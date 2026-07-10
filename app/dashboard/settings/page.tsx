@@ -805,27 +805,7 @@ export default function SettingsPage() {
                   </select>
                 </div>
 
-                <div>
-                  <div className="mb-1 flex items-center justify-between">
-                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      {language === "tr" ? "🛡️ Kur Kalkanı Marjı (%)" : "🛡️ Exchange Hedging Buffer (%)"}
-                    </label>
-                    <span className="text-xs font-extrabold text-blue-600">%{exchangeHedgingBuffer}</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="5"
-                    step="0.1"
-                    value={exchangeHedgingBuffer}
-                    onChange={(e) => setExchangeHedgingBuffer(Number(e.target.value))}
-                    className="w-full h-1.5 cursor-pointer appearance-none rounded-lg bg-slate-100 accent-blue-600 focus:outline-none" id="id-page-w-full-h-1-5-cursor-pointer-appearance-none-rounded-lg-bg-slate-100-accent-blue-600-focus-outline-none-719" aria-label="W full h 1 5 cursor pointer appearance none rounded lg bg slate 100 accent blue 600 focus outline none" />
-                  <span className="text-[10px] text-slate-400 font-semibold block mt-1 leading-normal">
-                    {language === "tr" 
-                      ? "Çapraz döviz çevirilerinde kur dalgalanma riskine karşı fiyata eklenecek emniyet payı." 
-                      : "Risk buffer added during dynamic currency conversions to protect against rate drops."}
-                  </span>
-                </div>
+
 
                 <div>
                   <label className="mb-1 block text-xs font-bold text-slate-500 uppercase tracking-wider">

@@ -42,11 +42,11 @@ export const OZGUR_MOTOR_STORE = {
   operatingModel: "hybrid",
   isActive: true,
   warehouses: [
-    { id: "wh-istanbul", name: "İstanbul Şubesi", purpose: "İstanbul Merkez Yedek Parça Dağıtım", customerVisible: true, city: "İstanbul", zones: ["A", "B", "C"], shelves: ["A-01-01", "A-01-02", "A-02-01", "B-01-01", "B-01-02", "C-01-01"], capacity: 5000, used: 800 },
-    { id: "wh-izmir", name: "İzmir Şubesi", purpose: "Ege Bölgesi Yedek Parça Deposu", customerVisible: true, city: "İzmir", zones: ["A", "B", "C"], shelves: ["A-01-01", "A-01-02", "A-02-01", "B-01-01", "B-01-02", "C-01-01"], capacity: 4000, used: 600 },
-    { id: "wh-batum", name: "Batum Şubesi", purpose: "Gürcistan Batum Ana Depo", customerVisible: true, city: "Batumi", zones: ["A", "B", "C"], shelves: ["A-01-01", "A-01-02", "A-02-01", "B-01-01", "B-01-02", "C-01-01"], capacity: 3000, used: 500 },
-    { id: "wh-tiflis", name: "Tiflis Şubesi", purpose: "Tiflis Bölge Dağıtım Deposu", customerVisible: true, city: "Tbilisi", zones: ["A", "B", "C"], shelves: ["A-01-01", "A-01-02", "A-02-01", "B-01-01", "B-01-02", "C-01-01"], capacity: 3000, used: 400 },
-    { id: "wh-ankara", name: "Ankara Şubesi", purpose: "İç Anadolu Bölge Deposu", customerVisible: true, city: "Ankara", zones: ["A", "B", "C"], shelves: ["A-01-01", "A-01-02", "A-02-01", "B-01-01", "B-01-02", "C-01-01"], capacity: 4000, used: 700 }
+    { id: "wh-istanbul", name: "İstanbul Şubesi", purpose: "İstanbul Merkez Yedek Parça Dağıtım", customerVisible: true, city: "İstanbul", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 5000, used: 800 },
+    { id: "wh-izmir", name: "İzmir Şubesi", purpose: "Ege Bölgesi Yedek Parça Deposu", customerVisible: true, city: "İzmir", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 4000, used: 600 },
+    { id: "wh-batum", name: "Batum Şubesi", purpose: "Gürcistan Batum Ana Depo", customerVisible: true, city: "Batumi", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 3000, used: 500 },
+    { id: "wh-tiflis", name: "Tiflis Şubesi", purpose: "Tiflis Bölge Dağıtım Deposu", customerVisible: true, city: "Tbilisi", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 3000, used: 400 },
+    { id: "wh-ankara", name: "Ankara Şubesi", purpose: "İç Anadolu Bölge Deposu", customerVisible: true, city: "Ankara", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 4000, used: 700 }
   ]
 };
 
@@ -103,13 +103,13 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
     "/product-images/diagnostic-tablet.svg"
   ];
 
-  const shelves = ["A-01-01", "A-01-02", "A-02-01", "B-01-01", "B-01-02", "C-01-01"];
+  const shelves = ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"];
 
   const products: ProductRecord[] = [];
 
   brands.forEach(b => {
-    // Generate exactly 100 products per brand
-    for (let i = 1; i <= 100; i++) {
+    // Generate exactly 4 products per brand
+    for (let i = 1; i <= 4; i++) {
       const part = partPool[(i - 1) % partPool.length];
       const model = b.models[(i - 1) % b.models.length];
       
@@ -138,10 +138,10 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
 
       const purchaseVal = Math.floor(20 + ((i * 7) % 300));
       const saleVal = Math.floor(purchaseVal * 1.8);
-      const quantityVal = Math.floor(15 + ((i * 3) % 85)); // realistic stock levels
+      const quantityVal = 10; // clean default stock level
 
       const warehouse = warehouses[(i - 1) % warehouses.length];
-      const shelf = shelves[(i - 1) % shelves.length];
+      const shelf = ""; // All unplaced/scattered by default
       const imageUrl = images[(i - 1) % images.length];
 
       products.push({

@@ -9,6 +9,77 @@ import CompactLanguageSwitcher, { LanguageCode, isLanguageCode } from "@/compone
 
 const safeLower = (val: any) => String(val || "").toLowerCase();
 
+const consolidateProductState = (list: ProductRecord[]): ProductRecord[] => {
+  const merged: { [key: string]: ProductRecord } = {};
+  const duplicatesToRemove: string[] = [];
+
+  for (const p of list) {
+    const catalogId = p.originalProductId || p.id;
+    const key = `${catalogId}-${p.warehouse || ""}-${p.shelf || ""}`;
+    
+    if (merged[key]) {
+      const existing = merged[key];
+      existing.quantity = (parseFloat(existing.quantity || "0") + parseFloat(p.quantity || "0")).toString();
+      if (p.stockId && !existing.stockId) {
+        existing.stockId = p.stockId;
+      } else if (p.stockId && existing.stockId && p.stockId !== existing.stockId) {
+        duplicatesToRemove.push(p.stockId);
+      }
+    } else {
+      merged[key] = { ...p };
+    }
+  }
+  
+  if (duplicatesToRemove.length > 0) {
+    (async () => {
+      const isSupabaseConfigured = 
+        process.env.NEXT_PUBLIC_SUPABASE_URL && 
+        process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
+      if (isSupabaseConfigured) {
+        try {
+          await supabase
+            .from("product_stocks")
+            .delete()
+            .in("id", duplicatesToRemove);
+          console.log("Consolidated and deleted duplicate stock records:", duplicatesToRemove);
+        } catch (e) {
+          console.error("Error deleting duplicates:", e);
+        }
+      }
+    })();
+  }
+
+  return Object.values(merged);
+};
+
+const parseShelfCode = (sh: string) => {
+  const code = (sh || "").trim();
+  if (code.includes("-")) {
+    const parts = code.split("-");
+    return {
+      zone: parts[0] || "",
+      slot: parseInt(parts[1]) || 1,
+      level: parts[2] ? (parseInt(parts[2]) || 1) : 1,
+      side: parts[3] ? parts[3].split("-")[0] : ""
+    };
+  } else {
+    // Format: A0101 or A0102
+    const zone = code.charAt(0) || "";
+    const slot = parseInt(code.substring(1, 3)) || 1;
+    const level = parseInt(code.substring(3, 5)) || 1;
+    const side = code.substring(5) || "";
+    return { zone, slot, level, side };
+  }
+};
+
+const getZoneFromShelf = (s: string): string => {
+  if (!s) return "";
+  if (s.includes("-")) {
+    return s.split("-")[0] || "";
+  }
+  return s.charAt(0) || "";
+};
+
 type CorridorConfig = {
   zone: string;
   name?: string; // Custom descriptive name
@@ -1190,12 +1261,55 @@ export default function WarehousesRevampPage() {
   const [storeName, setStoreName] = useState("OBDTR Diagnostics");
 
   // Core Data States
-  const [warehouses, setWarehouses] = useState<Warehouse[]>([]);
+  const [warehouses, setWarehouses] = useState<Warehouse[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const userStr = window.localStorage.getItem("hbs-current-user");
+        const activeUser = userStr ? JSON.parse(userStr) : null;
+        const slug = activeUser?.storeSlugs?.[0] || "obdtr";
+        const storesStr = window.localStorage.getItem("hbs-registered-stores");
+        if (storesStr) {
+          const registeredStores = JSON.parse(storesStr);
+          const myStore = registeredStores.find((s: any) => s.code === slug);
+          if (myStore && myStore.warehouses && myStore.warehouses.length > 0) {
+            return myStore.warehouses;
+          }
+        }
+        // Sync-fallback to default store data
+        const { OZGUR_MOTOR_STORE } = require("@/lib/demoData");
+        return OZGUR_MOTOR_STORE.warehouses || [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
   const [products, setProducts] = useState<ProductRecord[]>([]);
   const [movements, setMovements] = useState<StockMovement[]>([]);
 
   // Active / Selected UI states
-  const [activeWarehouseId, setActiveWarehouseId] = useState<string>("");
+  const [activeWarehouseId, setActiveWarehouseId] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const userStr = window.localStorage.getItem("hbs-current-user");
+        const activeUser = userStr ? JSON.parse(userStr) : null;
+        const slug = activeUser?.storeSlugs?.[0] || "obdtr";
+        const storesStr = window.localStorage.getItem("hbs-registered-stores");
+        if (storesStr) {
+          const registeredStores = JSON.parse(storesStr);
+          const myStore = registeredStores.find((s: any) => s.code === slug);
+          if (myStore && myStore.warehouses && myStore.warehouses.length > 0) {
+            return myStore.warehouses[0].id;
+          }
+        }
+        const { OZGUR_MOTOR_STORE } = require("@/lib/demoData");
+        return OZGUR_MOTOR_STORE.warehouses?.[0]?.id || "";
+      } catch (e) {
+        return "";
+      }
+    }
+    return "";
+  });
   const [productSearch, setProductSearch] = useState("");
   const [editingWarehouseId, setEditingWarehouseId] = useState<string | null>(null);
   const [editingWarehouseName, setEditingWarehouseName] = useState("");
@@ -1233,12 +1347,13 @@ export default function WarehousesRevampPage() {
 
   // Unified state and Supabase synchronizer function
   const saveProductsStateAndSync = async (updatedList: ProductRecord[]) => {
+    const consolidatedList = consolidateProductState(updatedList);
     // 1. Update React state immediately for snappy UX
-    setProducts(updatedList);
+    setProducts(consolidatedList);
 
     // 2. Save to local storage
     if (storeSlug) {
-      window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedList));
+      window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(consolidatedList));
     }
 
     // 3. Compare with previous products state and push dirty rows to database
@@ -1261,7 +1376,7 @@ export default function WarehousesRevampPage() {
         console.error("Failed to look up company ID in saveProductsStateAndSync:", e);
       }
 
-      const finalList = [...updatedList];
+      const finalList = [...consolidatedList];
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
       const insertsPayload: any[] = [];
       const stockUpdates: any[] = [];
@@ -1438,11 +1553,40 @@ export default function WarehousesRevampPage() {
   // Layout Shaper States
   const [shaperZones, setShaperZones] = useState("A, B, C");
   const [shaperShelfDepth, setShaperShelfDepth] = useState(4); // 4 shelves per zone (01, 02, 03, 04)
-  const [corridors, setCorridors] = useState<CorridorConfig[]>([
-    { zone: "A", depth: 4, tiers: 3 },
-    { zone: "B", depth: 4, tiers: 3 },
-    { zone: "C", depth: 4, tiers: 3 }
-  ]);
+  const [corridors, setCorridors] = useState<CorridorConfig[]>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const userStr = window.localStorage.getItem("hbs-current-user");
+        const activeUser = userStr ? JSON.parse(userStr) : null;
+        const slug = activeUser?.storeSlugs?.[0] || "obdtr";
+        const storesStr = window.localStorage.getItem("hbs-registered-stores");
+        if (storesStr) {
+          const registeredStores = JSON.parse(storesStr);
+          const myStore = registeredStores.find((s: any) => s.code === slug);
+          if (myStore && myStore.warehouses && myStore.warehouses.length > 0) {
+            return myStore.warehouses[0].corridorConfigs || [];
+          }
+        }
+        const { OZGUR_MOTOR_STORE } = require("@/lib/demoData");
+        return OZGUR_MOTOR_STORE.warehouses?.[0]?.corridorConfigs || [
+          { zone: "A", depth: 4, tiers: 3 },
+          { zone: "B", depth: 4, tiers: 3 },
+          { zone: "C", depth: 4, tiers: 3 }
+        ];
+      } catch (e) {
+        return [
+          { zone: "A", depth: 4, tiers: 3 },
+          { zone: "B", depth: 4, tiers: 3 },
+          { zone: "C", depth: 4, tiers: 3 }
+        ];
+      }
+    }
+    return [
+      { zone: "A", depth: 4, tiers: 3 },
+      { zone: "B", depth: 4, tiers: 3 },
+      { zone: "C", depth: 4, tiers: 3 }
+    ];
+  });
   const [shelfCapacities, setShelfCapacities] = useState<{ [shelfCode: string]: ShelfCapacity }>({});
   const [shelfAliases, setShelfAliases] = useState<Record<string, string>>({});
   const [stockTransfers, setStockTransfers] = useState<StockTransfer[]>([]);
@@ -1571,16 +1715,14 @@ export default function WarehousesRevampPage() {
     }
     const map: { [key: string]: { slots: Set<number>, levels: Set<number> } } = {};
     shelves.forEach(sh => {
-      const parts = sh.split("-");
-      if (parts.length >= 2) {
-        const zone = parts[0];
-        const slot = parseInt(parts[1]) || 1;
-        const level = parts[2] ? (parseInt(parts[2]) || 1) : 1;
+      const parsed = parseShelfCode(sh);
+      const zone = parsed.zone;
+      if (zone) {
         if (!map[zone]) {
           map[zone] = { slots: new Set<number>(), levels: new Set<number>() };
         }
-        map[zone].slots.add(slot);
-        map[zone].levels.add(level);
+        map[zone].slots.add(parsed.slot);
+        map[zone].levels.add(parsed.level);
       }
     });
     return Object.keys(map).sort().map(zone => {
@@ -1674,7 +1816,7 @@ export default function WarehousesRevampPage() {
             p.id.startsWith("prod-bmw-")
           ).length;
 
-          if (ozgurCount < 400) {
+          if (ozgurCount < 150) {
             const { generateOzgurMotorProducts } = require("@/lib/demoData");
             const ozgurProducts = generateOzgurMotorProducts();
             const filtered = parsedProducts.filter((p: any) => 
@@ -1739,7 +1881,7 @@ export default function WarehousesRevampPage() {
                   purpose: w.address || "Depo Açıklaması",
                   customerVisible: w.is_visible_to_customers || false,
                   city: w.address || "Türkiye",
-                  zones: Array.from(new Set(shelves.map(s => s.split("-")[0]))).filter(Boolean),
+                  zones: Array.from(new Set(shelves.map(s => getZoneFromShelf(s)))).filter(Boolean),
                   shelves: shelves,
                   corridorConfigs: parseShelvesToConfig(shelves),
                   capacity: 1000,
@@ -1883,9 +2025,10 @@ export default function WarehousesRevampPage() {
                     galleryUrls: item.photo_urls || (item.photo_urls?.[0] ? [item.photo_urls[0]] : ["/product-images/diagnostic-scanner.svg"])
                   };
                 });
-              setProducts(mapped);
-              window.localStorage.setItem(`hbs-store-products-${slug}`, JSON.stringify(mapped));
-              loadSyncWarehouses(mapped);
+              const consolidated = consolidateProductState(mapped);
+              setProducts(consolidated);
+              window.localStorage.setItem(`hbs-store-products-${slug}`, JSON.stringify(consolidated));
+              loadSyncWarehouses(consolidated);
             } else {
               loadLocalFallback();
             }
@@ -1911,7 +2054,7 @@ export default function WarehousesRevampPage() {
       const updated = products.map(p => p.id === productId ? { ...p, shelf: "" } : p);
       saveProductsStateAndSync(updated);
       window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updated));
-      alert(activeLang === "en" ? `"${productName}" shelf location cleared.` : activeLang === "de" ? `"${productName}" Regalposition gelöscht.` : activeLang === "ru" ? `Для товар "${productName}" очищено местоположение на полке.` : activeLang === "ka" ? `"${productName}" თაროს მდებარეობა გასუფთავდა.` : `"${productName}" raf konumu temizlendi.`);
+      showSuccess(activeLang === "en" ? `"${productName}" shelf location cleared.` : activeLang === "de" ? `"${productName}" Regalposition gelöscht.` : activeLang === "ru" ? `Для товар "${productName}" очищено местоположение на полке.` : activeLang === "ka" ? `"${productName}" თაროს მდებარეობა გასუფთავდა.` : `"${productName}" raf konumu temizlendi.`);
 
       const isSupabaseConfigured = 
         process.env.NEXT_PUBLIC_SUPABASE_URL && 
@@ -1932,7 +2075,7 @@ export default function WarehousesRevampPage() {
       const updatedProducts = products.filter((p) => p.id !== productId);
       saveProductsStateAndSync(updatedProducts);
       window.localStorage.setItem(`hbs-store-products-${storeSlug}`, JSON.stringify(updatedProducts));
-      alert(activeLang === "en" ? `"${productName}" deleted from inventory.` : activeLang === "de" ? `"${productName}" aus dem Inventar gelöscht.` : activeLang === "ru" ? `"${productName}" удален из инвентаря.` : activeLang === "ka" ? `"${productName}" წაიშალა ინვენტარიდან.` : `"${productName}" envanterden silindi.`);
+      showSuccess(activeLang === "en" ? `"${productName}" deleted from inventory.` : activeLang === "de" ? `"${productName}" aus dem Inventar gelöscht.` : activeLang === "ru" ? `"${productName}" удален из инвентаря.` : activeLang === "ka" ? `"${productName}" წაიშალა ინვენტარიდან.` : `"${productName}" envanterden silindi.`);
 
       const isSupabaseConfigured = 
         process.env.NEXT_PUBLIC_SUPABASE_URL && 
@@ -2123,7 +2266,7 @@ export default function WarehousesRevampPage() {
   const handleDeleteWarehouse = async (warehouseId: string, warehouseName: string) => {
     const itemsCount = products.filter((p) => safeLower(p.warehouse) === safeLower(warehouseName)).length;
     if (itemsCount > 0) {
-      alert(wm.errHasInventory.replace("{count}", itemsCount.toString()));
+      showError(wm.errHasInventory.replace("{count}", itemsCount.toString()));
       return;
     }
 
@@ -2223,12 +2366,12 @@ export default function WarehousesRevampPage() {
     const currentQty = parseInt(targetProd.quantity) || 0;
 
     if (qtyVal <= 0) {
-      alert(wm.alertValidQty);
+      showError(wm.alertValidQty);
       return;
     }
 
     if (qtyVal > currentQty) {
-      alert(wm.alertStockLimitExceeded.replace("{max}", currentQty.toString()));
+      showError(wm.alertStockLimitExceeded.replace("{max}", currentQty.toString()));
       return;
     }
 
@@ -2280,7 +2423,7 @@ export default function WarehousesRevampPage() {
   const handleAddNewWarehouse = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newWhName.trim()) {
-      alert(wm.alertValidWhName);
+      showError(wm.alertValidWhName);
       return;
     }
 
@@ -2474,7 +2617,7 @@ export default function WarehousesRevampPage() {
       return {
         ...wh,
         shelves: mergedShelves,
-        zones: Array.from(new Set(mergedShelves.map(s => s.split("-")[0]))).filter(Boolean),
+        zones: Array.from(new Set(mergedShelves.map(s => getZoneFromShelf(s)))).filter(Boolean),
         corridorConfigs: parseShelvesToConfig(mergedShelves)
       };
     }
@@ -2511,7 +2654,7 @@ export default function WarehousesRevampPage() {
             const slotStr = d < 10 ? `0${d}` : `${d}`;
             for (let t = 1; t <= corr.tiers; t++) {
               const tierStr = t < 10 ? `0${t}` : `${t}`;
-              const baseCode = `${zone}-${slotStr}-${tierStr}`;
+              const baseCode = `${zone}${slotStr}${tierStr}`;
 
               const sides = corr.isDoubleRow ? ["S1", "S2"] : [""];
               sides.forEach((side) => {
@@ -3142,26 +3285,17 @@ ${sizeStr}
       }
     }
 
-    // Sort walking path by zone letter, slot number, and level number
     steps.sort((a, b) => {
-      const partsA = a.shelf.split("-");
-      const partsB = b.shelf.split("-");
+      const parsedA = parseShelfCode(a.shelf);
+      const parsedB = parseShelfCode(b.shelf);
 
-      const zoneA = partsA[0] || "";
-      const zoneB = partsB[0] || "";
-      if (zoneA !== zoneB) {
-        return zoneA.localeCompare(zoneB);
+      if (parsedA.zone !== parsedB.zone) {
+        return parsedA.zone.localeCompare(parsedB.zone);
       }
-
-      const slotA = parseInt(partsA[1]) || 0;
-      const slotB = parseInt(partsB[1]) || 0;
-      if (slotA !== slotB) {
-        return slotA - slotB;
+      if (parsedA.slot !== parsedB.slot) {
+        return parsedA.slot - parsedB.slot;
       }
-
-      const levelA = parseInt(partsA[2]) || 0;
-      const levelB = parseInt(partsB[2]) || 0;
-      return levelA - levelB;
+      return parsedA.level - parsedB.level;
     });
 
     setPickingRouteSteps(steps);
@@ -4057,7 +4191,7 @@ ${sizeStr}
                                     <div className="flex-1 flex gap-1.5">
                                       {Array.from({ length: c.depth }, (_, dIdx) => {
                                         const slot = dIdx + 1;
-                                        const code = `${c.zone}-${slot < 10 ? `0${slot}` : `${slot}`}-${level < 10 ? `0${level}` : `${level}`}`;
+                                        const code = `${c.zone}${slot < 10 ? `0${slot}` : `${slot}`}${level < 10 ? `0${level}` : `${level}`}`;
                                         const hasProduct = products.some(
                                           (p) =>
                                             safeLower(p.warehouse) === safeLower(activeWh.name) &&
@@ -4078,7 +4212,7 @@ ${sizeStr}
                                                 : "bg-slate-50 border-slate-200 border-dashed text-slate-700 hover:bg-slate-100"
                                             }`}
                                           >
-                                            <span className="text-[8px] font-mono font-bold block">{slot < 10 ? `0${slot}` : slot}-{level < 10 ? `0${level}` : level}</span>
+                                            <span className="text-[8px] font-mono font-bold block">{slot < 10 ? `0${slot}` : slot}{level < 10 ? `0${level}` : level}</span>
                                             {hasProduct && <span className="text-[7px] font-black mt-0.5">📦 Dolu</span>}
                                           </div>
                                         );
@@ -4309,34 +4443,35 @@ ${sizeStr}
 
                 {/* Live Shelf Inspector Screen (Okutulan Raf Müfettişi) */}
                 {scannedShelfCode && (
-                  <div className="rounded-2xl border-2 border-blue-400 bg-blue-50/40 p-4 space-y-4 animate-fadeIn">
-                    <div className="flex justify-between items-start border-b border-blue-200 pb-2">
+                  <div className="rounded-xl border border-blue-250 bg-blue-50/20 p-3 space-y-3 animate-fadeIn">
+                    <div className="flex justify-between items-center border-b border-blue-200/50 pb-1.5">
                       <div>
-                        <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">{t.scannedStatus}</span>
-                        <h3 className="text-base font-black text-slate-900">📍 Raf: {scannedShelfCode}</h3>
+                        <h3 className="text-xs font-black text-slate-900 flex items-center gap-1">
+                          📍 {language === "en" ? "Shelf:" : "Raf:"} {scannedShelfCode}
+                        </h3>
                       </div>
-                      <div className="flex gap-1.5">
+                      <div className="flex items-center gap-1.5">
                         <button
                           type="button"
                           onClick={() => triggerPrintLabel("shelf", scannedShelfCode, `RAF: ${scannedShelfCode}`)}
-                          className="rounded-lg bg-white border border-blue-200 px-2 py-1 text-[10px] font-black text-blue-700 hover:bg-blue-100 shadow-sm"
+                          className="rounded-lg bg-white border border-blue-200 px-2 py-0.5 text-[9px] font-black text-blue-700 hover:bg-blue-100 shadow-sm"
                         >
                           {t.printShelfLabelBtn}
                         </button>
                         <button
                           type="button"
                           onClick={() => setScannedShelfCode(null)}
-                          className="text-slate-450 hover:text-slate-700 text-xs font-black px-1.5"
+                          className="text-slate-450 hover:text-slate-700 text-[10px] font-black px-1"
                         >
-                          {t.closeBtn}
+                          ✕ {t.closeBtn || "Kapat"}
                         </button>
                       </div>
                     </div>
 
-                    {/* Shelf Capacities Editor */}
-                    <div className="grid grid-cols-2 gap-3 p-3 bg-white/70 border border-blue-150 rounded-xl text-xs font-semibold">
-                      <label className="grid gap-1">
-                        <span className="text-[10px] text-slate-700 font-black">Maksimum Yük (kg)</span>
+                    {/* Shelf Capacities Editor (Inline & Compact) */}
+                    <div className="flex gap-4 p-2 bg-white/80 border border-blue-100 rounded-lg text-[10px] font-bold items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-slate-700 font-extrabold">{language === "en" ? "Weight (kg):" : "Yük (kg):"}</span>
                         <input
                           type="number"
                           min="1"
@@ -4351,10 +4486,11 @@ ${sizeStr}
                             };
                             saveShelfCapacities(updated);
                           }}
-                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-bold outline-none" id="id-page-w-full-rounded-md-border-border-slate-200-bg-white-px-2-py-1-font-bold-outline-none-322" aria-label="W full rounded md border border slate 200 bg white px 2 py 1 font bold outline none" />
-                      </label>
-                      <label className="grid gap-1">
-                        <span className="text-[10px] text-slate-700 font-black">Maksimum Hacim (m³)</span>
+                          className="w-14 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-bold outline-none text-center"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-slate-700 font-extrabold">{language === "en" ? "Volume (m³):" : "Hacim (m³):"}</span>
                         <input
                           type="number"
                           step="0.1"
@@ -4370,34 +4506,40 @@ ${sizeStr}
                             };
                             saveShelfCapacities(updated);
                           }}
-                          className="w-full rounded-md border border-slate-200 bg-white px-2 py-1 font-bold outline-none" id="id-page-w-full-rounded-md-border-border-slate-200-bg-white-px-2-py-1-font-bold-outline-none-537" aria-label="W full rounded md border border slate 200 bg white px 2 py 1 font bold outline none" />
-                      </label>
+                          className="w-14 rounded border border-slate-200 bg-white px-1.5 py-0.5 font-bold outline-none text-center"
+                        />
+                      </div>
                     </div>
 
                     {/* Shelf Products list */}
-                    <div className="space-y-2">
-                      <h4 className="text-[11px] font-bold text-slate-600 uppercase tracking-wider">{t.currentProducts}</h4>
+                    <div className="space-y-1.5">
+                      <h4 className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">{t.currentProducts}</h4>
                       {shelfProducts.length > 0 ? (
                         shelfProducts.map((p) => (
-                          <div key={p.id} className="bg-white border border-slate-200 rounded-xl p-3 shadow-sm space-y-2">
+                          <div key={p.id} className="bg-white border border-slate-200 rounded-xl p-2 shadow-sm space-y-1.5">
                             <div className="flex justify-between items-start">
                               <div>
                                 <h5 className="font-bold text-slate-850 text-xs">{getLocalizedField(p.name, activeLang)}</h5>
-                                <p className="text-[9px] text-slate-550 font-mono mt-0.5">SKU: {p.sku || "—"} | OEM: {p.oemCode || "—"}</p>
+                                <p className="text-[9px] text-slate-550 font-mono mt-0.5">SKU: {p.sku || "—"}</p>
                               </div>
                               <span className="text-xs font-black text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
                                 {p.quantity} {activeLang === "en" ? "pcs" : activeLang === "de" ? "Stk" : activeLang === "ru" ? "шт" : activeLang === "ka" ? "ცალი" : "Adet"}
                               </span>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold text-slate-650 bg-slate-50 p-2 rounded-lg border border-slate-100">
-                              <div>💰 {activeLang === "en" ? "Purchase" : activeLang === "de" ? "Einkauf" : activeLang === "ru" ? "Закупка" : activeLang === "ka" ? "შესყიდვა" : "Alış"}: <strong className="text-rose-700 font-mono">{p.purchasePrice || "0"} EUR</strong></div>
-                              <div>💵 {activeLang === "en" ? "Sale" : activeLang === "de" ? "Verkauf" : activeLang === "ru" ? "Продажа" : activeLang === "ka" ? "გაყიდვა" : "Satış"}: <strong className="text-emerald-700 font-mono">{p.salePrice || "0"} EUR</strong></div>
-                              <div className="col-span-2">🏷️ {activeLang === "en" ? "Category/Brand" : activeLang === "de" ? "Kategorie/Marke" : activeLang === "ru" ? "Категория/Бренд" : activeLang === "ka" ? "კატეგორია/ბრენდი" : "Kategori/Marka"}: <span className="text-slate-900 font-bold">{getLocalizedField(p.category, activeLang)} · {p.brand} ({p.model})</span></div>
-                              <div className="col-span-2 text-slate-600 leading-normal italic">{activeLang === "en" ? "Description" : activeLang === "de" ? "Beschreibung" : activeLang === "ru" ? "Описание" : activeLang === "ka" ? "აღწერა" : "Açıklama"}: {getLocalizedField(p.description || "", activeLang) || "—"}</div>
+                            <div className="flex flex-wrap gap-1.5 text-[9px] font-bold text-slate-650 bg-slate-50 p-1.5 rounded-lg border border-slate-100">
+                              <span className="bg-slate-200/50 px-1.5 py-0.5 rounded text-slate-800">🏷️ {getLocalizedField(p.category, activeLang)} · {p.brand}</span>
+                              <span className="bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded border border-rose-100">💰 {p.purchasePrice || "0"} {p.currency || "EUR"}</span>
+                              <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-100">💵 {p.salePrice || "0"} {p.currency || "EUR"}</span>
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-1">
+                            {p.description && (
+                              <div className="text-[9px] text-slate-500 italic line-clamp-1 truncate max-w-sm mt-0.5">
+                                💬 {getLocalizedField(p.description, activeLang)}
+                              </div>
+                            )}
+
+                            <div className="flex justify-end gap-1.5 pt-0.5">
                               <button
                                 type="button"
                                 onClick={() => {
@@ -4408,50 +4550,48 @@ ${sizeStr}
                                   setShelfTransferQty(p.quantity);
                                   setIsShelfTransferOpen(true);
                                 }}
-                                className="rounded-lg bg-indigo-50 border border-indigo-200 px-2.5 py-1 text-[9px] font-black text-indigo-700 hover:bg-indigo-100 flex items-center gap-0.5"
+                                className="rounded-md bg-indigo-50 border border-indigo-200 px-2 py-0.5 text-[9px] font-black text-indigo-700 hover:bg-indigo-100 flex items-center gap-0.5"
                                 title="Raftan Başka Depoya veya Rafa Transfer Et"
                               >
-                                🔄 {language === "en" ? "Transfer" : "Sevk/Transfer Et"}
+                                🔄 {language === "en" ? "Transfer" : "Sevk/Transfer"}
                               </button>
                               <button
                                 type="button"
                                 onClick={() => triggerPrintLabel("product", p.sku || p.barcode, p.name, `Alış: ${p.purchasePrice} EUR | Satış: ${p.salePrice} EUR`, `RAF: ${scannedShelfCode}`)}
-                                className="rounded-lg bg-blue-50 px-2.5 py-1 text-[9px] font-black text-blue-700 hover:bg-blue-100"
+                                className="rounded-md bg-blue-50 px-2 py-0.5 text-[9px] font-black text-blue-700 hover:bg-blue-100"
                               >
-                                🖨️ {language === "en" ? "Print Product Label" : "Ürün Barkodu Yazdır"}
+                                🖨️ {language === "en" ? "Print" : "Yazdır"}
                               </button>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <p className="text-xs text-slate-550 italic p-3 text-center bg-white rounded-xl border border-slate-200">
+                        <p className="text-[10px] text-slate-500 italic py-2 text-center bg-white rounded-lg border border-slate-200">
                           {t.noProductsOnShelf}
                         </p>
                       )}
                     </div>
 
-                    {/* Shelf Movements log */}
-                    <div className="space-y-2 border-t border-blue-200/50 pt-3">
-                      <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">{t.movementsHistory}</h4>
-                      <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1">
+                    {/* Shelf Movements log (Compact layout) */}
+                    <div className="space-y-1 pt-1.5 border-t border-blue-150">
+                      <h4 className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">{t.movementsHistory}</h4>
+                      <div className="max-h-24 overflow-y-auto space-y-1 pr-1">
                         {shelfMovements.length > 0 ? (
                           shelfMovements.map((m) => (
-                            <div key={m.id} className="text-[10px] leading-relaxed text-slate-600 border-b border-slate-100 pb-1 flex justify-between">
-                              <div>
+                            <div key={m.id} className="text-[9px] leading-relaxed text-slate-600 border-b border-slate-100 pb-0.5 flex justify-between">
+                              <div className="truncate max-w-[12rem]">
                                 <strong className="text-slate-800">{m.productName}</strong>
-                                <span className="text-slate-550"> ({m.note})</span>
                               </div>
                               <div className="text-right font-mono shrink-0 ml-2">
                                 <span className={m.movementType === "stock_in" ? "text-emerald-700 font-bold" : "text-rose-600 font-bold"}>
                                   {m.movementType === "stock_in" ? "+" : ""}{m.quantity} Adet
                                 </span>
-                                <span className="text-slate-550"> | {m.createdAt}</span>
                               </div>
                             </div>
                           ))
                         ) : (
-                          <p className="text-[10px] text-slate-550 italic text-center py-2">
-                            {t.noMovements}
+                          <p className="text-[9px] text-slate-450 italic text-center py-1">
+                            {t.noMovements || "Geçmiş hareket kaydı yok."}
                           </p>
                         )}
                       </div>
@@ -5251,19 +5391,15 @@ ${sizeStr}
               (() => {
                 const isShelfCodeValidInLayout = (shelfCode: string) => {
                   if (!shelfCode) return false;
-                  const parts = shelfCode.split("-");
-                  if (parts.length < 3) return false;
-                  const zone = parts[0];
-                  const slot = parseInt(parts[1], 10);
-                  const level = parseInt(parts[2], 10);
+                  const parsed = parseShelfCode(shelfCode);
+                  if (!parsed.zone) return false;
                   
-                  const corr = corridors.find(c => c.zone === zone);
+                  const corr = corridors.find(c => c.zone === parsed.zone);
                   if (!corr) return false;
-                  if (isNaN(slot) || slot < 1 || slot > corr.depth) return false;
-                  if (isNaN(level) || level < 1 || level > corr.tiers) return false;
+                  if (parsed.slot < 1 || parsed.slot > corr.depth) return false;
+                  if (parsed.level < 1 || parsed.level > corr.tiers) return false;
                   
-                  const sideSuffix = parts[3] ? parts[3].split("-")[0] : "";
-                  if (sideSuffix && !corr.isDoubleRow) return false;
+                  if (parsed.side && !corr.isDoubleRow) return false;
                   
                   return true;
                 };
@@ -5308,7 +5444,7 @@ ${sizeStr}
                             </span>
                             <button
                               type="button"
-                              onClick={() => setSelectedWhiteboardShelfCode(p.shelf || "A-01-01")}
+                              onClick={() => setSelectedWhiteboardShelfCode(p.shelf || "A0101")}
                               className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold text-[10px] px-2 py-1 rounded-xl transition cursor-pointer"
                               title={activeLang === "en" ? "Assign to a shelf location" : "Yeni raf konumu atamak için tıklayın"}
                             >
@@ -5462,12 +5598,9 @@ ${sizeStr}
                 <div className="grid grid-cols-4 gap-2">
                   {[1, 2, 3, 4].map((count) => {
                     // Extract zone prefix and code to find corridor config
-                    const parts = selectedWhiteboardShelfCode.split("-");
-                    const zone = parts[0];
-                    const slot = parts[1];
-                    const level = parts[2];
-                    const side = parts[3] ? parts[3].split("-")[0] : "";
-                    const baseSideCode = `${zone}-${slot}-${level}${side ? `-${side}` : ""}`;
+                    const parsed = parseShelfCode(selectedWhiteboardShelfCode);
+                    const zone = parsed.zone;
+                    const baseSideCode = selectedWhiteboardShelfCode.split("-B")[0];
                     
                     const corr = corridors.find(c => c.zone === zone);
                     const currentBinsCount = corr?.binsConfig?.[baseSideCode] || 1;

@@ -42,6 +42,7 @@ const texts = {
     goMarketplace: "Ürünleri keşfet",
     goDashboard: "Mağaza paneline git",
     storeNote: "Ürün, hizmet, kiralama, tur veya açık artırma modülleri ilk girişten sonra panelden açılıp kapatılabilir.",
+    storeRegisterError: "Mağaza kaydı sırasında hata oluştu: "
   },
   en: {
     home: "Home",
@@ -75,6 +76,7 @@ const texts = {
     goMarketplace: "Explore products",
     goDashboard: "Go to store panel",
     storeNote: "Product, service, rental, tour or auction modules can be enabled later from the panel.",
+    storeRegisterError: "An error occurred during store registration: "
   },
   de: {
     home: "Startseite",
@@ -108,6 +110,7 @@ const texts = {
     goMarketplace: "Produkte entdecken",
     goDashboard: "Zum Shop-Panel",
     storeNote: "Produkt-, Service-, Miet-, Tour- oder Auktionsmodule können später im Panel aktiviert werden.",
+    storeRegisterError: "Bei der Shop-Registrierung ist ein Fehler aufgetreten: "
   },
   ru: {
     home: "Главная",
@@ -141,6 +144,7 @@ const texts = {
     goMarketplace: "Смотреть товары",
     goDashboard: "В панель магазина",
     storeNote: "Модули товаров, услуг, аренды, туров или аукционов можно включить позже из панели.",
+    storeRegisterError: "Произошла ошибка при регистрации магазина: "
   },
   ka: {
     home: "მთავარი",
@@ -174,6 +178,7 @@ const texts = {
     goMarketplace: "პროდუქტების ნახვა",
     goDashboard: "მაღაზიის პანელი",
     storeNote: "პროდუქტის, სერვისის, ქირაობის, ტურის ან აუქციონის მოდულები მოგვიანებით პანელიდან ჩაირთვება.",
+    storeRegisterError: "მაღაზიის რეგისტრაციისას მოხდა შეცდომა: "
   },
 };
 
@@ -336,7 +341,7 @@ export default function RegisterPage() {
           .single();
 
         if (compError) {
-          setError("Mağaza kaydı sırasında hata oluştu: " + compError.message);
+          setError(t.storeRegisterError + compError.message);
           return;
         }
 

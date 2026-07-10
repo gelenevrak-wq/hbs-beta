@@ -410,17 +410,7 @@ export default function OrdersPage() {
               </p>
             </div>
 
-            <div className="rounded-3xl border border-amber-400/20 bg-amber-400/10 p-5">
-              <h2 className="text-lg font-black text-amber-100">
-                Gerçek veri bağlantısı
-              </h2>
 
-              <p className="mt-3 text-sm leading-6 text-amber-100/90">
-                Bu ekran şimdilik demo kayıtlarla çalışır. Gerçek sistemde her
-                sipariş müşteri, ürün, stok hareketi, mesajlaşma ve cari hesap
-                kayıtlarıyla ilişkilendirilecektir.
-              </p>
-            </div>
           </div>
         </section>
 

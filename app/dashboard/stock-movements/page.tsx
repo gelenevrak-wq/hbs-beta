@@ -1028,15 +1028,7 @@ export default function StockMovementsPage() {
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-amber-200 bg-amber-50/50 p-6 shadow-sm">
-              <h2 className="text-lg font-black text-amber-900">
-                {t.realDataConn}
-              </h2>
 
-              <p className="mt-3 text-xs leading-relaxed text-amber-805 font-semibold">
-                {t.realDataConnDesc}
-              </p>
-            </div>
           </div>
         </section>
       </div>

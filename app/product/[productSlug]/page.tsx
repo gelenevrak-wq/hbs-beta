@@ -293,13 +293,55 @@ export default function ProductDetailPage() {
       ? `${activeProduct.priceValue} ${activeProduct.currency}` 
       : (activeProduct ? txt(activeProduct.priceText, activeLang) : "");
 
+    const helloMsg = activeLang === "tr" ? "Merhaba! HBS üzerinden sipariş vermek istiyorum:" :
+                     activeLang === "de" ? "Hallo! Ich möchte über HBS bestellen:" :
+                     activeLang === "ru" ? "Здравствуйте! Я хочу сделать заказ через HBS:" :
+                     activeLang === "ka" ? "გამარჯობა! მსურს შეკვეთის გაფორმება HBS-ის საშუალებით:" :
+                     "Hello! I would like to place an order via HBS:";
+
+    const itemLabel = activeLang === "tr" ? "Ürün" :
+                      activeLang === "de" ? "Produkt" :
+                      activeLang === "ru" ? "Товар" :
+                      activeLang === "ka" ? "პროდუქტი" :
+                      "Product";
+
+    const modelLabel = activeLang === "tr" ? "Model" :
+                       activeLang === "de" ? "Modell" :
+                       activeLang === "ru" ? "Модель" :
+                       activeLang === "ka" ? "მოდელი" :
+                       "Model";
+
+    const brandLabel = activeLang === "tr" ? "Marka" :
+                       activeLang === "de" ? "Marke" :
+                       activeLang === "ru" ? "Бренд" :
+                       activeLang === "ka" ? "ბრენდი" :
+                       "Brand";
+
+    const priceLabel = activeLang === "tr" ? "Fiyat" :
+                       activeLang === "de" ? "Preis" :
+                       activeLang === "ru" ? "Цена" :
+                       activeLang === "ka" ? "ფასი" :
+                       "Price";
+
+    const locationLabelText = activeLang === "tr" ? "Konum" :
+                              activeLang === "de" ? "Standort" :
+                              activeLang === "ru" ? "Местоположение" :
+                              activeLang === "ka" ? "მდებარეობა" :
+                              "Location";
+
+    const closingMsg = activeLang === "tr" ? "Bu ürün için sevkiyat ve ödeme detaylarını görüşebilir miyiz?" :
+                       activeLang === "de" ? "Können wir die Versand- und Zahlungsdetails für dieses Produkt besprechen?" :
+                       activeLang === "ru" ? "Можем ли мы обсудить детали доставки и оплаты этого товара?" :
+                       activeLang === "ka" ? "შეგვიძლია განვიხილოთ ამ პროდუქტის მიწოდებისა და გადახდის დეტალები?" :
+                       "Can we discuss the shipping and payment details for this product?";
+
     const messageText = encodeURIComponent(
-      `Merhaba! HBS üzerinden sipariş vermek istiyorum:\n\n` +
-      `📦 Ürün: ${nameText}\n` +
-      `🏷️ Model: ${activeProduct ? txt(activeProduct.model, activeLang) : ""} / Marka: ${activeProduct ? activeProduct.brand : ""}\n` +
-      `💰 Fiyat: ${priceText}\n` +
-      `📍 Konum: ${activeProduct ? activeProduct.city : ""}, ${activeProduct ? activeProduct.country : ""}\n\n` +
-      `Bu ürün için sevkiyat ve ödeme detaylarını görüşebilir miyiz?`
+      `${helloMsg}\n\n` +
+      `📦 ${itemLabel}: ${nameText}\n` +
+      `🏷️ ${modelLabel}: ${activeProduct ? txt(activeProduct.model, activeLang) : ""} / ${brandLabel}: ${activeProduct ? activeProduct.brand : ""}\n` +
+      `💰 ${priceLabel}: ${priceText}\n` +
+      `📍 ${locationLabelText}: ${activeProduct ? activeProduct.city : ""}, ${activeProduct ? activeProduct.country : ""}\n\n` +
+      `${closingMsg}`
     );
 
     const targetNumber = (activeProduct && activeProduct.storeWhatsapp) || "+905320000000";
@@ -360,62 +402,7 @@ export default function ProductDetailPage() {
     return null;
   }, []);
 
-  const convertedPricing = useMemo(() => {
-    if (!product) return null;
-    
-    // Get base currency & price
-    const basePrice = product.priceValue || 3500;
-    const baseCurrency = product.currency || "GEL";
 
-    // Determine target currency: if localSettings has defaultCurrency, use it. Otherwise, default based on language:
-    let targetCurrency = "GEL";
-    if (localSettings?.defaultCurrency) {
-      targetCurrency = localSettings.defaultCurrency;
-    } else {
-      if (language === "tr") targetCurrency = "TRY";
-      else if (language === "en") targetCurrency = "USD";
-      else if (language === "de") targetCurrency = "EUR";
-      else if (language === "ka") targetCurrency = "GEL";
-      else targetCurrency = "USD";
-    }
-
-    // Standard rates mapping relative to USD (1 USD = X target)
-    const usdRates: Record<string, number> = {
-      USD: 1.0,
-      GEL: 2.65,
-      TRY: 34.20,
-      EUR: 0.92,
-      RUB: 92.50
-    };
-
-    // Convert from baseCurrency to USD first, then to targetCurrency
-    const baseToUsd = usdRates[baseCurrency] ? (1 / usdRates[baseCurrency]) : (1 / 2.65);
-    const usdToTarget = usdRates[targetCurrency] || 1;
-    
-    let rawConverted = basePrice * baseToUsd * usdToTarget;
-
-    // Apply Kur Kalkanı (exchangeHedgingBuffer) if enabled
-    const isHedgingEnabled = localSettings?.exchangeHedgingMode !== "disabled";
-    const bufferPercent = parseFloat(localSettings?.exchangeHedgingBuffer || "1.5");
-    
-    let finalPrice = rawConverted;
-    let hedgeFee = 0;
-    if (isHedgingEnabled && bufferPercent > 0) {
-      hedgeFee = rawConverted * (bufferPercent / 100);
-      finalPrice = rawConverted + hedgeFee;
-    }
-
-    return {
-      basePrice,
-      baseCurrency,
-      targetCurrency,
-      rawConverted: rawConverted.toFixed(2),
-      finalPrice: finalPrice.toFixed(2),
-      hedgeFee: hedgeFee.toFixed(2),
-      bufferPercent,
-      isHedgingEnabled
-    };
-  }, [product, localSettings, language]);
 
   const storeInfo = useMemo(() => {
     if (typeof window === "undefined" || !product) return null;
@@ -1046,6 +1033,151 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
   };
 
   const handleDownloadProforma = () => {
+    const activeLang = language || "tr";
+    const proformaTitle = activeLang === "tr" ? "RESMİ B2B ANLAŞMA PROFORMA FATURASI" :
+                          activeLang === "de" ? "OFFIZIELLE B2B-ANBAHNUNG PROFORMA-RECHNUNG" :
+                          activeLang === "ru" ? "ОФИЦИАЛЬНЫЙ B2B ПРОФОРМА-СЧЕТ" :
+                          activeLang === "ka" ? "ოფიციალური B2B პროფორმა ინვოისი" :
+                          "OFFICIAL B2B DEAL PROFORMA INVOICE";
+
+    const refLabel = activeLang === "tr" ? "Referans No" :
+                     activeLang === "de" ? "Referenz-Nr" :
+                     activeLang === "ru" ? "Регистрационный номер" :
+                     activeLang === "ka" ? "რეფერენსის ნომერი" :
+                     "Reference No";
+
+    const dateLabel = activeLang === "tr" ? "Tarih" :
+                      activeLang === "de" ? "Datum" :
+                      activeLang === "ru" ? "Дата" :
+                      activeLang === "ka" ? "თარიღი" :
+                      "Date";
+
+    const sellerInfoLabel = activeLang === "tr" ? "SATICI BİLGİLERİ" :
+                            activeLang === "de" ? "VERKÄUFERINFORMATIONEN" :
+                            activeLang === "ru" ? "ИНФОРМАЦИЯ О ПРОДАВЦЕ" :
+                            activeLang === "ka" ? "გამყიდველის ინფორმაცია" :
+                            "SELLER INFORMATION";
+
+    const buyerInfoLabel = activeLang === "tr" ? "ALICI BİLGİLERİ" :
+                           activeLang === "de" ? "KÄUFERINFORMATIONEN" :
+                           activeLang === "ru" ? "ИНФОРМАЦИЯ О ПОКУПАТЕЛЕ" :
+                           activeLang === "ka" ? "მყიდველის ინფორმაცია" :
+                           "BUYER INFORMATION";
+
+    const companyLabel = activeLang === "tr" ? "Şirket" :
+                         activeLang === "de" ? "Unternehmen" :
+                         activeLang === "ru" ? "Компания" :
+                         activeLang === "ka" ? "კომპანია" :
+                         "Company";
+
+    const cityCountryLabel = activeLang === "tr" ? "Şehir/Ülke" :
+                             activeLang === "de" ? "Stadt/Land" :
+                             activeLang === "ru" ? "Город/Страна" :
+                             activeLang === "ka" ? "ქალაქი/ქვეყანა" :
+                             "City/Country";
+
+    const logisticsLabel = activeLang === "tr" ? "Lojistik Durumu" :
+                           activeLang === "de" ? "Logistikstatus" :
+                           activeLang === "ru" ? "Статус логистики" :
+                           activeLang === "ka" ? "ლოგისტიკის სტატუსი" :
+                           "Logistics Status";
+
+    const logisticsVal = activeLang === "tr" ? "Sınır Ötesi Teslimat Hazır" :
+                         activeLang === "de" ? "Grenzüberschreitende Lieferung bereit" :
+                         activeLang === "ru" ? "Готово к международной доставке" :
+                         activeLang === "ka" ? "მზად არის საერთაშორისო მიწოდებისთვის" :
+                         "Cross-Border Delivery Ready";
+
+    const customerLabel = activeLang === "tr" ? "Müşteri" :
+                          activeLang === "de" ? "Kunde" :
+                          activeLang === "ru" ? "Клиент" :
+                          activeLang === "ka" ? "კლიენტი" :
+                          "Customer";
+
+    const phoneLabel = activeLang === "tr" ? "Telefon" :
+                       activeLang === "de" ? "Telefon" :
+                       activeLang === "ru" ? "Телефон" :
+                       activeLang === "ka" ? "ტელეფონი" :
+                       "Phone";
+
+    const locationLabelText = activeLang === "tr" ? "Konum" :
+                              activeLang === "de" ? "Standort" :
+                              activeLang === "ru" ? "Местоположение" :
+                              activeLang === "ka" ? "მდებარეობა" :
+                              "Location";
+
+    const descLabel = activeLang === "tr" ? "Ürün Açıklaması / SKU" :
+                      activeLang === "de" ? "Produktbeschreibung / SKU" :
+                      activeLang === "ru" ? "Описание товара / SKU" :
+                      activeLang === "ka" ? "პროდუქტის აღწერა / SKU" :
+                      "Product Description / SKU";
+
+    const qtyLabel = activeLang === "tr" ? "Miktar" :
+                     activeLang === "de" ? "Menge" :
+                     activeLang === "ru" ? "Количество" :
+                     activeLang === "ka" ? "რაოდენობა" :
+                     "Quantity";
+
+    const unitPriceLabel = activeLang === "tr" ? "Birim Fiyat" :
+                           activeLang === "de" ? "Einzelpreis" :
+                           activeLang === "ru" ? "Цена за единицу" :
+                           activeLang === "ka" ? "ერთეულის ფასი" :
+                           "Unit Price";
+
+    const totalLabel = activeLang === "tr" ? "Toplam Tutar" :
+                       activeLang === "de" ? "Gesamtbetrag" :
+                       activeLang === "ru" ? "Итоговая сумма" :
+                       activeLang === "ka" ? "ჯამური ღირებულება" :
+                       "Total Amount";
+
+    const qtyUnitVal = activeLang === "tr" ? "1 Adet" :
+                       activeLang === "de" ? "1 Stück" :
+                       activeLang === "ru" ? "1 шт." :
+                       activeLang === "ka" ? "1 ცალი" :
+                       "1 Unit";
+
+    const lockedTotalLabel = activeLang === "tr" ? "KİLİTLENEN ANLAŞMA TOPLAMI:" :
+                             activeLang === "de" ? "GESPERRTE VEREINBARUNGSSUMME:" :
+                             activeLang === "ru" ? "ИТОГО ФИКСИРОВАННАЯ СДЕЛКА:" :
+                             activeLang === "ka" ? "შეთანხმებული ჯამი:" :
+                             "LOCKED DEAL TOTAL:";
+
+    const disclaimerHeader = activeLang === "tr" ? "Yasal Uyarı ve Koşullar:" :
+                             activeLang === "de" ? "Rechtliche Hinweise und Bedingungen:" :
+                             activeLang === "ru" ? "Юридическое предупреждение и условия:" :
+                             activeLang === "ka" ? "სამართლებრივი გაფრთხილება და პირობები:" :
+                             "Legal Notice & Terms:";
+
+    const disclaimerVal = activeLang === "tr" ? "Bu proforma fatura HBS B2B Canlı Pazarlık Odasında iki tarafın rızası ve teklif kilitleme mührüyle dijital olarak üretilmiştir. Tutar üzerine HBS Sınır Ötesi Gümrük ve Döviz Kalkanı garantisi eklenmiştir. Fiyat 24 saat boyunca döviz dalgalanmalarına karşı sabitlenmiştir." :
+                          activeLang === "de" ? "Diese Proforma-Rechnung wurde im HBS-B2B-Live-Verhandlungsraum mit Zustimmung beider Parteien und dem Angebots-Sperrsiegel digital erstellt. HBS Cross-Border Zoll- und Währungsschutzgarantie wurde dem Betrag hinzugefügt. Der Preis ist für 24 Stunden gegen Währungsschwankungen gesichert." :
+                          activeLang === "ru" ? "Этот счет-проформа был создан в цифровом формате в живой комнате B2B-переговоров HBS с согласия обеих сторон и с печатью блокировки предложения. К сумме добавлена гарантия трансграничной таможни и валютной защиты HBS. Цена зафиксирована на 24 часа против колебаний валютных курсов." :
+                          activeLang === "ka" ? "ეს პროფორმა ინვოისი ციფრულად შეიქმნა HBS B2B მოლაპარაკებების ოთახში ორივე მხარის თანხმობითა და შეთავაზების ბლოკირების ბეჭდით. თანხას დაემატა HBS-ის ტრანსსასაზღვრო საბაჟო და ვალუტის დაცვის გარანტია. ფასი დაფიქსირებულია 24 საათით ვალუტის მერყეობის წინააღმდეგ." :
+                          "This proforma invoice was digitally generated in the HBS B2B Live Negotiation Room with the consent of both parties and the deal lock seal. HBS Cross-Border Customs and Exchange Hedging guarantee has been added to the amount. The price is locked for 24 hours against currency fluctuations.";
+
+    const buyerSigLabel = activeLang === "tr" ? "Alıcı Yetkili İmza" :
+                           activeLang === "de" ? "Autorisierte Unterschrift des Käufers" :
+                           activeLang === "ru" ? "Уполномоченная подпись покупателя" :
+                           activeLang === "ka" ? "მყიდველის უფლებამოსილი ხელმოწერა" :
+                           "Buyer Authorized Signature";
+
+    const sellerSigLabel = activeLang === "tr" ? "Satıcı Yetkili İmza" :
+                            activeLang === "de" ? "Autorisierte Unterschrift des Verkäufers" :
+                            activeLang === "ru" ? "Уполномоченная подпись продавца" :
+                            activeLang === "ka" ? "გამყიდველის უფლებამოსილი ხელმოწერა" :
+                            "Seller Authorized Signature";
+
+    const repLabel = activeLang === "tr" ? "Temsilcisi" :
+                     activeLang === "de" ? "Vertreter" :
+                     activeLang === "ru" ? "Представитель" :
+                     activeLang === "ka" ? "წარმომადგენელი" :
+                     "Representative";
+
+    const footerText = activeLang === "tr" ? "HBS Sınır Ötesi Güvenli Ticaret Altyapısı © 2026. Tüm hakları saklıdır." :
+                       activeLang === "de" ? "HBS Grenzüberschreitende Sichere Handelsinfrastruktur © 2026. Alle Rechte vorbehalten." :
+                       activeLang === "ru" ? "Инфраструктура безопасной трансграничной торговли HBS © 2026. Все права защищены." :
+                       activeLang === "ka" ? "HBS-ის ტრანსსასაზღვრო უსაფრთხო ვაჭრობის ინფრასტრუქტურა © 2026. ყველა უფლება დაცულია." :
+                       "HBS Cross-Border Secure Trade Infrastructure © 2026. All rights reserved.";
+
     const htmlInvoice = `
       <html>
       <head>
@@ -1069,33 +1201,33 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       <body>
         <div class="header">
           <div class="logo">HYBRID BUSINESS SYSTEM (HBS)</div>
-          <div class="title">RESMİ B2B ANLAŞMA PROFORMA FATURASI</div>
-          <div>Referans No: <b>${lockedOfferCode}</b></div>
-          <div>Tarih: ${new Date().toLocaleDateString("tr-TR")}</div>
+          <div class="title">${proformaTitle}</div>
+          <div>${refLabel}: <b>${lockedOfferCode}</b></div>
+          <div>${dateLabel}: ${new Date().toLocaleDateString("tr-TR")}</div>
         </div>
 
         <div class="grid">
           <div>
-            <div class="section-title">SATICI BİLGİLERİ</div>
-            <div><b>Şirket:</b> ${activeProduct.storeName}</div>
-            <div><b>Şehir/Ülke:</b> ${activeProduct.city}, ${activeProduct.country}</div>
-            <div><b>Lojistik Durumu:</b> Sınır Ötesi Teslimat Hazır</div>
+            <div class="section-title">${sellerInfoLabel}</div>
+            <div><b>${companyLabel}:</b> ${activeProduct.storeName}</div>
+            <div><b>${cityCountryLabel}:</b> ${activeProduct.city}, ${activeProduct.country}</div>
+            <div><b>${logisticsLabel}:</b> ${logisticsVal}</div>
           </div>
           <div>
-            <div class="section-title">ALICI BİLGİLERİ</div>
-            <div><b>Müşteri:</b> ${profileName || "B2B İş Ortağı"}</div>
-            <div><b>Telefon:</b> ${profilePhone || "-"}</div>
-            <div><b>Konum:</b> ${profileCity || "-"}</div>
+            <div class="section-title">${buyerInfoLabel}</div>
+            <div><b>${customerLabel}:</b> ${profileName || "B2B"}</div>
+            <div><b>${phoneLabel}:</b> ${profilePhone || "-"}</div>
+            <div><b>${locationLabelText}:</b> ${profileCity || "-"}</div>
           </div>
         </div>
 
         <table>
           <thead>
             <tr>
-              <th>Ürün Açıklaması / SKU</th>
-              <th>Miktar</th>
-              <th>Birim Fiyat</th>
-              <th>Toplam Tutar</th>
+              <th>${descLabel}</th>
+              <th>${qtyLabel}</th>
+              <th>${unitPriceLabel}</th>
+              <th>${totalLabel}</th>
             </tr>
           </thead>
           <tbody>
@@ -1103,36 +1235,36 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               <td>
                 <b>${txt(activeProduct.name, language)}</b><br/>
                 SKU: ${activeProduct.sku || "-"}<br/>
-                Marka: ${activeProduct.brand}
+                Brand: ${activeProduct.brand}
               </td>
-              <td>1 Adet</td>
+              <td>${qtyUnitVal}</td>
               <td>${negotiatedPrice.toLocaleString()} ${activeProduct.currency || "GEL"}</td>
               <td>${negotiatedPrice.toLocaleString()} ${activeProduct.currency || "GEL"}</td>
             </tr>
             <tr class="total">
-              <td colspan="3" style="text-align: right;">KİLİTLENEN ANLAŞMA TOPLAMI:</td>
+              <td colspan="3" style="text-align: right;">${lockedTotalLabel}</td>
               <td>${negotiatedPrice.toLocaleString()} ${activeProduct.currency || "GEL"}</td>
             </tr>
           </tbody>
         </table>
 
         <div style="margin-top: 30px; font-size: 11px; background: #fffbeb; border: 1px solid #fef3c7; padding: 15px; border-radius: 10px;">
-          ⚠️ <b>Yasal Uyarı ve Koşullar:</b> Bu proforma fatura HBS B2B Canlı Pazarlık Odasında iki tarafın rızası ve teklif kilitleme mührüyle dijital olarak üretilmiştir. Tutar üzerine HBS Sınır Ötesi Gümrük ve Döviz Kalkanı garantisi eklenmiştir. Fiyat 24 saat boyunca döviz dalgalanmalarına karşı sabitlenmiştir.
+          ⚠️ <b>${disclaimerHeader}</b> ${disclaimerVal}
         </div>
 
         <div class="signature-box">
           <div class="sig">
-            Alıcı Yetkili İmza<br/>
-            <b>${profileName || "Müşteri"}</b>
+            ${buyerSigLabel}<br/>
+            <b>${profileName || "B2B"}</b>
           </div>
           <div class="sig">
-            Satıcı Yetkili İmza<br/>
-            <b>${activeProduct.storeName} Temsilcisi</b>
+            ${sellerSigLabel}<br/>
+            <b>${activeProduct.storeName} ${repLabel}</b>
           </div>
         </div>
 
         <div class="footer">
-          HBS Sınır Ötesi Güvenli Ticaret Altyapısı © 2026. Tüm hakları saklıdır.
+          ${footerText}
         </div>
       </body>
       </html>
@@ -1152,10 +1284,16 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       setIsNegotiationOpen(true);
       const initialPrice = activeProduct.priceValue || 3500;
       setNegotiatedPrice(initialPrice);
+      const activeLang = language || "tr";
+      const repWelcomeText = activeLang === "tr" ? `Merhaba! Ben ${activeProduct.storeName} Satış Temsilcisiyim. "${txt(activeProduct.name, activeLang)}" ürünümüz için canlı B2B pazarlık odamıza hoş geldiniz. HBS platformu üzerinden teklifinizi doğrudan müzakere edebilir ve anlaşmayı resmi proforma fatura ile anında kilitleyebiliriz. Sürgüyü kullanarak teklifinizi belirleyin!` :
+                             activeLang === "de" ? `Hallo! Ich bin der Vertriebsmitarbeiter von ${activeProduct.storeName}. Willkommen in unserem B2B-Live-Verhandlungsraum für "${txt(activeProduct.name, activeLang)}". Sie können Ihr Angebot direkt über die HBS-Plattform verhandeln und den Deal sofort mit einer offiziellen Proforma-Rechnung sichern. Verwenden Sie den Schieberegler, um Ihr Angebot festzulegen!` :
+                             activeLang === "ru" ? `Здравствуйте! Я торговый представитель ${activeProduct.storeName}. Добро пожаловать в наш живой зал B2B-переговоров по товару "${txt(activeProduct.name, activeLang)}". Вы можете обсудить цену напрямую через платформу HBS и зафиксировать сделку с официальным счетом-проформой. Используйте ползунок, чтобы указать ваше предложение!` :
+                             activeLang === "ka" ? `გამარჯობა! მე ვარ ${activeProduct.storeName}-ის გაყიდვების წარმომადგენელი. კეთილი იყოს თქვენი მობრძანება B2B ცოცხალ მოლაპარაკებების ოთახში პროდუქტზე "${txt(activeProduct.name, activeLang)}". შეგიძლიათ აწარმოოთ მოლაპარაკება პირდაპირ HBS პლატფორმის საშუალებით და გააფორმოთ გარიგება პროფორმა ინვოისით. გამოიყენეთ სლაიდერი!` :
+                             `Hello! I am the sales representative for ${activeProduct.storeName}. Welcome to our live B2B negotiation room for "${txt(activeProduct.name, activeLang)}". You can negotiate your offer directly through the HBS platform and instantly lock the deal with an official proforma invoice. Adjust the slider to set your offer!`;
       setChatMessages([
         {
           sender: "rep",
-          text: `Merhaba! Ben ${activeProduct.storeName} Satış Temsilcisiyim. "${txt(activeProduct.name, language)}" ürünümüz için canlı B2B pazarlık odamıza hoş geldiniz. HBS platformu üzerinden teklifinizi doğrudan müzakere edebilir ve anlaşmayı resmi proforma fatura ile anında kilitleyebiliriz. Sürgüyü kullanarak teklifinizi belirleyin!`,
+          text: repWelcomeText,
           time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
         }
       ]);
@@ -1167,10 +1305,16 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       setIsNegotiationOpen(true);
       const initialPrice = activeProduct.priceValue || 3500;
       setNegotiatedPrice(initialPrice);
+      const activeLang = language || "tr";
+      const repQuestionText = activeLang === "tr" ? `Merhaba! Cihaz özellikleri, sınır ötesi lojistik veya gümrük süreçleri hakkında sormak istediğiniz soruları yanıtlamaya hazırım. Eğer fiyatta anlaşmak isterseniz teklif sürgüsünü kullanarak bir teklif de iletebilirsiniz.` :
+                              activeLang === "de" ? `Hallo! Ich stehe bereit, um Ihre Fragen zu Gerätespezifikationen, grenzüberschreitender Logistik oder Zollprozessen zu beantworten. Wenn Sie sich auf einen Preis einigen möchten, können Sie auch ein Angebot über den Preisregler abgeben.` :
+                              activeLang === "ru" ? `Здравствуйте! Я готов ответить на любые вопросы о характеристиках устройства, трансграничной логистике или таможенных процедурах. Если вы хотите договориться о цене, вы также можете отправить предложение с помощью ползунка.` :
+                              activeLang === "ka" ? `გამარჯობა! მზად ვარ ვუპასუხო თქვენს კითხვებს მოწყობილობის მახასიათებლებზე, ტრანსსასაზღვრო ლოგისტიკაზე ან საბაჟო პროცესებზე. თუ გსურთ ფასზე შეთანხმება, შეგიძლიათ შემოგვთავაზოთ ფასი სლაიდერის საშუალებით.` :
+                              `Hello! I am ready to answer any questions you have about device specifications, cross-border logistics, or customs processes. If you want to negotiate the price, you can also submit an offer using the price slider.`;
       setChatMessages([
         {
           sender: "rep",
-          text: `Merhaba! Cihaz özellikleri, sınır ötesi lojistik veya gümrük süreçleri hakkında sormak istediğiniz soruları yanıtlamaya hazırım. Eğer fiyatta anlaşmak isterseniz teklif sürgüsünü kullanarak bir teklif de iletebilirsiniz.`,
+          text: repQuestionText,
           time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
         }
       ]);
@@ -1182,10 +1326,16 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       setIsNegotiationOpen(true);
       const initialPrice = activeProduct.priceValue || 3500;
       setNegotiatedPrice(initialPrice);
+      const activeLang = language || "tr";
+      const repOfferText = activeLang === "tr" ? `Değerli iş ortağımız, toplu alım veya özel döviz korumalı teklif talebiniz için pazarlık odamız aktif edildi! Fiyat sürgüsünü ayarlayarak teklif sunabilir ve anlaşmayı onayladığınızda dijital proforma belgenizi anında indirebilirsiniz.` :
+                           activeLang === "de" ? `Sehr geehrter Geschäftspartner, unser Verhandlungsraum wurde für Ihre Großbestellung oder Ihre spezielle währungsgesicherte Angebotsanfrage aktiviert! Reichen Sie Ihr Angebot über den Schieberegler ein. Nach der Freigabe können Sie Ihre digitale Proforma-Rechnung sofort herunterladen.` :
+                           activeLang === "ru" ? `Уважаемый партнер, комната переговоров активирована для вашего оптового заказа или специального запроса цены с защитой от колебаний курса! Укажите ваше предложение с помощью ползунка, и после одобрения вы сможете мгновенно скачать электронный счет-проформу.` :
+                           activeLang === "ka" ? `ძვირფასო პარტნიორო, მოლაპარაკებების ოთახი გააქტიურდა თქვენი საბითუმო შესყიდვის ან სპეციალური კურსით დაცული ფასის მოთხოვნისთვის! წარადგინეთ შეთავაზება სლაიდერის საშუალებით და დამტკიცების შემდეგ მომენტალურად ჩამოტვირთეთ ციფრული პროფორმა დოკუმენტი.` :
+                           `Dear business partner, our negotiation room has been activated for your bulk purchase or special currency-hedged quote request! Submit your offer using the slider, and once you approve, you can instantly download your digital proforma document.`;
       setChatMessages([
         {
           sender: "rep",
-          text: `Değerli iş ortağımız, toplu alım veya özel döviz korumalı teklif talebiniz için pazarlık odamız aktif edildi! Fiyat sürgüsünü ayarlayarak teklif sunabilir ve anlaşmayı onayladığınızda dijital proforma belgenizi anında indirebilirsiniz.`,
+          text: repOfferText,
           time: new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" })
         }
       ]);
@@ -1247,47 +1397,17 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 via-blue-50/50 to-indigo-50/80 p-3 sm:rounded-3xl sm:p-4 shadow-sm relative overflow-hidden">
-              {/* Premium Kur Kalkanı Shield in Background */}
-              <div className="absolute -right-4 -bottom-4 text-blue-500/5 select-none pointer-events-none text-9xl">🛡️</div>
-
-              {/* Dynamic Currency Price Container */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:rounded-3xl shadow-sm relative overflow-hidden">
+              {/* Price Container */}
               <div className="space-y-1.5 relative z-10">
-                {convertedPricing ? (
-                  <>
-                    <span className="text-[10px] font-black text-blue-700 bg-blue-100/70 border border-blue-200/50 px-2 py-0.5 rounded-md uppercase tracking-wider inline-flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                      {pageTxt("exchangeHedged", language)}
-                    </span>
-                    <h2 className="text-2xl font-black text-blue-900 tracking-tight">
-                      {parseFloat(convertedPricing.finalPrice).toLocaleString(language === "tr" ? "tr-TR" : "en-US", {minimumFractionDigits: 2})} {convertedPricing.targetCurrency}
-                    </h2>
-                    
-                    {convertedPricing.baseCurrency !== convertedPricing.targetCurrency && (
-                      <p className="text-[10px] text-slate-500 font-semibold">
-                        {`${pageTxt("originalBasePrice", language)}: ${convertedPricing.basePrice} ${convertedPricing.baseCurrency}`}
-                      </p>
-                    )}
-
-                    {/* Breakdown Tooltip/Panel for absolute transparency */}
-                    <div className="mt-2.5 rounded-xl bg-white/70 border border-blue-100 p-2 text-[10px] leading-relaxed text-slate-600 font-bold space-y-1">
-                      <p className="flex justify-between">
-                        <span>{pageTxt("rawRate", language)}</span>
-                        <span className="text-slate-900">{parseFloat(convertedPricing.rawConverted).toFixed(2)} {convertedPricing.targetCurrency}</span>
-                      </p>
-                      {convertedPricing.isHedgingEnabled && (
-                        <p className="flex justify-between text-indigo-700">
-                          <span>{pageTxt("exchangeHedging", language)} (+%${convertedPricing.bufferPercent}):</span>
-                          <span className="font-extrabold">+{parseFloat(convertedPricing.hedgeFee).toFixed(2)} {convertedPricing.targetCurrency}</span>
-                        </p>
-                      )}
-                      <p className="border-t border-slate-100 pt-1 text-[9px] text-slate-400 font-semibold italic">
-                        {pageTxt("rateLockedGuarantee", language)}
-                      </p>
-                    </div>
-                  </>
+                {activeProduct.priceValue ? (
+                  <h2 className="text-3xl font-black text-slate-900 tracking-tight">
+                    {activeProduct.priceValue.toLocaleString(language === "tr" ? "tr-TR" : "en-US", {minimumFractionDigits: 2})} {activeProduct.currency || "GEL"}
+                  </h2>
                 ) : (
-                  <h2 className="text-lg font-black text-blue-800 sm:text-xl">{txt(activeProduct.priceText, language)}</h2>
+                  <h2 className="text-xl font-black text-slate-800 tracking-tight">
+                    {txt(activeProduct.priceText, language)}
+                  </h2>
                 )}
               </div>
 

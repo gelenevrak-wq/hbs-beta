@@ -48,7 +48,7 @@ export function getLanguageDirection(language: HbsLanguageCode) {
 export function normalizeBrowserLanguage(
   value: string | undefined | null
 ): HbsLanguageCode {
-  if (!value) return "en";
+  if (!value) return "tr";
 
   const lowerValue = value.toLowerCase();
 
@@ -65,12 +65,12 @@ export function normalizeBrowserLanguage(
   if (lowerValue.startsWith("pt")) return "pt";
   if (lowerValue.startsWith("fa")) return "fa";
 
-  return "en";
+  return "tr";
 }
 
 export function getInitialLanguage(): HbsLanguageCode {
   if (typeof window === "undefined") {
-    return "en";
+    return "tr";
   }
 
   // 1. URL Query Parameter Check (Critical for SEO & Search Engine Indexing in multiple languages)

@@ -472,7 +472,7 @@ export default function DashboardPage() {
                         purpose: w.address || "Depo Açıklaması",
                         customerVisible: w.is_visible_to_customers || false,
                         city: w.address || "Türkiye",
-                        zones: Array.from(new Set(shelves.map(s => s.split("-")[0]))).filter(Boolean),
+                        zones: Array.from(new Set(shelves.map(s => s.includes("-") ? s.split("-")[0] : s.charAt(0)))).filter(Boolean),
                         shelves: shelves,
                         capacity: 1000,
                         used: 0
@@ -654,7 +654,7 @@ export default function DashboardPage() {
     {
       title: currentText.moduleStorefront,
       description: currentText.moduleStorefrontDesc,
-      href: "/store/obdtr",
+      href: `/store/${currentUser?.storeSlugs?.[0] || "obdtr"}`,
       tag: currentText.tagLive,
     },
     {

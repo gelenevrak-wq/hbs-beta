@@ -1289,28 +1289,28 @@ export default function StorePage() {
   const [offerProduct, setOfferProduct] = useState("");
 
   return (
-    <main className="min-h-screen bg-[#f5f7fb] text-slate-900 px-3 py-3 sm:px-6 sm:py-6">
+    <main className="min-h-screen text-slate-900 px-3 py-3 sm:px-6 sm:py-6">
       <div className="mx-auto max-w-7xl">
-        <header className="mb-3 flex items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+        <header className="mb-4 flex items-center justify-between gap-2 rounded-3xl premium-glass px-4 py-3 shadow-md">
           <Link href="/" className="text-base font-black sm:text-xl text-blue-600">
             {getTxt("hbsVitrin")}
           </Link>
           <div className="flex items-center gap-2">
             <CompactLanguageSwitcher />
-            <Link href="/requests" className="rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-750 px-3 py-2 text-xs font-black shadow-sm hover:bg-indigo-100 transition">
+            <Link href="/requests" className="rounded-2xl border border-indigo-200 bg-indigo-50/80 text-indigo-750 px-4 py-2.5 text-xs font-black shadow-sm hover:bg-indigo-100 transition duration-200 hover:scale-105 active:scale-95">
               {getTxt("tendersBoard")}
             </Link>
-            <Link href="/customer" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black shadow-sm">
+            <Link href="/customer" className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black shadow-sm hover:bg-slate-50 transition duration-200 hover:scale-105 active:scale-95">
               {getTxt("customerPortal")}
             </Link>
-            <Link href="/login" className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black shadow-sm">
+            <Link href="/login" className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black shadow-sm hover:bg-slate-50 transition duration-200 hover:scale-105 active:scale-95">
               {getTxt("storePanel")}
             </Link>
           </div>
         </header>
 
         {message && (
-          <div className="mb-3 rounded-xl border border-blue-200 bg-blue-50/50 p-3.5 text-xs font-black text-blue-950">
+          <div className="mb-4 rounded-2xl border border-blue-200 bg-blue-50/50 p-4 text-xs font-black text-blue-950">
             ✓ {message}
           </div>
         )}
@@ -1319,7 +1319,7 @@ export default function StorePage() {
         {storeType === "products" && (
           <section className="space-y-4 animate-fadeIn">
             {/* STICKY STORE HEADER & CATALOG SEARCH */}
-            <div className="sticky top-2 z-40 bg-white/95 border border-slate-200 shadow-md rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 backdrop-blur">
+            <div className="sticky top-3 z-40 premium-glass shadow-xl rounded-3xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300">
               <div className="flex items-center gap-2">
                 <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   🏢 {storeInfo?.name || "OBDTR Diagnostics"}
@@ -1372,20 +1372,15 @@ export default function StorePage() {
                     ? (activeVariant.salePrice ? `${activeVariant.salePrice} ${p.currency}` : getTxt("quoteOption")) 
                     : (p.pricingMode === "fixed" && p.salePrice ? `${p.salePrice} ${p.currency}` : getTxt("quoteOption"));
 
-                  const displaySku = activeVariant ? activeVariant.sku : p.sku;
-                  const displayBarcode = activeVariant ? activeVariant.barcode : p.barcode;
-                  const displayShelf = activeVariant ? activeVariant.shelf : p.shelf;
-                  const displayWarehouse = activeVariant ? activeVariant.warehouse : p.warehouse;
                   const displayQuantity = activeVariant ? activeVariant.quantity : p.quantity;
                   const isPricingFixed = activeVariant ? !!activeVariant.salePrice : p.pricingMode === "fixed" && !!p.salePrice;
 
-                  // Fully translate dynamic data attributes (category, product name, description)
+                  // Fully translate dynamic data attributes (category, product name)
                   const finalCategory = translateProductField(p.category, "category", language);
                   const finalName = translateProductField(p.name, "name", language);
-                  const finalDescription = translateProductField(p.description, "description", language);
 
                   return (
-                    <article key={p.id} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-md shadow-slate-100/50 hover:shadow-xl hover:border-slate-350 transition-all duration-300 flex flex-col justify-between relative group">
+                    <article key={p.id} className="rounded-3xl hbs-glow-card p-6 flex flex-col justify-between relative group">
                       {isOwner && (
                         <Link
                           href={"/dashboard/products?edit=" + p.id}
@@ -1395,7 +1390,7 @@ export default function StorePage() {
                         </Link>
                       )}
                       <div className="space-y-4">
-                        <Link href={`/product/${p.id}`} className="block aspect-[16/10] w-full rounded-2xl bg-slate-50 border border-slate-100 overflow-hidden hover:scale-[1.01] hover:shadow-inner transition-all duration-300">
+                        <Link href={`/product/${p.id}`} className="block aspect-square w-full rounded-2xl bg-slate-50 border border-slate-100 overflow-hidden hover:scale-[1.01] hover:shadow-inner transition-all duration-300 relative">
                           {p.imageUrl ? (
                             <img src={p.imageUrl} alt={finalName} className="object-contain h-full w-full p-4" />
                           ) : (
@@ -1404,49 +1399,20 @@ export default function StorePage() {
                         </Link>
                         
                         <div>
-                          <span className="rounded-full bg-blue-50 border border-blue-150 px-3 py-1 text-[10px] sm:text-xs font-black text-blue-800 uppercase tracking-wide">
-                            {finalCategory}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="rounded-full bg-blue-50 border border-blue-150 px-3 py-1 text-[10px] sm:text-xs font-black text-blue-800 uppercase tracking-wide">
+                              {finalCategory}
+                            </span>
+                            {((parseInt(displayQuantity) || 0) <= 0) && (
+                              <span className="rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-[10px] sm:text-xs font-black text-amber-800 uppercase tracking-wide flex items-center gap-1 animate-pulse">
+                                ⏳ {language === "en" ? "3-5 Days Delivery" : language === "de" ? "3-5 Tage Lieferzeit" : language === "ru" ? "Доставка 3-5 дн." : language === "ka" ? "მიწოდება 3-5 დღეში" : "3-5 İş Gününde Teslim"}
+                              </span>
+                            )}
+                          </div>
+                          
                           <h3 className="font-black text-base sm:text-lg text-slate-800 mt-2.5 hover:text-blue-600 transition leading-snug">
                             <Link href={`/product/${p.id}`}>{finalName}</Link>
                           </h3>
-                          {p.description && (
-                            <p className="text-xs sm:text-sm text-slate-500 mt-2 line-clamp-3 leading-relaxed font-medium">{finalDescription}</p>
-                          )}
-                          
-                          <div className="text-xs text-slate-500 mt-4 space-y-2 border-t border-slate-100 pt-3.5 font-semibold">
-                            <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
-                              <span className="text-slate-400 font-medium">{getTxt("skuLabel")}</span>
-                              <span className="text-slate-800 font-extrabold">{displaySku || "-"}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
-                              <span className="text-slate-400 font-medium">{getTxt("barcodeLabel")}</span>
-                              <span className="text-slate-800 font-extrabold">{displayBarcode || "-"}</span>
-                            </div>
-                            {isVirtualDelivery ? (
-                              <>
-                                <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
-                                  <span className="text-slate-400 font-medium">{getTxt("deliveryTypeLabel")}</span>
-                                  <span className="text-blue-700 font-black">{getTxt("deliveryTypeValue")}</span>
-                                </div>
-                                <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
-                                  <span className="text-slate-400 font-medium">{getTxt("extraServiceLabel")}</span>
-                                  <span className="text-emerald-700 font-black">{getTxt("extraServiceValue")}</span>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
-                                  <span className="text-slate-400 font-medium">{getTxt("shelfAddressLabel")}</span>
-                                  <span className="text-blue-700 font-black">{displayWarehouse} · {displayShelf || "-"}</span>
-                                </div>
-                                <div className="flex justify-between border-b border-slate-50/50 pb-1.5">
-                                  <span className="text-slate-400 font-medium">{getTxt("stockStatusLabel")}</span>
-                                  <span className="text-emerald-700 font-black">{displayQuantity ? `${displayQuantity} ${getTxt("pieces")}` : "Stokta Var"}</span>
-                                </div>
-                              </>
-                            )}
-                          </div>
 
                           {/* Variants Select Box */}
                           {hasVariants && (
