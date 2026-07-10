@@ -156,6 +156,7 @@ const translations = {
     biometricSuccess: "Biyometrik doğrulama başarılı! İşlem kaydediliyor...",
     codeLabel: "Kod",
     navProducts: "Ürün Yönetimi",
+    navWarehouses: "Depo Yönetimi",
     navDashboard: "Panel",
     navHome: "Ana Sayfa"
   },
@@ -203,6 +204,7 @@ const translations = {
     biometricSuccess: "Biometric authentication successful! Saving transaction...",
     codeLabel: "Code",
     navProducts: "Product Management",
+    navWarehouses: "Warehouse Management",
     navDashboard: "Dashboard",
     navHome: "Homepage"
   },
@@ -250,6 +252,7 @@ const translations = {
     biometricSuccess: "Biometrische Authentifizierung erfolgreich! Speichere Transaktion...",
     codeLabel: "Code",
     navProducts: "Produktverwaltung",
+    navWarehouses: "Lagerverwaltung",
     navDashboard: "Dashboard",
     navHome: "Startseite"
   },
@@ -297,6 +300,7 @@ const translations = {
     biometricSuccess: "Биометрическая проверка успешна! Запись операции...",
     codeLabel: "Код",
     navProducts: "Управление товарами",
+    navWarehouses: "Управление складами",
     navDashboard: "Панель управления",
     navHome: "Главная страница"
   },
@@ -344,6 +348,7 @@ const translations = {
     biometricSuccess: "ბიომეტრიული ავტორიზაცია წარმატებულია! ოპერაცია ინახება...",
     codeLabel: "კოდი",
     navProducts: "პროდუქტების მართვა",
+    navWarehouses: "საწყობების მართვა",
     navDashboard: "მართვის პანელი",
     navHome: "მთავარი"
   }
@@ -1007,6 +1012,13 @@ export default function StockMovementsPage() {
               className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
             >
               {t.navProducts}
+            </Link>
+
+            <Link
+              href="/dashboard/warehouses"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-black text-slate-700 hover:bg-slate-50 shadow-sm transition active:scale-95"
+            >
+              {t.navWarehouses}
             </Link>
 
             <Link
