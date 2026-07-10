@@ -2479,9 +2479,9 @@ export default function WarehousesRevampPage() {
       process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://placeholder.supabase.co";
 
     const defaultShelves = [
-      "A-01", "A-02", "A-03",
-      "B-01", "B-02", "B-03",
-      "C-01", "C-02", "C-03"
+      "A0101", "A0102", "A0103",
+      "B0101", "B0102", "B0103",
+      "C0101", "C0102", "C0103"
     ];
 
     if (isSupabaseConfigured && storeSlug) {
@@ -2595,7 +2595,7 @@ export default function WarehousesRevampPage() {
         }
         const id = `wh-${Date.now()}-${i}`;
         const zones = ["A", "B"];
-        const shelves = ["A-01", "A-02", "B-01", "B-02"];
+        const shelves = ["A0101", "A0102", "B0101", "B0102"];
         return {
           id,
           name: name.trim(),
@@ -5434,7 +5434,7 @@ ${sizeStr}
                                 <div className="flex gap-1">
                                   {Array.from({ length: c.depth }, (_, dIdx) => {
                                     const slot = dIdx + 1;
-                                    const baseCode = `${c.zone}-${slot < 10 ? `0${slot}` : `${slot}`}-${level < 10 ? `0${level}` : `${level}`}`;
+                                    const baseCode = `${c.zone}${slot < 10 ? `0${slot}` : `${slot}`}${level < 10 ? `0${level}` : `${level}`}`;
 
                                     const sides = c.isDoubleRow ? ["S1", "S2"] : [""];
                                     const sideWidthClass = c.isDoubleRow ? "w-10" : "w-14";

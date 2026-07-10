@@ -1193,7 +1193,7 @@ export default function StockMovementsPage() {
                     <input
                       value={shelf}
                       onChange={(event) => setShelf(event.target.value)}
-                      placeholder="A-01"
+                      placeholder="A0101"
                       className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
                       aria-label="Shelf Location" 
                     />
