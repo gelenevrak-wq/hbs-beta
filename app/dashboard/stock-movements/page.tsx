@@ -1030,7 +1030,7 @@ export default function StockMovementsPage() {
           </div>
         )}
 
-        <section className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="grid gap-4 grid-cols-1">
           <div className="rounded-3xl border border-indigo-150 bg-gradient-to-br from-indigo-50/30 via-indigo-50/20 to-indigo-100/10 p-5 shadow-md space-y-4">
             <div className="pb-3 border-b border-indigo-100/50">
               <h2 className="text-xl font-black text-indigo-950 flex items-center gap-2">
