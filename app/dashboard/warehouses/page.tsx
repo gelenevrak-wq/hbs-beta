@@ -127,6 +127,9 @@ type ProductRecord = {
   volume?: string;
   imageUrl?: string;
   galleryUrls?: string[];
+  originalProductId?: string;
+  stockId?: string;
+  currency?: string;
 };
 
 type StockMovement = {
