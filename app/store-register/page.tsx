@@ -89,6 +89,7 @@ const texts = {
     useCaseStock: "📦 Sadece Stok Kontrolü",
     useCaseSales: "💰 Ürün Satışı & Teklif",
     companyLabel: "Mağaza / Firma Adı *",
+    logoUrlLabel: "Firma Logosu (URL - Opsiyonel)",
     representativeLabel: "Yetkili Ad Soyad *",
     phoneLabel: "Telefon / WhatsApp *",
     emailLabel: "E-posta Adresi *",
@@ -168,6 +169,7 @@ const texts = {
     useCaseStock: "📦 Stock Control Only",
     useCaseSales: "💰 Product Sales & Bidding",
     companyLabel: "Store / Company Name *",
+    logoUrlLabel: "Company Logo (URL - Optional)",
     representativeLabel: "Authorized Person *",
     phoneLabel: "Phone / WhatsApp *",
     emailLabel: "Email Address *",
@@ -247,6 +249,7 @@ const texts = {
     useCaseStock: "📦 Nur Bestandskontrolle",
     useCaseSales: "💰 Produktverkauf & Angebote",
     companyLabel: "Shop- / Firmenname *",
+    logoUrlLabel: "Firmenlogo (URL - Optional)",
     representativeLabel: "Bevollmächtigte Person *",
     phoneLabel: "Telefon / WhatsApp *",
     emailLabel: "E-Mail-Adresse *",
@@ -326,6 +329,7 @@ const texts = {
     useCaseStock: "📦 Только контроль запасов",
     useCaseSales: "💰 Продажа товаров и предложения",
     companyLabel: "Название магазина / компании *",
+    logoUrlLabel: "Логотип компании (URL - Опционально)",
     representativeLabel: "Уполномоченное лицо *",
     phoneLabel: "Телефон / WhatsApp *",
     emailLabel: "Email *",
@@ -405,6 +409,7 @@ const texts = {
     useCaseStock: "📦 მხოლოდ მარაგების კონტროლი",
     useCaseSales: "💰 პროდუქტის გაყიდვა და შეთავაზება",
     companyLabel: "მაღაზიის / კომპანიის სახელი *",
+    logoUrlLabel: "კომპანიის ლოგო (URL - არასავალდებულო)",
     representativeLabel: "უფლებამოსილი პირი *",
     phoneLabel: "ტელეფონი / WhatsApp *",
     emailLabel: "ელფოსტის მისამართი *",
@@ -478,6 +483,7 @@ export default function StoreRegisterPage() {
   const [language, setLanguage] = useState<LanguageCode>("tr");
   const [step, setStep] = useState<Step>("details");
   const [companyName, setCompanyName] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
   const [representative, setRepresentative] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -722,6 +728,7 @@ export default function StoreRegisterPage() {
         serviceCountries: serviceCountries,
         useCase: useCase,
         taxNumber: useCase === "sales" ? taxNumber : "",
+        logoUrl: logoUrl,
       };
 
       const localStores = JSON.parse(window.localStorage.getItem("hbs-registered-stores") || "[]");
@@ -821,6 +828,17 @@ export default function StoreRegisterPage() {
                     onChange={(e) => setRepresentative(e.target.value)}
                     required
                     placeholder="John Doe"
+                    className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" />
+                </label>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="grid gap-1">
+                  <span className="text-[11px] font-bold text-slate-650">{t.logoUrlLabel}</span>
+                  <input
+                    value={logoUrl}
+                    onChange={(e) => setLogoUrl(e.target.value)}
+                    placeholder="https://..."
                     className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition" />
                 </label>
               </div>

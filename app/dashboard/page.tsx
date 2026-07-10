@@ -351,6 +351,10 @@ export default function DashboardPage() {
   const [waitingMessages, setWaitingMessages] = useState(0);
   const [stockAlerts, setStockAlerts] = useState(0);
 
+  const [storeName, setStoreName] = useState("HBS");
+  const [storeLogo, setStoreLogo] = useState("");
+  const [storeSlug, setStoreSlug] = useState("obdtr");
+
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : "tr");
@@ -359,19 +363,35 @@ export default function DashboardPage() {
       const activeUser = JSON.parse(window.localStorage.getItem("hbs-current-user") || "null");
       setCurrentUser(activeUser);
 
-      const storeSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+      const currentStoreSlug = activeUser?.storeSlugs?.[0] || "obdtr";
+      setStoreSlug(currentStoreSlug);
+
+      // Resolve store name & logo from registered stores
+      const storesStr = window.localStorage.getItem("hbs-registered-stores");
+      if (storesStr) {
+        const stores = JSON.parse(storesStr);
+        const activeStore = stores.find((s: any) => s.code === currentStoreSlug);
+        if (activeStore) {
+          setStoreName(activeStore.name);
+          if (activeStore.logoUrl) {
+            setStoreLogo(activeStore.logoUrl);
+          }
+        }
+      }
 
       // 1 & 2 & 7: Check if company settings saved
       const savedSettings = window.localStorage.getItem("hbs-company-settings");
       if (savedSettings) {
         setIsCompanyDone(true);
+        const s = JSON.parse(savedSettings);
+        if (s.companyName) setStoreName(s.companyName);
+        if (s.logoUrl) setStoreLogo(s.logoUrl);
       }
 
       // 3 & 4: Check if any custom warehouse is created for active store slug
-      const storesStr = window.localStorage.getItem("hbs-registered-stores");
       if (storesStr) {
         const stores = JSON.parse(storesStr);
-        const activeStore = stores.find((s: any) => s.code === storeSlug);
+        const activeStore = stores.find((s: any) => s.code === currentStoreSlug);
         if (activeStore && activeStore.warehouses && activeStore.warehouses.length > 0) {
           setIsWarehouseDone(true);
         }
@@ -713,49 +733,67 @@ export default function DashboardPage() {
         )}
         
         <header className="mb-4 flex items-center justify-between gap-2">
-          <Link href="/" className="text-xl font-black tracking-wide">
+          <Link href="/" className="text-xl font-black tracking-wide text-slate-800">
             HBS
           </Link>
-
-          <div className="flex min-w-0 items-center gap-2">
-            <CompactLanguageSwitcher />
-
-            <Link
-              href="/customer"
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-slate-100"
-            >
-              {currentText.customerPortal}
-            </Link>
-
-            <Link
-              href="/store/obdtr"
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-slate-100"
-            >
-              OBDTR Vitrini
-            </Link>
-
-            <Link
-              href="/"
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-slate-100"
-            >
-              {currentText.home}
-            </Link>
-          </div>
         </header>
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5">
-          <div className="space-y-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-700">
-              {currentText.eyebrow}
-            </p>
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5 relative">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            
+            {/* Left side: Logo & Title Info */}
+            <div className="flex items-center gap-4 min-w-0">
+              {storeLogo ? (
+                <div className="w-14 h-14 rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
+                  <img src={storeLogo} alt={storeName} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-14 h-14 rounded-2xl border border-slate-200 bg-slate-50 shrink-0 flex items-center justify-center text-xl shadow-sm">
+                  🏪
+                </div>
+              )}
+              
+              <div className="space-y-0.5 min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
+                  {currentText.eyebrow}
+                </p>
+                <h1 className="text-lg font-black sm:text-2xl truncate text-slate-800">
+                  {isCompanyDone ? storeName : currentText.title}
+                </h1>
+                <p className="text-xs leading-5 text-slate-500 max-w-2xl line-clamp-1">
+                  {currentText.description}
+                </p>
+              </div>
+            </div>
 
-            <h1 className="mt-2 text-xl font-black sm:text-3xl">
-              {currentText.title}
-            </h1>
+            {/* Right side: Navigation buttons (Larger and inside the card) */}
+            <div className="flex flex-wrap items-center gap-2 shrink-0 self-start lg:self-center">
+              <div className="flex items-center gap-2">
+                <CompactLanguageSwitcher />
 
-            <p className="mt-2 max-w-4xl text-sm leading-5 text-slate-600">
-              {currentText.description}
-            </p>
+                <Link
+                  href="/customer"
+                  className="rounded-xl border border-slate-250 bg-slate-50 px-3.5 py-2 text-xs font-black text-slate-700 hover:bg-slate-100 transition shadow-sm active:scale-95"
+                >
+                  {currentText.customerPortal}
+                </Link>
+
+                <Link
+                  href={`/store/${storeSlug}`}
+                  className="rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-black text-blue-700 hover:bg-blue-100 transition shadow-sm active:scale-95"
+                >
+                  {storeName} {currentText.storeFront}
+                </Link>
+
+                <Link
+                  href="/"
+                  className="rounded-xl border border-slate-250 bg-slate-50 px-3.5 py-2 text-xs font-black text-slate-700 hover:bg-slate-100 transition shadow-sm active:scale-95"
+                >
+                  {currentText.home}
+                </Link>
+              </div>
+            </div>
+
           </div>
         </section>
 

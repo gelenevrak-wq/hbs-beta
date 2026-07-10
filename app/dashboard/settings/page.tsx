@@ -27,6 +27,8 @@ const texts = {
     companyNamePlaceholder: "Firma adınızı yazın",
     officialTitle: "Resmî Firma Ünvanı",
     officialTitlePlaceholder: "Varsa resmî firma ünvanı",
+    logoUrl: "Firma Logosu (URL)",
+    logoUrlPlaceholder: "https://... veya resim bağlantısı",
     taxNumber: "Vergi / Kayıt Numarası",
     taxNumberPlaceholder: "Varsa kayıt numarası",
     sector: "Sektör",
@@ -91,6 +93,8 @@ const texts = {
     companyNamePlaceholder: "Enter company name",
     officialTitle: "Official Company Title",
     officialTitlePlaceholder: "Official registered name if available",
+    logoUrl: "Company Logo (URL)",
+    logoUrlPlaceholder: "https://... or image link",
     taxNumber: "Tax / Registration Number",
     taxNumberPlaceholder: "Registration number if available",
     sector: "Sector",
@@ -155,6 +159,8 @@ const texts = {
     companyNamePlaceholder: "Введите название компании",
     officialTitle: "Официальное название компании",
     officialTitlePlaceholder: "Официальное название, если есть",
+    logoUrl: "Логотип компании (URL)",
+    logoUrlPlaceholder: "https://... или ссылка на изображение",
     taxNumber: "Налоговый / регистрационный номер",
     taxNumberPlaceholder: "Регистрационный номер, если есть",
     sector: "Сектор",
@@ -219,6 +225,8 @@ const texts = {
     companyNamePlaceholder: "შეიყვანეთ კომპანიის სახელი",
     officialTitle: "ოფიციალური კომპანიის სახელი",
     officialTitlePlaceholder: "ოფიციალური რეგისტრირებული სახელი",
+    logoUrl: "კომპანიის ლოგო (URL)",
+    logoUrlPlaceholder: "https://... ან სურათის ბმული",
     taxNumber: "საგადასახადო / რეგისტრაციის ნომერი",
     taxNumberPlaceholder: "რეგისტრაციის ნომერი თუ არსებობს",
     sector: "სექტორი",
@@ -283,6 +291,8 @@ const texts = {
     companyNamePlaceholder: "Firmennamen eingeben",
     officialTitle: "Offizieller Firmenname",
     officialTitlePlaceholder: "Offizieller registrierter Name",
+    logoUrl: "Firmenlogo (URL)",
+    logoUrlPlaceholder: "https://... oder Bild-Link",
     taxNumber: "Steuer- / Registrierungsnummer",
     taxNumberPlaceholder: "Registrierungsnummer, falls vorhanden",
     sector: "Branche",
@@ -347,6 +357,7 @@ export default function SettingsPage() {
   const [language, setLanguage] = useState<LanguageCode | null>(null);
   const [companyName, setCompanyName] = useState("OBDTR Diagnostics");
   const [officialTitle, setOfficialTitle] = useState("OBDTR Diagnostics LLC");
+  const [logoUrl, setLogoUrl] = useState("");
   const [taxNumber, setTaxNumber] = useState("");
   const [sector, setSector] = useState("Oto Yedek Parça");
   const [description, setDescription] = useState(
@@ -379,6 +390,7 @@ export default function SettingsPage() {
         const s = JSON.parse(savedSettingsStr);
         if (s.companyName) setCompanyName(s.companyName);
         if (s.officialTitle) setOfficialTitle(s.officialTitle);
+        if (s.logoUrl) setLogoUrl(s.logoUrl);
         if (s.taxNumber) setTaxNumber(s.taxNumber);
         if (s.sector) setSector(s.sector);
         if (s.description) setDescription(s.description);
@@ -410,6 +422,7 @@ export default function SettingsPage() {
             setEmail(activeStoreObj.email);
             setPhone(activeStoreObj.phone || "+995 555 000 001");
             setWhatsapp(activeStoreObj.phone || "+995 555 000 001");
+            if (activeStoreObj.logoUrl) setLogoUrl(activeStoreObj.logoUrl);
           }
         }
       }
@@ -468,6 +481,7 @@ export default function SettingsPage() {
     const settingsData = {
       companyName,
       officialTitle,
+      logoUrl,
       taxNumber,
       sector,
       description,
@@ -508,6 +522,7 @@ export default function SettingsPage() {
               whatsapp: sanitizedWhatsapp,
               city: city,
               representative: officialTitle,
+              logoUrl: logoUrl,
             };
           }
           return s;
@@ -606,6 +621,13 @@ export default function SettingsPage() {
                   value={sector}
                   onChange={setSector}
                   placeholder={currentText.sectorPlaceholder}
+                />
+
+                <InputBlock
+                  label={currentText.logoUrl}
+                  value={logoUrl}
+                  onChange={setLogoUrl}
+                  placeholder={currentText.logoUrlPlaceholder}
                 />
 
                 <div className="sm:col-span-2">
