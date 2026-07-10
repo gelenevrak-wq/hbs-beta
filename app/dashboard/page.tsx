@@ -732,37 +732,42 @@ export default function DashboardPage() {
           </section>
         )}
         
-        <header className="mb-4 flex items-center justify-between gap-2">
-          <Link href="/" className="text-xl font-black tracking-wide text-slate-800">
-            HBS
-          </Link>
-        </header>
-
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5 relative">
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-5 relative mt-4">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             
             {/* Left side: Logo & Title Info */}
             <div className="flex items-center gap-4 min-w-0">
-              {storeLogo ? (
-                <div className="w-14 h-14 rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden shrink-0 flex items-center justify-center shadow-sm">
-                  <img src={storeLogo} alt={storeName} className="w-full h-full object-cover" />
-                </div>
-              ) : (
-                <div className="w-14 h-14 rounded-2xl border border-slate-200 bg-slate-50 shrink-0 flex items-center justify-center text-xl shadow-sm">
-                  🏪
-                </div>
-              )}
+              <Link 
+                href="/dashboard/settings" 
+                className="group relative w-16 h-16 rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 shrink-0 flex flex-col items-center justify-center text-slate-400 hover:border-blue-500 hover:text-blue-500 hover:bg-blue-50/30 transition-all cursor-pointer shadow-sm overflow-hidden"
+                title={language === "tr" ? "Logo Ekle / Düzenle" : "Add / Edit Logo"}
+              >
+                {storeLogo ? (
+                  <>
+                    <img src={storeLogo} alt={storeName} className="w-full h-full object-cover group-hover:opacity-75 transition" />
+                    <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition text-white text-[9px] font-black uppercase tracking-wider">
+                      ✏️ {language === "tr" ? "Değiştir" : "Change"}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xl">📷</span>
+                    <span className="text-[8px] font-black uppercase tracking-wider mt-0.5 text-slate-500 group-hover:text-blue-600">
+                      {language === "tr" ? "Logo Ekle" : "Add Logo"}
+                    </span>
+                  </>
+                )}
+              </Link>
               
-              <div className="space-y-0.5 min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-emerald-700">
-                  {currentText.eyebrow}
-                </p>
-                <h1 className="text-lg font-black sm:text-2xl truncate text-slate-800">
-                  {isCompanyDone ? storeName : currentText.title}
+              <div className="min-w-0">
+                <h1 className="text-2xl font-black sm:text-4xl tracking-tight text-slate-800 leading-none">
+                  {language === "tr" && `${storeName} Mağaza Paneli`}
+                  {language === "en" && `${storeName} Store Panel`}
+                  {language === "de" && `${storeName} Shop-Panel`}
+                  {language === "ru" && `${storeName} Панель Магазина`}
+                  {language === "ka" && `${storeName} მაღაზიის პანელი`}
+                  {!language && `${storeName} Mağaza Paneli`}
                 </h1>
-                <p className="text-xs leading-5 text-slate-500 max-w-2xl line-clamp-1">
-                  {currentText.description}
-                </p>
               </div>
             </div>
 
