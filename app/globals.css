@@ -211,10 +211,16 @@ html {
 .bg-\[\#030712\],
 .bg-\[\#0f172a\] {
   background-color: #ffffff !important;
+  color: #0f172a !important;
 }
 
-.text-white { 
-  color: #0f172a !important; 
+.text-white,
+button.text-white,
+a.text-white,
+.bg-indigo-600,
+.bg-indigo-700,
+.bg-blue-600 { 
+  color: #ffffff !important; 
 }
 
 .border-slate-800,
