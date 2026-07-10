@@ -399,7 +399,11 @@ export default function ProductDetailPage() {
       `${closingMsg}`
     );
 
-    const targetNumber = (activeProduct && activeProduct.storeWhatsapp) || "+905320000000";
+    const targetNumber = storeWhatsappVal || (activeProduct && activeProduct.storeWhatsapp);
+    if (!targetNumber || targetNumber === "+905320000000" || targetNumber === "905320000000") {
+      alert(activeLang === "en" ? "This store's WhatsApp hotline is not configured yet." : "Bu mağazanın WhatsApp hattı henüz ayarlanmamış.");
+      return;
+    }
     const cleanNumber = targetNumber.replace(/\D/g, "");
     window.open(`https://wa.me/${cleanNumber}?text=${messageText}`, "_blank");
   };
@@ -529,7 +533,9 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       if (memoizedActiveProduct.storeSlug === loggedInStoreSlug && localSettings?.phone) {
         return localSettings.phone;
       }
-      return storeInfo?.phone || "+905320000000";
+      const finalVal = storeInfo?.phone;
+      const isFinalPlaceholder = finalVal === "+905320000000" || finalVal === "905320000000" || !finalVal;
+      return isFinalPlaceholder ? undefined : finalVal;
     }
     return baseVal;
   }, [memoizedActiveProduct, localSettings, storeInfo]);
@@ -551,7 +557,9 @@ const memoizedActiveProduct = useMemo<ProductData | null>(() => {
       if (memoizedActiveProduct.storeSlug === loggedInStoreSlug && localSettings?.whatsapp) {
         return sanitizeWhatsAppNumber(localSettings.whatsapp);
       }
-      return sanitizeWhatsAppNumber(storeInfo?.whatsapp || "905320000000");
+      const finalVal = storeInfo?.whatsapp;
+      const isFinalPlaceholder = finalVal === "+905320000000" || finalVal === "905320000000" || !finalVal;
+      return isFinalPlaceholder ? undefined : sanitizeWhatsAppNumber(finalVal);
     }
     return sanitizeWhatsAppNumber(baseVal);
   }, [memoizedActiveProduct, localSettings, storeInfo]);

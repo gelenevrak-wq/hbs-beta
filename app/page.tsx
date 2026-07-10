@@ -338,13 +338,22 @@ type LocationSuggestion = {
 const productCoordinates: Record<string, { lat: number; lng: number }> = {
   Batumi: { lat: 41.6168, lng: 41.6367 },
   Batum: { lat: 41.6168, lng: 41.6367 },
-  İstanbul: { lat: 41.0082, lng: 28.9784 },
-  Istanbul: { lat: 41.0082, lng: 28.9784 },
   Tbilisi: { lat: 41.7151, lng: 44.8271 },
   Tiflis: { lat: 41.7151, lng: 44.8271 },
+  Kutaisi: { lat: 42.2679, lng: 42.6946 },
+  Rustavi: { lat: 41.5394, lng: 45.0008 },
+  İstanbul: { lat: 41.0082, lng: 28.9784 },
+  Istanbul: { lat: 41.0082, lng: 28.9784 },
   İzmir: { lat: 38.4237, lng: 27.1428 },
   Izmir: { lat: 38.4237, lng: 27.1428 },
+  Ankara: { lat: 39.9334, lng: 32.8597 },
+  Bursa: { lat: 40.1885, lng: 29.0610 },
   Antalya: { lat: 36.8969, lng: 30.7133 },
+  Adana: { lat: 37.0017, lng: 35.3289 },
+  Gaziantep: { lat: 37.0662, lng: 37.3833 },
+  Konya: { lat: 37.8714, lng: 32.4846 },
+  Trabzon: { lat: 41.0027, lng: 39.7168 },
+  Samsun: { lat: 41.2867, lng: 36.3333 }
 };
 
 function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
@@ -437,30 +446,54 @@ export default function HomePage() {
   const [category, setCategory] = useState("all");
   const [locationInput, setLocationInput] = useState("");
 
-  const handleMobileCapture = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const loadZXing = () => {
+    return new Promise((resolve) => {
+      if ((window as any).ZXing) {
+        resolve((window as any).ZXing);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+      script.async = true;
+      script.onload = () => {
+        resolve((window as any).ZXing);
+      };
+      script.onerror = () => {
+        resolve(null);
+      };
+      document.head.appendChild(script);
+    });
+  };
+
+  const handleMobileCapture = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    alert(t.aiAnalyzing);
-    
-    let targetSku = "SKU-AUTEL-001";
-    try {
-      const savedProducts = window.localStorage.getItem("hbs-store-products");
-      if (savedProducts) {
-        const parsed = JSON.parse(savedProducts);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const visibleProduct = parsed.find((p: any) => p.visibility !== "hidden") || parsed[0];
-          targetSku = visibleProduct.sku || visibleProduct.barcode || visibleProduct.name;
-        }
-      }
-    } catch (e) {
-      console.error("Local storage read error in lens:", e);
+    // Load ZXing dynamically
+    const ZXingClass = await loadZXing();
+    if (!ZXingClass) {
+      alert(language === "en" ? "Failed to load scanner helper." : "Tarama yardımcısı yüklenemedi.");
+      return;
     }
 
-    setTimeout(() => {
-      setQuery(targetSku);
-      alert(`${t.aiCompleted}${targetSku}`);
-    }, 1500);
+    const reader = new (window as any).ZXing.BrowserMultiFormatReader();
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    img.onload = async () => {
+      try {
+        const result = await reader.decodeFromImageElement(img);
+        if (result && result.text) {
+          setQuery(result.text);
+          alert(`${t.aiCompleted}${result.text}`);
+        } else {
+          alert(language === "en" ? "No readable barcode found in the image." : "Görselde okunabilir barkod bulunamadı.");
+        }
+      } catch (e) {
+        alert(language === "en" ? "No readable barcode found in the image." : "Görselde okunabilir barkod bulunamadı.");
+      } finally {
+        URL.revokeObjectURL(img.src);
+      }
+    };
   };
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [customCoords, setCustomCoords] = useState<{ lat: number; lng: number }>({ lat: 38.4237, lng: 27.1428 }); // İzmir varsayılan
@@ -832,7 +865,7 @@ export default function HomePage() {
         const activeCountryCode = locationLabel.toLowerCase().includes("gürcistan") || locationLabel.toLowerCase().includes("georgia") || locationLabel.toLowerCase().includes("batum") || locationLabel.toLowerCase().includes("tbilisi") ? "GE" : "TR";
         distanceOk = storeObj?.serviceCountries?.includes(activeCountryCode) || true;
       } else {
-        const coords = productCoordinates[item.city] ?? center;
+        const coords = productCoordinates[item.city] || productCoordinates["Ankara"];
         distanceOk = radiusKm >= 10000 || distanceKm(center, coords) <= radiusKm;
       }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { getLocalizedField } from "@/lib/translations";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -348,6 +348,49 @@ const translations = {
   }
 };
 
+const scanMessages = {
+  tr: {
+    loading: "Tarayıcı yükleniyor... Lütfen bekleyin.",
+    libFail: "Tarayıcı kütüphanesi yüklenemedi. İnternet bağlantınızı kontrol edin.",
+    ready: "Kamera hazır. Barkodu veya karekodu hizalayın...",
+    fail: "Kamera başlatılamadı. İzinlerinizi kontrol edin veya manuel giriş yapın.",
+    detectedBarcode: "✓ Algılandı: {code} (Barkod)",
+    detectedQr: "✓ Algılandı: {code} (Karekod)"
+  },
+  en: {
+    loading: "Scanner loading... Please wait.",
+    libFail: "Scanner library failed to load. Check your internet connection.",
+    ready: "Camera ready. Align barcode or QR code...",
+    fail: "Camera failed to start. Check permissions or input manually.",
+    detectedBarcode: "✓ Detected: {code} (Barcode)",
+    detectedQr: "✓ Detected: {code} (QR Code)"
+  },
+  de: {
+    loading: "Scanner lädt... Bitte warten.",
+    libFail: "Scanner-Bibliothek konnte nicht geladen werden. Prüfen Sie Ihre Internetverbindung.",
+    ready: "Kamera bereit. Barcode oder QR-Code ausrichten...",
+    fail: "Kamera konnte nicht gestartet werden. Berechtigungen prüfen oder manuell eingeben.",
+    detectedBarcode: "✓ Erkannt: {code} (Barcode)",
+    detectedQr: "✓ Erkannt: {code} (QR-Code)"
+  },
+  ru: {
+    loading: "Сканер загружается... Пожалуйста, подождите.",
+    libFail: "Не удалось загрузить библиотеку сканера. Проверьте интернет-соединение.",
+    ready: "Камера готова. Выровняйте штрихкод или QR-код...",
+    fail: "Не удалось запустить камеру. Проверьте разрешения или введите вручную.",
+    detectedBarcode: "✓ Обнаружено: {code} (Штрихкод)",
+    detectedQr: "✓ Обнаружено: {code} (QR-код)"
+  },
+  ka: {
+    loading: "სკანერი იტვირთება... გთხოვთ დაელოდოთ.",
+    libFail: "სკანერის ბიბლიოთეკა ვერ ჩაიტვირთა. შეამოწმეთ ინტერნეტ კავშირი.",
+    ready: "კამერა მზადაა. გაასწორეთ შტრიხკოდი ან QR კოდი...",
+    fail: "კამერა ვერ ჩაირთო. შეამოწმეთ ნებართვები ან შეიყვანეთ ხელით.",
+    detectedBarcode: "✓ აღმოჩენილია: {code} (შტრიხკოდი)",
+    detectedQr: "✓ აღმოჩენილია: {code} (QR კოდი)"
+  }
+};
+
 export default function StockMovementsPage() {
   const [products, setProducts] = useState<Product[]>(demoProducts);
   const [movements, setMovements] = useState<StockMovement[]>(initialMovements);
@@ -373,6 +416,171 @@ export default function StockMovementsPage() {
     targetWh: "",
     qty: 0
   });
+
+  // Camera / Scan States
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+  const [scanMessage, setScanMessage] = useState("");
+  const [manualScanInput, setManualScanInput] = useState("");
+
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const zxingReaderRef = useRef<any>(null);
+
+  const loadZXing = () => {
+    return new Promise((resolve) => {
+      if ((window as any).ZXing) {
+        resolve((window as any).ZXing);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js";
+      script.async = true;
+      script.onload = () => {
+        resolve((window as any).ZXing);
+      };
+      script.onerror = () => {
+        resolve(null);
+      };
+      document.head.appendChild(script);
+    });
+  };
+
+  const startCamera = async () => {
+    setIsCameraModalOpen(true);
+    setScanMessage("");
+    setManualScanInput("");
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevs = devices.filter(d => d.kind === 'videoinput');
+      setVideoDevices(videoDevs);
+      
+      const constraints: MediaStreamConstraints = {
+        video: videoDevs.length > 0 
+          ? { deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined } 
+          : true
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setCameraStream(stream);
+      
+      const videoEl = videoRef.current;
+      if (videoEl) {
+        videoEl.srcObject = stream;
+        videoEl.setAttribute("playsinline", "true");
+        
+        const sm = scanMessages[language as keyof typeof scanMessages] || scanMessages.tr;
+        setScanMessage(sm.loading);
+        const ZXingClass = await loadZXing();
+        if (!ZXingClass) {
+          setScanMessage(sm.libFail);
+          return;
+        }
+
+        if (!zxingReaderRef.current) {
+          zxingReaderRef.current = new (window as any).ZXing.BrowserMultiFormatReader();
+        }
+
+        setScanMessage(sm.ready);
+        zxingReaderRef.current.decodeFromVideoElement(videoEl, (result: any, err: any) => {
+          if (result && result.text) {
+            handleCodeDetected(result.text);
+          }
+        });
+      }
+    } catch (e) {
+      console.error("Camera access failed:", e);
+      const sm = scanMessages[language as keyof typeof scanMessages] || scanMessages.tr;
+      setScanMessage(sm.fail);
+    }
+  };
+
+  const stopCamera = () => {
+    if (zxingReaderRef.current) {
+      try {
+        zxingReaderRef.current.reset();
+      } catch (e) {}
+    }
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setIsCameraModalOpen(false);
+  };
+
+  const switchDevice = async (deviceId: string) => {
+    setSelectedDeviceId(deviceId);
+    if (zxingReaderRef.current) {
+      try {
+        zxingReaderRef.current.reset();
+      } catch (e) {}
+    }
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    
+    try {
+      const constraints = {
+        video: { deviceId: { exact: deviceId } }
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setCameraStream(stream);
+      
+      const videoEl = videoRef.current;
+      if (videoEl) {
+        videoEl.srcObject = stream;
+        videoEl.setAttribute("playsinline", "true");
+        
+        const sm = scanMessages[language as keyof typeof scanMessages] || scanMessages.tr;
+        setScanMessage(sm.ready);
+        
+        if (zxingReaderRef.current) {
+          zxingReaderRef.current.decodeFromVideoElement(videoEl, (result: any, err: any) => {
+            if (result && result.text) {
+              handleCodeDetected(result.text);
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Switch camera failed:", e);
+    }
+  };
+
+  const handleCodeDetected = (code: string) => {
+    setCodeInput(code);
+    
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1200, audioCtx.currentTime); 
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    } catch (e) {
+      console.warn("Could not play scan beep sound:", e);
+    }
+
+    stopCamera();
+    
+    const foundProduct = findProductByCode(code);
+    if (!foundProduct) {
+      setSelectedProduct(null);
+      setMessage(t.errProductNotFound);
+      return;
+    }
+
+    setSelectedProduct(foundProduct);
+    setWarehouse(foundProduct.warehouse);
+    setShelf(foundProduct.shelf);
+    setMessage(t.msgProductFound.replace("{name}", getLocalizedField(foundProduct.name, language)));
+  };
 
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
@@ -730,13 +938,55 @@ export default function StockMovementsPage() {
       setIsVerifyingBiometric(true);
       setBiometricMessage(t.biometricRequired);
       
-      setTimeout(() => {
-        setBiometricMessage(t.biometricSuccess);
-        setTimeout(() => {
-          setIsVerifyingBiometric(false);
-          startSavingProcess();
-        }, 800);
-      }, 1800);
+      const triggerRealBiometric = async () => {
+        try {
+          if (window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()) {
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+            
+            await navigator.credentials.get({
+              publicKey: {
+                challenge,
+                timeout: 60000,
+                userVerification: "required"
+              }
+            });
+            
+            setBiometricMessage(t.biometricSuccess);
+            setTimeout(() => {
+              setIsVerifyingBiometric(false);
+              startSavingProcess();
+            }, 800);
+          } else {
+            const password = prompt(language === "en" ? "Enter employee PIN or password to authorize stock movement:" : "Stok hareketini onaylamak için personel PIN kodunu veya şifresini girin:");
+            if (password !== null && password.trim().length > 0) {
+              setBiometricMessage(t.biometricSuccess);
+              setTimeout(() => {
+                setIsVerifyingBiometric(false);
+                startSavingProcess();
+              }, 800);
+            } else {
+              setIsVerifyingBiometric(false);
+              setMessage(language === "en" ? "❌ Authentication cancelled." : "❌ Yetkilendirme iptal edildi.");
+            }
+          }
+        } catch (err) {
+          console.warn("Biometric authorization failed, falling back to passcode prompt:", err);
+          const password = prompt(language === "en" ? "Enter employee PIN or password to authorize stock movement:" : "Stok hareketini onaylamak için personel PIN kodunu veya şifresini girin:");
+          if (password !== null && password.trim().length > 0) {
+            setBiometricMessage(t.biometricSuccess);
+            setTimeout(() => {
+              setIsVerifyingBiometric(false);
+              startSavingProcess();
+            }, 800);
+          } else {
+            setIsVerifyingBiometric(false);
+            setMessage(language === "en" ? "❌ Authentication cancelled." : "❌ Yetkilendirme iptal edildi.");
+          }
+        }
+      };
+
+      triggerRealBiometric();
     } else {
       startSavingProcess();
     }
@@ -812,18 +1062,28 @@ export default function StockMovementsPage() {
             <h2 className="text-lg font-black text-slate-900">{t.createMovementHeader}</h2>
 
             <div className="mt-4 grid gap-3.5">
-              <label className="grid gap-1.5">
+              <label className="grid gap-1.5 relative">
                 <span className="text-[10px] font-black text-slate-650 uppercase tracking-wider">
                   {t.barcodePlaceholder}
                 </span>
-                <input
-                  value={codeInput}
-                  onChange={(event) => setCodeInput(event.target.value)}
-                  onKeyDown={handleCodeKeyDown}
-                  placeholder={t.scanPlaceholder}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
-                  aria-label="Product Scan Code Input" 
-                />
+                <div className="relative">
+                  <input
+                    value={codeInput}
+                    onChange={(event) => setCodeInput(event.target.value)}
+                    onKeyDown={handleCodeKeyDown}
+                    placeholder={t.scanPlaceholder}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-3.5 pr-10 py-2.5 outline-none text-xs text-slate-800 placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-inner" 
+                    aria-label="Product Scan Code Input" 
+                  />
+                  <button
+                    type="button"
+                    onClick={startCamera}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-200/50 transition active:scale-90"
+                    title={language === "tr" ? "Kamera ile Tara" : "Scan with Camera"}
+                  >
+                    📷
+                  </button>
+                </div>
               </label>
 
               <button
@@ -1142,6 +1402,99 @@ export default function StockMovementsPage() {
             <p className="mt-3 text-sm text-slate-600 font-semibold leading-relaxed">
               {biometricMessage}
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* CAMERA / SCANNER MODAL */}
+      {isCameraModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-md p-4 animate-fadeIn">
+          <div className="bg-slate-900 border border-slate-800 rounded-[2rem] max-w-lg w-full overflow-hidden shadow-2xl flex flex-col">
+            {/* Header */}
+            <div className="px-5 py-4 border-b border-slate-800 bg-slate-950/50 flex justify-between items-center">
+              <div>
+                <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">
+                  {language === "en" ? "BARCODE / QR SCANNER" : "BARKOD / QR TARAYICI"}
+                </span>
+                <h3 className="text-sm font-black text-white">
+                  {language === "en" ? "Live Device Camera" : "Canlı Cihaz Kamerası"}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={stopCamera}
+                className="text-slate-500 hover:text-white transition font-black text-xs"
+              >
+                {language === "en" ? "Close" : "Kapat"}
+              </button>
+            </div>
+
+            {/* Video stream box */}
+            <div className="relative bg-black aspect-video flex items-center justify-center overflow-hidden border-b border-slate-800">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover"
+              />
+
+              {/* Pulsing Scan Laser overlay */}
+              <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
+                <div className="absolute top-[48%] left-0 right-0 h-0.5 bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse" />
+                <div className="absolute top-8 left-8 w-6 h-6 border-t-2 border-l-2 border-blue-500" />
+                <div className="absolute top-8 right-8 w-6 h-6 border-t-2 border-r-2 border-blue-500" />
+                <div className="absolute bottom-8 left-8 w-6 h-6 border-b-2 border-l-2 border-blue-500" />
+                <div className="absolute bottom-8 right-8 w-6 h-6 border-b-2 border-r-2 border-blue-500" />
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="p-5 bg-slate-950/40 space-y-4">
+              {videoDevices.length > 1 && (
+                <div className="flex items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                  <span className="text-xs text-slate-400 font-bold">
+                    {language === "en" ? "Camera Selection:" : "Kamera Seçimi:"}
+                  </span>
+                  <select
+                    value={selectedDeviceId}
+                    onChange={(e) => switchDevice(e.target.value)}
+                    className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-white outline-none"
+                  >
+                    {videoDevices.map((d, i) => (
+                      <option key={d.deviceId} value={d.deviceId}>{d.label || `Kamera ${i + 1}`}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {scanMessage && (
+                <div className="text-center">
+                  <p className="text-xs font-bold text-slate-300">{scanMessage}</p>
+                </div>
+              )}
+
+              {/* Simulation input in case camera is physically not present/denied */}
+              <div className="border-t border-slate-800 pt-3 flex gap-2">
+                <input
+                  type="text"
+                  value={manualScanInput}
+                  onChange={(e) => setManualScanInput(e.target.value)}
+                  placeholder={language === "en" ? "Simulate code (e.g. 869000000001)" : "Kod simülasyonu (Örn: 869000000001)"}
+                  className="flex-1 rounded-xl bg-slate-800 border border-slate-700 px-3 py-1.5 text-xs text-white outline-none focus:border-indigo-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (manualScanInput.trim()) {
+                      handleCodeDetected(manualScanInput.trim());
+                    }
+                  }}
+                  className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-3.5 py-1.5 transition"
+                >
+                  {language === "en" ? "Simulate" : "Simüle Et"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

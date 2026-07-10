@@ -966,9 +966,11 @@ export default function StorePage() {
       if (params.storeSlug === loggedInStoreSlug && localSettings?.phone) {
         return localSettings.phone;
       }
-      return storeInfo?.phone || "+905320000000";
+      const finalVal = storeInfo?.phone;
+      const isFinalPlaceholder = finalVal === "+905320000000" || finalVal === "905320000000" || !finalVal;
+      return isFinalPlaceholder ? undefined : finalVal;
     }
-    return baseVal || (params.storeSlug === "obdtr" ? "+905320000000" : undefined);
+    return baseVal;
   }, [storePhone, storeInfo, localSettings, params.storeSlug]);
 
   const storeWhatsappVal = useMemo(() => {
@@ -987,9 +989,11 @@ export default function StorePage() {
       if (params.storeSlug === loggedInStoreSlug && localSettings?.whatsapp) {
         return sanitizeWhatsAppNumber(localSettings.whatsapp);
       }
-      return sanitizeWhatsAppNumber(storeInfo?.whatsapp || "905320000000");
+      const finalVal = storeInfo?.whatsapp;
+      const isFinalPlaceholder = finalVal === "+905320000000" || finalVal === "905320000000" || !finalVal;
+      return isFinalPlaceholder ? undefined : sanitizeWhatsAppNumber(finalVal);
     }
-    return sanitizeWhatsAppNumber(baseVal || (params.storeSlug === "obdtr" ? "905320000000" : undefined));
+    return sanitizeWhatsAppNumber(baseVal);
   }, [storeWhatsapp, storeInfo, localSettings, params.storeSlug]);
 
   const contactButtons = useMemo(() => {

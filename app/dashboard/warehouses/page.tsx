@@ -4022,7 +4022,7 @@ ${sizeStr}
                         ) : (
                           <span
                             className="hover:text-blue-600 transition flex items-center gap-1"
-                            title="Yeniden adlandırmak için çift tıklayın ağam"
+                            title={language === "en" ? "Double click to rename" : language === "de" ? "Doppelklicken zum Umbenennen" : language === "ru" ? "Дважды кликните для переименования" : language === "ka" ? "ორმაგი დაწკაპუნება გადასარქმევად" : "Yeniden adlandırmak için çift tıklayın"}
                             onDoubleClick={(e) => {
                               e.stopPropagation();
                               setEditingWarehouseId(w.id);
@@ -6453,12 +6453,20 @@ ${sizeStr}
                         showError(activeLang === "en" ? "Please generate a ZPL code first." : activeLang === "de" ? "Bitte generieren Sie zuerst einen ZPL-Code." : activeLang === "ru" ? "Пожалуйста, сначала создайте код ZPL." : activeLang === "ka" ? "გთხოვთ ჯერ დააგენერიროთ ZPL კოდი." : "Lütfen önce bir ZPL kodu oluşturun.");
                         return;
                       }
-                      // Simulate direct network socket printing
-                      showSuccess(activeLang === "en" ? "Sent to Thermal Printer (Simulated: RAW Port 9100)." : activeLang === "de" ? "An Thermodrucker gesendet (Simuliert: RAW Port 9100)." : activeLang === "ru" ? "Отправлено на термопринтер (Симуляция: порт RAW 9100)." : activeLang === "ka" ? "გაგზავნილია თერმულ პრინტერთან (სიმულირებული: RAW Port 9100)." : "Termal Yazıcıya Gönderildi (Simüle edildi: RAW Port 9100).");
+                      const blob = new Blob([zplText], { type: "text/plain" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `hbs-label-${zplProductId || "print"}.zpl`;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      URL.revokeObjectURL(url);
+                      showSuccess(activeLang === "en" ? "ZPL File downloaded!" : activeLang === "de" ? "ZPL-Datei heruntergeladen!" : activeLang === "ru" ? "Файл ZPL скачан!" : activeLang === "ka" ? "ZPL ფაილი ჩამოტვირთულია!" : "ZPL Dosyası indirildi!");
                     }}
                     className="flex-1 rounded-xl bg-blue-600 py-3 text-xs font-black text-white hover:bg-blue-500 transition text-center shadow-sm active:scale-95"
                   >
-                    {activeLang === "en" ? "Send to Printer 🖨️" : activeLang === "de" ? "An Drucker senden 🖨️" : activeLang === "ru" ? "Отправить на принтер 🖨️" : activeLang === "ka" ? "პრინტერთან გაგზავნა 🖨️" : "Yazıcıya Gönder 🖨️"}
+                    {activeLang === "en" ? "Download ZPL File 💾" : activeLang === "de" ? "ZPL-Datei herunterladen 💾" : activeLang === "ru" ? "Скачать ZPL 💾" : activeLang === "ka" ? "ZPL ფაილის ჩამოტვირთვა 💾" : "ZPL Dosyası İndir 💾"}
                   </button>
                 </div>
               </div>
