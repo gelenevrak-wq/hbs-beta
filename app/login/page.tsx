@@ -23,13 +23,6 @@ const demoUsers: DemoUser[] = [
   { username: "MUSTERI", password: "MUSTERI123", role: "customer", storeSlugs: [], displayName: "Demo Müşteri", redirectTo: "/customer" },
 ];
 
-const texts = {
-  tr: { home: "Ana sayfa", title: "HBS hesabına giriş yap", description: "Alışveriş, rezervasyon ve hesabına ait işlemler için giriş yap.", username: "Kullanıcı adı veya E-posta", password: "Şifre", login: "Giriş yap", forgot: "Şifremi unuttum", register: "Kayıt ol", error: "Giriş bilgileri hatalı veya kullanıcı bulunamadı." },
-  en: { home: "Home", title: "Sign in to HBS", description: "Sign in for shopping, bookings and account actions.", username: "Username or Email", password: "Password", login: "Sign in", forgot: "Forgot password", register: "Register", error: "Invalid credentials or user not found." },
-  de: { home: "Startseite", title: "Bei HBS anmelden", description: "Für Einkauf, Reservierung und Kontoaktionen anmelden.", username: "Benutzername oder E-Mail", password: "Passwort", login: "Anmelden", forgot: "Passwort vergessen", register: "Registrieren", error: "Ungültige Anmeldedaten." },
-  ru: { home: "Главная", title: "Войти в HBS", description: "Войдите для покупок, бронирований и действий в аккаунте.", username: "Пользователь или Email", password: "Пароль", login: "Войти", forgot: "Забыли пароль", register: "Регистрация", error: "Неверный логин, email или пароль." },
-  ka: { home: "მთავარი", title: "HBS-ში შესვლა", description: "შედით შესყიდვების, ჯავშნების და ანგარიშის მოქმედებებისთვის.", username: "მომხმარებელი ან ელფოსტა", password: "პაროლი", login: "შესვლა", forgot: "პაროლი დამავიწყდა", register: "რეგისტრაცია", error: "მომხმარებელი, ელფოსტა ან პაროლი არასწორია." },
-};
 
 const biometricTranslations: Record<LanguageCode, Record<string, string>> = {
   tr: {
@@ -94,19 +87,7 @@ export default function LoginPage() {
   const [biometricUser, setBiometricUser] = useState<any>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-  const [activeDemoGlow, setActiveDemoGlow] = useState<string | null>(null);
-
-  const fillDemoUser = (demo: DemoUser) => {
-    setActiveDemoGlow(demo.username);
-    setUsername(demo.username);
-    setPassword(demo.password);
-    setTimeout(() => {
-      setActiveDemoGlow(null);
-    }, 1000);
-  };
-
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("hbs-language");
     setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : "tr");
