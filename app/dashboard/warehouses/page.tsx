@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
@@ -281,7 +281,21 @@ const translations = {
     noShelfOption: "-- Rafsız (Ortalıkta Dursun) --",
     shelfSuffix: "Rafı",
     dispatchBtn: "⚡ Sevk Et ve Güncelle",
-    cancelBtn: "Vazgeç"
+    cancelBtn: "Vazgeç",
+    productSearchPlaceholder: "🔍 Ürün adı veya kodu ile hızlı ara...",
+    unitWeightLabel: "Birim Ağırlık (kg)",
+    unitVolumeLabel: "Birim Hacim (m³)",
+    dragToResize: "Sürükleyerek Genişletin / Daraltın",
+    resizeWidthTooltip: "Sürükleyerek Genişliği (Slot Sayısı) Ayarlayın",
+    resizeHeightTooltip: "Sürükleyerek Yüksekliği (Kat Sayısı) Ayarlayın",
+    selectedPlacementInstructions: "👈 Seçildi! Yukarıdaki haritada hedef rafa tıklayın (seçildiğinde ONAY yazacaktır).",
+    clickToPlaceInstructions: "🎯 Rafa yerleştirmek için 'Yerleştir' butonuna basın.",
+    closePlacement: "Yerleşimi Kapat / İptal Et",
+    placementModeInstructions: "Yerleşim Modu: Haritadan hedef rafa tıklayın, ardından yerleştirmek için rafa bir kez daha basarak onaylayın",
+    confirmPlaceProduct: '"{prodName}" ürününü "{sh}" rafına yerleştirmek istiyor musunuz?',
+    shelfFull: "Dolu",
+    shelfEmpty: "Boş",
+    clickToEditShelfBins: "Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın"
   },
   en: {
     header: "📦 HBS Smart Warehouse Management",
@@ -404,7 +418,21 @@ const translations = {
     noShelfOption: "-- No Shelf (Keep Unplaced) --",
     shelfSuffix: "Shelf",
     dispatchBtn: "⚡ Dispatch & Update",
-    cancelBtn: "Cancel"
+    cancelBtn: "Cancel",
+    productSearchPlaceholder: "🔍 Quick search by name or code...",
+    unitWeightLabel: "Unit Weight (kg)",
+    unitVolumeLabel: "Unit Volume (m³)",
+    dragToResize: "Drag to Resize",
+    resizeWidthTooltip: "Drag to Adjust Width (Slot Count)",
+    resizeHeightTooltip: "Drag to Adjust Height (Tier Count)",
+    selectedPlacementInstructions: "👈 Selected! Click on target shelf on the map above (will show CONFIRM when clicked).",
+    clickToPlaceInstructions: "🎯 Press 'Place' button to position on a shelf.",
+    closePlacement: "Cancel / Close",
+    placementModeInstructions: "Placement Mode: Click a target shelf on the map, then click it again to confirm",
+    confirmPlaceProduct: 'Do you want to place the product "{prodName}" onto the shelf "{sh}"?',
+    shelfFull: "Full",
+    shelfEmpty: "Empty",
+    clickToEditShelfBins: "Click to Edit Subdivisions and Limits"
   },
   de: {
     header: "📦 HBS Intelligentes Lagerverwaltungs-System",
@@ -527,7 +555,21 @@ const translations = {
     noShelfOption: "-- Kein Regal (Unplatziert lassen) --",
     shelfSuffix: "Regal",
     dispatchBtn: "⚡ Buchen & Aktualisieren",
-    cancelBtn: "Abbrechen"
+    cancelBtn: "Abbrechen",
+    productSearchPlaceholder: "🔍 Schnellsuche nach Name oder Code...",
+    unitWeightLabel: "Einheitsgewicht (kg)",
+    unitVolumeLabel: "Einheitsvolumen (m³)",
+    dragToResize: "Ziehen zum Skalieren",
+    resizeWidthTooltip: "Ziehen Sie, um die Breite (Slotanzahl) anzupassen",
+    resizeHeightTooltip: "Ziehen Sie, um die Höhe (Etagenanzahl) anzupassen",
+    selectedPlacementInstructions: "👈 Ausgewählt! Klicken Sie auf das Zielregal auf der Karte oben (zeigt BESTÄTIGEN an, wenn geklickt).",
+    clickToPlaceInstructions: "🎯 Drücken Sie die Taste 'Platzieren', um auf dem Regal zu positionieren.",
+    closePlacement: "Schließen / Abbrechen",
+    placementModeInstructions: "Platzierungsmodus: Klicken Sie auf ein Zielregal auf der Karte und klicken Sie erneut zur Bestätigung",
+    confirmPlaceProduct: 'Möchten Sie das Produkt "{prodName}" auf das Regal "{sh}" stellen?',
+    shelfFull: "Voll",
+    shelfEmpty: "Leer",
+    clickToEditShelfBins: "Klicken Sie hier, um Unterteilungen und Grenzwerte zu bearbeiten"
   },
   ru: {
     header: "📦 Умное управление складом HBS",
@@ -650,7 +692,21 @@ const translations = {
     noShelfOption: "-- Без полки (Оставить неразмещенным) --",
     shelfSuffix: "Полка",
     dispatchBtn: "⚡ Отгрузить и обновить",
-    cancelBtn: "Отмена"
+    cancelBtn: "Отмена",
+    productSearchPlaceholder: "🔍 Быстрый поиск по названию или коду...",
+    unitWeightLabel: "Вес за единицу (кг)",
+    unitVolumeLabel: "Объем за единицу (м³)",
+    dragToResize: "Перетащите для изменения размера",
+    resizeWidthTooltip: "Перетащите, чтобы настроить ширину (количество слотов)",
+    resizeHeightTooltip: "Перетащите, чтобы настроить высоту (количество уровней)",
+    selectedPlacementInstructions: "👈 Выбрано! Кликните на целевую полку на карте выше (при клике отобразится ПОДТВЕРДИТЬ).",
+    clickToPlaceInstructions: "🎯 Нажмите кнопку 'Разместить', чтобы расположить на полке.",
+    closePlacement: "Отмена / Закрыть",
+    placementModeInstructions: "Режим размещения: кликните на целевую полку на карте, затем кликните еще раз для подтверждения",
+    confirmPlaceProduct: 'Вы хотите поместить продукт "{prodName}" на полку "{sh}"?',
+    shelfFull: "Заполнено",
+    shelfEmpty: "Пусто",
+    clickToEditShelfBins: "Нажмите, чтобы изменить подразделы и ограничения"
   },
   ka: {
     header: "📦 HBS საწყობის ჭკვიანი მართვა",
@@ -773,7 +829,21 @@ const translations = {
     noShelfOption: "-- თაროს გარეშე (დატოვეთ განუთავსებელი) --",
     shelfSuffix: "თარო",
     dispatchBtn: "⚡ გაგზავნა და განახლება",
-    cancelBtn: "გაუქმება"
+    cancelBtn: "გაუქმება",
+    productSearchPlaceholder: "🔍 სწრაფი ძიება სახელით ან კოდით...",
+    unitWeightLabel: "ერთეულის წონა (კგ)",
+    unitVolumeLabel: "ერთეულის მოცულობა (მ³)",
+    dragToResize: "ჩაათრიეთ ზომის შესაცვლელად",
+    resizeWidthTooltip: "ჩაათრიეთ სიგანის დასარეგულირებლად (სლოტების რაოდენობა)",
+    resizeHeightTooltip: "ჩაათრიეთ სიმაღლის დასარეგულირებლად (დონეების რაოდენობა)",
+    selectedPlacementInstructions: "👈 არჩეულია! დააწკაპუნეთ სამიზნე თაროზე ზედა რუკაზე (დაწკაპუნებისას გამოჩნდება დასტური).",
+    clickToPlaceInstructions: "🎯 თაროზე მოსათავსებლად დააჭირეთ ღილაკს 'განთავსება'.",
+    closePlacement: "გაუქმება / დახურვა",
+    placementModeInstructions: "განთავსების რეჟიმი: დააწკაპუნეთ სამიზნე თაროზე რუკაზე, შემდეგ დააწკაპუნეთ ისევ დასადასტურებლად",
+    confirmPlaceProduct: 'გსურთ პროდუქტის "{prodName}" განთავსება თაროზე "{sh}"?',
+    shelfFull: "სავსე",
+    shelfEmpty: "ცარიელი",
+    clickToEditShelfBins: "დააწკაპუნეთ ქვეგანყოფილებებისა და ლიმიტების დასარედაქტირებლად"
   }
 };
 
@@ -1684,14 +1754,14 @@ export default function WarehousesRevampPage() {
   const [placeProductId, setPlaceProductId] = useState("");
   const [placeShelf, setPlaceShelf] = useState("");
   const [placeQty, setPlaceQty] = useState(1);
-  const [placeNote, setPlaceNote] = useState("Raf Konum Yerleşimi");
+  const [placeNote, setPlaceNote] = useState("");
 
   // Transfer Form States
   const [transferProductId, setTransferProductId] = useState("");
   const [transferDestWhId, setTransferDestWhId] = useState("");
   const [transferDestShelf, setTransferDestShelf] = useState("");
   const [transferQty, setTransferQty] = useState(1);
-  const [transferNote, setTransferNote] = useState("Depolar Arası Sevkiyat");
+  const [transferNote, setTransferNote] = useState("");
 
   // Audit (Stok Sayım) States
   const [isAuditActive, setIsAuditActive] = useState(false);
@@ -4431,6 +4501,7 @@ ${sizeStr}
                   onAdjustQuantity={handleVoiceAdjustQuantity}
                   onSetShelf={setPlaceShelf}
                   activeShelf={placeShelf}
+                  language={activeLang}
                 />
 
                 <div className="space-y-3">
@@ -4438,7 +4509,7 @@ ${sizeStr}
                     <span className="text-xs font-bold text-slate-700">{t.selectFromCatalog}</span>
                     <input
                       type="text"
-                      placeholder="🔍 Ürün adı veya kodu ile hızlı ara..."
+                      placeholder={t.productSearchPlaceholder}
                       value={productSearch}
                       onChange={(e) => setProductSearch(e.target.value)}
                       className="w-full mb-1.5 rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold focus:outline-none focus:border-blue-500 bg-slate-50" id="id-page-w-full-mb-1-5-rounded-xl-border-border-slate-200-px-3-py-1-5-text-xs-font-semibold-focus-outline-none-focus-border-blue-500-bg-slate-50-111" aria-label="W full mb 1 5 rounded xl border border slate 200 px 3 py 1 5 text xs font semibold focus outline none focus border blue 500 bg slate 50" />
@@ -4515,7 +4586,7 @@ ${sizeStr}
                       {/* Weight & Volume overrides */}
                       <div className="grid gap-2 grid-cols-2 p-3 bg-blue-50/40 border border-blue-100 rounded-2xl">
                         <label className="grid gap-1">
-                          <span className="text-[10px] font-black text-slate-700">Birim Ağırlık (kg)</span>
+                          <span className="text-[10px] font-black text-slate-700">{t.unitWeightLabel}</span>
                           <input
                             type="number"
                             step="0.1"
@@ -4530,7 +4601,7 @@ ${sizeStr}
                             className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold outline-none" id="id-page-rounded-lg-border-border-slate-200-bg-white-px-2-py-1-text-xs-font-bold-outline-none-234" aria-label="Rounded lg border border slate 200 bg white px 2 py 1 text xs font bold outline none" />
                         </label>
                         <label className="grid gap-1">
-                          <span className="text-[10px] font-black text-slate-700">Birim Hacim (m³)</span>
+                          <span className="text-[10px] font-black text-slate-700">{t.unitVolumeLabel}</span>
                           <input
                             type="number"
                             step="0.001"
@@ -4572,7 +4643,7 @@ ${sizeStr}
             <div
               onMouseDown={startResize}
               className="hidden lg:flex w-2 bg-slate-200 hover:bg-blue-500 cursor-col-resize self-stretch transition-all duration-150 relative items-center justify-center select-none z-20"
-              title="Sürükleyerek Genişletin / Daraltın"
+              title={t.dragToResize}
             >
               <div className="w-0.5 h-12 rounded-full bg-slate-400"></div>
             </div>
@@ -4869,10 +4940,10 @@ ${sizeStr}
                       onClick={() => { setPlaceProductId(""); setPlaceShelf(""); }}
                       className="absolute top-4 right-4 text-xs font-black text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-1.5 hover:bg-rose-100 transition active:scale-95 z-50 shadow-sm"
                     >
-                      ✕ {language === "tr" ? "Yerleşimi Kapat / İptal Et" : "Cancel / Close"}
+                      ✕ {t.closePlacement}
                     </button>
                     <div className="bg-blue-600 text-white rounded-2xl p-3 text-xs font-black flex justify-between items-center shadow-lg animate-pulse mb-2">
-                      <span className="flex items-center gap-1.5 text-[11px]">🎯 {language === "tr" ? `Yerleşim Modu: Haritadan hedef rafa tıklayın, ardından yerleştirmek için rafa bir kez daha basarak onaylayın` : `Placement Mode: Click a target shelf on the map, then click it again to confirm`}</span>
+                      <span className="flex items-center gap-1.5 text-[11px]">🎯 {t.placementModeInstructions}</span>
                     </div>
                   </>
                 )}
@@ -4933,11 +5004,11 @@ ${sizeStr}
                                 <span className="font-bold text-slate-800">📦 {getLocalizedField(up.name, language || "tr")} ({up.quantity} {t.qty || "Adet"})</span>
                                 {isSelected ? (
                                   <span className="text-[9px] text-blue-650 font-black mt-0.5 animate-pulse">
-                                    👈 Seçildi! Yukarıdaki haritada hedef rafa tıklayın (seçildiğinde ONAY yazacaktır).
+                                    {t.selectedPlacementInstructions}
                                   </span>
                                 ) : (
                                   <span className="text-[9px] text-slate-500 mt-0.5 font-bold">
-                                    🎯 Rafa yerleştirmek için "Yerleştir" butonuna basın.
+                                    {t.clickToPlaceInstructions}
                                   </span>
                                 )}
                               </div>
@@ -5007,9 +5078,7 @@ ${sizeStr}
                             key={sh}
                             onClick={() => {
                               const confirmed = window.confirm(
-                                language === "tr"
-                                  ? `"${prodName}" ürününü "${sh}" rafına yerleştirmek istiyor musunuz?`
-                                  : `Do you want to place the product "${prodName}" onto the shelf "${sh}"?`
+                                t.confirmPlaceProduct.replace("{prodName}", prodName).replace("{sh}", sh)
                               );
                               if (confirmed) {
                                 executeDirectPlacement(placeProductId, sh, placeQty || 1);
@@ -5496,11 +5565,11 @@ ${sizeStr}
                                                         if (placeProductId) {
                                                           const product = products.find(p => p.id === placeProductId);
                                                           const prodName = product ? getLocalizedField(product.name, language || "tr") : "";
-                                                          const confirmed = window.confirm(
-                                                            language === "tr"
-                                                              ? `"${prodName}" ürününü "${binCode}" rafına yerleştirmek istiyor musunuz?`
-                                                              : `Do you want to place the product "${prodName}" onto the shelf "${binCode}"?`
-                                                          );
+                                                           const confirmed = window.confirm(
+                                                             t.confirmPlaceProduct.replace("{prodName}", prodName).replace("{sh}", binCode)
+                                                           );
+                                                           // Placement checked
+                                                           
                                                           if (confirmed) {
                                                             executeDirectPlacement(placeProductId, binCode, placeQty || 1);
                                                           }
@@ -5508,7 +5577,7 @@ ${sizeStr}
                                                           setSelectedWhiteboardShelfCode(binCode);
                                                         }
                                                       }}
-                                                      title={`${binCode} (${hasProduct ? "Dolu" : "Boş"}) - Bölmeleri ve Limitleri Düzenlemek İçin Tıklayın`}
+                                                       title={`${binCode} (${hasProduct ? t.shelfFull : t.shelfEmpty}) - ${t.clickToEditShelfBins}`}
                                                       className={`flex-1 h-9 rounded-lg text-center flex flex-col justify-center items-center transition cursor-pointer select-none active:scale-95 ${
                                                         hasProduct
                                                           ? "bg-indigo-100 text-indigo-850 hover:bg-indigo-200"
@@ -5543,7 +5612,7 @@ ${sizeStr}
                               onPointerMove={(e) => handleResizeMove(e, c.zone)}
                               onPointerUp={(e) => handleResizeEnd(e, c.zone)}
                               className="absolute right-0 top-0 bottom-0 w-4 hover:bg-indigo-500/10 active:bg-indigo-600/25 cursor-col-resize flex flex-col justify-center items-center select-none"
-                              title="Sürükleyerek Genişliği (Slot Sayısı) Ayarlayın"
+                              title={t.resizeWidthTooltip}
                             >
                               <div className="w-1.5 h-10 bg-slate-350 rounded-full hover:bg-indigo-600 transition"></div>
                             </div>
@@ -5554,7 +5623,7 @@ ${sizeStr}
                               onPointerMove={(e) => handleResizeMove(e, c.zone)}
                               onPointerUp={(e) => handleResizeEnd(e, c.zone)}
                               className="absolute bottom-0 left-0 right-0 h-4 hover:bg-indigo-500/10 active:bg-indigo-600/25 cursor-row-resize flex justify-center items-center select-none"
-                              title="Sürükleyerek Yüksekliği (Kat Sayısı) Ayarlayın"
+                              title={t.resizeHeightTooltip}
                             >
                               <div className="h-1.5 w-10 bg-slate-350 rounded-full hover:bg-indigo-600 transition"></div>
                             </div>
