@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
 import { translateProductField, parseLocalizedField } from "@/lib/i18n/dynamicContent";
+import { loadRegisteredStores } from "@/lib/hbsData";
 
 type Localized = Partial<Record<LanguageCode, string>> & { tr: string };
 
@@ -622,30 +623,29 @@ export default function HomePage() {
       console.error(e);
     }
 
-    // Load registered stores and ensure obdtr is present
+    // Load registered stores (Supabase companies + local demo registry) and ensure obdtr is present
     try {
-      const storesStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
-      let storesList = JSON.parse(storesStr);
-      const hasObdtr = storesList.some((st: any) => st.code === "obdtr");
-      if (!hasObdtr) {
-        storesList = [
-          {
-            code: "obdtr",
-            name: "OBDTR Diagnostics",
-            city: "İstanbul",
-            address: "Sanal Mağaza, Türkiye çapında kargolama",
-            industry: "Oto yedek parçası",
-            licenseType: "lifetime",
-            isSuspended: false,
-            operatingModel: "virtual_delivery",
-            serviceCountries: ["TR", "GE"]
-          },
-          ...storesList
-        ];
-      }
-      setRegisteredStores(storesList);
+      loadRegisteredStores()
+        .then((storesList) => {
+          const hasObdtr = storesList.some((st: any) => st.code === "obdtr");
+          if (!hasObdtr) {
+            storesList.unshift({
+              code: "obdtr",
+              name: "OBDTR Diagnostics",
+              city: "İstanbul",
+              address: "Sanal Mağaza, Türkiye çapında kargolama",
+              industry: "Oto yedek parçası",
+              licenseType: "lifetime",
+              isSuspended: false,
+              operatingModel: "virtual_delivery",
+              serviceCountries: ["TR", "GE"]
+            });
+          }
+          setRegisteredStores(storesList);
+        })
+        .catch((e) => console.error("Error loading registered stores", e));
     } catch (e) {
-      console.error(e);
+      console.error("Error loading registered stores", e);
     }
 
     // Load customer submitted offers

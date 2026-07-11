@@ -6,6 +6,7 @@ import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/Com
 import { supabase } from "@/lib/supabaseClient";
 import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
 import { signCookieValue } from "@/lib/security";
+import { upsertLocalStore } from "@/lib/hbsData";
 
 type RegisterMode = "select" | "customer" | "store" | "done";
 type DoneKind = "customer" | "store";
@@ -356,6 +357,19 @@ export default function RegisterPage() {
             })
             .eq("id", data.user.id);
         }
+
+        // Yerel demo kayıt defterini de güncelle (Supabase + localStorage tutarlılığı)
+        upsertLocalStore({
+          code: companyCode,
+          name: company,
+          city: city || "İstanbul",
+          address,
+          representative,
+          email,
+          isActive: true,
+          operatingModel: "physical",
+          serviceCountries: ["TR"],
+        });
 
         // Local storage'a kaydet (uyumluluk için)
         document.cookie = `hbs-user-role=${await signCookieValue("owner")}; path=/; max-age=86400; SameSite=Lax`;
