@@ -31,6 +31,20 @@ export type ProductRecord = {
   galleryUrls: string[];
 };
 
+export const generateShelves = (zones: string[], depth: number, tiers: number) => {
+  const list: string[] = [];
+  zones.forEach(z => {
+    for (let d = 1; d <= depth; d++) {
+      for (let t = 1; t <= tiers; t++) {
+        const dStr = d < 10 ? `0${d}` : `${d}`;
+        const tStr = t < 10 ? `0${t}` : `${t}`;
+        list.push(`${z}${dStr}${tStr}`);
+      }
+    }
+  });
+  return list;
+};
+
 export const OZGUR_MOTOR_STORE = {
   code: "ozgur-motor",
   name: "Özgür Motor",
@@ -42,11 +56,12 @@ export const OZGUR_MOTOR_STORE = {
   operatingModel: "hybrid",
   isActive: true,
   warehouses: [
-    { id: "wh-istanbul", name: "İstanbul Şubesi", purpose: "İstanbul Merkez Yedek Parça Dağıtım", customerVisible: true, city: "İstanbul", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 5000, used: 800 },
-    { id: "wh-izmir", name: "İzmir Şubesi", purpose: "Ege Bölgesi Yedek Parça Deposu", customerVisible: true, city: "İzmir", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 4000, used: 600 },
-    { id: "wh-batum", name: "Batum Şubesi", purpose: "Gürcistan Batum Ana Depo", customerVisible: true, city: "Batumi", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 3000, used: 500 },
-    { id: "wh-tiflis", name: "Tiflis Şubesi", purpose: "Tiflis Bölge Dağıtım Deposu", customerVisible: true, city: "Tbilisi", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 3000, used: 400 },
-    { id: "wh-ankara", name: "Ankara Şubesi", purpose: "İç Anadolu Bölge Deposu", customerVisible: true, city: "Ankara", zones: ["A", "B", "C"], shelves: ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"], capacity: 4000, used: 700 }
+    { id: "wh-ana", name: "Ana Depo", purpose: "Merkez Dağıtım Deposu", customerVisible: true, city: "Batumi", zones: ["A", "B", "C", "D"], shelves: generateShelves(["A", "B", "C", "D"], 10, 8), capacity: 10000, used: 0 },
+    { id: "wh-istanbul", name: "İstanbul Deposu", purpose: "Yedek Parça Dağıtım Deposu", customerVisible: true, city: "İstanbul", zones: ["A", "B", "C", "D"], shelves: generateShelves(["A", "B", "C", "D"], 10, 8), capacity: 5000, used: 0 },
+    { id: "wh-ankara", name: "Ankara Deposu", purpose: "Yedek Parça Dağıtım Deposu", customerVisible: true, city: "Ankara", zones: ["A", "B", "C", "D"], shelves: generateShelves(["A", "B", "C", "D"], 10, 8), capacity: 5000, used: 0 },
+    { id: "wh-trabzon", name: "Trabzon Deposu", purpose: "Karadeniz Dağıtım Deposu", customerVisible: true, city: "Trabzon", zones: ["A", "B", "C", "D"], shelves: generateShelves(["A", "B", "C", "D"], 10, 8), capacity: 5000, used: 0 },
+    { id: "wh-batum", name: "Batum Deposu", purpose: "Gürcistan Ana Depo", customerVisible: true, city: "Batumi", zones: ["A", "B", "C", "D"], shelves: generateShelves(["A", "B", "C", "D"], 10, 8), capacity: 5000, used: 0 },
+    { id: "wh-tiflis", name: "Tiflis Deposu", purpose: "Gürcistan Bölge Depo", customerVisible: true, city: "Tbilisi", zones: ["A", "B", "C", "D"], shelves: generateShelves(["A", "B", "C", "D"], 10, 8), capacity: 5000, used: 0 }
   ]
 };
 
@@ -69,14 +84,6 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
     { name: "Subaru", zone: "S", models: ["Forester 2.0 EJ20", "Outback 2.5", "Impreza WRX 2.5", "XV 1.6", "Legacy 2.0", "Tribeca 3.6"] },
     { name: "Honda", zone: "H", models: ["Civic 1.6 VTEC", "CR-V 2.0", "Fit 1.4 i-DSI", "Accord 2.0", "HR-V 1.5", "Jazz 1.2"] },
     { name: "Hyundai", zone: "Y", models: ["Elantra 1.6", "Accent Era 1.5", "Santa Fe 2.2", "i30 1.6 CRDi", "Tucson 1.6 T-GDI", "Getz 1.4"] }
-  ];
-
-  const warehouses = [
-    "İstanbul Şubesi",
-    "İzmir Şubesi",
-    "Batum Şubesi",
-    "Tiflis Şubesi",
-    "Ankara Şubesi"
   ];
 
   const partPool = [
@@ -102,8 +109,6 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
     "/product-images/diagnostic-scanner.svg",
     "/product-images/diagnostic-tablet.svg"
   ];
-
-  const shelves = ["A0101", "A0102", "A0201", "B0101", "B0102", "C0101"];
 
   const products: ProductRecord[] = [];
 
@@ -140,8 +145,6 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
       const saleVal = Math.floor(purchaseVal * 1.8);
       const quantityVal = 10; // clean default stock level
 
-      const warehouse = warehouses[(i - 1) % warehouses.length];
-      const shelf = ""; // All unplaced/scattered by default
       const imageUrl = images[(i - 1) % images.length];
 
       products.push({
@@ -162,8 +165,8 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
         manufacturerCode: mfrCode,
         stockTracking: true,
         quantity: String(quantityVal),
-        warehouse,
-        shelf,
+        warehouse: "Ana Depo",
+        shelf: "",
         entryDate: `2026-06-${(i % 28) + 1 < 10 ? `0${(i % 28) + 1}` : (i % 28) + 1}`,
         exitDate: "",
         pricingMode: "fixed",
@@ -176,5 +179,5 @@ export const generateOzgurMotorProducts = (): ProductRecord[] => {
     }
   });
 
-  return products;
+  return products.slice(0, 27);
 };

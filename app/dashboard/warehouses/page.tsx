@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
@@ -1628,7 +1628,233 @@ export default function WarehousesRevampPage() {
 
   const [modalWarehouses, setModalWarehouses] = useState<Warehouse[]>([]);
   const [modalActiveWhId, setModalActiveWhId] = useState<string>("");
+  const [modalActiveZone, setModalActiveZone] = useState<string>("");
   const [newCorridorZone, setNewCorridorZone] = useState("");
+  const [activeWizardTab, setActiveWizardTab] = useState("DEPO");
+
+  // New Inline/Borderless States
+  const [activeAisleZone, setActiveAisleZone] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const userStr = window.localStorage.getItem("hbs-current-user");
+        const activeUser = userStr ? JSON.parse(userStr) : null;
+        const slug = activeUser?.storeSlugs?.[0] || "obdtr";
+        const storesStr = window.localStorage.getItem("hbs-registered-stores");
+        if (storesStr) {
+          const registeredStores = JSON.parse(storesStr);
+          const myStore = registeredStores.find((s: any) => s.code === slug);
+          if (myStore && myStore.warehouses && myStore.warehouses.length > 0) {
+            const firstWh = myStore.warehouses[0];
+            return firstWh.corridorConfigs?.[0]?.zone || firstWh.zones?.[0] || "A";
+          }
+        }
+        const { OZGUR_MOTOR_STORE } = require("@/lib/demoData");
+        const firstWh = OZGUR_MOTOR_STORE.warehouses?.[0];
+        return firstWh?.corridorConfigs?.[0]?.zone || firstWh?.zones?.[0] || "A";
+      } catch (e) {
+        return "A";
+      }
+    }
+    return "A";
+  });
+  const [showNoWarehouseWarning, setShowNoWarehouseWarning] = useState(false);
+  const [isCreatingWhInline, setIsCreatingWhInline] = useState(false);
+
+  const saveWarehouseConfigs = (whId: string, corridorConfigs: CorridorConfig[]) => {
+    const generatedShelves: string[] = [];
+    const parsedZones: string[] = [];
+    const updatedCapacities = { ...shelfCapacities };
+
+    corridorConfigs.forEach((corr) => {
+      const zone = corr.zone.trim().toUpperCase();
+      if (zone) {
+        if (!parsedZones.includes(zone)) parsedZones.push(zone);
+        for (let d = 1; d <= corr.depth; d++) {
+          const slotStr = d < 10 ? `0${d}` : `${d}`;
+          for (let t = 1; t <= corr.tiers; t++) {
+            const tierStr = t < 10 ? `0${t}` : `${t}`;
+            const baseCode = `${zone}${slotStr}${tierStr}`;
+
+            const sides = corr.isDoubleRow ? ["S1", "S2"] : [""];
+            sides.forEach((side) => {
+              const sideSuffix = side ? `-${side}` : "";
+              const sideCode = `${baseCode}${sideSuffix}`;
+
+              const binsCount = corr.binsConfig?.[sideCode] || 1;
+              if (binsCount > 1) {
+                for (let b = 1; b <= binsCount; b++) {
+                  const binCode = `${sideCode}-B${b}`;
+                  generatedShelves.push(binCode);
+                  if (!updatedCapacities[binCode]) {
+                    updatedCapacities[binCode] = {
+                      maxWeight: Math.round(100 / binsCount),
+                      maxVolume: Number((1.0 / binsCount).toFixed(3)),
+                    };
+                  }
+                }
+              } else {
+                generatedShelves.push(sideCode);
+                if (!updatedCapacities[sideCode]) {
+                  updatedCapacities[sideCode] = { maxWeight: 100, maxVolume: 1.0 };
+                }
+              }
+            });
+          }
+        }
+      }
+    });
+
+    window.localStorage.setItem("hbs-shelf-capacities", JSON.stringify(updatedCapacities));
+    setShelfCapacities(updatedCapacities);
+
+    const updatedWarehouses = warehouses.map((w) =>
+      w.id === whId
+        ? { ...w, zones: parsedZones, shelves: generatedShelves, corridorConfigs: corridorConfigs }
+        : w
+    );
+
+    const storesStr = window.localStorage.getItem("hbs-registered-stores") || "[]";
+    const registeredStores = JSON.parse(storesStr);
+    const updatedStores = registeredStores.map((s: any) => {
+      if (s.code === storeSlug) {
+        return { ...s, warehouses: updatedWarehouses };
+      }
+      return s;
+    });
+
+    window.localStorage.setItem("hbs-registered-stores", JSON.stringify(updatedStores));
+    setWarehouses(updatedWarehouses);
+
+    if (whId === activeWarehouseId) {
+      setCorridors(corridorConfigs);
+    }
+  };
+
+  const handleAddAisleDirect = () => {
+    if (!activeWarehouseId || !activeWh) return;
+    const currentZones = (activeWh.corridorConfigs || []).map(c => c.zone);
+    let nextZone = "A";
+    for (let i = 0; i < 26; i++) {
+      const char = String.fromCharCode(65 + i);
+      if (!currentZones.includes(char)) {
+        nextZone = char;
+        break;
+      }
+    }
+    const updatedConfigs = [...(activeWh.corridorConfigs || []), { zone: nextZone, depth: 4, tiers: 3 }];
+    saveWarehouseConfigs(activeWarehouseId, updatedConfigs);
+    setActiveAisleZone(nextZone);
+  };
+
+  const handleDeleteAisleDirect = () => {
+    if (!activeWarehouseId || !activeWh || !activeAisleZone) return;
+    const remaining = (activeWh.corridorConfigs || []).filter(c => c.zone !== activeAisleZone);
+    saveWarehouseConfigs(activeWarehouseId, remaining);
+    setActiveAisleZone(remaining.length > 0 ? remaining[0].zone : "");
+  };
+
+  const handleAdjustTierDirect = (change: number) => {
+    if (!activeWarehouseId || !activeWh || !activeAisleZone) return;
+    const config = (activeWh.corridorConfigs || []).find(c => c.zone === activeAisleZone);
+    if (!config) return;
+    const newTiers = Math.max(1, Math.min(10, config.tiers + change));
+    const updatedConfigs = (activeWh.corridorConfigs || []).map(c => c.zone === activeAisleZone ? { ...c, tiers: newTiers } : c);
+    saveWarehouseConfigs(activeWarehouseId, updatedConfigs);
+  };
+
+  const handleAdjustRowDirect = (change: number) => {
+    if (!activeWarehouseId || !activeWh || !activeAisleZone) return;
+    const config = (activeWh.corridorConfigs || []).find(c => c.zone === activeAisleZone);
+    if (!config) return;
+    const newDepth = Math.max(1, Math.min(20, config.depth + change));
+    const updatedConfigs = (activeWh.corridorConfigs || []).map(c => c.zone === activeAisleZone ? { ...c, depth: newDepth } : c);
+    saveWarehouseConfigs(activeWarehouseId, updatedConfigs);
+  };
+
+  const handleCreateWarehouseInline = () => {
+    if (!newWhName.trim()) {
+      showError(activeLang === "tr" ? "Depo ismi boş bırakılamaz." : "Warehouse name cannot be empty.");
+      return;
+    }
+    const newId = `wh-${Date.now()}`;
+    const newWh: Warehouse = {
+      id: newId,
+      name: newWhName.trim(),
+      purpose: "Satışa hazır ürün stoğu",
+      customerVisible: false,
+      city: newWhCity.trim() || "Batumi",
+      zones: ["A", "B", "C"],
+      shelves: [],
+      capacity: 1000,
+      used: 0,
+      corridorConfigs: [
+        { zone: "A", depth: 4, tiers: 3 },
+        { zone: "B", depth: 4, tiers: 3 },
+        { zone: "C", depth: 4, tiers: 3 }
+      ]
+    };
+
+    setWarehouses(prev => [...prev, newWh]);
+    saveWarehouseConfigs(newId, newWh.corridorConfigs || []);
+
+    setActiveWarehouseId(newId);
+    setActiveAisleZone("A");
+
+    setIsCreatingWhInline(false);
+    setNewWhName("");
+    showSuccess(wm.createWhSuccess.replace("{name}", newWh.name));
+  };
+
+  const addAisleSequential = () => {
+    if (!modalActiveWhId) return;
+    const currentWh = modalWarehouses.find(w => w.id === modalActiveWhId);
+    if (!currentWh) return;
+    const currentZones = (currentWh.corridorConfigs || []).map(c => c.zone);
+    let nextZone = "A";
+    for (let i = 0; i < 26; i++) {
+      const char = String.fromCharCode(65 + i);
+      if (!currentZones.includes(char)) {
+        nextZone = char;
+        break;
+      }
+    }
+    addModalCorridor(nextZone);
+    setModalActiveZone(nextZone);
+  };
+
+  const deleteActiveAisle = () => {
+    if (!modalActiveWhId || !modalActiveZone) return;
+    deleteModalCorridor(modalActiveZone);
+    const currentWh = modalWarehouses.find(w => w.id === modalActiveWhId);
+    if (currentWh) {
+      const remaining = (currentWh.corridorConfigs || []).filter(c => c.zone !== modalActiveZone);
+      if (remaining.length > 0) {
+        setModalActiveZone(remaining[0].zone);
+      } else {
+        setModalActiveZone("");
+      }
+    }
+  };
+
+  const adjustRowDepth = (change: number) => {
+    if (!modalActiveWhId || !modalActiveZone) return;
+    const currentWh = modalWarehouses.find(w => w.id === modalActiveWhId);
+    if (!currentWh) return;
+    const config = (currentWh.corridorConfigs || []).find(c => c.zone === modalActiveZone);
+    if (!config) return;
+    const newDepth = Math.max(1, Math.min(20, config.depth + change));
+    updateModalCorridor(modalActiveZone, { depth: newDepth });
+  };
+
+  const adjustTierHeight = (change: number) => {
+    if (!modalActiveWhId || !modalActiveZone) return;
+    const currentWh = modalWarehouses.find(w => w.id === modalActiveWhId);
+    if (!currentWh) return;
+    const config = (currentWh.corridorConfigs || []).find(c => c.zone === modalActiveZone);
+    if (!config) return;
+    const newTiers = Math.max(1, Math.min(10, config.tiers + change));
+    updateModalCorridor(modalActiveZone, { tiers: newTiers });
+  };
 
   const updateModalWhName = (id: string, newName: string) => {
     setModalWarehouses(prev => prev.map(w => w.id === id ? { ...w, name: newName } : w));
@@ -1703,9 +1929,13 @@ export default function WarehousesRevampPage() {
     setModalWarehouses(list);
     if (list.length > 0) {
       setModalActiveWhId(list[0].id);
+      const configs = list[0].corridorConfigs || [];
+      setModalActiveZone(configs.length > 0 ? configs[0].zone : "");
     } else {
       setModalActiveWhId("");
+      setModalActiveZone("");
     }
+    setActiveWizardTab("DEPO");
     setShowWizard(true);
   };
 
@@ -2718,8 +2948,8 @@ export default function WarehousesRevampPage() {
     showSuccess(wm.createWhSuccess.replace("{name}", newWh.name));
   };
 
-  const handleSaveAdminModal = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveAdminModal = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!isAuthorized) {
       showError(activeLang === "en" ? "Unauthorized!" : "Yetersiz Yetki!");
       return;
@@ -3748,7 +3978,6 @@ ${sizeStr}
               {t.runWizard}
             </button>
             <Link href="/dashboard/stock-movements" className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold hover:bg-slate-50 transition">
-              {t.stockMovements}
             </Link>
             <Link 
               href="/dashboard/products" 
@@ -4055,330 +4284,431 @@ ${sizeStr}
           </div>
         )}
 
-        {/* SETUP WIZARD (Wizard Mode overlay) */}
-        {showWizard && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
-            <form onSubmit={handleSaveAdminModal} className="w-full max-w-4xl rounded-3xl border border-slate-250 bg-white p-6 shadow-2xl space-y-4 animate-scaleUp">
-              <div className="text-center space-y-1 pb-3 border-b border-slate-100 flex items-center justify-between">
-                <div className="text-left">
-                  <span className="text-[10px] font-black uppercase text-blue-600 tracking-wider bg-blue-50 px-2 py-0.5 rounded-full">
-                    {activeLang === "tr" ? "Depo Yönetim Paneli" : "Warehouse Management Panel"} ⚙️
-                  </span>
-                  <h2 className="text-lg font-black text-slate-900 mt-1">
-                    {activeLang === "tr" ? "Depo Yapılandırması ve Düzenleme" : "Warehouse Layout & Configuration"}
-                  </h2>
-                </div>
+        {/* COMPACT BORDERLESS CREATION & CONFIGURATION PANEL */}
+        <section className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-sm select-none">
+          
+          {/* Warehouse Selector Row (Shapes as Selector items) */}
+          <div className="space-y-2 border-b border-slate-100 pb-4 mb-6">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">
+              {activeLang === "tr" ? "Depolar (Seçmek için Depo Üzerine Tıklayın)" : "Warehouses (Click on Building to Select)"}
+            </span>
+            <div className="flex flex-wrap items-center gap-6">
+              {warehouses.map((w) => {
+                const isSelected = w.id === activeWarehouseId;
+                return (
+                  <div
+                    key={w.id}
+                    onClick={() => {
+                      setActiveWarehouseId(w.id);
+                      const configs = w.corridorConfigs || [];
+                      setActiveAisleZone(configs.length > 0 ? configs[0].zone : "");
+                      setCorridors(configs);
+                    }}
+                    className={`flex flex-col items-center cursor-pointer group transition-all duration-300 ${
+                      isSelected ? "scale-105" : "opacity-45 grayscale hover:opacity-85 hover:grayscale-0"
+                    }`}
+                  >
+                    {/* SVG Warehouse Building Shape */}
+                    <svg viewBox="0 0 600 300" className="w-36 h-20 filter drop-shadow-md select-none">
+                      {/* Ground Shadow */}
+                      <ellipse cx="300" cy="285" rx="240" ry="10" fill="rgba(15, 23, 42, 0.08)" />
+
+                      {/* Foundation Base */}
+                      <rect x="70" y="265" width="460" height="15" fill="#475569" rx="3" />
+
+                      {/* Main Building Body */}
+                      <rect x="80" y="85" width="440" height="180" fill="#94A3B8" />
+
+                      {/* Corrugated vertical steel lines */}
+                      <line x1="95" y1="85" x2="95" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="115" y1="85" x2="115" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="135" y1="85" x2="135" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="155" y1="85" x2="155" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="175" y1="85" x2="175" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="195" y1="85" x2="195" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="215" y1="85" x2="215" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="385" y1="85" x2="385" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="405" y1="85" x2="405" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="425" y1="85" x2="425" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="445" y1="85" x2="445" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="465" y1="85" x2="465" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="485" y1="85" x2="485" y2="265" stroke="#64748B" strokeWidth="2.5" />
+                      <line x1="505" y1="85" x2="505" y2="265" stroke="#64748B" strokeWidth="2.5" />
+
+                      {/* Pitched Roof (Beşik Çatı) */}
+                      <polygon points="65,95 300,30 535,95 525,103 300,43 75,103" fill="#334155" />
+                      <polygon points="80,85 300,35 520,85" fill="#475569" />
+
+                      {/* Roll-up Shutter Garage Door Frame */}
+                      <rect x="238" y="125" width="124" height="140" fill="#1E293B" rx="2" />
+                      {/* Garage Shutter Slats */}
+                      <rect x="242" y="130" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="142" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="154" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="166" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="178" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="190" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="202" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="214" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="226" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="238" width="116" height="8" fill="#475569" />
+                      <rect x="242" y="250" width="116" height="15" fill="#334155" />
+
+                      {/* Side Door */}
+                      <rect x="440" y="165" width="40" height="100" fill="#1E293B" rx="1" />
+                      <rect x="443" y="168" width="34" height="97" fill="#334155" />
+                      <circle cx="448" cy="215" r="2.5" fill="#94A3B8" />
+
+                      {/* Safety Bollards */}
+                      <rect x="224" y="235" width="10" height="30" fill="#EAB308" rx="1.5" />
+                      <rect x="224" y="240" width="10" height="4" fill="#0F172A" />
+                      <rect x="224" y="250" width="10" height="4" fill="#0F172A" />
+                      <rect x="224" y="260" width="10" height="4" fill="#0F172A" />
+                      <rect x="366" y="235" width="10" height="30" fill="#EAB308" rx="1.5" />
+                      <rect x="366" y="240" width="10" height="4" fill="#0F172A" />
+                      <rect x="366" y="250" width="10" height="4" fill="#0F172A" />
+                      <rect x="366" y="260" width="10" height="4" fill="#0F172A" />
+
+                      {/* Sign Board (Mavi/Gri Tabela) */}
+                      <rect x="180" y="55" width="240" height="35" fill={isSelected ? "#1E3A8A" : "#475569"} rx="4" stroke={isSelected ? "#3B82F6" : "#64748B"} strokeWidth="1.5" />
+                      <text x="300" y="77" fill="#FFFFFF" fontSize="11" fontWeight="900" fontFamily="sans-serif" textAnchor="middle" letterSpacing="0.8">
+                        {w.name.toUpperCase()}
+                      </text>
+                    </svg>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid lg:grid-cols-[260px_1fr] gap-6 items-start">
+            {/* Left Column: Yönetim Paneli */}
+            <div className="space-y-4">
+              <h3 className="text-slate-800 font-black tracking-wider uppercase text-xs border-b border-slate-100 pb-2">
+                {activeLang === "tr" ? "Yönetim Paneli" : "Control Panel"}
+              </h3>
+
+              <div className="flex flex-col gap-3">
+                {/* DEPO EKLE / OLUŞTUR */}
                 <button
                   type="button"
-                  onClick={() => setShowWizard(false)}
-                  className="text-slate-400 hover:text-slate-600 transition font-black text-lg p-2"
+                  onClick={() => setIsCreatingWhInline(!isCreatingWhInline)}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 px-4 rounded-xl text-center shadow-sm transition active:scale-98 text-xs select-none"
                 >
-                  ✕
+                  {warehouses.length === 0 
+                    ? (activeLang === "tr" ? "DEPO OLUŞTUR" : "CREATE WAREHOUSE")
+                    : (activeLang === "tr" ? "DEPO EKLE" : "ADD WAREHOUSE")}
+                </button>
+
+                {/* REYON EKLE */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeWarehouseId) {
+                      handleAddAisleDirect();
+                    } else {
+                      setShowNoWarehouseWarning(true);
+                      setTimeout(() => setShowNoWarehouseWarning(false), 1000);
+                    }
+                  }}
+                  className={`w-full font-black py-3 px-4 rounded-xl text-center shadow-sm transition active:scale-98 text-xs select-none ${
+                    activeWarehouseId
+                      ? "bg-emerald-700 text-white hover:bg-emerald-800"
+                      : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                  }`}
+                >
+                  {activeLang === "tr" ? "REYON EKLE" : "ADD AISLE"}
+                </button>
+
+                {/* SIRA EKLE */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeWarehouseId && activeAisleZone) {
+                      handleAdjustRowDirect(1);
+                    }
+                  }}
+                  className={`w-full font-black py-3 px-4 rounded-xl text-center shadow-sm transition active:scale-98 text-xs select-none ${
+                    activeWarehouseId && activeAisleZone
+                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                      : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                  }`}
+                >
+                  {activeLang === "tr" ? "SIRA EKLE" : "ADD ROW"}
+                </button>
+
+                {/* KAT EKLE */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (activeWarehouseId && activeAisleZone) {
+                      handleAdjustTierDirect(1);
+                    }
+                  }}
+                  className={`w-full font-black py-3 px-4 rounded-xl text-center shadow-sm transition active:scale-98 text-xs select-none ${
+                    activeWarehouseId && activeAisleZone
+                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                      : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                  }`}
+                >
+                  {activeLang === "tr" ? "KAT EKLE" : "ADD TIER"}
                 </button>
               </div>
 
-              {/* Two Column Layout: Left = Warehouse CRUD, Right = Layout & Corridor Shaper */}
-              <div className="grid gap-6 md:grid-cols-[0.4fr_0.6fr] max-h-[500px] min-h-[350px] overflow-hidden">
-                
-                {/* Left Column: Warehouse CRUD */}
-                <div className="space-y-4 overflow-y-auto pr-2 max-h-[480px]">
-                  <span className="text-[10px] font-black text-slate-550 uppercase tracking-wider block">
-                    {activeLang === "tr" ? "MEVCUT DEPOLAR" : "ACTIVE WAREHOUSES"}
-                  </span>
-                  <div className="space-y-2">
-                    {modalWarehouses.map((w, i) => {
-                      const isSelected = w.id === modalActiveWhId;
-                      return (
-                        <div
-                          key={w.id}
-                          onClick={() => setModalActiveWhId(w.id)}
-                          className={`p-3 rounded-2xl border transition flex items-center justify-between gap-2 cursor-pointer ${
-                            isSelected
-                              ? "bg-blue-50/50 border-blue-300 ring-2 ring-blue-500/10 shadow-sm"
-                              : "bg-slate-50 border-slate-200 hover:bg-slate-100/50"
-                          }`}
-                        >
-                          <div className="flex-1 min-w-0" onClick={(e) => e.stopPropagation()}>
-                            <input
-                              type="text"
-                              value={w.name}
-                              onChange={(e) => updateModalWhName(w.id, e.target.value)}
-                              className="w-full bg-white border border-slate-250 rounded-xl px-2.5 py-1 text-xs font-bold text-slate-800 focus:border-blue-500 focus:bg-white outline-none"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteModalWh(w.id);
-                            }}
-                            className="p-1.5 rounded-xl text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition active:scale-90"
-                            title={activeLang === "tr" ? "Depoyu Sil" : "Delete Warehouse"}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  <button
-                    type="button"
-                    onClick={addModalWh}
-                    className="w-full py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-750 border border-indigo-200 rounded-2xl text-xs font-black transition active:scale-95 flex items-center justify-center gap-1.5"
-                  >
-                    <span>➕</span> {activeLang === "tr" ? "Yeni Depo Ekle" : "Add Warehouse"}
-                  </button>
+              {/* Fading 1-second warning next to buttons */}
+              {showNoWarehouseWarning && (
+                <div className="text-rose-600 font-extrabold text-[10px] bg-rose-50 border border-rose-100 rounded-lg p-2 text-center animate-pulse">
+                  ⚠️ {activeLang === "tr" ? "Reyon oluşturmak istediğiniz depoyu seçin" : "Select the warehouse you want to create an aisle for"}
                 </div>
+              )}
 
-                {/* Right Column: Layout & Corridor config shaper for selected warehouse */}
-                <div className="space-y-4 overflow-y-auto pl-2 border-l border-slate-150 max-h-[480px]">
-                  {modalActiveWhId && modalWarehouses.find(w => w.id === modalActiveWhId) ? (() => {
-                    const currentWh = modalWarehouses.find(w => w.id === modalActiveWhId)!;
-                    const currentConfigs = currentWh.corridorConfigs || [];
-                    return (
-                      <div className="space-y-4">
-                        <div className="bg-indigo-50/40 border border-indigo-100 p-3.5 rounded-2xl">
-                          <h4 className="text-xs font-black text-indigo-950 flex items-center gap-1">
-                            <span>🏢</span> {currentWh.name} {activeLang === "tr" ? "Raf & Koridor Düzeni" : "Shelf & Corridor Layout"}
-                          </h4>
-                          <p className="text-[10px] text-indigo-800/80 leading-relaxed mt-1">
-                            {activeLang === "tr"
-                              ? "Bu deponun reyon haritasını (zonlarını), derinliğini (slot sayısı) ve kat/raf yüksekliklerini buradan yönetin."
-                              : "Configure zone codes, corridor depth slots, and level heights of this warehouse layout here."}
-                          </p>
-                        </div>
+              {/* Inline warehouse creation form */}
+              {isCreatingWhInline && (
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60 text-xs font-semibold space-y-3.5 animate-scaleUp">
+                  <div className="space-y-1">
+                    <span className="text-slate-600 block">{activeLang === "tr" ? "Depo İsmi:" : "Wh Name:"}</span>
+                    <input
+                      type="text"
+                      value={newWhName}
+                      onChange={(e) => setNewWhName(e.target.value)}
+                      placeholder={activeLang === "tr" ? "Örn: Batum Deposu" : "e.g. Batumi Warehouse"}
+                      className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none text-slate-800 focus:border-blue-600"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-slate-600 block">{activeLang === "tr" ? "Şehir:" : "City:"}</span>
+                    <input
+                      type="text"
+                      value={newWhCity}
+                      onChange={(e) => setNewWhCity(e.target.value)}
+                      placeholder="Batumi"
+                      className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 outline-none text-slate-800 focus:border-blue-600"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleCreateWarehouseInline}
+                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg py-1.5 font-bold text-[11px]"
+                    >
+                      {activeLang === "tr" ? "Kaydet" : "Save"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setIsCreatingWhInline(false); setNewWhName(""); }}
+                      className="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg py-1.5 font-bold text-[11px]"
+                    >
+                      {activeLang === "tr" ? "İptal" : "Cancel"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
-                        {/* Quick Add Corridor */}
-                        <div className="space-y-1.5">
-                          <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider block">
-                            {activeLang === "tr" ? "Yeni Reyon/Bölge Kodu Ekle" : "Add New Corridor/Zone Code"}
-                          </span>
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              maxLength={3}
-                              placeholder={activeLang === "tr" ? "Örn: D, E" : "e.g., D, E"}
-                              value={newCorridorZone}
-                              onChange={(e) => setNewCorridorZone(e.target.value)}
-                              className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 outline-none text-xs font-semibold uppercase focus:bg-white focus:border-blue-500"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const val = newCorridorZone.trim().toUpperCase();
-                                if (val) {
-                                  addModalCorridor(val);
-                                  setNewCorridorZone("");
-                                }
-                              }}
-                              className="px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition active:scale-95"
-                            >
-                              {activeLang === "tr" ? "Ekle" : "Add"}
-                            </button>
+            {/* Right Column: Dynamic SVG & Grid */}
+            <div className="space-y-6">
+              {activeWh ? (
+                <>
+                  {/* Selected warehouse display (Text only) */}
+                  <div className="space-y-1 select-none">
+                    <h2 className="text-2xl font-black text-slate-900 leading-tight uppercase tracking-wide">
+                      {translateWarehouseName(activeWh.name, language)}
+                    </h2>
+                    <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">
+                      {activeWh.city} · {translateWarehousePurpose(activeWh.purpose, language)}
+                    </p>
+                  </div>
+
+                  {/* Aisles Row (Clean Pill Tabs) */}
+                  <div className="space-y-3">
+                    <span className="text-[10px] font-black text-slate-450 uppercase tracking-widest block">
+                      {activeLang === "tr" ? "Reyonlar" : "Aisles"}
+                    </span>
+
+                    <div className="flex flex-wrap items-center gap-3">
+                      {activeWh.corridorConfigs?.map((c) => {
+                        const isSelected = c.zone === activeAisleZone;
+                        return (
+                          <div
+                            key={c.zone}
+                            onClick={() => {
+                              setActiveAisleZone(c.zone);
+                              setModalActiveZone(c.zone);
+                            }}
+                            className={`w-9 h-9 rounded-full flex items-center justify-center font-black text-xs cursor-pointer transition active:scale-95 select-none ${
+                              isSelected
+                                ? "bg-emerald-750 text-white shadow-md ring-2 ring-emerald-500/30 scale-105"
+                                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            }`}
+                          >
+                            {c.zone}
                           </div>
-                        </div>
+                        );
+                      })}
 
-                        {/* Corridor Dimensions Grid list */}
-                        <div className="space-y-2">
-                          <span className="text-[10px] font-black text-slate-755 uppercase tracking-wider block">
-                            {activeLang === "tr" ? "Mevcut Koridorlar ve Ölçüler" : "Active Corridors & Dimensions"}
-                          </span>
-                          {currentConfigs.length === 0 ? (
-                            <p className="text-xs text-slate-400 italic py-4">
-                              {activeLang === "tr" ? "Tanımlı reyon bulunmuyor. Yukarıdan ekleyin." : "No corridors defined. Add one above."}
-                            </p>
-                          ) : (
-                            <div className="space-y-3">
-                              {currentConfigs.map((c) => (
-                                <div key={c.zone} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-black text-slate-850">
-                                      {activeLang === "tr" ? "Reyon/Sektör:" : "Zone/Corridor:"} <span className="text-blue-600 font-mono font-black">{c.zone}</span>
-                                    </span>
-                                    <button
-                                      type="button"
-                                      onClick={() => deleteModalCorridor(c.zone)}
-                                      className="text-[9px] text-rose-600 hover:underline font-extrabold"
-                                    >
-                                      {activeLang === "tr" ? "Kaldır 🗑️" : "Remove 🗑️"}
-                                    </button>
-                                  </div>
+                      {/* 1/3 scale plus and minus signs to add/remove aisles */}
+                      <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg ml-2 select-none">
+                        <button
+                          type="button"
+                          onClick={handleAddAisleDirect}
+                          className="w-4 h-4 rounded bg-emerald-600 text-white hover:bg-emerald-700 flex items-center justify-center text-[10px] font-extrabold transition active:scale-90"
+                          title={activeLang === "tr" ? "Reyon Ekle" : "Add Aisle"}
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleDeleteAisleDirect}
+                          disabled={(activeWh.corridorConfigs || []).length <= 1}
+                          className="w-4 h-4 rounded bg-rose-600 text-white hover:bg-rose-700 disabled:opacity-30 disabled:pointer-events-none flex items-center justify-center text-[10px] font-extrabold transition active:scale-90"
+                          title={activeLang === "tr" ? "Reyon Sil" : "Delete Aisle"}
+                        >
+                          -
+                        </button>
+                      </div>
+                    </div>
+                  </div>
 
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <label className="grid gap-1">
-                                      <span className="text-[9px] font-black text-slate-600 uppercase">
-                                        {activeLang === "tr" ? "Derinlik (Slot):" : "Depth (Slots):"}
-                                      </span>
-                                      <input
-                                        type="number"
-                                        min={1}
-                                        max={20}
-                                        value={c.depth}
-                                        onChange={(e) => updateModalCorridor(c.zone, { depth: Number(e.target.value) })}
-                                        className="rounded-xl border border-slate-250 bg-white px-2 py-1.5 text-xs text-slate-850 font-bold"
-                                      />
-                                    </label>
+                  {/* Dynamically Scaling Grid Matrisi */}
+                  {activeAisleZone && (() => {
+                    const activeConfig = activeWh.corridorConfigs?.find(c => c.zone === activeAisleZone);
+                    const numTiers = activeConfig?.tiers || 3;
+                    const numRows = activeConfig?.depth || 4;
 
-                                    <label className="grid gap-1">
-                                      <span className="text-[9px] font-black text-slate-600 uppercase">
-                                        {activeLang === "tr" ? "Yükseklik (Kat/Raf):" : "Height (Tiers):"}
-                                      </span>
-                                      <input
-                                        type="number"
-                                        min={1}
-                                        max={10}
-                                        value={c.tiers}
-                                        onChange={(e) => updateModalCorridor(c.zone, { tiers: Number(e.target.value) })}
-                                        className="rounded-xl border border-slate-250 bg-white px-2 py-1.5 text-xs text-slate-855 font-bold"
-                                      />
-                                    </label>
-                                  </div>
+                    return (
+                      <div className="space-y-3 pt-2">
+                        <div className="flex flex-col gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200/60 shadow-inner">
+                          <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+                            <span className="text-xs font-black text-slate-800 uppercase tracking-wider">
+                              {activeLang === "tr" ? `Reyon ${activeAisleZone} Raf Haritası` : `Aisle ${activeAisleZone} Shelf Map`}
+                            </span>
+                            <span className="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-bold font-mono">
+                              {numRows} {activeLang === "tr" ? "Sıra" : "Rows"} × {numTiers} {activeLang === "tr" ? "Kat" : "Tiers"}
+                            </span>
+                          </div>
 
-                                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/50">
-                                    <span className="text-[9px] text-slate-600 font-bold">
-                                      {activeLang === "tr" ? "Toplam Konum:" : "Total Locations:"} <span className="font-mono font-black text-slate-800">{c.depth * c.tiers * (c.isDoubleRow ? 2 : 1)}</span>
-                                    </span>
-                                    <button
-                                      type="button"
-                                      onClick={() => updateModalCorridor(c.zone, { isDoubleRow: !c.isDoubleRow })}
-                                      className={`text-[9px] font-black px-2 py-0.5 rounded-lg border transition ${
-                                        c.isDoubleRow ? "bg-blue-600 text-white border-blue-600" : "bg-white border-slate-200 text-slate-700"
-                                      }`}
-                                    >
-                                      {c.isDoubleRow ? (activeLang === "tr" ? "Çift Sıra" : "Double Row") : (activeLang === "tr" ? "Tek Sıra" : "Single Row")}
-                                    </button>
-                                  </div>
+                          {/* Matris */}
+                          <div className="flex flex-col gap-3 overflow-x-auto py-2">
+                            {Array.from({ length: numTiers }).map((_, tierIdx) => {
+                              const tierNum = numTiers - tierIdx;
+                              return (
+                                <div key={tierNum} className="flex gap-2.5 min-w-max items-center">
+                                  {/* Tier Label */}
+                                  <span className="w-12 text-right text-[10px] font-black text-slate-450 uppercase tracking-wider font-mono">
+                                    {activeLang === "tr" ? `Kat ${tierNum}` : `Tier ${tierNum}`}
+                                  </span>
+                                  
+                                  {/* Slots */}
+                                  {Array.from({ length: numRows }).map((_, slotIdx) => {
+                                    const slotNum = slotIdx + 1;
+                                    const slotStr = slotNum < 10 ? `0${slotNum}` : `${slotNum}`;
+                                    const tierStr = tierNum < 10 ? `0${tierNum}` : `${tierNum}`;
+                                    const shelfCode = `${activeAisleZone}${slotStr}${tierStr}`;
+
+                                    const shelfProducts = products.filter(
+                                      (p) =>
+                                        safeLower(p.warehouse) === safeLower(activeWh.name) &&
+                                        safeLower(p.shelf) === safeLower(shelfCode)
+                                    );
+                                    const isOccupied = shelfProducts.length > 0;
+
+                                    return (
+                                      <div
+                                        key={shelfCode}
+                                        onClick={() => handleShelfCardClick(shelfCode)}
+                                        className={`w-28 h-20 rounded-xl border flex flex-col justify-between p-2 cursor-pointer transition active:scale-95 group relative ${
+                                          isOccupied
+                                            ? "bg-indigo-50 border-indigo-300 shadow-[0_2px_4px_rgba(99,102,241,0.08)]"
+                                            : "bg-white border-slate-200 border-dashed hover:border-slate-350"
+                                        }`}
+                                      >
+                                        <div className="absolute top-0 left-0 right-0 h-1 bg-orange-500 rounded-t-xl" />
+                                        <div className="absolute top-0 bottom-0 left-0 w-1 bg-blue-600 rounded-l-xl" />
+
+                                        <div className="flex justify-between items-center">
+                                          <span className="text-[10px] font-mono font-black text-slate-800 bg-slate-100 px-1.5 py-0.5 rounded group-hover:bg-blue-600 group-hover:text-white transition">
+                                            {shelfCode}
+                                          </span>
+                                          {isOccupied && (
+                                            <span className="text-[8px] font-black text-indigo-750 bg-indigo-100/50 px-1 py-0.2 rounded">
+                                              {shelfProducts.length} Ürün
+                                            </span>
+                                          )}
+                                        </div>
+
+                                        {isOccupied ? (
+                                          <div className="flex flex-col mt-1">
+                                            <span className="text-[9px] font-extrabold text-slate-900 truncate max-w-[6rem] line-clamp-1">
+                                              📦 {shelfProducts[0].name}
+                                            </span>
+                                            {shelfProducts.length > 1 && (
+                                              <span className="text-[7px] font-bold text-slate-500 mt-0.2">
+                                                + {shelfProducts.length - 1} başka
+                                              </span>
+                                            )}
+                                          </div>
+                                        ) : (
+                                          <span className="text-[8px] text-slate-400 font-semibold italic mt-auto">
+                                            {activeLang === "tr" ? "Boş Raf" : "Empty Shelf"}
+                                          </span>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
                                 </div>
+                              );
+                            })}
+
+                            {/* Row Labels */}
+                            <div className="flex gap-2.5 min-w-max items-center mt-1 border-t border-slate-200 pt-2">
+                              <div className="w-12 shrink-0"></div>
+                              {Array.from({ length: numRows }).map((_, slotIdx) => (
+                                <span key={slotIdx} className="w-28 text-center text-[10px] font-black text-slate-450 uppercase tracking-wider font-mono">
+                                  {activeLang === "tr" ? `${slotIdx + 1}. Sıra` : `Row ${slotIdx + 1}`}
+                                </span>
                               ))}
                             </div>
-                          )}
+                          </div>
+
+                        </div>
+
+                        {/* Decrement controls */}
+                        <div className="flex justify-end gap-4 text-xs font-bold text-slate-400 select-none px-2">
+                          <span
+                            onClick={() => handleAdjustRowDirect(-1)}
+                            className="cursor-pointer hover:text-rose-600 transition"
+                          >
+                            [ {activeLang === "tr" ? "Sıra Azalt" : "Reduce Row"} ]
+                          </span>
+                          <span
+                            onClick={() => handleAdjustTierDirect(-1)}
+                            className="cursor-pointer hover:text-rose-600 transition"
+                          >
+                            [ {activeLang === "tr" ? "Kat Azalt" : "Reduce Tier"} ]
+                          </span>
                         </div>
                       </div>
                     );
-                  })() : (
-                    <div className="text-center py-12 text-slate-400 text-xs italic">
-                      {activeLang === "tr" ? "Düzenlemek istediğiniz depoyu soldan seçin." : "Select a warehouse from the left list to shape."}
-                    </div>
-                  )}
+                  })()}
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-16 text-center text-slate-400">
+                  <svg className="w-16 h-16 text-slate-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <h3 className="text-sm font-black text-slate-700">{activeLang === "tr" ? "Depo Seçilmedi" : "No Warehouse Selected"}</h3>
+                  <p className="text-xs text-slate-500 mt-1 max-w-sm">
+                    {activeLang === "tr" 
+                      ? "Tasarım stüdyosunu kullanmak için lütfen üst taraftan bir depo seçin veya sol menüden yeni bir depo ekleyin." 
+                      : "Please select a warehouse from the top or create a new one from the control panel to use the design studio."}
+                  </p>
                 </div>
-              </div>
+              )}
+            </div>
 
-              <div className="flex justify-end gap-3 border-t border-slate-100 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowWizard(false)}
-                  className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition active:scale-95"
-                >
-                  {t.cancel}
-                </button>
-                <button
-                  type="submit"
-                  className="rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-black text-white hover:bg-blue-500 transition active:scale-95 shadow-md flex items-center gap-1.5"
-                >
-                  ⚡ {activeLang === "tr" ? "Depoları Kaydet & Kur" : "Save & Configure Warehouses"}
-                </button>
-              </div>
-            </form>
           </div>
-        )}
 
-        {/* WAREHOUSE SELECTOR (Tabs as large cards) */}
-        <section className="space-y-2">
-          <span className="text-[10px] font-black uppercase tracking-wider text-slate-700">{t.activeWarehousesLabel}</span>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {warehouses.map((w) => {
-              const isActive = w.id === activeWarehouseId;
-              const itemsCount = products.filter((p) => safeLower(p.warehouse) === safeLower(w.name)).length;
-              return (
-                <article
-                  key={w.id}
-                  onClick={() => {
-                    setActiveWarehouseId(w.id);
-                    setShaperZones(w.zones ? w.zones.join(", ") : "A, B, C");
-                    setCorridors(w.corridorConfigs || parseShelvesToConfig(w.shelves || []));
-                  }}
-                  className={`rounded-2xl border p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all active:scale-98 ${
-                    isActive
-                      ? "border-blue-600 bg-white ring-2 ring-blue-500/20"
-                      : "border-slate-200 bg-white hover:border-slate-350"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h3 className="font-black text-slate-900 text-sm flex items-center gap-1">
-                        {editingWarehouseId === w.id ? (
-                          <input
-                            type="text"
-                            value={editingWarehouseName}
-                            onChange={(e) => setEditingWarehouseName(e.target.value)}
-                            onBlur={() => handleSaveWarehouseName(w.id)}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") handleSaveWarehouseName(w.id);
-                              if (e.key === "Escape") setEditingWarehouseId(null);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="rounded border border-blue-500 px-2 py-0.5 text-xs font-black text-slate-900 bg-white"
-                            autoFocus id="id-page-rounded-border-border-blue-500-px-2-py-0-5-text-xs-font-black-text-slate-900-bg-white-422" aria-label="Rounded border border blue 500 px 2 py 0 5 text xs font black text slate 900 bg white" />
-                        ) : (
-                          <span
-                            className="hover:text-blue-600 transition flex items-center gap-1"
-                            title={language === "en" ? "Double click to rename" : language === "de" ? "Doppelklicken zum Umbenennen" : language === "ru" ? "Дважды кликните для переименования" : language === "ka" ? "ორმაგი დაწკაპუნება გადასარქმევად" : "Yeniden adlandırmak için çift tıklayın"}
-                            onDoubleClick={(e) => {
-                              e.stopPropagation();
-                              setEditingWarehouseId(w.id);
-                              setEditingWarehouseName(w.name);
-                            }}
-                          >
-                            🏪 {translateWarehouseName(w.name, language)} <span className="text-[10px] text-slate-400 font-normal">✏️</span>
-                          </span>
-                        )}
-                      </h3>
-                      <p className="text-[10px] text-slate-600 font-bold mt-0.5">{w.city} · {translateWarehousePurpose(w.purpose, language)}</p>
-                    </div>
-                    <span className={`rounded-full px-2 py-0.5 text-[8px] font-black uppercase ${
-                      isActive ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700"
-                    }`}>
-                      {isActive ? t.badgeSelected : t.badgePassive}
-                    </span>
-                  </div>
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-600 font-black">
-                    <span>📦 {itemsCount} {t.definedProducts}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-blue-600">{w.shelves?.length || 0} {t.shelfPositions}</span>
-                      {isAuthorized && warehouses.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteWarehouse(w.id, w.name);
-                          }}
-                          className="text-rose-600 hover:text-rose-700 font-bold w-11 h-11 flex items-center justify-center rounded-xl hover:bg-rose-50 border border-transparent hover:border-rose-100 transition active:scale-90 shrink-0"
-                          title="Depoyu Tamamen Sil"
-                          aria-label={`${w.name} deposunu sil`}
-                        >
-                          🗑️
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-
-            {isAuthorized && (
-              <article
-                onClick={() => setIsNewWarehouseModalOpen(true)}
-                className="rounded-2xl border border-dashed border-slate-350 bg-slate-50 hover:bg-slate-100/70 p-4 shadow-sm flex flex-col items-center justify-center text-center cursor-pointer transition min-h-[120px] text-slate-700 hover:border-blue-500 hover:shadow-md"
-              >
-                <span className="text-2xl mb-1">➕</span>
-                <h4 className="text-xs font-black text-slate-800">{t.addNewWarehouse || "Yeni Depo Ekle"}</h4>
-                <p className="text-[9px] text-slate-500 font-semibold mt-0.5">{t.addNewWarehouseDesc || "Sisteme yeni bir depo şubesi ekleyin"}</p>
-              </article>
-            )}
-          </div>
         </section>
-
         {/* Workspace Operations Tabs */}
         {activeWh && (
           <nav className="flex gap-2 p-1.5 bg-slate-100 rounded-2xl w-fit max-w-full overflow-x-auto shadow-inner">
