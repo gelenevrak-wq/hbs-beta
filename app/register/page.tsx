@@ -7,6 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { sanitizeWhatsAppNumber } from "@/lib/phoneUtils";
 import { signCookieValue } from "@/lib/security";
 import { upsertLocalStore } from "@/lib/hbsData";
+import { setSessionCookies } from "@/lib/session";
 
 type RegisterMode = "select" | "customer" | "store" | "done";
 type DoneKind = "customer" | "store";
@@ -248,8 +249,7 @@ export default function RegisterPage() {
         });
 
         // Local storage'a kaydet (uyumluluk için)
-        document.cookie = `hbs-user-role=${await signCookieValue("customer")}; path=/; max-age=86400; SameSite=Lax`;
-        document.cookie = `hbs-user-email=${await signCookieValue(email)}; path=/; max-age=86400; SameSite=Lax`;
+        await setSessionCookies({ role: "customer", email });
 
         window.localStorage.setItem(
           "hbs-current-user",
@@ -372,8 +372,7 @@ export default function RegisterPage() {
         });
 
         // Local storage'a kaydet (uyumluluk için)
-        document.cookie = `hbs-user-role=${await signCookieValue("owner")}; path=/; max-age=86400; SameSite=Lax`;
-        document.cookie = `hbs-user-email=${await signCookieValue(email)}; path=/; max-age=86400; SameSite=Lax`;
+        await setSessionCookies({ role: "owner", email });
 
         window.localStorage.setItem(
           "hbs-current-user",

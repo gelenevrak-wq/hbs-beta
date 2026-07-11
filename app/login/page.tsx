@@ -7,6 +7,7 @@ import { FormEvent, useEffect, useState } from "react";
 import CompactLanguageSwitcher, { LanguageCode } from "@/components/language/CompactLanguageSwitcher";
 import { supabase } from "@/lib/supabaseClient";
 import { signCookieValue } from "@/lib/security";
+import { setSessionCookies } from "@/lib/session";
 
 type DemoUser = {
   username: string;
@@ -200,8 +201,7 @@ export default function LoginPage() {
           redirectTo = "/dashboard";
         }
 
-        document.cookie = `hbs-user-role=${await signCookieValue(role)}; path=/; max-age=86400; SameSite=Lax`;
-        document.cookie = `hbs-user-email=${await signCookieValue(data.user.email || "")}; path=/; max-age=86400; SameSite=Lax`;
+        await setSessionCookies({ role, email: data.user.email || "" });
 
         window.localStorage.setItem(
           "hbs-current-user",
