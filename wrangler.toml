@@ -1,0 +1,12 @@
+name = "hbs-market"
+compatibility_date = "2025-07-01"
+compatibility_flags = ["nodejs_compat"]
+
+# OpenNext Cloudflare build output
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
+
+# Build-time public env vars (NEXT_PUBLIC_*) are inlined from .env.local
+# during `opennextjs-cloudflare build`. Set them in Cloudflare > Workers &
+# Pages > hbs-market > Settings > Variables when building via the dashboard.
+observability = { enabled = true }

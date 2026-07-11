@@ -1,0 +1,5 @@
+NEXTJS_ENV=development
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_COOKIE_SECRET=change-me-to-a-long-random-string-min-16-chars
+NEXT_PUBLIC_ENABLE_DEMO_LOGIN=false
