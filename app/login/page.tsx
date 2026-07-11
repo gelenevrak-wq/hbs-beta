@@ -18,11 +18,18 @@ type DemoUser = {
   redirectTo: string;
 };
 
-const demoUsers: DemoUser[] = [
-  { username: "OZGUR", password: "OZDEMIR", role: "superadmin", storeSlugs: ["obdtr", "yildiz-hirdavat"], displayName: "Özgür Özdemir", redirectTo: "/dashboard" },
-  { username: "ALTANCANCI", password: "CANCI35", role: "storeOwner", storeSlugs: ["obdtr"], displayName: "Altan Cancı", redirectTo: "/dashboard" },
-  { username: "MUSTERI", password: "MUSTERI123", role: "customer", storeSlugs: [], displayName: "Demo Müşteri", redirectTo: "/customer" },
-];
+const ENABLE_DEMO_LOGIN = process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGIN === "true";
+
+// Demo accounts are ONLY available when NEXT_PUBLIC_ENABLE_DEMO_LOGIN=true
+// (development). In production this array is empty and the demo/local
+// fallback login path below is disabled.
+const demoUsers: DemoUser[] = ENABLE_DEMO_LOGIN
+  ? [
+      { username: "OZGUR", password: "OZDEMIR", role: "superadmin", storeSlugs: ["obdtr", "yildiz-hirdavat"], displayName: "Özgür Özdemir", redirectTo: "/dashboard" },
+      { username: "ALTANCANCI", password: "CANCI35", role: "storeOwner", storeSlugs: ["obdtr"], displayName: "Altan Cancı", redirectTo: "/dashboard" },
+      { username: "MUSTERI", password: "MUSTERI123", role: "customer", storeSlugs: [], displayName: "Demo Müşteri", redirectTo: "/customer" },
+    ]
+  : [];
 
 
 const biometricTranslations: Record<LanguageCode, Record<string, string>> = {
@@ -224,7 +231,7 @@ export default function LoginPage() {
         );
         window.location.href = redirectTo;
       }
-    } else {
+    } else if (ENABLE_DEMO_LOGIN) {
       // Demo kullanıcı ve local tescilli mağaza fall-back
       const normalizedUsername = inputVal.toUpperCase();
       let user = demoUsers.find(
