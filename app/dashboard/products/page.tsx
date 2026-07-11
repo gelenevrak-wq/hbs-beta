@@ -2869,7 +2869,7 @@ export default function ProductsPage() {
     }
   }
 
-  if (!language) return <main className="min-h-screen bg-slate-950" />;
+  if (!language) return <main className="min-h-screen bg-[#f4f7fb]" />;
 
   return (
     <main className={"min-h-screen bg-[#f5f7fb] text-slate-900 px-3 py-3 sm:px-6 sm:py-6 " + (sanayiMode ? "sanayi-mode-active" : "")}>

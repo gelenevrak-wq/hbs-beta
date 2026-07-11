@@ -206,7 +206,7 @@ export default function HelpCenterPage() {
     });
   }, [searchQuery, selectedCategory, activeLang]);
 
-  if (!language) return <main className="min-h-screen bg-slate-950" />;
+  if (!language) return <main className="min-h-screen bg-[#f4f7fb]" />;
 
   return (
     <DashboardLayout activeMenu="Yardım Merkezi">

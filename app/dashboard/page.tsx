@@ -593,7 +593,7 @@ export default function DashboardPage() {
   }, []);
 
   if (!language) {
-    return <main className="min-h-screen bg-slate-950" />;
+    return <main className="min-h-screen bg-[#f4f7fb]" />;
   }
 
   const currentText = texts[language];
